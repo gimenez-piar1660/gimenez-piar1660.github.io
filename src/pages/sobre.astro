@@ -323,7 +323,7 @@ const url = `https://${site.brandDomain}/sobre`;
           {lideranca.map((l, i) => (
             <div class:list={['leader', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
               <div class="leader-photo">
-                <img src={l.foto} alt={`${l.nome}, ${l.cargo} da PiaR`} class:list={[l.flip && 'flip']} loading="lazy" decoding="async" />
+                <img src={`${import.meta.env.BASE_URL}${l.foto}`} alt={`${l.nome}, ${l.cargo} da PiaR`} class:list={[l.flip && 'flip']} loading="lazy" decoding="async" />
               </div>
               <span class="leader-chip">{l.cargo}</span>
               <h3>{l.nome}</h3>

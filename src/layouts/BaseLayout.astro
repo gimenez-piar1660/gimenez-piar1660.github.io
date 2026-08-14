@@ -28,6 +28,16 @@ const siteName = 'PiaR Group';
 const fullTitle = title === siteName || title.includes(siteName)
   ? title
   : `${title} · ${siteName}`;
+
+// O site é publicado sob a subpasta /siteAstro no GitHub Pages. O Astro prefixa
+// sozinho só o que ele mesmo gera (_assets). Tudo que vem de public/ e é escrito
+// à mão no HTML precisa do BASE_URL na frente, senão resolve na raiz do domínio
+// e dá 404. BASE_URL vale '/siteAstro', sem barra no fim: manter a barra do path.
+const BASE = import.meta.env.BASE_URL;
+
+// og:image e twitter:image pedem URL absoluta, então junta base + path e resolve
+// contra Astro.site.
+const ogImageUrl = new URL(`${BASE}${ogImage}`, Astro.site).href;
 ---
 <!doctype html>
 <html lang="pt-BR" class="scroll-smooth">
@@ -43,9 +53,9 @@ const fullTitle = title === siteName || title.includes(siteName)
     {noindex && <meta name="robots" content="noindex,nofollow" />}
 
     <!-- Ícones -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/brand/piar-vertical-amarelo.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href={`${BASE}/favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${BASE}/brand/piar-vertical-amarelo.png`} />
+    <link rel="manifest" href={`${BASE}/site.webmanifest`} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -53,14 +63,14 @@ const fullTitle = title === siteName || title.includes(siteName)
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta property="og:locale" content="pt_BR" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Atribuicao de origem: grava UTM, pagina de entrada e referrer num cookie
          proprio de 90 dias, para o formulario de /contato conseguir dizer de onde
