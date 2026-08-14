@@ -9,8 +9,14 @@
 // Se os dois estiverem vazios, o form entra em modo demo e avisa na tela.
 //
 // 1) RD STATION (destino oficial do lead)
-//    Painel RD → Integrações → API → copie a "Chave de API Pública".
-//    Cole em RD_PUBLIC_KEY abaixo.
+//    Painel RD → Integrações → API → copie o "Token Público".
+//    Cole em RD_PUBLIC_KEY abaixo. Testado em 14/08/2026: o token público
+//    autentica no endpoint /platform/conversions pelo parâmetro api_key.
+//    (A documentação do RD manda pegar uma "API Key" no App Publisher; não
+//    precisa, o token público funciona. Chave inválida devolve 401 UNAUTHORIZED,
+//    então dá para conferir com um curl antes de publicar.)
+//    O token é público por natureza: ele aparece no código-fonte da página,
+//    é assim que o RD projetou para formulário em site.
 //    Antes de publicar, criar no RD os campos personalizados da spec:
 //      cf_cargo · cf_frente_interesse · cf_assessoria_previa · cf_gatilho
 //      cf_faturamento_faixa · cf_origem_declarada · cf_indicado_por
@@ -27,7 +33,7 @@
 //    no passo 2, então o mesmo lead gera duas mensagens. É de propósito:
 //    quem abandona no meio ainda dá para ligar.
 // ============================================================
-const RD_PUBLIC_KEY = 'COLE-SUA-CHAVE-PUBLICA-RD-AQUI';
+const RD_PUBLIC_KEY = '0ba58cf81bc6e78d267b310a8ccafbfc';
 const RD_ID_PARCIAL = 'piar-site-contato-passo-1';
 const RD_ID_COMPLETO = 'piar-site-contato-briefing';
 const WEB3FORMS_KEY = 'COLE-SUA-CHAVE-WEB3FORMS-AQUI';
