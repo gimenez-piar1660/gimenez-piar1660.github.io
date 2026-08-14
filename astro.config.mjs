@@ -3,7 +3,8 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://pep.piar.group',
+  site: 'https://gimenez-piar1660.github.io',
+  base: '/siteAstro',
   trailingSlash: 'never',
   build: {
     assets: '_assets',
