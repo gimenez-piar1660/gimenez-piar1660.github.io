@@ -1,0 +1,827 @@
+---
+// ============================================================================
+// NARRATIVA PARA CMOs · "O QUE UM CMO REALMENTE ESPERA DE PR"
+// Conceito-assinatura: CAMPO GRAVITACIONAL DA MARCA.
+//   PR não empurra (funil linear). Cria MASSA (reputação, autoridade, prova)
+//   que gera GRAVIDADE e atrai o mercado.
+// Inovação de storytelling: um único campo gravitacional FIXO, full-screen,
+//   atrás da página inteira, cuja MASSA CRESCE conforme o scroll. O mercado é
+//   um corpo que orbita a marca e vai caindo (esquentando) enquanto você lê.
+//   Parallax full-screen atrás dos cards. Mouse move a massa de verdade.
+// Voz institucional PiaR com a autoridade de quem já sentou dos dois lados.
+// Fiel ao deck de Ana Flávia Carrilo.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/para-cmos`;
+
+const motores = [
+  { n: '01', t: 'Branding', d: 'Constrói a base. Consistência antes de escala.' },
+  { n: '02', t: 'Conteúdo', d: 'Motor de aquisição, não peça isolada.' },
+  { n: '03', t: 'Imprensa', d: 'Distribui autoridade além dos canais próprios.' },
+  { n: '04', t: 'Tráfego', d: 'Alavanca o que já funciona. Não é a base.' },
+];
+
+const idioma = [
+  { k: 'Receita', q: 'Quanto vendemos?' },
+  { k: 'Pipeline', q: 'Quanto geramos?' },
+  { k: 'ROI', q: 'Qual foi o retorno?' },
+  { k: 'Crescimento', q: 'CAC, LTV, expansão.' },
+];
+
+const caminho = ['Publicação', 'Credibilidade', 'Confiança', 'Consideração', 'Venda'];
+
+const corpos = [
+  { ic: 'solar:cart-check-line-duotone', t: 'Vendas', d: 'Credibilidade que o time comercial usa para fechar com menos objeção.' },
+  { ic: 'solar:chart-2-line-duotone', t: 'Investidores', d: 'Confiança de mercado que valida a empresa para fundos e parceiros.' },
+  { ic: 'solar:crown-line-duotone', t: 'Liderança', d: 'Autoridade que posiciona CEO e founders como referência do setor.' },
+  { ic: 'solar:users-group-rounded-line-duotone', t: 'Talentos', d: 'Atração e retenção de quem quer trabalhar numa empresa referência.' },
+];
+
+const reclamacoes = [
+  { r: 'Ninguém conhece nossa marca.', o: 'Oportunidade de branding e distribuição.' },
+  { r: 'As matérias não dão resultado.', o: 'Oportunidade de ativação e uso dos ativos.' },
+  { r: 'Nosso CEO não aparece.', o: 'Oportunidade de posicionamento executivo.' },
+  { r: 'Não entendem o que fazemos.', o: 'Oportunidade de narrativa e mensagem.' },
+];
+
+const argumentos = [
+  { n: '01', t: 'Custo invisível da visibilidade', d: 'O custo de comprar o mesmo espaço em mídia paga transforma PR de centro de custo em centro de retorno.' },
+  { n: '02', t: 'Impacto em SEO e tráfego', d: 'Backlinks de veículos relevantes, domain authority, tráfego orgânico, CAC. Conecta PR a uma métrica que a liderança já acompanha.' },
+  { n: '03', t: 'Narrativa de awareness', d: 'Quais temas do negócio ganharam espaço na mídia, e como isso posiciona a empresa para vender.' },
+];
+
+// FAQ citável (alimenta a seção visível e o FAQPage JSON-LD).
+const faq = [
+  {
+    q: 'PR é custo ou investimento?',
+    a: 'PR é investimento quando a comunicação é tratada como construção de massa, reputação, autoridade e prova, que reduz o custo de aquisição e a resistência da venda. Vira custo quando fica presa no clipping, sem distribuição nem conexão com a meta de negócio.',
+  },
+  {
+    q: 'Como medir o ROI de PR?',
+    a: 'Conecte a comunicação a métricas que a liderança já acompanha: custo equivalente do espaço conquistado, backlinks e tráfego orgânico, share of voice e a redução de objeção no funil. O ponto não é contar matérias, e sim mostrar a massa que cada cobertura deixou. Veja <a href="/roi">como calcular o ROI de assessoria de imprensa</a>.',
+  },
+  {
+    q: 'Qual a diferença entre PR e marketing?',
+    a: 'Marketing responde por demanda e receita no curto prazo; PR constrói a reputação e a autoridade que tornam essa demanda mais barata de capturar. As duas querem a mesma coisa e rendem mais integradas. Veja <a href="/comunicacao-integrada">comunicação integrada</a>.',
+  },
+  {
+    q: 'PR ajuda a vender?',
+    a: 'Sim, de forma indireta e mensurável. O lead que chega depois de ler uma matéria em veículo confiável tem menos objeção e tende a pagar o preço cheio. A credibilidade que o comercial usa para fechar nasce da <a href="/reputacao">reputação</a> construída na imprensa.',
+  },
+  {
+    q: 'PR ou mídia paga: o que vem primeiro?',
+    a: 'PR constrói a base de credibilidade; a mídia paga alavanca o que já tem tração. Investir só em tráfego sobre uma marca sem reputação encarece o CAC. A sequência saudável é massa primeiro, alavanca depois.',
+  },
+];
+---
+
+<BaseLayout
+  title="Para CMOs · O que marketing realmente espera de PR"
+  description="Para o CMO, PR constrói a massa de reputação, autoridade e prova que reduz o custo de aquisição e a resistência da venda. A PiaR traduz comunicação para receita, pipeline e ROI desde 2013."
+  canonical={url}
+>
+  <div id="scroll-progress" aria-hidden="true"></div>
+  <Nav />
+
+  <!-- Campo gravitacional fixo, full-screen, atrás de tudo. A massa cresce no scroll. -->
+  <canvas id="field-bg" aria-hidden="true"></canvas>
+  <span id="lbl-mercado" class="body-label cold" aria-hidden="true"><span class="cb-dot"></span>o mercado</span>
+  <span id="lbl-marca" class="body-label warm" aria-hidden="true"><span class="wb-dot"></span>a marca</span>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="grav-hero">
+      <div class="scrim" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>Para CMOs · O que marketing realmente espera de PR</span>
+        <h1 class="reveal d1">PR não empurra a venda. Constrói a <span class="warm">massa</span> que a atrai.</h1>
+        <p class="hero-sub reveal d2">
+          Marketing e PR olham a mesma coisa de órbitas diferentes. O que une os dois é a massa que a marca acumula: reputação, autoridade, prova. Quanto mais massa, mais forte o campo, e mais o mercado é atraído sem ser perseguido.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="#campo" class="btn btn-accent">Entender o campo<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#falar" class="btn btn-ghost-d">Falar com a PiaR</a>
+        </div>
+      </div>
+      <span class="grav-cue" aria-hidden="true"><span class="l"></span>role</span>
+    </section>
+
+    <!-- ============ O QUE É (abstract answer-first p/ GEO) ============ -->
+    <section class="section dark tight">
+      <div class="wrap narrow">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>O que um CMO espera de PR</span>
+        <p class="lede on-dark reveal d1">Para um CMO, o valor de PR está na massa que a marca acumula, reputação, autoridade e prova, que reduz o custo de aquisição e a resistência da venda. Na PiaR, essa comunicação roda como sistema de crescimento há {site.yearsOperating} anos, ao lado de {site.brandsServed} marcas.</p>
+      </div>
+    </section>
+
+    <!-- ============ O ATRITO ============ -->
+    <section class="section dark tight">
+      <div class="wrap narrow">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>A reunião que você já teve</span>
+        <p class="strike reveal d1">Saímos na Exame essa semana.</p>
+        <p class="reply reveal d2">Ótimo. E daí?</p>
+        <p class="lede on-dark reveal d3">Essa pergunta não é ingratidão. É uma diferença de perspectiva. PR fala em cobertura; a liderança fala em receita. O trabalho não está faltando. Está faltando tradução.</p>
+      </div>
+    </section>
+
+    <!-- ============ AS DUAS ÓRBITAS ============ -->
+    <section id="campo" class="section dark has-g">
+      <span class="gword" data-parallax-y="-14" aria-hidden="true" style="top:8%; right:-3%">órbita</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>As duas órbitas</span>
+          <h2>A mesma marca, observada de dois pontos da mesma órbita.</h2>
+        </div>
+        <div class="orbits">
+          <div class="orbit-col reveal">
+            <span class="oc-tag">Como CMO</span>
+            <ul>
+              <li>Responde por receita</li>
+              <li>Defende orçamento</li>
+              <li>Presta contas à liderança</li>
+              <li>Mede por pipeline, ROI, CAC</li>
+            </ul>
+          </div>
+          <div class="orbit-mid reveal d1" aria-hidden="true"><span class="om-core"></span></div>
+          <div class="orbit-col warm-col reveal d2">
+            <span class="oc-tag">Como PR</span>
+            <ul>
+              <li>Conquista matérias</li>
+              <li>Constrói relacionamento</li>
+              <li>Gera autoridade</li>
+              <li>Entrega cobertura e narrativa</li>
+            </ul>
+          </div>
+        </div>
+        <p class="punch on-dark reveal">Quem já observou dos dois pontos sabe: marketing e PR querem a <span class="warm">mesma coisa</span>. Só medem por lentes diferentes.</p>
+      </div>
+    </section>
+
+    <!-- ============ PR É UM DOS MOTORES ============ -->
+    <section class="section warmer has-g">
+      <span class="gword" data-parallax-y="16" aria-hidden="true" style="bottom:-4%; left:-2%">massa</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>O sistema</span>
+          <h2>Nenhum corpo cresce sozinho. PR é um dos motores.</h2>
+          <p class="lede on-dark">Branding, conteúdo, imprensa e tráfego não são peças isoladas. São corpos do mesmo sistema, e cada um adiciona massa ao conjunto.</p>
+        </div>
+        <div class="motores">
+          {motores.map((m, i) => (
+            <div class:list={['motor-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="m-n">{m.n}</span>
+              <h3>{m.t}</h3>
+              <p>{m.d}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch on-dark reveal">PR é um dos motores que dão <span class="warm">massa</span> ao sistema, não um apêndice de marketing.</p>
+      </div>
+    </section>
+
+    <!-- ============ A LENTE DO CMO ============ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>O idioma da liderança</span>
+          <h2>A liderança pergunta sobre receita, não sobre releases.</h2>
+        </div>
+        <div class="idioma">
+          {idioma.map((x, i) => (
+            <div class:list={['idioma-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="ic-k">{x.k}</span>
+              <span class="ic-q">{x.q}</span>
+            </div>
+          ))}
+        </div>
+        <p class="punch on-dark reveal">Esse é o idioma que a liderança fala. Quando PR não se conecta a ele, o que falta é <span class="warm">tradução</span>, não valor.</p>
+      </div>
+    </section>
+
+    <!-- ============ O MITO vs O CAMPO · POÇO GRAVITACIONAL ============ -->
+    <section class="section deep has-g">
+      <span class="gword" data-parallax-y="-18" aria-hidden="true" style="top:6%; left:-2%">campo</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>O maior mito sobre assessoria</span>
+          <h2>O mito é uma linha reta. O real é um campo.</h2>
+          <p class="lede on-dark">O cliente imagina uma fila: release, publicação, lead, venda. O caminho real não é uma linha. É um poço de gravidade em que a marca, com massa, faz o mercado cair em direção à venda.</p>
+        </div>
+        <div class="well-stage reveal d1">
+          <canvas id="well-canvas" role="img" aria-label="O funil linear desaba e vira um poço gravitacional: um corpo desce pelos estágios publicação, credibilidade, confiança, consideração e venda, atraído pela massa da marca."></canvas>
+          <div class="well-path" aria-hidden="true">
+            {caminho.map((c) => (<span class="wp">{c}</span>))}
+          </div>
+        </div>
+        <p class="punch on-dark reveal">PR cria o <span class="warm">campo</span> que faz o lead cair em direção à venda, em vez de puxá-lo pela manga.</p>
+      </div>
+    </section>
+
+    <!-- ============ A VIRADA ============ -->
+    <section class="section dark tight">
+      <div class="wrap narrow">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>A virada de chave</span>
+        <h2 class="reveal d1">Além de acelerar a aquisição, PR reduz a <span class="warm">resistência</span> da venda.</h2>
+        <p class="lede on-dark reveal d2">O lead que fecha depois de ler uma matéria chega mais confiante, com menos objeções, mais propenso a pagar o preço cheio. É valor financeiro real, mesmo invisível no CRM. Na física do campo: quanto mais massa, menos esforço para o corpo cair.</p>
+      </div>
+    </section>
+
+    <!-- ============ A DISTRIBUIÇÃO ============ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>O alcance do campo</span>
+          <h2>Saiu na Forbes. Agora começa a distribuição.</h2>
+        </div>
+        <div class="distrib reveal d1">
+          <span class="dq">No LinkedIn</span>
+          <span class="dq">No site</span>
+          <span class="dq">Em conteúdo</span>
+          <span class="dq">Em prova social</span>
+          <span class="dq">No deck comercial</span>
+        </div>
+        <p class="punch on-dark reveal">Sem isso, o ativo morre no clipping. A publicação é o começo, não o fim. A distribuição é o alcance do campo: onde a massa vira gravidade que <span class="warm">aparece nos indicadores</span>.</p>
+      </div>
+    </section>
+
+    <!-- ============ ALÉM DO CLIPPING ============ -->
+    <section class="section warmer has-g">
+      <span class="gword" data-parallax-y="14" aria-hidden="true" style="bottom:-5%; right:-3%">gravidade</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Além do clipping</span>
+          <h2>Uma matéria atrai mais do que leads.</h2>
+        </div>
+        <div class="corpos">
+          {corpos.map((c, i) => (
+            <div class:list={['corpo-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="c-ic"><iconify-icon icon={c.ic}></iconify-icon></span>
+              <h3>{c.t}</h3>
+              <p>{c.d}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch on-dark reveal">Nem tudo aparece no CRM. Mas tudo <span class="warm">orbita</span> o negócio.</p>
+      </div>
+    </section>
+
+    <!-- ============ TRADUZIR IMPACTO · O TRADUTOR ============ -->
+    <section class="section deep">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Traduzir impacto</span>
+          <h2>A publicação é o que foi feito. O impacto é a massa que ficou.</h2>
+        </div>
+        <div class="translator reveal d1" aria-hidden="true">
+          <div class="tr-side tr-a">
+            <span class="tr-tag">Relatório de atividade</span>
+            <p id="tr-a-text" class="tr-text"></p>
+          </div>
+          <div class="tr-arrow"><iconify-icon icon="solar:arrow-right-linear"></iconify-icon></div>
+          <div class="tr-side tr-b">
+            <span class="tr-tag warm">Relatório de impacto</span>
+            <p id="tr-b-text" class="tr-text"></p>
+          </div>
+        </div>
+        <ul class="sr-only">
+          <li>Saímos em 15 veículos esta semana traduz para: a marca ganhou massa na narrativa de liderança do setor.</li>
+          <li>Número de publicações no mês traduz para: share of voice subindo contra os concorrentes.</li>
+          <li>Lista de veículos e audiência somada traduz para: backlinks e palavras-chave que aproximam a marca da venda.</li>
+        </ul>
+        <p class="punch on-dark reveal">Relatório de atividade mostra o que foi feito. Relatório de impacto mostra o <span class="warm">campo que cresceu</span>.</p>
+      </div>
+    </section>
+
+    <!-- ============ TODA RECLAMAÇÃO É UMA OPORTUNIDADE ============ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>A mudança de chave</span>
+          <h2>Toda reclamação revela uma necessidade.</h2>
+          <p class="lede on-dark">Quem ouve como reclamação perde o contrato. Quem ouve como necessidade amplia o escopo.</p>
+        </div>
+        <div class="reclama">
+          {reclamacoes.map((x, i) => (
+            <div class:list={['recl-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="rc-r">{x.r}</span>
+              <span class="rc-o"><iconify-icon icon="solar:arrow-right-down-linear"></iconify-icon>{x.o}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OS 3 ARGUMENTOS ============ -->
+    <section class="section warmer">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Os argumentos que funcionam na sala</span>
+          <h2>Três argumentos que a liderança reconhece como resultado.</h2>
+        </div>
+        <div class="args">
+          {argumentos.map((a, i) => (
+            <div class:list={['arg-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
+              <span class="a-n">{a.n}</span>
+              <h3>{a.t}</h3>
+              <p>{a.d}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch on-dark reveal">Juntos, viram a conversa de "quanto custa PR" para <span class="warm">"quanto custa não ter massa"</span>.</p>
+      </div>
+    </section>
+
+    <!-- ============ FAQ (citável p/ GEO) ============ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Perguntas frequentes</span>
+          <h2>O que dá para <span class="warm">responder por aqui</span>.</h2>
+        </div>
+        <div class="faq-wrap reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body" set:html={f.a}></div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FECHO / CTA ============ -->
+    <section id="falar" class="grav-cta has-g">
+      <span class="gword big" data-parallax-y="-10" aria-hidden="true" style="top:50%; left:50%; transform:translate(-50%,-50%)">PiaR</span>
+      <div class="wrap cta-inner">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>Vamos conversar</span>
+        <h2 class="reveal d1">Quem enxerga a pauta vê um trabalho. Quem enxerga o <span class="warm">campo</span> vê o negócio sendo atraído.</h2>
+        <p class="lede on-dark reveal d2">A PiaR conduz comunicação como construção de massa: reputação, autoridade e prova que viram gravidade para o seu mercado. Há {site.yearsOperating} anos, ao lado de {site.brandsServed} marcas.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar conversa<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/metodo" class="btn btn-ghost-d">Ver o método</a>
+        </div>
+        <p class="cta-foot reveal d4">{site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'O que um CMO realmente espera de PR: o campo gravitacional da marca',
+    description: 'Para o CMO, PR constrói a massa de reputação, autoridade e prova que reduz o custo de aquisição e a resistência da venda. A PiaR traduz comunicação para receita, pipeline e ROI desde 2013.',
+    inLanguage: 'pt-BR',
+    about: 'Relações públicas para marketing e crescimento',
+    author: { '@id': `${site.domain}/#organization` },
+    publisher: { '@id': `${site.domain}/#organization` },
+    mainEntityOfPage: url,
+  })} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+    })),
+  })} />
+
+  <style is:global>
+    :root {
+      --space: #07080C;
+      --space-2: #0B0D13;
+      --cold: #5B7B9A;
+      --warm: #FED136;
+      --warm-deep: #E0B420;
+      --text-d: #FFFFFF;
+      --text-d-muted: rgba(255, 255, 255, .68);
+      --text-d-faint: rgba(255, 255, 255, .42);
+      --r-card: 22px;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -.03em; margin: 0; }
+    body { font-family: var(--font-sans); background: var(--space); color: var(--text-d); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+    #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--warm); z-index: 9999; width: 0; transition: width .1s linear; }
+
+    /* Campo gravitacional fixo full-screen (inovação: massa cresce no scroll) */
+    #field-bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; background: var(--space); }
+    .body-label { position: fixed; left: 0; top: 0; z-index: 3; display: inline-flex; align-items: center; gap: .5rem; padding: .42rem .85rem; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; backdrop-filter: blur(6px); pointer-events: none; white-space: nowrap; will-change: transform, opacity; }
+    .body-label.cold { color: rgba(186,206,224,.9); background: rgba(91,123,154,.12); border: 1px solid rgba(110,147,184,.3); }
+    .body-label.cold .cb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cold); box-shadow: 0 0 10px 1px rgba(110,147,184,.7); }
+    .body-label.warm { color: rgba(255,236,176,.95); background: rgba(254,209,54,.1); border: 1px solid rgba(254,209,54,.34); }
+    .body-label.warm .wb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 12px 2px rgba(254,209,54,.85); }
+    @media (max-width: 820px) { .body-label { display: none; } }
+
+    .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 2; }
+    @media (min-width: 768px) { .wrap { padding-inline: 2.5rem; } }
+    .wrap.narrow { max-width: 760px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    main { position: relative; z-index: 1; }
+    .warm { color: var(--warm); }
+
+    .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-d-muted); font-weight: 600; }
+    .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warm); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .9rem 1.7rem; border-radius: 20px; font-family: var(--font-display); font-size: .92rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+    .btn iconify-icon { transition: transform .4s var(--ease); }
+    .btn:hover iconify-icon { transform: translateX(4px); }
+    .btn-accent { background: var(--warm); color: #15130C; border-color: var(--warm); }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(254,209,54,.34); }
+    .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.26); }
+    .btn-ghost-d:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.55); }
+
+    /* palavra-fantasma com parallax atrás dos cards */
+    .has-g { overflow: hidden; }
+    .gword { position: absolute; z-index: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(6rem, 24vw, 24rem); line-height: .8; letter-spacing: -.05em; color: rgba(255,255,255,.03); pointer-events: none; user-select: none; white-space: nowrap; }
+    .gword.big { color: rgba(254,209,54,.04); }
+
+    /* FAQ citável */
+    .faq-wrap { max-width: 880px; }
+    .faq-item { border-bottom: 1px solid var(--hairline-d); }
+    .faq-item summary { list-style: none; cursor: pointer; padding: 1.4rem 0; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; font-size: 1.08rem; font-weight: 600; letter-spacing: -.01em; color: #fff; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary iconify-icon { transition: transform .4s var(--ease); font-size: 1.4rem; color: var(--warm); flex-shrink: 0; }
+    .faq-item[open] summary iconify-icon { transform: rotate(45deg); }
+    .faq-item .faq-body { padding: 0 0 1.4rem; color: var(--text-d-muted); max-width: 70ch; line-height: 1.65; }
+    .faq-item .faq-body a { color: var(--warm); text-decoration: none; border-bottom: 1px solid rgba(254,209,54,.4); }
+
+    /* ===================== HERO ===================== */
+    .grav-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; overflow: hidden; background: transparent; }
+    .grav-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(120% 90% at 30% 45%, rgba(7,8,12,.78) 0%, rgba(7,8,12,.3) 42%, rgba(7,8,12,0) 64%),
+                  linear-gradient(180deg, rgba(7,8,12,.55) 0%, rgba(7,8,12,0) 22%, rgba(7,8,12,0) 70%, rgba(7,8,12,.85) 100%); }
+    .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 5rem; }
+    .grav-hero h1 { font-size: clamp(2.7rem, 7vw, 6rem); font-weight: 600; line-height: .98; letter-spacing: -.04em; margin: 1.5rem 0 0; max-width: 16ch; text-wrap: balance; }
+    .grav-hero .hero-sub { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-d-muted); margin-top: 1.7rem; max-width: 48ch; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.4rem; }
+
+    .grav-cue { position: absolute; left: 50%; bottom: 1.6rem; transform: translateX(-50%); z-index: 3; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-d-faint); }
+    .grav-cue .l { width: 1px; height: 36px; background: linear-gradient(180deg, var(--text-d-faint), transparent); animation: cue 2.2s var(--ease) infinite; }
+    @keyframes cue { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+    /* ===================== SEÇÕES (translúcidas: o campo passa atrás) ===================== */
+    .section { position: relative; z-index: 1; padding-block: clamp(5rem, 10vw, 8.5rem); border-top: 1px solid var(--hairline-d); }
+    .section.dark { background: rgba(7, 8, 12, .8); }
+    .section.warmer { background: linear-gradient(180deg, rgba(11,13,19,.84), rgba(7,8,12,.7)); }
+    .section.deep { background: rgba(9, 11, 17, .52); }
+    .section.tight { padding-block: clamp(4rem, 8vw, 6.5rem); }
+    .sec-head { max-width: 62ch; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
+    .section h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 20ch; text-wrap: balance; }
+    .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--text-d-muted); margin-top: 1.4rem; max-width: 58ch; }
+    .punch { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.18; letter-spacing: -.025em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; color: #fff; }
+
+    .strike { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3.4vw, 2.6rem); letter-spacing: -.02em; color: rgba(180,200,220,.7); margin: 1.5rem 0 0; }
+    .reply { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.03em; color: var(--warm); margin: .4rem 0 0; }
+
+    .orbits { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
+    @media (min-width: 860px) { .orbits { grid-template-columns: 1fr auto 1fr; gap: 2.5rem; } }
+    .orbit-col { padding: clamp(1.75rem, 3vw, 2.5rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(255,255,255,.025); }
+    .orbit-col.warm-col { border-color: rgba(254,209,54,.22); background: rgba(254,209,54,.05); }
+    .oc-tag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-d-faint); }
+    .warm-col .oc-tag { color: var(--warm); }
+    .orbit-col ul { list-style: none; margin: 1.1rem 0 0; padding: 0; }
+    .orbit-col li { font-size: 1.05rem; color: var(--text-d-muted); padding: .55rem 0; border-bottom: 1px solid var(--hairline-d); }
+    .orbit-col li:last-child { border-bottom: 0; }
+    .orbit-mid { display: none; }
+    @media (min-width: 860px) { .orbit-mid { display: grid; place-items: center; width: 64px; height: 64px; } }
+    .om-core { width: 16px; height: 16px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 0 8px rgba(254,209,54,.1), 0 0 0 20px rgba(254,209,54,.05), 0 0 28px 4px rgba(254,209,54,.6); animation: pulse 3s var(--ease) infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: .85; } }
+
+    .motores, .corpos, .args { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 720px) { .motores { grid-template-columns: repeat(2, 1fr); } .corpos { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1000px) { .motores { grid-template-columns: repeat(4, 1fr); } .args { grid-template-columns: repeat(3, 1fr); } }
+    .motor-card, .corpo-card, .arg-card { padding: clamp(1.5rem, 2.4vw, 2rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(13,15,22,.6); transition: var(--t-smooth); }
+    .motor-card:hover, .corpo-card:hover, .arg-card:hover { border-color: rgba(254,209,54,.28); transform: translateY(-4px); }
+    .m-n, .a-n { font-family: var(--font-mono); font-size: .8rem; font-weight: 700; letter-spacing: .08em; color: var(--warm); }
+    .motor-card h3, .corpo-card h3, .arg-card h3 { font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; margin: .7rem 0 0; }
+    .motor-card p, .corpo-card p, .arg-card p { font-size: 1rem; line-height: 1.55; color: var(--text-d-muted); margin: .6rem 0 0; }
+    .c-ic { display: inline-flex; width: 46px; height: 46px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(254,209,54,.1); color: var(--warm); font-size: 1.4rem; }
+
+    .idioma { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    @media (min-width: 860px) { .idioma { grid-template-columns: repeat(4, 1fr); } }
+    .idioma-card { padding: clamp(1.5rem, 2.4vw, 2rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); text-align: center; background: rgba(13,15,22,.6); }
+    .ic-k { display: block; font-family: var(--font-display); font-weight: 700; font-size: clamp(1.3rem, 2.4vw, 1.9rem); letter-spacing: -.03em; color: #fff; }
+    .ic-q { display: block; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-d-faint); margin-top: .6rem; }
+
+    .well-stage { position: relative; border-radius: var(--r-card); overflow: hidden; border: 1px solid var(--hairline-d); background: rgba(4,5,7,.7); aspect-ratio: 16 / 9; max-height: 70vh; }
+    #well-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .well-path { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(1.25rem, 3vw, 2.25rem); pointer-events: none; }
+    .well-path .wp { font-family: var(--font-mono); font-size: clamp(.6rem, 1.1vw, .74rem); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+    .well-path .wp:nth-child(odd) { align-self: flex-start; }
+    .well-path .wp:nth-child(even) { align-self: flex-end; }
+    .well-path .wp:last-child { color: var(--warm); font-weight: 600; }
+
+    .distrib { display: flex; flex-wrap: wrap; gap: .7rem; }
+    .dq { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-d-muted); padding: .6rem 1.1rem; border: 1px solid var(--hairline-d); border-radius: var(--r-pill); background: rgba(13,15,22,.5); }
+
+    .translator { display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: stretch; }
+    @media (min-width: 860px) { .translator { grid-template-columns: 1fr auto 1fr; gap: 1.5rem; } }
+    .tr-side { padding: clamp(1.75rem, 3vw, 2.5rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); min-height: 168px; display: flex; flex-direction: column; }
+    .tr-a { background: rgba(91,123,154,.08); border-color: rgba(110,147,184,.2); }
+    .tr-b { background: rgba(254,209,54,.06); border-color: rgba(254,209,54,.24); }
+    .tr-tag { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-d-faint); }
+    .tr-text { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.15rem, 2vw, 1.6rem); line-height: 1.25; letter-spacing: -.02em; margin: auto 0 0; transition: opacity .5s var(--ease), transform .5s var(--ease); }
+    .tr-a .tr-text { color: rgba(180,200,220,.75); }
+    .tr-b .tr-text { color: #fff; }
+    .tr-text.swap { opacity: 0; transform: translateY(8px); }
+    .tr-arrow { display: grid; place-items: center; color: var(--warm); font-size: 1.6rem; transform: rotate(90deg); }
+    @media (min-width: 860px) { .tr-arrow { transform: none; } }
+
+    .reclama { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 760px) { .reclama { grid-template-columns: repeat(2, 1fr); } }
+    .recl-card { padding: clamp(1.5rem, 2.4vw, 2rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(13,15,22,.6); }
+    .rc-r { display: block; font-family: var(--font-display); font-weight: 500; font-size: 1.2rem; letter-spacing: -.02em; color: rgba(180,200,220,.8); }
+    .rc-o { display: inline-flex; align-items: center; gap: .5rem; margin-top: .9rem; font-size: .98rem; color: var(--warm); }
+    .rc-o iconify-icon { font-size: 1.1rem; }
+
+    .grav-cta { position: relative; z-index: 1; overflow: hidden; background: rgba(7,8,12,.5); padding-block: clamp(6rem, 13vw, 10rem); border-top: 1px solid var(--hairline-d); }
+    .cta-inner { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
+    .grav-cta h2 { font-size: clamp(2rem, 4.6vw, 3.8rem); font-weight: 600; line-height: 1.08; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 20ch; }
+    .grav-cta .lede { margin-inline: auto; }
+    .grav-cta .cta-row { justify-content: center; }
+    .cta-foot { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; color: var(--text-d-faint); margin-top: 2.6rem; }
+
+    .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.active { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: .1s; } .reveal.d2 { transition-delay: .2s; } .reveal.d3 { transition-delay: .3s; } .reveal.d4 { transition-delay: .4s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .grav-cue .l, .om-core { animation: none; }
+    }
+  </style>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf0 = function (t) { lenis.raf(t); requestAnimationFrame(raf0); }; requestAnimationFrame(raf0); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress + global progress (alimenta a massa do campo) ---- */
+      var bar = document.getElementById('scroll-progress');
+      var scrollP = 0;
+      function onScroll() {
+        var h = document.documentElement;
+        scrollP = h.scrollTop / ((h.scrollHeight - h.clientHeight) || 1);
+        if (bar) bar.style.width = (scrollP * 100) + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* ---- parallax de scroll (palavras-fantasma atrás dos cards) ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ========================================================
+         CAMPO GRAVITACIONAL FIXO (inovação de storytelling)
+         A massa da marca cresce com o scroll. O mercado e um corpo
+         que orbita e cai (esquenta). O mouse move a massa. As
+         etiquetas "a marca" e "o mercado" seguem os corpos no herói.
+         ======================================================== */
+      (function masterField() {
+        var canvas = document.getElementById('field-bg');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        function resize() { W = window.innerWidth; H = window.innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+        resize();
+        window.addEventListener('resize', resize);
+
+        var N = 150, parts = [];
+        for (var i = 0; i < N; i++) parts.push({ x: ((i * 131) % 100) / 100, y: ((i * 71) % 100) / 100, vx: 0, vy: 0, m: 0.4 + ((i * 97) % 100) / 130, heat: 0, init: false });
+
+        // Trajetoria cinematografica: a massa NAO segue o mouse. O scroll e a camera.
+        // Ela atravessa a tela ao longo das obras: direita (heroi) -> esquerda (meio)
+        // -> volta -> centro (fecho). A malha do espaco-tempo viaja junto = a camera se move.
+        var PATH = [
+          [0.00, 0.72, 0.38],
+          [0.22, 0.60, 0.46],
+          [0.42, 0.30, 0.52],
+          [0.62, 0.40, 0.61],
+          [0.82, 0.63, 0.49],
+          [1.00, 0.50, 0.48]
+        ];
+        function smooth(t) { return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
+        function corePath(p) {
+          var a = PATH[0], b = PATH[PATH.length - 1];
+          for (var i = 0; i < PATH.length - 1; i++) {
+            if (p >= PATH[i][0] && p <= PATH[i + 1][0]) { a = PATH[i]; b = PATH[i + 1]; break; }
+          }
+          var span = (b[0] - a[0]) || 1, lt = smooth((p - a[0]) / span);
+          return [a[1] + (b[1] - a[1]) * lt, a[2] + (b[2] - a[2]) * lt];
+        }
+        var start = corePath(0);
+        var coreX = start[0], coreY = start[1], tcx = coreX, tcy = coreY;
+
+        var lblMarca = document.getElementById('lbl-marca');
+        var lblMercado = document.getElementById('lbl-mercado');
+        var mkAng = 0, heroFade = 1;
+
+        function frame() {
+          // o scroll dirige a massa pela trajetoria; a inercia do lerp da peso ao corpo
+          var cp = corePath(scrollP); tcx = cp[0]; tcy = cp[1];
+          coreX += (tcx - coreX) * 0.075; coreY += (tcy - coreY) * 0.075;
+          var bx = coreX * W, by = coreY * H;
+          var me = smooth(scrollP);
+          var mass = 0.5 + me * 2.5;                  // a massa cresce de verdade ao longo das obras
+          var finale = smooth((scrollP - 0.72) / 0.28); // 0 ate 72%, sobe ate 1 no clima do fecho
+          var pull = 1100 * mass * (1 + finale * 0.7);  // no clima o mercado e sugado mais forte
+
+          ctx.clearRect(0, 0, W, H);
+          ctx.fillStyle = '#07080C'; ctx.fillRect(0, 0, W, H);
+
+          // malha de espaco-tempo afundando na massa
+          var step = 56, samp = 16, maxPull = 40 + mass * 14, k = 2400 * mass;
+          ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(116,146,176,.06)';
+          var gx, gy, x, y, dx, dy, d, pl, px, py;
+          for (gy = -step; gy <= H + step; gy += step) {
+            ctx.beginPath();
+            for (x = 0; x <= W; x += samp) {
+              dx = x - bx; dy = gy - by; d = Math.sqrt(dx * dx + dy * dy) + 1; pl = Math.min(maxPull, k / d);
+              px = x - (dx / d) * pl; py = gy - (dy / d) * pl;
+              if (x === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+          }
+          for (gx = -step; gx <= W + step; gx += step) {
+            ctx.beginPath();
+            for (y = 0; y <= H; y += samp) {
+              dx = gx - bx; dy = y - by; d = Math.sqrt(dx * dx + dy * dy) + 1; pl = Math.min(maxPull, k / d);
+              px = gx - (dx / d) * pl; py = y - (dy / d) * pl;
+              if (y === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+          }
+
+          // brilho da massa (cresce com o scroll, e estoura no clima do fecho)
+          var glowR = Math.max(W, H) * (0.4 + mass * 0.12 + finale * 0.28);
+          var g = ctx.createRadialGradient(bx, by, 0, bx, by, glowR);
+          g.addColorStop(0, 'rgba(254,209,54,' + (0.14 + scrollP * 0.16 + finale * 0.12) + ')');
+          g.addColorStop(0.16, 'rgba(254,209,54,' + (0.06 + scrollP * 0.06 + finale * 0.06) + ')');
+          g.addColorStop(0.5, 'rgba(254,209,54,0)');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+          // particulas (o mercado difuso) atraidas e esquentando
+          for (var i2 = 0; i2 < parts.length; i2++) {
+            var p = parts[i2];
+            if (!p.init) { p.x = p.x * W; p.y = p.y * H; p.init = true; }
+            var pdx = bx - p.x, pdy = by - p.y, pd2 = pdx * pdx + pdy * pdy + 6000, pd = Math.sqrt(pd2);
+            var f = pull / pd2;
+            p.vx += (pdx / pd) * f + (-pdy / pd) * f * 0.5;
+            p.vy += (pdy / pd) * f + (pdx / pd) * f * 0.5;
+            p.vx *= 0.992; p.vy *= 0.992;
+            p.x += p.vx; p.y += p.vy;
+            var heat = Math.max(0, Math.min(1, (1 - (pd - 30) / (Math.min(W, H) * 0.5)) * (0.4 + scrollP * 0.9)));
+            p.heat += (heat - p.heat) * 0.05;
+            if (pd < 22) { p.x = Math.random() * W; p.y = Math.random() * H; p.vx = 0; p.vy = 0; p.heat = 0; }
+            var cr = Math.round(91 + 163 * p.heat), cg = Math.round(123 + 86 * p.heat), cb = Math.round(154 - 100 * p.heat);
+            ctx.beginPath(); ctx.arc(p.x, p.y, 1 + p.m * 1.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + (0.3 + 0.5 * p.heat) + ')'; ctx.fill();
+          }
+
+          // o corpo "mercado": orbita a marca e fecha o raio conforme o scroll
+          mkAng += prefersReduced ? 0 : 0.011;
+          var orbR = (0.30 - me * 0.17) * Math.min(W, H);
+          if (orbR < 34) orbR = 34;
+          // o angulo jornalistico muda: o plano da orbita inclina e gira com o scroll.
+          // a camera arca por cima do sistema no meio e o plano gira pro outro lado.
+          var orbTilt = 0.24 + 0.58 * Math.sin(scrollP * Math.PI);   // edge-on nas pontas, aberto no meio
+          var orbRot = scrollP * 1.5;                                // o plano gira ~86deg ao longo da pagina
+          orbR *= (1 - finale * 0.9);                  // no clima o mercado despenca pra dentro e e absorvido
+          var ox = Math.cos(mkAng) * orbR, oy = Math.sin(mkAng) * orbR * orbTilt;
+          var cr_ = Math.cos(orbRot), sr_ = Math.sin(orbRot);
+          var mkx = bx + ox * cr_ - oy * sr_;
+          var mky = by + ox * sr_ + oy * cr_;
+          var mkFade = 1 - finale;                      // o mercado some ao se fundir com a marca
+          // tether de atracao
+          ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(mkx, mky);
+          ctx.strokeStyle = 'rgba(254,209,54,' + ((0.08 + scrollP * 0.14) * mkFade) + ')'; ctx.lineWidth = 1; ctx.stroke();
+          // o mercado esquenta conforme cai (scroll)
+          var mh = Math.min(1, scrollP * 1.1);
+          var mr = Math.round(91 + 163 * mh), mg = Math.round(123 + 86 * mh), mb = Math.round(154 - 100 * mh);
+          ctx.beginPath(); ctx.arc(mkx, mky, 5.5 * (0.55 + 0.45 * mkFade), 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + mr + ',' + mg + ',' + mb + ',' + mkFade.toFixed(3) + ')';
+          ctx.shadowColor = 'rgba(' + mr + ',' + mg + ',' + mb + ',' + (0.8 * mkFade).toFixed(3) + ')'; ctx.shadowBlur = 16; ctx.fill(); ctx.shadowBlur = 0;
+
+          // a marca: nucleo quente. cresce com a massa e INCHA no clima, absorvendo o mercado.
+          var coreR = 5 + mass * 3 + finale * finale * 30;
+          // transicao: um halo de choque floresce e se dissipa na aproximacao do fim (reversivel)
+          var bloom = Math.sin(finale * Math.PI);
+          if (bloom > 0.002) {
+            ctx.beginPath(); ctx.arc(bx, by, coreR + bloom * Math.max(W, H) * 0.2, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(254,209,54,' + (bloom * 0.45).toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.arc(bx, by, coreR + bloom * Math.max(W, H) * 0.11, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,236,176,' + (bloom * 0.3).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.stroke();
+          }
+          ctx.beginPath(); ctx.arc(bx, by, coreR, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.shadowColor = 'rgba(254,209,54,.95)'; ctx.shadowBlur = 24 + mass * 8 + finale * 34; ctx.fill(); ctx.shadowBlur = 0;
+          // anel fino e brilhante na borda do sol inchado (definicao no fim)
+          if (finale > 0.02) {
+            ctx.beginPath(); ctx.arc(bx, by, coreR + 2.5, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,243,205,' + (0.55 * finale).toFixed(3) + ')'; ctx.lineWidth = 1.3; ctx.stroke();
+          }
+
+          // etiquetas seguem os corpos, somem ao sair do herói
+          heroFade += ((scrollP < 0.11 ? 1 : 0) - heroFade) * 0.07;
+          if (lblMarca) { lblMarca.style.transform = 'translate(' + bx + 'px,' + by + 'px) translate(-50%, 16px)'; lblMarca.style.opacity = heroFade.toFixed(3); }
+          if (lblMercado) { lblMercado.style.transform = 'translate(' + mkx + 'px,' + mky + 'px) translate(-50%, 16px)'; lblMercado.style.opacity = heroFade.toFixed(3); }
+
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      })();
+
+      /* ========================================================
+         POCO GRAVITACIONAL (a virada: funil linear -> poco)
+         ======================================================== */
+      (function well() {
+        var canvas = document.getElementById('well-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        function resize() { var r = canvas.getBoundingClientRect(); W = r.width; H = r.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+        resize();
+        window.addEventListener('resize', resize);
+        var t = 0;
+        function frame() {
+          t += prefersReduced ? 0 : 0.006;
+          ctx.clearRect(0, 0, W, H);
+          var cx = W * 0.5, cy = H * 0.5, rings = 13;
+          for (var i = rings; i >= 1; i--) {
+            var pp = i / rings, rx = (W * 0.46) * pp, ry = rx * 0.42, yo = cy + (1 - pp) * H * 0.3;
+            ctx.beginPath(); ctx.ellipse(cx, yo, rx, ry, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(' + Math.round(116 + 138 * (1 - pp)) + ',' + Math.round(146 + 63 * (1 - pp)) + ',' + Math.round(176 - 122 * (1 - pp)) + ',' + (0.05 + (1 - pp) * 0.18) + ')';
+            ctx.lineWidth = 1; ctx.stroke();
+          }
+          var core = cy + H * 0.3;
+          var cg = ctx.createRadialGradient(cx, core, 0, cx, core, W * 0.2);
+          cg.addColorStop(0, 'rgba(254,209,54,.5)'); cg.addColorStop(0.4, 'rgba(254,209,54,.12)'); cg.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, core, W * 0.2, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(cx, core, 5, 0, Math.PI * 2); ctx.fillStyle = '#FED136'; ctx.shadowColor = 'rgba(254,209,54,.9)'; ctx.shadowBlur = 22; ctx.fill(); ctx.shadowBlur = 0;
+          var prog = (t % 3) / 3, ang = t * 2.2, spiral = 1 - prog;
+          var rx2 = (W * 0.46) * spiral, ry2 = rx2 * 0.42, yo2 = cy + (1 - spiral) * H * 0.3;
+          var bxp = cx + Math.cos(ang) * rx2, byp = yo2 + Math.sin(ang) * ry2, heat = prog;
+          var br = Math.round(91 + 163 * heat), bgc = Math.round(123 + 86 * heat), bb = Math.round(154 - 100 * heat);
+          ctx.beginPath(); ctx.arc(bxp, byp, 4 + 2 * heat, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + br + ',' + bgc + ',' + bb + ',1)'; ctx.shadowColor = 'rgba(' + br + ',' + bgc + ',' + bb + ',.8)'; ctx.shadowBlur = 14; ctx.fill(); ctx.shadowBlur = 0;
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      })();
+
+      /* ========================================================
+         O TRADUTOR · atividade -> impacto (cicla com crossfade)
+         ======================================================== */
+      (function translator() {
+        var a = document.getElementById('tr-a-text'), b = document.getElementById('tr-b-text');
+        if (!a || !b) return;
+        var pairs = [
+          ['Saímos em 15 veículos esta semana.', 'A marca ganhou massa na narrativa de liderança do setor.'],
+          ['Número de publicações no mês.', 'Share of voice subindo contra os concorrentes.'],
+          ['Lista de veículos e audiência somada.', 'Backlinks e palavras-chave que aproximam a marca da venda.']
+        ];
+        var i = 0;
+        function set(n) { a.textContent = pairs[n][0]; b.textContent = pairs[n][1]; }
+        set(0);
+        if (prefersReduced) return;
+        setInterval(function () {
+          a.classList.add('swap'); b.classList.add('swap');
+          setTimeout(function () { i = (i + 1) % pairs.length; set(i); a.classList.remove('swap'); b.classList.remove('swap'); }, 500);
+        }, 3400);
+      })();
+    });
+  </script>
+</BaseLayout>

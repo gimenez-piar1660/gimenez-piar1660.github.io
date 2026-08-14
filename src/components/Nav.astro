@@ -1,0 +1,396 @@
+---
+// Nav principal — fonte única. Editar um único arquivo afeta todas as páginas.
+// Prop `current` aceita: 'home' | 'processos' (expandir conforme novas páginas).
+
+interface Props {
+  current?: 'home' | 'sobre' | 'servicos' | 'cases' | 'pep' | 'insights' | 'blog' | 'metodo' | 'processos' | 'contato';
+}
+const { current = 'home' } = Astro.props;
+
+// Narrativas promovidas para a raiz. BASE vazio = links no site vivo (/<slug>).
+const BASE = '';
+
+// Dropdown "Serviços" — as 6 ofertas-ancora da PiaR (curadoria comercial).
+const services = [
+  { label: 'Relações Públicas Estratégica', href: `${BASE}/relacoes-publicas` },
+  { label: 'Media & Audience Training', href: `${BASE}/media-training` },
+  { label: 'Reputação & Branding', href: `${BASE}/reputacao` },
+  { label: 'Comunicação Integrada', href: `${BASE}/comunicacao-integrada` },
+  { label: 'Dados & GEO', href: `${BASE}/geo` },
+  { label: 'Projetos Especiais (PEP)', href: '/pep' },
+];
+
+// Dropdown "Insights" — o acervo de narrativas e temas editoriais.
+const insights = [
+  { label: 'RP para Startups', href: `${BASE}/relacoes-publicas-para-startups` },
+  { label: 'Para CMOs', href: '/para-cmos' },
+  { label: 'Branding', href: `${BASE}/branding` },
+  { label: 'Rebranding', href: `${BASE}/rebranding` },
+  { label: 'Branded Content', href: `${BASE}/branded-content` },
+  { label: 'Mídia Espontânea', href: `${BASE}/midia-espontanea` },
+  { label: 'Newsjacking', href: `${BASE}/newsjacking` },
+  { label: 'News Patrocinada', href: `${BASE}/news-patrocinada` },
+  { label: 'Nano e Micro Influenciadores', href: `${BASE}/nano-e-micro-influenciadores` },
+  { label: 'Data PR', href: `${BASE}/o-que-e-data-pr` },
+  { label: 'O que é GEO', href: `${BASE}/o-que-e-geo-pr` },
+  { label: 'PR Go-to-Market', href: `${BASE}/pr-go-to-market` },
+  { label: 'RevOps', href: `${BASE}/revops` },
+  { label: 'ROI de Assessoria', href: `${BASE}/roi` },
+];
+---
+<header id="navbar">
+  <div class="inner">
+    <a href="/" class="brand-mark flex items-center" aria-label="PiaR Group">
+      <img src="/brand/piar-horizontal-positivo.png" alt="PiaR Group" class="brand-logo" />
+    </a>
+
+    <nav
+      class="hidden md:flex items-center gap-1 bg-black/[.04] rounded-full p-1"
+      aria-label="Menu principal"
+    >
+      <a class:list={['nav-link', current === 'sobre' && 'is-current']} href="/sobre" aria-current={current === 'sobre' ? 'page' : undefined}>Sobre</a>
+
+      <div class="nav-dropdown nav-dd-left">
+        <button
+          type="button"
+          class:list={['nav-link', 'nav-dd-trigger', current === 'servicos' && 'is-current']}
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Serviços
+          <iconify-icon icon="solar:alt-arrow-down-linear" class="nav-dd-caret"></iconify-icon>
+        </button>
+        <div class="nav-dd-panel" role="menu">
+          {services.map((s) => (
+            <a class="nav-dd-item" href={s.href} role="menuitem">{s.label}</a>
+          ))}
+          <a class="nav-dd-item nav-dd-all" href="/metodo" role="menuitem">
+            Ver o método<iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+          </a>
+        </div>
+      </div>
+
+      <a class:list={['nav-link', current === 'cases' && 'is-current']} href="/cases" aria-current={current === 'cases' ? 'page' : undefined}>Cases</a>
+      <a class:list={['nav-link', current === 'pep' && 'is-current']} href="/pep" aria-current={current === 'pep' ? 'page' : undefined}>PEP</a>
+
+      <div class="nav-dropdown">
+        <button
+          type="button"
+          class:list={['nav-link', 'nav-dd-trigger', current === 'insights' && 'is-current']}
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Insights
+          <iconify-icon icon="solar:alt-arrow-down-linear" class="nav-dd-caret"></iconify-icon>
+        </button>
+        <div class="nav-dd-panel" role="menu">
+          {insights.map((s) => (
+            <a class="nav-dd-item" href={s.href} role="menuitem">{s.label}</a>
+          ))}
+          <a class="nav-dd-item nav-dd-all" href="/insights" role="menuitem">
+            Ver todos os insights<iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+          </a>
+        </div>
+      </div>
+
+      <a class:list={['nav-link', current === 'blog' && 'is-current']} href="/blog" aria-current={current === 'blog' ? 'page' : undefined}>Blogs</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href="/contato" class="beam-btn">
+        <span class="beam-inner">
+          Agendar diagnóstico
+          <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+        </span>
+      </a>
+
+      <button
+        id="nav-toggle"
+        class="md:hidden nav-hamburger"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="nav-drawer"
+      >
+        <span class="nav-hamburger-line"></span>
+        <span class="nav-hamburger-line"></span>
+        <span class="nav-hamburger-line"></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="nav-drawer" class="nav-drawer md:hidden" aria-hidden="true">
+    <nav aria-label="Menu mobile" class="nav-drawer-inner">
+      <a class:list={['nav-drawer-link', current === 'sobre' && 'is-current']} href="/sobre">Sobre</a>
+
+      <span class="nav-drawer-label">Serviços</span>
+      {services.map((s) => (
+        <a class="nav-drawer-link nav-drawer-sub" href={s.href}>{s.label}</a>
+      ))}
+
+      <a class:list={['nav-drawer-link', current === 'cases' && 'is-current']} href="/cases">Cases</a>
+      <a class:list={['nav-drawer-link', current === 'pep' && 'is-current']} href="/pep">PEP</a>
+
+      <span class="nav-drawer-label">Insights</span>
+      {insights.map((s) => (
+        <a class="nav-drawer-link nav-drawer-sub" href={s.href}>{s.label}</a>
+      ))}
+      <a class="nav-drawer-link nav-drawer-sub nav-drawer-all" href="/insights">Ver todos os insights →</a>
+
+      <a class:list={['nav-drawer-link', current === 'blog' && 'is-current']} href="/blog">Blogs</a>
+
+      <a href="/contato" class="nav-drawer-cta">
+        Agendar diagnóstico
+        <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* Estilos isolados do Nav — não vazam para o resto do site. */
+  #navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 500;
+    transition: all 0.5s cubic-bezier(.16, 1, .3, 1);
+  }
+  #navbar .inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    transition: padding 0.4s;
+  }
+  #navbar.scrolled .inner { padding: 0.5rem 1.5rem; }
+  #navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    z-index: -1;
+  }
+
+  .nav-link {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(15, 15, 17, 0.6);
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    transition: 0.3s;
+    text-decoration: none;
+  }
+  .nav-link:hover { color: #0F0F11; background: rgba(0, 0, 0, 0.04); }
+  .nav-link.is-current { color: #0F0F11; background: rgba(15, 15, 17, 0.06); }
+
+  /* dropdown Insights (desktop) */
+  .nav-dropdown { position: relative; display: flex; }
+  .nav-dd-trigger { display: inline-flex; align-items: center; gap: .3rem; border: 0; background: transparent; cursor: pointer; font-family: inherit; }
+  .nav-dd-caret { font-size: .9rem; transition: transform .3s; }
+  .nav-dropdown:hover .nav-dd-caret,
+  .nav-dropdown:focus-within .nav-dd-caret { transform: rotate(180deg); }
+  .nav-dd-panel {
+    position: absolute; top: calc(100% + 12px); right: 0; min-width: 560px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 18px; padding: 8px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+    opacity: 0; visibility: hidden; transform: translateY(-6px);
+    transition: opacity .25s, transform .25s, visibility .25s; z-index: 600;
+  }
+  .nav-dropdown:hover .nav-dd-panel,
+  .nav-dropdown:focus-within .nav-dd-panel { opacity: 1; visibility: visible; transform: translateY(0); }
+  /* o dropdown de Serviços fica no inicio da barra: abre alinhado a esquerda */
+  .nav-dd-left .nav-dd-panel { left: 0; right: auto; }
+  .nav-dd-item { display: flex; align-items: center; gap: .4rem; padding: .6rem .85rem; border-radius: 12px; font-size: .82rem; font-weight: 500; letter-spacing: -.01em; color: rgba(15, 15, 17, 0.7); text-decoration: none; transition: background-color .2s, color .2s; }
+  .nav-dd-item:hover { background: rgba(15, 15, 17, 0.05); color: #0F0F11; }
+  .nav-dd-all { grid-column: 1 / -1; justify-content: space-between; background: rgba(254, 209, 54, 0.16); color: #0F0F11; font-weight: 600; margin-top: 2px; }
+  .nav-dd-all:hover { background: #FED136; }
+
+  /* drawer: rótulo + subitens de Insights (mobile) */
+  .nav-drawer-label { display: block; margin: 1.25rem 1.25rem .35rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(15, 15, 17, 0.4); font-weight: 600; }
+  .nav-drawer-sub { font-size: 1.05rem !important; padding: .7rem 1.25rem !important; color: rgba(15, 15, 17, 0.7) !important; }
+  .nav-drawer-all { color: #0F0F11 !important; font-weight: 600 !important; }
+
+  .brand-mark {
+    text-decoration: none;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.3s;
+  }
+  .brand-mark:hover { opacity: 0.75; }
+  .brand-logo { height: 32px; width: auto; display: block; user-select: none; }
+  @media (max-width: 768px) {
+    .brand-logo { height: 28px; }
+  }
+
+  .beam-btn {
+    position: relative;
+    padding: 2px;
+    border-radius: 999px;
+    display: inline-block;
+    isolation: isolate;
+    text-decoration: none;
+  }
+  .beam-btn::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    z-index: -1;
+    background: conic-gradient(from 0deg, transparent 0 70%, #FED136 80%, transparent 95%);
+    animation: beam 3s linear infinite;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .beam-btn:hover::before { opacity: 1; }
+  @keyframes beam { to { transform: rotate(360deg); } }
+  .beam-btn .beam-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0F0F11;
+    color: #fff;
+    padding: 0.9rem 1.9rem;
+    border-radius: inherit;
+    font-weight: 600;
+    font-size: 0.94rem;
+  }
+  @media (max-width: 640px) {
+    .beam-btn .beam-inner { padding: 0.65rem 1.1rem; font-size: 0.82rem; }
+  }
+
+  /* Hamburger trigger (mobile only) */
+  .nav-hamburger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(15, 15, 17, 0.06);
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-hamburger:hover { background: rgba(15, 15, 17, 0.10); }
+  .nav-hamburger-line {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: #0F0F11;
+    border-radius: 2px;
+    transition: transform .3s cubic-bezier(.16,1,.3,1), opacity .2s;
+  }
+  body.nav-open .nav-hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  body.nav-open .nav-hamburger-line:nth-child(2) { opacity: 0; }
+  body.nav-open .nav-hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Drawer */
+  .nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px) saturate(180%);
+    z-index: 490;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .35s cubic-bezier(.16,1,.3,1);
+    padding: 88px 1.5rem 2rem;
+    overflow-y: auto;
+  }
+  body.nav-open .nav-drawer {
+    pointer-events: auto;
+    opacity: 1;
+  }
+  .nav-drawer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .nav-drawer-link {
+    display: block;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #0F0F11;
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: background-color .2s;
+  }
+  .nav-drawer-link:hover,
+  .nav-drawer-link:focus-visible { background: rgba(15, 15, 17, 0.05); }
+  .nav-drawer-link.is-current {
+    background: rgba(15, 15, 17, 0.08);
+    font-weight: 600;
+  }
+  .nav-drawer-cta {
+    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #0F0F11;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  body.nav-open { overflow: hidden; }
+</style>
+
+<script>
+  // Scroll-state + toggle do drawer mobile.
+  const nav = document.getElementById('navbar');
+  const toggle = document.getElementById('nav-toggle');
+  const drawer = document.getElementById('nav-drawer');
+
+  if (nav) {
+    window.addEventListener(
+      'scroll',
+      () => nav.classList.toggle('scrolled', window.scrollY > 40),
+      { passive: true },
+    );
+  }
+
+  if (toggle && drawer) {
+    const close = () => {
+      document.body.classList.remove('nav-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      drawer.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-label', 'Abrir menu');
+    };
+    const open = () => {
+      document.body.classList.add('nav-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      drawer.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-label', 'Fechar menu');
+    };
+    toggle.addEventListener('click', () => {
+      document.body.classList.contains('nav-open') ? close() : open();
+    });
+    drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('nav-open')) close();
+    });
+  }
+</script>

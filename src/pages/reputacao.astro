@@ -1,0 +1,918 @@
+---
+// ============================================================================
+// Exemplar narrativo · REPUTAÇÃO
+// Conteúdo voice-backed portado de:
+//   src/content/pages/reputacao.md
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói WebGL (campo de percepção frio) + dataviz dos três planos da
+// reputação (canvas 2D) + scroll storytelling (GSAP/Lenis), sobre o mesmo
+// esqueleto da GEO (eyebrow-dot, raios stadium/pill, inversão dark, reveal,
+// parallax, faq, cta, scroll-progress, JSON-LD Article + FAQPage).
+// Assinatura de cor: fria e sóbria (grafite/ardósia + amarelo PiaR). Sem laranja.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/reputacao`;
+
+// Compare: o que se monitorava × o que decide hoje.
+const monitorava = [
+  'Nota de review e estrelas',
+  'Sentimento de menção',
+  'Volume de citações',
+  'Alerta de palavra-chave',
+];
+const decideHoje = [
+  'O que o Google mostra para o nome da marca',
+  'As três primeiras matérias que a pessoa lê',
+  'O que ChatGPT, Gemini e Perplexity respondem',
+  'As fontes que a IA cita para chegar lá',
+];
+
+// O escopo: seis frentes da reputação.
+const frentes = [
+  {
+    nome: 'Presença na busca',
+    desc: 'O que aparece nas primeiras posições do Google para o nome da marca, da liderança e dos termos do setor. Onde há vácuo, falta de conteúdo seu, ou risco, conteúdo de terceiros desatualizado dominando a página.',
+    icon: 'solar:magnifer-line-duotone',
+  },
+  {
+    nome: 'Presença na mídia',
+    desc: 'O ângulo com que os jornalistas descrevem a sua empresa, o share of voice contra concorrentes e os temas que ficam associados à marca quando ela é citada de forma espontânea.',
+    icon: 'solar:document-text-line-duotone',
+  },
+  {
+    nome: 'Presença em IA',
+    desc: 'Como ChatGPT, Gemini, Perplexity e Claude respondem quando alguém pergunta sobre a sua marca, o seu produto ou a sua categoria, e quais fontes esses modelos citam para chegar lá.',
+    icon: 'solar:cpu-bolt-line-duotone',
+  },
+  {
+    nome: 'Prova pública',
+    desc: 'Os ativos que sustentam a versão correta da sua história: artigos assinados, posicionamentos institucionais, dados próprios, cases. Tudo com revisão jurídica antes de publicar.',
+    icon: 'solar:shield-check-line-duotone',
+  },
+  {
+    nome: 'Resposta e canais',
+    desc: 'O que a marca diz, quem fala e por qual canal quando surge uma menção negativa, uma comparação injusta ou uma crise. Definido antes, não no meio.',
+    icon: 'solar:chat-round-line-duotone',
+  },
+  {
+    nome: 'Indicadores',
+    desc: 'O que melhorou, com lastro: posição na busca, sentimento e share of voice na mídia, presença e citações em respostas de IA. Métrica sem fonte não vira número em relatório.',
+    icon: 'solar:graph-up-line-duotone',
+  },
+];
+
+// Como funciona: quatro etapas.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico',
+    prazo: 'Escuta e mapeamento',
+    desc: 'Levantamos o que a busca mostra, o que a mídia escreveu nos últimos meses, o que as redes dizem de forma espontânea e o que a IA responde sobre a marca, a liderança e a categoria. O entregável é o gap entre o posicionamento que você quer e a percepção que existe.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging Framework',
+    prazo: 'A versão correta, por escrito',
+    desc: 'Definimos as afirmações centrais que precisam aparecer e ser sustentadas por prova, os públicos de cada uma e o que está fora dos limites. É o documento que mantém a versão correta consistente na busca, na mídia e na IA.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'A prova pública vai ao ar',
+    desc: 'Produzimos a prova pública, artigos, posicionamentos, dados próprios, pautas para a imprensa, no formato que cada canal indexa e cita. Todos os ativos passam por revisão jurídica antes de ir ao ar.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento',
+    prazo: 'Ciclos contínuos',
+    desc: 'Acompanhamos a evolução nos três planos e ajustamos. Aqui entra o protocolo de resposta a menções negativas e a crises, com quem fala, o que diz e quem aprova já definidos antes da pressão.',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'Unifisa', 'Livup', 'Qranio', 'FluencyPass', 'Investidores.vc'];
+
+const faq = [
+  {
+    q: 'O que é gestão de reputação digital?',
+    a: 'É controlar como a sua marca aparece nos lugares onde uma decisão sobre ela é tomada: a busca do Google, a cobertura da imprensa e, hoje, as respostas das inteligências artificiais. Vai além de monitorar reviews e sentimento. Envolve construir prova pública, conteúdo verdadeiro e indexável, para que a versão correta da sua história seja a que o mercado encontra.',
+  },
+  {
+    q: 'Reputação é a mesma coisa que monitoramento de menções?',
+    a: 'Não. Monitoramento mostra o que está sendo dito. Gestão de reputação muda o que está escrito. Um painel de alertas é insumo para o diagnóstico, não a entrega.',
+  },
+  {
+    q: 'Por que a presença em IA entra na reputação?',
+    a: 'Porque parte das decisões hoje passa por uma pergunta feita a ChatGPT, Gemini ou Perplexity antes de qualquer busca tradicional. A resposta que esses modelos dão sobre a sua marca, e as fontes que eles citam, formam percepção. Se não há prova pública sólida para a IA citar, ela responde com o que encontrar.',
+  },
+  {
+    q: 'Vocês apagam conteúdo negativo da internet?',
+    a: 'Não trabalhamos com remoção ou supressão artificial. Construímos prova pública verdadeira o suficiente para que a versão correta prevaleça na busca, na mídia e na IA. Quando o conteúdo negativo é factual, a resposta é comunicação e correção de rota, não ocultação.',
+  },
+  {
+    q: 'Gestão de crise está incluída?',
+    a: 'Sim, como parte da frente de reputação. O protocolo de resposta, quem fala, o que diz, quem aprova, é construído na etapa de monitoramento, antes de qualquer crise, para que a marca responda no prazo e não improvise.',
+  },
+  {
+    q: 'Como vocês medem resultado?',
+    a: 'Com indicadores nos três planos: posição na busca para os termos da marca, sentimento e share of voice na mídia contra concorrentes, e presença e citações em respostas de IA. Métrica sem fonte não vira número em relatório.',
+  },
+];
+---
+<BaseLayout
+  title="Gestão de reputação digital: na busca, na mídia e na IA"
+  description="Gestão de reputação digital é controlar como a sua marca aparece no Google, na mídia e nas respostas de IA. A PiaR faz isso para startups e empresas de tecnologia desde 2013."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --primary: #0F0F11;
+        --accent: #FED136;
+        --accent-deep: #C99E1F;
+        --paper: #FAFAFA;
+        --paper-warm: #F2F3F5;          /* papel frio (ardósia clara) */
+        --paper-lifted: #FCFCFD;
+        /* paleta fria do mundo Reputação */
+        --rep-ink: #16181D;
+        --rep-ink-2: #20232A;
+        --rep-slate: #2B2F38;
+        --rep-steel: #3A404C;
+        --text-muted: rgba(15, 15, 17, .62);
+        --text-faint: rgba(15, 15, 17, .42);
+        --hairline: rgba(0, 0, 0, .08);
+        --hairline-strong: rgba(0, 0, 0, .14);
+        --hairline-d: rgba(255, 255, 255, .12);
+        --radius-btn: 20px;
+        --radius-card: 24px;
+        --radius-stadium: 40px;
+        --radius-pill: 999px;
+        --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+        --t-smooth: all .6s var(--ease-out-expo);
+        --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-serif: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--yellow-ink); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.28); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · WebGL campo de percepção (frio)
+         =========================================================== */
+      .rep-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--rep-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #rep-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      /* video-ready: <video class="hero-bg-video" autoplay muted loop playsinline> pode entrar aqui, object-fit:cover, inset:0 */
+      .hero-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+      .rep-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 95% at 14% 42%, rgba(16,18,21,.86) 0%, rgba(16,18,21,.42) 46%, rgba(16,18,21,0) 72%),
+          linear-gradient(180deg, rgba(16,18,21,.55) 0%, rgba(16,18,21,0) 30%, rgba(16,18,21,.18) 74%, rgba(16,18,21,.92) 100%);
+      }
+      .rep-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .rep-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.13); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .rep-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rep-hero h1 { font-size: clamp(2.6rem, 7vw, 6.6rem); font-weight: 700; line-height: .96; letter-spacing: -.04em; margin: 1.6rem 0 0; max-width: 18ch; text-wrap: balance; }
+      .rep-hero .sub { font-size: clamp(1.08rem, 1.6vw, 1.35rem); line-height: 1.55; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 50ch; }
+      .rep-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .rep-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .rep-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade: chips flutuantes (planos da percepção) */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+
+      /* Três Mares · contorno topográfico (planos da percepção, frio) */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(108,124,142,.13);
+        background: repeating-radial-gradient(circle at 84% 44%, transparent 0 52px, var(--contour-line) 52px 53px);
+        -webkit-mask-image: radial-gradient(circle at 84% 44%, #000 0%, rgba(0,0,0,.5) 44%, transparent 78%);
+                mask-image: radial-gradient(circle at 84% 44%, #000 0%, rgba(0,0,0,.5) 44%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .55; } }
+      .rep-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.13); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .rep-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.6); }
+      .rep-hero-float.f1 { right: 9%; top: 24%; }
+      .rep-hero-float.f2 { right: 18%; top: 46%; }
+      .rep-hero-float.f3 { right: 12%; bottom: 22%; }
+      @media (max-width: 900px) { .rep-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--rep-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (a virada do que se monitora) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 300px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card .clist { margin: 1.5rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: .85rem; }
+      .compare-card .clist li { display: flex; align-items: flex-start; gap: .65rem; font-size: 1.02rem; line-height: 1.45; color: var(--text-muted); }
+      .compare-card .clist li iconify-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: .08rem; color: var(--text-faint); }
+      .compare-card.is-dark { background: var(--rep-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark .clist li { color: rgba(255,255,255,.82); }
+      .compare-card.is-dark .clist li iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; }
+      .punch .hl { color: var(--yellow-ink); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* ===========================================================
+         3 · DATAVIZ · os três planos da reputação (canvas 2D)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #20232A 0%, #16181D 70%); border: 1px solid rgba(255,255,255,.1); }
+      #rep-planes-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+      .viz-legend .sw.line { width: 18px; height: 2px; border-radius: 2px; }
+
+      /* etapas (método) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 260px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* frentes (escopo) */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(43,47,56,.07); color: var(--rep-slate); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.05); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .rep-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Reputação é o que o mercado encontra sobre você sem você na sala',
+        description:
+          'Gestão de reputação digital é controlar como a sua marca aparece no Google, na mídia e nas respostas de IA. A PiaR faz isso para startups e empresas de tecnologia desde 2013.',
+        inLanguage: 'pt-BR',
+        about: 'Gestão de reputação',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="rep-hero">
+      <canvas id="rep-hero-canvas" aria-hidden="true"></canvas>
+      <!-- video-ready: <video class="hero-bg-video" autoplay muted loop playsinline poster="">…</video> entra aqui sem mudar o layout -->
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="rep-hero-float f1 px" data-parallax-y="32" aria-hidden="true"><span class="dot"></span>Busca</span>
+      <span class="rep-hero-float f2 px" data-parallax-y="-22" aria-hidden="true"><span class="dot"></span>Mídia</span>
+      <span class="rep-hero-float f3 px" data-parallax-y="26" aria-hidden="true"><span class="dot"></span>IA</span>
+      <div class="wrap hero-inner">
+        <span class="rep-hero-chip reveal"><span class="dot"></span>Reputação · semântica, não só sentimento</span>
+        <h1 class="reveal d1">Reputação é o que o mercado encontra sobre você <span class="accent-serif on-dark">sem você na sala</span>.</h1>
+        <p class="sub reveal d2">
+          A busca, a mídia e a IA respondem sobre a sua marca ao mesmo tempo. Esse conjunto de afirmações é a sua reputação semântica.
+          Monitorar é só enxergar. Nós mudamos o que está escrito.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Comece pelo diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#semantica" class="btn btn-ghost-d">Ver como funciona<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="rep-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- abstract answer-first · gestao de reputacao digital -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:66ch">
+          <span class="eyebrow">O que é gestão de reputação digital</span>
+          <p class="lede" style="margin-top:1.25rem">Gestão de reputação digital é controlar como a sua marca aparece nos lugares onde a decisão sobre ela é tomada: a busca do Google, a cobertura da imprensa e as respostas de inteligência artificial. Vai além de monitorar reviews e sentimento; constrói prova pública verdadeira para que a versão correta da sua história seja a que o mercado encontra. A PiaR faz isso para startups e empresas de tecnologia desde 2013.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · SEMÂNTICA, NÃO SÓ SENTIMENTO -->
+    <section id="semantica" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">percepção</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Semântica, não só sentimento</span>
+          <h2>A pergunta <span class="accent-serif">mudou</span>.</h2>
+          <p class="lede">Por anos, gerenciar reputação significou acompanhar nota de review e sentimento de menção. Continua importando, mas é a parte menor. Quem decide se vai conversar, contratar ou investir pesquisa primeiro: digita o nome da marca no Google, lê as três primeiras matérias e, cada vez mais, pergunta para uma IA o que ela sabe sobre você.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">O que se monitorava</span>
+            <h3>O painel de alertas.</h3>
+            <ul class="clist">
+              {monitorava.map((m) => (
+                <li><iconify-icon icon="solar:minus-circle-line-duotone"></iconify-icon><span>{m}</span></li>
+              ))}
+            </ul>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">O que decide hoje</span>
+            <h3>Busca, mídia e IA, ao mesmo tempo.</h3>
+            <ul class="clist">
+              {decideHoje.map((d) => (
+                <li><iconify-icon icon="solar:check-circle-line-duotone"></iconify-icon><span>{d}</span></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p class="punch reveal d1">O que esses três lugares afirmam sobre você, sem você por perto para corrigir, é a sua <span class="hl">reputação semântica</span>.</p>
+      </div>
+    </section>
+
+    <!-- 3 · DATAVIZ · OS TRÊS PLANOS -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="rep-planes-canvas" role="img" aria-label="Os três planos da reputação: busca, mídia e IA. No centro, a marca. Quando há prova pública, a mesma descrição aparece consistente nos três planos."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#FED136"></span>Sua marca</span>
+              <span class="li"><span class="sw" style="background:#8A93A6"></span>Plano de percepção</span>
+              <span class="li"><span class="sw" style="background:#FED136; box-shadow:0 0 6px 1px rgba(254,209,54,.7)"></span>Prova pública</span>
+              <span class="li"><span class="sw line" style="background:rgba(254,209,54,.6)"></span>Descrição consistente</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">Os três planos</span>
+            <h2>A mesma marca, descrita em <span class="accent-serif on-dark">três lugares</span>.</h2>
+            <p class="lede">Busca, mídia e IA não são canais separados. São três planos da mesma percepção, e a pessoa que decide consulta os três quase no mesmo gesto. Se as afirmações divergem, a dúvida cresce.</p>
+            <p class="lede" style="margin-top:1.25rem">Quando existe prova pública, a mesma descrição correta aparece consistente nos três planos, e o indicador de consistência sobe. É isso que coloca a versão certa da sua história como a que prevalece. Passe o mouse sobre cada plano para destacar a conexão com a marca.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · REFRAME -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">prova</span>
+      <div class="wrap">
+        <div style="max-width:62ch">
+          <span class="eyebrow reveal">Monitorar é só ver</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:30ch">
+            Monitorar mostra o problema. A PiaR existe para <span class="hl">mudar o que está escrito</span>.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Não apagamos conteúdo nem suprimimos resultado de forma artificial. Se as afirmações sobre a sua marca estão erradas, desatualizadas ou ausentes, o trabalho é construir prova pública verdadeira o suficiente para que a versão correta seja a que prevalece na busca, na mídia e na IA. Quando o conteúdo negativo é factual, a resposta é comunicação e correção de rota, não ocultação.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · O ESCOPO -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que está no escopo</span>
+          <h2>Seis frentes, um plano para cada lugar onde a <span class="accent-serif">decisão acontece</span>.</h2>
+          <p class="lede">Reputação na PiaR não é um painel de alertas. É uma frente de comunicação que cuida de como a sua marca é descrita em todos os lugares onde uma decisão sobre ela é tomada. Cada frente cobre um plano onde essa percepção se forma.</p>
+        </div>
+        <div class="frentes-grid">
+          {frentes.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">A frente de reputação é a mesma máquina da imprensa: o relacionamento com jornalistas gera a prova pública que a busca indexa e que a <span class="hl">IA cita</span>.</p>
+      </div>
+    </section>
+
+    <!-- 6 · COMO FUNCIONA -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-14" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como funciona</span>
+          <h2>O ponto de partida é o dado, não o <span class="accent-serif">alarme</span>.</h2>
+          <p class="lede">Antes de produzir qualquer ativo, mapeamos o que já existe sobre a sua marca nos três planos. Sem esse retrato, gestão de reputação vira reação a notificação, e reação não é estratégia. O processo segue quatro etapas, as mesmas que estruturam todo trabalho de PR na PiaR.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1" style="max-width:34ch">Gestão de crise não é serviço à parte. O protocolo das primeiras horas já existe, porque foi <span class="hl">construído antes</span>, não improvisado sob pressão.</p>
+      </div>
+    </section>
+
+    <!-- 7 · A PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">A prova</span>
+          <h2><span class="accent-serif on-dark">13 anos</span> cuidando da reputação de quem cresce.</h2>
+          <p class="lede">A PiaR acompanha startups e empresas de tecnologia desde {site.foundingYear}, em São Paulo, e apoiou {site.exitsSupported} startups até o exit. A autoridade que coloca a versão correta da sua história na busca, na mídia e na IA é a mesma que sempre colocou marcas na imprensa.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em">/// Entre os clientes de comunicação e reputação</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A diferença para um SaaS de monitoramento é simples: o painel mostra a menção; nós mudamos o que está escrito. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação é conduzida com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · FAQ -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">reputação</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Comece pelo <span class="accent-serif on-dark">diagnóstico</span>.</h2>
+        <p class="lede reveal d2">Mapeamos o que a busca mostra, o que a mídia escreveu, o que as redes dizem e o que a IA responde sobre a sua marca. O entregável é o gap entre o posicionamento que você quer e a percepção que existe. O investimento é definido conforme o diagnóstico de cada marca.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.1em">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · campo de percepção em WebGL (fBm frio + brilhos)
+         ardósia/grafite calmo, brilhos amarelos pulsando devagar,
+         vinheta escura à esquerda para o texto respirar.
+         ======================================================== */
+      (function perceptionField() {
+        var canvas = document.getElementById('rep-hero-canvas');
+        if (!canvas) return;
+        var fallbackBg = 'radial-gradient(120% 95% at 80% 35%, #2A2E37 0%, #20232A 45%, #16181D 100%)';
+        var gl = null;
+        try { gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl'); } catch (e) { gl = null; }
+        if (!gl) { canvas.style.background = fallbackBg; return; }
+
+        var vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p,0.0,1.0); }';
+        var fs = [
+          'precision highp float;',
+          'uniform vec2 r; uniform float t;',
+          'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }',
+          'float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.0-2.0*f);',
+          '  return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),u.x), mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),u.x), u.y); }',
+          'float fbm(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<6;i++){ v+=a*noise(p); p*=2.02; a*=0.5; } return v; }',
+          'void main(){',
+          '  vec2 uv = gl_FragCoord.xy / r.xy;',
+          '  vec2 p = (uv - 0.5) * vec2(r.x/r.y, 1.0) * 2.0;',
+          '  float tt = t*0.018;',                       // muito mais lento e calmo que a GEO
+          '  vec2 q = vec2(fbm(p + tt), fbm(p + vec2(3.4,1.7) - tt));',
+          '  float f = fbm(p + 1.4*q + tt*0.5);',
+          // paleta fria: grafite -> ardósia -> aço azulado
+          '  vec3 ink   = vec3(0.086,0.094,0.114);',     // #16181D
+          '  vec3 slate = vec3(0.169,0.184,0.220);',     // #2B2F38
+          '  vec3 steel = vec3(0.290,0.330,0.400);',     // azulado-cinza frio
+          '  vec3 col = mix(ink, slate, smoothstep(0.20,0.62,f));',
+          '  col = mix(col, steel, smoothstep(0.58,0.92,f)*0.85);',
+          '  col += vec3(0.012,0.018,0.030) * f;',       // leve viés azulado, nunca quente
+          // brilhos pontuais amarelos (provas públicas) pulsando devagar
+          '  vec3 amber = vec3(0.996,0.819,0.212);',     // #FED136
+          '  float glow = 0.0;',
+          '  for(int i=0;i<4;i++){',
+          '    float fi = float(i);',
+          '    vec2 c = vec2(0.62+0.22*sin(0.21*t+fi*1.9), 0.40+0.26*cos(0.17*t+fi*2.7));',
+          '    float d = length((uv-c)*vec2(r.x/r.y,1.0));',
+          '    float pulse = 0.45 + 0.55*sin(0.6*t + fi*1.6);',
+          '    glow += pulse * 0.012 / (d*d + 0.004);',
+          '  }',
+          '  glow = clamp(glow, 0.0, 1.0);',
+          '  col += amber * glow * 0.5;',
+          // vinheta escura à esquerda (texto respira)
+          '  float vleft = smoothstep(-0.15, 0.85, uv.x);',
+          '  col *= 0.34 + 0.66*vleft;',
+          '  float vig = smoothstep(1.30,0.25,length(uv-vec2(0.7,0.45)));',
+          '  col *= 0.55 + 0.45*vig;',
+          '  gl_FragColor = vec4(col,1.0);',
+          '}'
+        ].join('\n');
+
+        function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+        var prog, ok = false;
+        try {
+          prog = gl.createProgram();
+          gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs));
+          gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+          gl.linkProgram(prog);
+          ok = gl.getProgramParameter(prog, gl.LINK_STATUS);
+        } catch (e) { ok = false; }
+        if (!ok) { canvas.style.background = fallbackBg; return; }
+        gl.useProgram(prog);
+
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        var loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        var uR = gl.getUniformLocation(prog, 'r');
+        var uT = gl.getUniformLocation(prog, 't');
+
+        function resize() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 1.5);   // cap webgl <= 1.5
+          var w = canvas.clientWidth, h = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(w * dpr));
+          canvas.height = Math.max(1, Math.floor(h * dpr));
+          gl.viewport(0, 0, canvas.width, canvas.height);
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        var start = 0, raf = 0, running = false;
+        function frame(now) {
+          if (!start) start = now;
+          gl.uniform2f(uR, canvas.width, canvas.height);
+          gl.uniform1f(uT, (now - start) / 1000);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+          if (running) raf = requestAnimationFrame(frame);
+        }
+        if (prefersReduced) {
+          // pinta um quadro estático, sem rAF contínuo
+          gl.uniform2f(uR, canvas.width, canvas.height);
+          gl.uniform1f(uT, 2.0);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+        } else if ('IntersectionObserver' in window) {
+          // só desenha enquanto o herói está na viewport (pausa o rAF fora da tela)
+          var vio = new IntersectionObserver(function (ents) {
+            if (ents[0].isIntersecting) {
+              if (!running) { running = true; raf = requestAnimationFrame(frame); }
+            } else {
+              running = false;
+              if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            }
+          }, { rootMargin: '200px' });
+          vio.observe(canvas);
+        } else {
+          running = true;
+          raf = requestAnimationFrame(frame);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · os três planos da reputação (canvas 2D)
+         BUSCA | MÍDIA | IA, com a marca ao centro. Quando há prova
+         pública, a mesma descrição aparece consistente nos três
+         planos e os indicadores de consistência sobem.
+         ======================================================== */
+      (function reputationPlanes() {
+        var canvas = document.getElementById('rep-planes-canvas');
+        if (!canvas) return;
+        var ctx = null;
+        try { ctx = canvas.getContext('2d'); } catch (e) { ctx = null; }
+        if (!ctx) { canvas.style.background = 'linear-gradient(160deg,#20232A,#16181D)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);       // cap canvas <= 2
+        var W = 0, H = 0, t0 = 0;
+        var planes = [
+          { id: 'BUSCA', icon: 'magnifer' },
+          { id: 'MÍDIA', icon: 'doc' },
+          { id: 'IA', icon: 'cpu' }
+        ];
+        var nodes = [];     // por plano: lista de pontos { y, proof, on }
+        var brand = null;
+        var hover = -1;     // índice do plano sob o mouse
+        var consist = [0, 0, 0];
+        var raf = 0, running = false;
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          brand = { x: W * 0.5, y: H * 0.5, r: 11 };
+          var colX = [W * 0.16, W * 0.5, W * 0.84];
+          nodes = planes.map(function (pl, ci) {
+            var topY = H * 0.20, botY = H * 0.80, count = 4;
+            var pts = [];
+            for (var i = 0; i < count; i++) {
+              var y = topY + (botY - topY) * (i / (count - 1));
+              // alguns nós são "prova pública" (amarelos, consistentes)
+              var proof = (i === 1 || i === 2);
+              pts.push({ x: colX[ci], y: y, proof: proof, on: false });
+            }
+            return { x: colX[ci], topY: topY, botY: botY, pts: pts };
+          });
+        }
+        layout();
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function drawPanel(ci) {
+          var col = nodes[ci];
+          var active = hover === ci || hover === -1;
+          var px = col.x;
+          // moldura vertical do plano
+          ctx.beginPath();
+          ctx.moveTo(px, col.topY - 26); ctx.lineTo(px, col.botY + 14);
+          ctx.strokeStyle = (hover === ci) ? 'rgba(254,209,54,.35)' : 'rgba(255,255,255,.10)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          // rótulo
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillStyle = (hover === ci) ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.6)';
+          ctx.fillText(planes[ci].id, px, col.topY - 36);
+        }
+
+        function draw(now) {
+          if (!t0) t0 = now;
+          var tt = (now - t0) / 1000;
+          ctx.clearRect(0, 0, W, H);
+
+          // conexões marca -> cada nó
+          nodes.forEach(function (col, ci) {
+            var emphasize = hover === ci;
+            col.pts.forEach(function (pt) {
+              // pulso de consistência percorre as ligações de prova
+              var lit = pt.proof;
+              var base = lit ? 'rgba(254,209,54,' : 'rgba(255,255,255,';
+              var alpha = emphasize ? (lit ? 0.55 : 0.22) : (lit ? 0.34 : 0.10);
+              ctx.beginPath();
+              ctx.moveTo(brand.x, brand.y);
+              var midx = lerp(brand.x, pt.x, 0.5);
+              ctx.bezierCurveTo(midx, brand.y, midx, pt.y, pt.x, pt.y);
+              ctx.strokeStyle = base + alpha + ')';
+              ctx.lineWidth = lit ? (emphasize ? 1.7 : 1.2) : 1;
+              ctx.stroke();
+            });
+          });
+
+          // nós dos planos
+          nodes.forEach(function (col, ci) {
+            drawPanel(ci);
+            col.pts.forEach(function (pt, pi) {
+              var emphasize = hover === ci || hover === -1;
+              if (pt.proof) {
+                // brilho de prova pública, pulsando devagar
+                var pulse = 0.6 + 0.4 * Math.sin(tt * 1.4 + ci * 0.8 + pi);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(254,209,54,' + (0.12 * pulse) + ')'; ctx.fill();
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 4.2, 0, Math.PI * 2);
+                ctx.fillStyle = '#FED136'; ctx.fill();
+              } else {
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 3.4, 0, Math.PI * 2);
+                ctx.fillStyle = emphasize ? '#8A93A6' : '#5a606e'; ctx.fill();
+              }
+            });
+            // barra de consistência (sobe quando há prova)
+            var target = 0.5 + 0.5 * (col.pts.filter(function (p) { return p.proof; }).length / col.pts.length);
+            consist[ci] += (target - consist[ci]) * 0.04;
+            var barW = 46, barH = 4, bx = col.x - barW / 2, by = col.botY + 26;
+            ctx.fillStyle = 'rgba(255,255,255,.10)';
+            ctx.fillRect(bx, by, barW, barH);
+            ctx.fillStyle = 'rgba(254,209,54,.85)';
+            ctx.fillRect(bx, by, barW * consist[ci], barH);
+            ctx.font = '600 8px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255,255,255,.45)';
+            ctx.fillText('consistência', col.x, by + 16);
+          });
+
+          // marca ao centro, anel pulsante
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, brand.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.fill();
+          var ring = brand.r + 6 + (Math.sin(tt * 1.6) + 1) * 3;
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, ring, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(254,209,54,.32)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Sua marca', brand.x, brand.y + brand.r + 18);
+
+          if (running) raf = requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          var mx = e.clientX - rect.left;
+          hover = -1;
+          for (var i = 0; i < nodes.length; i++) {
+            if (Math.abs(nodes[i].x - mx) < W * 0.16) { hover = i; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          // quadro estático único, sem rAF contínuo
+          consist = [0.75, 0.75, 0.75];
+          draw(performance.now());
+        } else if ('IntersectionObserver' in window) {
+          // só desenha enquanto o gráfico está na viewport (pausa o rAF fora da tela)
+          var vioP = new IntersectionObserver(function (ents) {
+            if (ents[0].isIntersecting) {
+              if (!running) { running = true; raf = requestAnimationFrame(draw); }
+            } else {
+              running = false;
+              if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            }
+          }, { rootMargin: '200px' });
+          vioP.observe(canvas);
+        } else {
+          running = true;
+          raf = requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

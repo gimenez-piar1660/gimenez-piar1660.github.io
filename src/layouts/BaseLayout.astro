@@ -1,0 +1,209 @@
+---
+// Layout base: fonte unica de head, SEO, fontes, libs externas e meta.
+// Toda pagina .astro consome este layout. CSS/JS especifico da pagina entra
+// via slot "head" ou como style/script dentro do conteudo.
+
+import '@styles/global.css';
+import { site } from '@/data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  canonical = Astro.url.href,
+  ogImage = '/brand/piar-horizontal-positivo.png',
+  noindex = false,
+  bodyClass = 'antialiased',
+} = Astro.props;
+
+const siteName = 'PiaR Group';
+const fullTitle = title === siteName || title.includes(siteName)
+  ? title
+  : `${title} · ${siteName}`;
+---
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#0F0F11" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+    <!-- Ícones -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/piar-vertical-amarelo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
+
+    <!-- Atribuicao de origem: grava UTM, pagina de entrada e referrer num cookie
+         proprio de 90 dias, para o formulario de /contato conseguir dizer de onde
+         o lead veio mesmo quando a visita e a conversao acontecem em dias diferentes.
+         Primeiro toque manda; UTM nova sobrescreve (a campanha paga mais recente vence). -->
+    <script is:inline>
+      (function () {
+        try {
+          var CHAVE = 'piar_atrib';
+          var qs = new URLSearchParams(location.search);
+          var utm = {};
+          ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) {
+            var v = qs.get(k);
+            if (v) utm[k] = v.slice(0, 150);
+          });
+          var temUtmNova = Object.keys(utm).length > 0;
+          var jaGravado = document.cookie.split('; ').some(function (c) { return c.indexOf(CHAVE + '=') === 0; });
+          if (jaGravado && !temUtmNova) return;
+
+          var ref = document.referrer || '';
+          var externo = ref && ref.indexOf(location.origin) !== 0;
+          var dado = {
+            utm_source: utm.utm_source || '',
+            utm_medium: utm.utm_medium || '',
+            utm_campaign: utm.utm_campaign || '',
+            utm_content: utm.utm_content || '',
+            landing_page: (location.pathname + location.search).slice(0, 300),
+            referrer: externo ? ref.slice(0, 300) : '',
+          };
+          document.cookie = CHAVE + '=' + encodeURIComponent(JSON.stringify(dado)) +
+            ';path=/;max-age=' + 90 * 24 * 60 * 60 + ';SameSite=Lax' +
+            (location.protocol === 'https:' ? ';Secure' : '');
+        } catch (err) { /* cookie bloqueado: o form cai no fallback pela URL */ }
+      })();
+    </script>
+
+    <!-- Fontes: self-hosted via @fontsource em global.css (pacote npm). -->
+
+    <!-- Libs: bundladas via npm em src/scripts/bootstrap.ts (gsap, ScrollTrigger, lenis, iconify-icon).
+         Tailwind: gerado em build time pela integração @astrojs/tailwind. -->
+    <script>
+      import '@scripts/bootstrap.ts';
+    </script>
+
+    <!-- JSON-LD: ProfessionalService (PiaR Group) + Person (CEO), fatos vindos de src/data/site.ts -->
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'ProfessionalService',
+            '@id': `${site.domain}/#organization`,
+            name: site.name,
+            legalName: site.legalName,
+            alternateName: site.alternateNames,
+            url: site.domain,
+            logo: `${site.domain}/brand/piar-horizontal-positivo.png`,
+            image: `${site.domain}/brand/piar-horizontal-positivo.png`,
+            email: site.email,
+            telephone: site.phoneE164,
+            description: `Agência boutique brasileira de relações públicas fundada em ${site.foundingYear}, em ${site.address.locality}. Em ${site.yearsOperating} anos conduziu a comunicação de ${site.brandsServed} marcas e acompanhou ${site.exitsSupported} startups até o exit.`,
+            foundingDate: site.foundingYear,
+            founder: { '@id': `${site.domain}/#bruno-pinheiro` },
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: site.address.street,
+              addressLocality: site.address.locality,
+              addressRegion: site.address.region,
+              postalCode: site.address.postalCode,
+              addressCountry: site.address.country,
+            },
+            areaServed: { '@type': 'Country', name: 'Brazil' },
+            availableLanguage: ['pt-BR', 'en'],
+            knowsAbout: [
+              'Relações Públicas',
+              'Public Relations',
+              'Assessoria de Imprensa',
+              'Data PR',
+              'Newsjacking',
+              'Crisis Communications',
+              'Executive Positioning',
+              'Earned Media Measurement',
+              'AMEC Barcelona Principles',
+              'Share of Voice',
+              'Fintech Communications',
+              'Healthtech Communications',
+              'Startup PR',
+              'Exit Communications',
+            ],
+            serviceType: [
+              'Narrativa Executiva',
+              'Editorial Tier-1',
+              'Gestão de Crise',
+              'Digital & Social Ops',
+            ],
+            award: [site.founder.award],
+            slogan: site.slogan,
+            sameAs: [site.social.linkedin, site.social.instagram],
+          },
+          {
+            '@type': 'Person',
+            '@id': `${site.domain}/#bruno-pinheiro`,
+            name: site.founder.name,
+            jobTitle: site.founder.role,
+            worksFor: { '@id': `${site.domain}/#organization` },
+            award: [site.founder.award],
+            knowsAbout: [
+              'Public Relations Strategy',
+              'Startup Communications',
+              'Exit Communications',
+              'Crisis Management',
+              'Executive Positioning',
+            ],
+            knowsLanguage: ['pt-BR', 'en'],
+            sameAs: [site.social.linkedin],
+          },
+        ],
+      })}
+    />
+
+    <slot name="head" />
+
+    <!-- RD Station · script de monitoramento de trafego (ultima tag antes do </head>,
+         conforme instrucao do proprio RD). Vale para todas as paginas porque toda
+         pagina .astro consome este layout. Precisa de is:inline para o Astro emitir
+         a tag exatamente como o RD entregou, sem bundle. O dominio do loader tambem
+         esta liberado no script-src do CSP em public/_headers. -->
+    <script
+      is:inline
+      type="text/javascript"
+      async
+      src="https://d335luupugsy2.cloudfront.net/js/loader-scripts/9e65bedd-a60f-486e-932f-c88f1ac8ea32-loader.js"
+    ></script>
+  </head>
+  <body class={bodyClass}>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-black focus:text-white focus:px-4 focus:py-2 focus:rounded"
+    >
+      Pular para o conteúdo
+    </a>
+    <slot />
+  </body>
+</html>

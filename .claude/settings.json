@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(OUT=. node cdp-shot.mjs)",
+      "Bash(sed \"s/width: 1440, height: 1000, deviceScaleFactor: 2, mobile: false/width: 390, height: 844, deviceScaleFactor: 2, mobile: true/; s/form-1-passo1/mob-1-passo1/; s/form-2-erros-inline/mob-2-erros/; s/form-3-passo2/mob-3-passo2/; s/form-4-confirmacao-mql/mob-4-confirmacao/\" cdp-shot.mjs)",
+      "Bash(OUT=. node cdp-shot-mob.mjs)",
+      "Bash(node cdp-demo.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(pkill -f \"astro preview\")"
+    ]
+  }
+}

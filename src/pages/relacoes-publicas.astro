@@ -1,0 +1,1016 @@
+---
+// ============================================================================
+// Narrativa espetacular · Relações Públicas
+// Conteúdo voice-backed portado de:
+//   src/content/pages/relacoes-publicas.md
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói canvas 2D (constelação de veículos de imprensa orbitando a marca,
+// preto + glints amarelos) + dataviz de rede veículo, jornalista, marca
+// (canvas 2D) + scroll storytelling (GSAP/Lenis), sobre o DS da PiaR.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/relacoes-publicas`;
+
+// O que a PiaR entrega em relações públicas (cinco frentes).
+const frentes = [
+  {
+    nome: 'Relações com a imprensa',
+    desc: 'Pauta, relacionamento e cobertura editorial nos veículos que importam para o seu mercado. A abordagem nasce do veículo e do jornalista certos, não de uma lista.',
+    icon: 'solar:notebook-line-duotone',
+  },
+  {
+    nome: 'Narrativa e branding',
+    desc: 'Posicionamento de marca, voz executiva e construção de percepção pública. A história que sustenta cada cobertura, contada de ponta a ponta.',
+    icon: 'solar:pen-new-square-line-duotone',
+  },
+  {
+    nome: 'Reputação',
+    desc: 'Como a sua marca aparece na busca, na mídia e nas respostas de inteligência artificial. Reputação é o que sobra quando a cobertura passa.',
+    icon: 'solar:shield-star-line-duotone',
+  },
+  {
+    nome: 'Gestão de crise',
+    desc: 'Protocolo de resposta, mapa de stakeholders e controle da narrativa quando o tempo conta. Uma capacidade da casa, pronta antes de precisar.',
+    icon: 'solar:danger-triangle-line-duotone',
+  },
+  {
+    nome: 'Conteúdo e social',
+    desc: 'Presença digital e editorial que sustenta a reputação entre uma cobertura e outra. O ritmo que mantém a marca viva nos intervalos.',
+    icon: 'solar:chat-round-line-duotone',
+  },
+];
+
+// As quatro etapas do trabalho.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico e mapeamento',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Quem precisa ouvir a marca, em quais veículos e com qual ângulo. Mapeamos o veículo e o jornalista antes de escrever a primeira linha.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging framework',
+    prazo: 'A base da narrativa',
+    desc: 'As mensagens-chave e a voz dos porta-vozes. É o que garante que a história chegue certa, com fatos e dados que a sustentam.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Pauta e relacionamento',
+    desc: 'Conquistamos a cobertura com os jornalistas mapeados. Com pauta que o veículo tem motivo para publicar, não disparo em massa.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Ciclos quinzenais',
+    desc: 'Ajustamos o que funciona e abandonamos o que não funciona. Medição contínua do que a cobertura gera em percepção e em negócio.',
+  },
+];
+
+// Os seis vetores editoriais do PEP.
+const vetores = [
+  { nome: 'Palco', desc: 'Presença e autoridade em eventos e nos momentos certos.', icon: 'solar:microphone-large-line-duotone' },
+  { nome: 'Conversa', desc: 'Pauta e relacionamento que abrem porta com a imprensa.', icon: 'solar:dialog-2-line-duotone' },
+  { nome: 'Narrativa', desc: 'A história da marca contada de ponta a ponta.', icon: 'solar:book-2-line-duotone' },
+  { nome: 'Cadência', desc: 'Ritmo editorial constante, não picos isolados.', icon: 'solar:pulse-line-duotone' },
+  { nome: 'Alcance', desc: 'Distribuição da mensagem nos canais que importam.', icon: 'solar:radar-2-line-duotone' },
+  { nome: 'Veículo', desc: 'Presença nos meios certos para cada público.', icon: 'solar:bus-line-duotone' },
+];
+
+// Como escolher uma agência (critérios).
+const criterios = [
+  {
+    titulo: 'Peça prova datada, não adjetivo',
+    desc: 'Caso com número e data vale mais que "líder de mercado". Se a agência não consegue nomear um resultado, é sinal.',
+  },
+  {
+    titulo: 'Pergunte como ela decide a abordagem',
+    desc: 'Se a resposta for "disparamos para a nossa base", você vai pagar por ruído. A pergunta certa é como ela identifica veículo e jornalista antes de escrever.',
+  },
+  {
+    titulo: 'Verifique o relacionamento, não a lista',
+    desc: 'Cobertura qualificada vem de quem o jornalista atende, não de quantos e-mails a agência envia.',
+  },
+  {
+    titulo: 'Confirme quem assina o dia a dia',
+    desc: 'Saber o nome do time que conduz a conta importa mais que o nome no contrato.',
+  },
+  {
+    titulo: 'Cheque a revisão dos ativos',
+    desc: 'Em setores regulados, comunicar sem revisão jurídica é um risco que a empresa herda.',
+  },
+  {
+    titulo: 'Alinhe o modelo de cobrança ao escopo',
+    desc: 'Fee mensal, projeto e PEP servem a momentos diferentes. A agência deve recomendar o que cabe no seu, não o mais caro.',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Qranio', 'Unifisa', 'Livup', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'FluencyPass', 'Layer Up', 'Wylinka', 'Inovativa', 'Unlimitail'];
+
+const faq = [
+  {
+    q: 'O que é uma agência de relações públicas?',
+    a: 'É a empresa que constrói e protege a reputação de uma marca diante de imprensa, clientes, investidores e dos mecanismos que respondem por eles, como busca e inteligência artificial. O trabalho vai de assessoria de imprensa a narrativa, reputação e gestão de crise, e parte da decisão de qual história contar, para quem e por quê, antes de qualquer distribuição.',
+  },
+  {
+    q: 'Qual a diferença entre relações públicas e assessoria de imprensa?',
+    a: 'A assessoria de imprensa é a frente que cuida da relação com jornalistas e da cobertura editorial. Relações públicas é o conjunto maior, que inclui a assessoria e soma narrativa, branding, reputação e crise. Na PiaR, a imprensa é o ponto de partida, não o limite do trabalho.',
+  },
+  {
+    q: 'Quanto custa contratar uma agência de PR?',
+    a: 'O modelo mais comum é o fee mensal, em que a empresa contrata uma equipe e um escopo recorrentes. A PiaR também trabalha por projeto e pelo PEP, a metodologia de Projetos Especiais de PR, quando o objetivo pede um esforço concentrado. O investimento é definido sob consulta e depende do escopo, das frentes envolvidas e do nível de regulação do setor. O diagnóstico inicial é o que define a recomendação, e a PiaR sugere o modelo que cabe no momento da empresa, não o mais caro.',
+  },
+  {
+    q: 'Como contratar a PiaR?',
+    a: 'O primeiro passo é um diagnóstico. A empresa conta o contexto, a PiaR mapeia veículos, jornalistas e o ângulo, e apresenta a recomendação de escopo e modelo. A ativação editorial começa depois do messaging framework, e nada vai para a imprensa sem revisão.',
+  },
+  {
+    q: 'A PiaR atende empresas fora de tecnologia?',
+    a: 'O foco é startups, scale-ups e empresas de tecnologia, de fintech a healthtech, porque é onde está a experiência da casa. Empresas de outros setores com necessidade de comunicação para inovação podem levar o contexto ao diagnóstico.',
+  },
+  {
+    q: 'A PiaR dispara release para uma lista de contatos?',
+    a: 'Não como estratégia. A distribuição em massa de release é tratada como ruído. A abordagem nasce do mapeamento de veículo e jornalista, e a ferramenta de distribuição entra por último, depois da decisão editorial.',
+  },
+];
+---
+<BaseLayout
+  title="Uma agência de relações públicas que começa pelo dado"
+  description="Relações públicas para startups, scale-ups e empresas de tecnologia que precisam de cobertura qualificada e de marca forte. Desde 2013, em São Paulo."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --rp-ink: #0A0A0C;
+        --rp-ink-2: #141417;
+        --rp-amber: #FFB020;
+        --rp-glow: #FFD84A;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · constelação de veículos (canvas 2D)
+         =========================================================== */
+      .rp-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--rp-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #rp-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .rp-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 16% 38%, rgba(10,10,12,.86) 0%, rgba(10,10,12,.4) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .rp-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .rp-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .rp-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rp-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .rp-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 47ch; }
+      .rp-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .rp-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .rp-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax / camadas de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .rp-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .rp-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rp-hero-float.f1 { right: 9%; top: 26%; }
+      .rp-hero-float.f2 { right: 17%; bottom: 22%; }
+      @media (max-width: 900px) { .rp-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · contorno radial (a cor desta página) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.10);
+        background: repeating-radial-gradient(circle at 80% 35%, transparent 0 46px, var(--contour-line) 46px 47px);
+        -webkit-mask-image: radial-gradient(circle at 80% 35%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 80% 35%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--rp-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (a virada: release vs. dado) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--rp-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* frentes */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* ===========================================================
+         4 · DATAVIZ · rede veículo, jornalista, marca (canvas)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #rp-network-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* etapas (método) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 250px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* PEP · vetores */
+      .pep-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 600px) { .pep-grid { grid-template-columns: 1fr 1fr; gap: 1.1rem; } }
+      @media (min-width: 1000px) { .pep-grid { grid-template-columns: repeat(3, 1fr); } }
+      .pep-card { padding: 1.6rem 1.5rem; border-radius: var(--radius-card); background: var(--rp-ink-2); border: 1px solid rgba(255,255,255,.1); transition: var(--t-smooth); }
+      .pep-card:hover { transform: translateY(-4px); border-color: rgba(254,209,54,.4); box-shadow: 0 22px 44px rgba(0,0,0,.3); }
+      .pep-card .p-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.12); color: var(--accent); font-size: 1.4rem; }
+      .pep-card .p-name { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.1rem; color: #fff; }
+      .pep-card .p-desc { font-size: .9rem; line-height: 1.55; color: rgba(255,255,255,.66); margin-top: .55rem; }
+
+      /* critérios (como escolher) */
+      .crit-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .crit-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .crit-grid { grid-template-columns: repeat(3, 1fr); } }
+      .crit-card { padding: clamp(1.6rem, 2vw, 2rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; gap: .65rem; }
+      .crit-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .crit-card .c-mark { font-family: var(--font-mono); font-size: .82rem; font-weight: 700; color: var(--accent-deep); }
+      .crit-card .c-titulo { font-size: 1.12rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+      .crit-card .c-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* liderança */
+      .lead-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2.25rem; }
+      @media (min-width: 720px) { .lead-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .lead-card { padding: 1.6rem 1.5rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); }
+      .lead-card .l-name { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; }
+      .lead-card .l-role { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-deep); margin-top: .5rem; }
+      .lead-card .l-note { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .8rem; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 72ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .rp-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Uma agência de relações públicas que começa pelo dado',
+        description:
+          'Relações públicas para startups, scale-ups e empresas de tecnologia que precisam de cobertura qualificada e de marca forte. Desde 2013, em São Paulo.',
+        inLanguage: 'pt-BR',
+        about: 'Relações Públicas',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="rp-hero">
+      <canvas id="rp-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="rp-hero-float f1 px" data-parallax-y="28" aria-hidden="true"><span class="dot"></span>Exame</span>
+      <span class="rp-hero-float f2 px" data-parallax-y="-22" aria-hidden="true"><span class="dot"></span>Valor</span>
+      <div class="wrap hero-inner">
+        <span class="rp-hero-chip reveal"><span class="dot"></span>Relações Públicas · desde {site.foundingYear}</span>
+        <h1 class="reveal d1">Do dado ao <span class="accent-serif on-dark">relacionamento</span> que constrói reputação.</h1>
+        <p class="sub reveal d2">
+          A maioria das assessorias começa pelo disparo. A PiaR começa pela pergunta de quem precisa
+          ouvir a sua história e por quê. Mapeamos o veículo e o jornalista antes de escrever a primeira linha.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Começar pelo diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#virada" class="btn btn-ghost-d">Como trabalhamos<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="rp-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · O QUE FAZ UMA AGÊNCIA DE RP -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">reputação</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que faz uma agência de relações públicas</span>
+          <h2>Reputação diante de quem <span class="accent-serif">decide o seu mercado</span>.</h2>
+          <p class="lede">Uma agência de relações públicas constrói e gerencia a reputação de uma empresa diante dos públicos que decidem o seu mercado: imprensa, clientes, investidores, parceiros e, cada vez mais, os mecanismos de busca e de inteligência artificial que respondem por eles.</p>
+        </div>
+        <p class="punch reveal d1">Relações públicas não se resumem a enviar release. Começam na decisão de qual história contar, <span class="hl">para quem e por quê</span>.</p>
+        <p class="lede reveal d2" style="margin-top:2rem; max-width:62ch">É por isso que assessoria de imprensa, narrativa, <a href="/reputacao" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">reputação</a> e gestão de crise fazem parte da mesma frente, e não de caixas separadas. O trabalho continua depois da cobertura, no acompanhamento do que ela gera em percepção e em negócio.</p>
+      </div>
+    </section>
+
+    <!-- 3 · A VIRADA · release vs. dado -->
+    <section id="virada" class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O ponto de partida</span>
+          <h2>O ponto de partida é o dado, <span class="accent-serif">não o release</span>.</h2>
+          <p class="lede">Essa ordem muda o resultado. Quando a abordagem nasce de uma pauta que o jornalista tem motivo para publicar, a cobertura é mais qualificada e a relação com a imprensa se sustenta para a próxima história.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">A assessoria comum</span>
+            <h3>Começa pelo disparo.</h3>
+            <p>Release para uma lista de contatos, na esperança de que alguém publique. Disparo em massa não é estratégia, é ruído, e a relação com o jornalista não se sustenta.</p>
+            <div class="steps"><span>Lista</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Disparo</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Ruído</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">A PiaR</span>
+            <h3>Começa pela pergunta.</h3>
+            <p>Quem precisa ouvir a sua história e por quê. Mapeamos veículo e jornalista, usamos dados para decidir ângulo, momento e porta-voz. A distribuição vem por último.</p>
+            <div class="steps"><span>Dado</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Pauta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Relação</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Reputação</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">A ferramenta de distribuição vem por último, depois da decisão editorial, <span class="hl">não no lugar dela</span>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · rede veículo, jornalista, marca -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="rp-network-canvas" role="img" aria-label="Rede de relações públicas: o veículo conecta-se ao jornalista, o jornalista publica sobre a marca, e a cobertura repetida ao longo do tempo vira reputação."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#9aa0aa"></span>Veículo</span>
+              <span class="li"><span class="sw" style="background:#FFB020"></span>Jornalista</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Sua marca</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">Como uma pauta vira reputação</span>
+            <h2>O caminho não é o release. É o <span class="accent-serif on-dark">relacionamento</span>.</h2>
+            <p class="lede">Cada cobertura nasce de uma relação: o veículo certo, o jornalista que atende a pauta, a história que ele tem motivo para publicar. Uma pauta vira matéria, a matéria vira menção, e a menção repetida ao longo do tempo é o que constrói reputação.</p>
+            <p class="lede" style="margin-top:1.25rem">É a diferença entre quem o jornalista atende e quantos e-mails a agência envia. Cobertura qualificada vem da primeira, nunca da segunda. Por isso o relacionamento com a imprensa, e não o tamanho da lista, é o ativo que sustenta a próxima história.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · O QUE A PiaR ENTREGA · frentes -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que a PiaR entrega</span>
+          <h2>Comunicação integrada, da imprensa ao <span class="accent-serif">branding</span>.</h2>
+          <p class="lede">Sempre conectada a um objetivo de negócio. Cada frente entra conforme o momento da empresa, sempre a partir do diagnóstico. Para setores regulados como fintech e saúde, todos os ativos passam por revisão jurídica antes de chegar ao jornalista.</p>
+        </div>
+        <div class="frentes-grid">
+          {frentes.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · MÉTODO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como funciona o trabalho</span>
+          <h2>Quatro etapas e um <span class="accent-serif">princípio</span>.</h2>
+          <p class="lede">O processo tem quatro etapas e um princípio que não muda: nada vai para a imprensa sem passar por revisão jurídica, o que pesa especialmente para clientes de setores regulados.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · PEP -->
+    <section class="section dark has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-12" aria-hidden="true">PEP</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:54ch">
+          <span class="eyebrow on-dark">Projetos Especiais de PR</span>
+          <h2>Quando a comunicação precisa ir <span class="accent-serif on-dark">além da cobertura</span>.</h2>
+          <p class="lede">O PEP é a metodologia própria da PiaR, lançada em 2023, para mover o ponteiro do negócio com comunicação integrada. São seis vetores editoriais que trabalham coordenados, e cada projeto combina os que fazem sentido para o objetivo da empresa.</p>
+        </div>
+        <div class="pep-grid">
+          {vetores.map((v, i) => (
+            <div class:list={['pep-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="p-icon"><iconify-icon icon={v.icon}></iconify-icon></div>
+              <h3 class="p-name">{v.nome}</h3>
+              <p class="p-desc">{v.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1" style="margin-top:3rem">O PEP transforma assessoria de imprensa em comunicação que constrói marca e reputação <span class="hl">ao longo do tempo</span>.</p>
+      </div>
+    </section>
+
+    <!-- 8 · COMO ESCOLHER · contorno (Três Mares) -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:58ch">
+          <span class="eyebrow">Como escolher uma agência de relações públicas</span>
+          <h2>Critérios que valem para qualquer fornecedor. <span class="accent-serif">Inclusive a PiaR</span>.</h2>
+          <p class="lede">A decisão de contratar uma agência de PR costuma ser feita por reputação de portfólio, e isso explica por que tanta empresa troca de agência no primeiro ano. Em vez de defender uma escolha, vale aplicar critérios.</p>
+        </div>
+        <div class="crit-grid">
+          {criterios.map((c, i) => (
+            <div class:list={['crit-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <span class="c-mark">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="c-titulo">{c.titulo}</h3>
+              <p class="c-desc">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Trabalho de comunicação se mede por <span class="accent-serif on-dark">resultado</span>.</h2>
+          <p class="lede">Ao longo de 13 anos, a PiaR acompanhou a comunicação de marcas que precisam de cobertura qualificada, de fintechs a healthtechs. A casa opera comunicação para tech desde {site.foundingYear}, em São Paulo, com {site.brandsServed} marcas atendidas.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Outros clientes reais ilustram o alcance do trabalho: Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A relação completa de marcas atendidas está disponível sob consulta. A gestão de crise é uma capacidade da casa, com protocolo de resposta, mapa de stakeholders e controle da narrativa quando o tempo conta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · QUEM LIDERA -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">time</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:52ch">
+          <span class="eyebrow">Quem lidera</span>
+          <h2>Um time que vive comunicação para <span class="accent-serif">inovação</span>.</h2>
+          <p class="lede">Saber o nome de quem conduz a conta importa mais que o nome no contrato. Por isso a liderança da PiaR aparece nominal.</p>
+        </div>
+        <div class="lead-grid">
+          <div class="lead-card reveal">
+            <div class="l-name">Bruno Pinheiro</div>
+            <div class="l-role">Fundador e CEO</div>
+            <p class="l-note">Eleito Profissional de imprensa no Startup Awards da ABStartups, em 2018.</p>
+          </div>
+          <div class="lead-card reveal d1">
+            <div class="l-name">Renniê Paro</div>
+            <div class="l-role">COO</div>
+            <p class="l-note">Responde pela operação, do diagnóstico à entrega no dia a dia das contas.</p>
+          </div>
+          <div class="lead-card reveal d2">
+            <div class="l-name">Gabriela Calencautcy</div>
+            <div class="l-role">Projetos especiais</div>
+            <p class="l-note">Lidera o PEP e os projetos que vão além da cobertura de imprensa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · FAQ -->
+    <section class="section warm">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">PiaR</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">O primeiro passo é um <span class="accent-serif on-dark">diagnóstico</span>.</h2>
+        <p class="lede reveal d2">Se a sua empresa precisa de cobertura qualificada e de uma narrativa que se sustente, conte o seu contexto e a PiaR mostra onde está a oportunidade. O investimento é definido sob consulta, a partir do diagnóstico.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/o-que-e-geo-pr" class="btn btn-ghost-d">Ver reputação em IA<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · constelação de veículos de imprensa (canvas 2D)
+         nós (veículos) orbitando a marca no centro, com links
+         que se formam aos poucos · preto + glints amarelos
+         ======================================================== */
+      (function pressConstellation() {
+        var canvas = document.getElementById('rp-hero-canvas');
+        if (!canvas) { return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 72% 32%, #2a2305 0%, #120d05 55%, #0A0A0C 100%)'; return; }
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, cx = 0, cy = 0;
+        var names = ['Exame', 'Forbes', 'Valor', 'Veja', 'TechCrunch', 'Estadão', 'Globo', 'Pequenas Empresas', 'Startups', 'O Globo', 'Época Negócios', 'Mobile Time'];
+        var nodes = [], links = [], glints = [];
+
+        function build() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // a marca: deslocada para a direita, longe do bloco de texto
+          cx = W * 0.72; cy = H * 0.46;
+          var base = Math.min(W, H);
+          nodes = names.map(function (name, i) {
+            var ring = i % 2 === 0 ? 0.28 : 0.46;
+            var ang = (i / names.length) * Math.PI * 2 + (i % 2 ? 0.4 : 0);
+            var rad = base * ring + (i % 3) * 14;
+            return {
+              name: name,
+              ang: ang,
+              rad: rad,
+              sp: (0.00018 + (i % 4) * 0.00006) * (i % 2 ? 1 : -1),
+              size: 2 + (i % 3) * 0.7,
+              tw: Math.random() * Math.PI * 2
+            };
+          });
+          links = [];
+          glints = [];
+        }
+        build();
+
+        function pos(n) {
+          return { x: cx + Math.cos(n.ang) * n.rad, y: cy + Math.sin(n.ang) * n.rad * 0.82 };
+        }
+
+        function spawnLink() {
+          if (prefersReduced) { return; }
+          var i = Math.floor(Math.random() * nodes.length);
+          links.push({ node: i, p: 0, sp: 0.012 + Math.random() * 0.01, life: 1 });
+        }
+
+        function spawnGlint() {
+          if (prefersReduced) { return; }
+          var i = Math.floor(Math.random() * nodes.length);
+          glints.push({ node: i, p: 0, sp: 0.02 + Math.random() * 0.02 });
+        }
+
+        var t0 = 0;
+        function frame(now) {
+          if (!t0) { t0 = now; }
+          var dt = now - t0; t0 = now;
+          ctx.clearRect(0, 0, W, H);
+
+          // halo da marca no centro
+          var halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(W, H) * 0.5);
+          halo.addColorStop(0, 'rgba(254,209,54,.12)');
+          halo.addColorStop(0.4, 'rgba(254,209,54,.03)');
+          halo.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = halo;
+          ctx.fillRect(0, 0, W, H);
+
+          // avança órbitas
+          for (var i = 0; i < nodes.length; i++) {
+            if (!prefersReduced) { nodes[i].ang += nodes[i].sp * dt; nodes[i].tw += 0.04; }
+          }
+
+          // links permanentes tênues entre marca e cada veículo
+          ctx.lineWidth = 1;
+          for (var j = 0; j < nodes.length; j++) {
+            var pj = pos(nodes[j]);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(pj.x, pj.y);
+            ctx.strokeStyle = 'rgba(255,255,255,.05)';
+            ctx.stroke();
+          }
+
+          // links que se formam aos poucos (linha amarela crescendo da marca ao nó)
+          for (var l = links.length - 1; l >= 0; l--) {
+            var lk = links[l];
+            lk.p += lk.sp;
+            if (lk.p >= 1) { lk.life -= 0.012; }
+            if (lk.life <= 0) { links.splice(l, 1); continue; }
+            var pn = pos(nodes[lk.node]);
+            var grow = Math.min(lk.p, 1);
+            var ex = cx + (pn.x - cx) * grow;
+            var ey = cy + (pn.y - cy) * grow;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(ex, ey);
+            ctx.strokeStyle = 'rgba(254,209,54,' + (0.5 * lk.life) + ')';
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
+
+          // glints que viajam do veículo até a marca (a pauta chegando)
+          for (var g = glints.length - 1; g >= 0; g--) {
+            var gl = glints[g];
+            gl.p += gl.sp;
+            if (gl.p >= 1) { glints.splice(g, 1); continue; }
+            var gn = pos(nodes[gl.node]);
+            var gx = gn.x + (cx - gn.x) * gl.p;
+            var gy = gn.y + (cy - gn.y) * gl.p;
+            ctx.beginPath(); ctx.arc(gx, gy, 2.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,.95)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(gx, gy, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,.16)'; ctx.fill();
+          }
+
+          // nós (veículos)
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'left';
+          for (var k = 0; k < nodes.length; k++) {
+            var nk = nodes[k];
+            var p = pos(nk);
+            var tw = 0.5 + 0.5 * Math.abs(Math.sin(nk.tw));
+            ctx.beginPath(); ctx.arc(p.x, p.y, nk.size, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(220,224,230,' + (0.45 + tw * 0.4) + ')';
+            ctx.fill();
+            if (k % 2 === 0) {
+              ctx.fillStyle = 'rgba(255,255,255,.28)';
+              ctx.fillText(nk.name, p.x + nk.size + 5, p.y);
+            }
+          }
+
+          // marca no centro (amarelo, anel pulsante)
+          var pulse = (Math.sin(now / 620) + 1) * 3;
+          ctx.beginPath(); ctx.arc(cx, cy, 11 + pulse, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(254,209,54,.3)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.fill();
+          ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(10,10,12,.9)'; ctx.fill();
+
+          if (!prefersReduced) { requestAnimationFrame(frame); }
+        }
+
+        window.addEventListener('resize', build, { passive: true });
+
+        if (prefersReduced) {
+          // estado estático: algumas linhas e glints fixos
+          spawnLink(); spawnGlint();
+          requestAnimationFrame(frame);
+        } else {
+          setInterval(spawnLink, 1400);
+          setInterval(spawnGlint, 700);
+          spawnGlint();
+          requestAnimationFrame(frame);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · rede veículo, jornalista, marca (canvas 2D)
+         veículo -> jornalista -> marca, e a cobertura repetida
+         ao longo do tempo vira reputação
+         ======================================================== */
+      (function relationNet() {
+        var canvas = document.getElementById('rp-network-canvas');
+        if (!canvas) { return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var veiculos = ['Exame', 'Valor', 'TechCrunch'];
+        var vNodes = [], jNode = null, brand = null, pulses = [], hover = -1, mouse = { x: -1, y: -1 };
+        var repScore = 0;
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var lx = W * 0.15, n = veiculos.length;
+          vNodes = veiculos.map(function (name, i) {
+            var y = H * (0.22 + (0.56 * i) / (n - 1));
+            return { x: lx, y: y, name: name, r: 4.5 };
+          });
+          jNode = { x: W * 0.46, y: H * 0.5, r: 7, name: 'Jornalista' };
+          brand = { x: W * 0.82, y: H * 0.5, r: 9, name: 'Sua marca' };
+        }
+        layout();
+
+        function spawn() {
+          if (prefersReduced) { return; }
+          var src = Math.floor(Math.random() * vNodes.length);
+          pulses.push({ src: src, seg: 0, p: 0, sp: 0.007 + Math.random() * 0.006 });
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function bez(x0, y0, cx1, cy1, cx2, cy2, x1, y1, t) {
+          var u = 1 - t;
+          var x = u * u * u * x0 + 3 * u * u * t * cx1 + 3 * u * t * t * cx2 + t * t * t * x1;
+          var y = u * u * u * y0 + 3 * u * u * t * cy1 + 3 * u * t * t * cy2 + t * t * t * y1;
+          return { x: x, y: y };
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // edges veiculo -> jornalista
+          vNodes.forEach(function (vn, i) {
+            var active = hover === i;
+            ctx.beginPath();
+            ctx.moveTo(vn.x, vn.y);
+            ctx.bezierCurveTo(lerp(vn.x, jNode.x, 0.5), vn.y, lerp(vn.x, jNode.x, 0.5), jNode.y, jNode.x, jNode.y);
+            ctx.strokeStyle = active ? 'rgba(255,176,32,.6)' : 'rgba(255,255,255,.12)';
+            ctx.lineWidth = active ? 1.6 : 1;
+            ctx.stroke();
+          });
+          // edge jornalista -> marca
+          ctx.beginPath();
+          ctx.moveTo(jNode.x, jNode.y);
+          ctx.bezierCurveTo(lerp(jNode.x, brand.x, 0.5), jNode.y, lerp(jNode.x, brand.x, 0.5), brand.y, brand.x, brand.y);
+          ctx.strokeStyle = 'rgba(254,209,54,.4)';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+
+          // pulses (a pauta viajando: veiculo -> jornalista -> marca)
+          for (var k = pulses.length - 1; k >= 0; k--) {
+            var pu = pulses[k];
+            pu.p += pu.sp;
+            var posP, col;
+            if (pu.seg === 0) {
+              var vn = vNodes[pu.src];
+              posP = bez(vn.x, vn.y, lerp(vn.x, jNode.x, 0.5), vn.y, lerp(vn.x, jNode.x, 0.5), jNode.y, jNode.x, jNode.y, pu.p);
+              col = '255,176,32';
+              if (pu.p >= 1) { pu.seg = 1; pu.p = 0; }
+            } else {
+              posP = bez(jNode.x, jNode.y, lerp(jNode.x, brand.x, 0.5), jNode.y, lerp(jNode.x, brand.x, 0.5), brand.y, brand.x, brand.y, pu.p);
+              col = '254,209,54';
+              if (pu.p >= 1) { pulses.splice(k, 1); repScore = Math.min(1, repScore + 0.06); continue; }
+            }
+            ctx.beginPath(); ctx.arc(posP.x, posP.y, 2.6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.95)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(posP.x, posP.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.18)'; ctx.fill();
+          }
+
+          // decaimento lento do score (reputação precisa de cadência)
+          if (!prefersReduced) { repScore = Math.max(0, repScore - 0.0012); }
+
+          // veiculo nodes + labels
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          vNodes.forEach(function (vn, i) {
+            var active = hover === i;
+            ctx.beginPath(); ctx.arc(vn.x, vn.y, vn.r + (active ? 1.5 : 0), 0, Math.PI * 2);
+            ctx.fillStyle = active ? '#FFB020' : '#9aa0aa'; ctx.fill();
+            ctx.textAlign = 'right';
+            ctx.fillStyle = active ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.55)';
+            ctx.fillText(vn.name, vn.x - 12, vn.y);
+          });
+
+          // jornalista node
+          ctx.beginPath(); ctx.arc(jNode.x, jNode.y, jNode.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FFB020'; ctx.fill();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Jornalista', jNode.x, jNode.y + jNode.r + 16);
+
+          // marca node (anel de reputação que cresce com a cadência)
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, brand.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.fill();
+          var repR = brand.r + 6 + repScore * 22;
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, repR, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(254,209,54,' + (0.18 + repScore * 0.4) + ')'; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Reputação', brand.x, brand.y + brand.r + 16);
+
+          requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+          hover = -1;
+          for (var i = 0; i < vNodes.length; i++) {
+            var vn = vNodes[i];
+            if (Math.hypot(vn.x - mouse.x, vn.y - mouse.y) < 26) { hover = i; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          repScore = 0.5;
+          layout();
+          draw();
+        } else {
+          setInterval(spawn, 900);
+          spawn();
+          requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

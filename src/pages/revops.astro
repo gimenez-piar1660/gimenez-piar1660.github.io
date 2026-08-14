@@ -1,0 +1,1092 @@
+---
+// ============================================================================
+// Exemplar narrativo · RevOps
+// Conteúdo voice-backed portado de:
+//   src/content/pages/revops.md
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói canvas 2D (partículas de PR alimentando um funil que vira receita) +
+// dataviz de pipeline PR -> receita (canvas) + scroll storytelling
+// (GSAP/Lenis), sobre o DS da PiaR. A cor-assinatura desta página é o
+// grafite frio aplicado ao motor do funil e ao contorno topográfico.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/revops`;
+
+// Os quatro pilares canônicos do modelo RevOps.
+const pilares = [
+  {
+    id: 'Processos',
+    nome: 'Fluxos unificados',
+    desc: 'Padronização dos fluxos que ligam marketing, vendas e sucesso do cliente, da qualificação do lead à renovação.',
+    icon: 'solar:routing-2-line-duotone',
+  },
+  {
+    id: 'Dados',
+    nome: 'Fonte única de verdade',
+    desc: 'Consolidação de métricas em uma base única, para que todas as áreas trabalhem com o mesmo número.',
+    icon: 'solar:database-line-duotone',
+  },
+  {
+    id: 'Tecnologia',
+    nome: 'Ferramentas integradas',
+    desc: 'Sistemas que reduzem retrabalho e automatizam tarefas repetitivas ao longo do funil de receita.',
+    icon: 'solar:cpu-bolt-line-duotone',
+  },
+  {
+    id: 'Cultura',
+    nome: 'Meta de receita comum',
+    desc: 'Times avaliados pelo resultado coletivo de receita, não só por metas isoladas de cada área.',
+    icon: 'solar:users-group-rounded-line-duotone',
+    featured: true,
+  },
+];
+
+// Os três pontos onde a comunicação entra na máquina de receita.
+const pontos = [
+  {
+    num: '01',
+    estagio: 'Topo de funil',
+    titulo: 'Demanda e autoridade',
+    indicador: 'Sessões qualificadas e MQLs',
+    desc: 'Earned media alimenta o topo com leads mais aquecidos, que já viram a marca num veículo que respeitam. O indicador não é número de matérias, é a contribuição dessas menções para pedidos de contato.',
+    icon: 'solar:magnet-line-duotone',
+  },
+  {
+    num: '02',
+    estagio: 'Meio de funil',
+    titulo: 'Sustentação da decisão',
+    indicador: 'Avanço de oportunidade',
+    desc: 'Quando o lead avalia, a reputação por imprensa e dados próprios reduz atrito na venda. O comercial usa clipping e estudos como prova, e o RevOps mede a presença desse conteúdo nas oportunidades que avançam.',
+    icon: 'solar:scale-line-duotone',
+  },
+  {
+    num: '03',
+    estagio: 'Pós-venda',
+    titulo: 'Retenção e advocacy',
+    indicador: 'Retenção e expansão',
+    desc: 'Sucesso do cliente se beneficia de comunicação que mantém a marca relevante depois da compra: cases publicados, liderança em pautas do setor, conteúdo que dá ao cliente argumentos para defender a escolha.',
+    icon: 'solar:refresh-circle-line-duotone',
+  },
+];
+
+// O passo a passo de integração comunicação + RevOps.
+const passos = [
+  {
+    num: '01',
+    titulo: 'Combine as definições',
+    desc: 'O que conta como MQL, o que conta como lead de imprensa, qual estágio cada conteúdo serve. Comunicação na mesma mesa que marketing e vendas quando esses critérios forem escritos.',
+  },
+  {
+    num: '02',
+    titulo: 'Conecte à fonte única',
+    desc: 'Menções de imprensa, tráfego de earned media e clippings entram no mesmo sistema que o time de receita já consulta. Comunicação fora do CRM é comunicação invisível.',
+  },
+  {
+    num: '03',
+    titulo: 'Defina o que mover',
+    desc: 'Atrele cada frente a um indicador: topo à demanda, meio ao avanço de oportunidade, pós-venda à retenção. Já coloca a comunicação à frente da média do mercado.',
+  },
+  {
+    num: '04',
+    titulo: 'Earned antes de paga',
+    desc: 'Construa relacionamento com a imprensa e produza pauta com lastro de dado antes de comprar espaço. A mídia paga complementa quando há objetivo de alcance específico.',
+  },
+  {
+    num: '05',
+    titulo: 'Data PR como motor',
+    desc: 'Transforme os dados da operação em pautas recorrentes. É o que mantém a marca em circulação editorial sem depender de release reativo.',
+  },
+  {
+    num: '06',
+    titulo: 'Feche o circuito',
+    desc: 'Revise o que a comunicação gerou em receita, não em volume de saída. Ajuste pauta e relacionamento com base nesse retorno. RevOps é, por definição, um ciclo fechado.',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Doctoralia', 'Solides', 'PagBrasil', 'Corning'];
+
+const faq = [
+  {
+    q: 'RevOps substitui a área de comunicação?',
+    a: 'Não. RevOps é um modelo de operação que alinha marketing, vendas e sucesso do cliente em torno de receita. Comunicação é uma função que passa a operar dentro desse alinhamento, com dados e metas comuns.',
+  },
+  {
+    q: 'Qual a diferença entre RevOps e marketing tradicional?',
+    a: 'Marketing tradicional costuma ter metas próprias, isoladas das de vendas e CS. RevOps une as três áreas sob a mesma fonte de dados e a mesma meta de receita, com visibilidade do funil inteiro.',
+  },
+  {
+    q: 'Comunicação dá para medir dentro de RevOps?',
+    a: 'Sim, desde que as menções de imprensa, o tráfego de earned media e os clippings entrem na mesma base de dados que o time de receita consulta. Fora do sistema, a comunicação fica invisível para o modelo.',
+  },
+  {
+    q: 'O que é earned media e por que vem antes da mídia paga?',
+    a: 'Earned media é o espaço editorial conquistado por relevância, não comprado. Vem antes da mídia paga porque carrega credibilidade que o anúncio não tem, e custa relacionamento e pauta, não verba de veiculação. A mídia paga complementa quando há um objetivo de alcance específico.',
+  },
+  {
+    q: 'O que é Data PR?',
+    a: 'É a prática de transformar os dados que a empresa já possui em pauta de imprensa. Em RevOps, usa a mesma fonte única de verdade da operação de receita, o que liga diretamente a comunicação a um ativo já medido.',
+  },
+  {
+    q: 'Minha empresa é pequena. RevOps com comunicação faz sentido?',
+    a: 'O Panorama Brasileiro de Revenue Operations 2025 mostra operações estratégicas tocadas até por um único profissional. O ponto não é tamanho de time, é ter definições escritas, dado confiável e meta de receita combinada. Sem isso, mesmo uma estrutura grande não funciona.',
+  },
+  {
+    q: 'Por que não fazer disparo em massa de release, já que alcança mais gente?',
+    a: 'Porque alcance bruto não é resultado. Disparo em massa queima relacionamento com a imprensa e raramente vira earned media de qualidade. Pauta com ângulo e dado, enviada para os jornalistas certos, gera mais com menos atrito.',
+  },
+];
+---
+<BaseLayout
+  title="RevOps: PR deixa de ser custo e vira pipeline"
+  description="RevOps integra marketing, vendas e sucesso do cliente sob dados e metas de receita comuns. Veja onde a comunicação e o PR se encaixam na máquina de receita, com indicador em cada estágio do funil."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --rev-ink: #0B0D10;
+        --rev-ink-2: #14171B;
+        --rev-graph: #6C7C8E;       /* grafite frio, cor-assinatura desta página */
+        --rev-graph-2: #93A3B4;
+        --rev-steel: #3D4854;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · fluxo PR -> funil -> receita (canvas 2D)
+         =========================================================== */
+      .rev-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--rev-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #rev-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .rev-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 16% 38%, rgba(11,13,16,.84) 0%, rgba(11,13,16,.38) 46%, rgba(11,13,16,0) 72%),
+          linear-gradient(180deg, rgba(11,13,16,.5) 0%, rgba(11,13,16,0) 30%, rgba(11,13,16,.2) 75%, rgba(11,13,16,.92) 100%);
+      }
+      .rev-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .rev-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .rev-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rev-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .rev-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 48ch; }
+      .rev-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .rev-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .rev-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .rev-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .rev-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rev-graph-2); box-shadow: 0 0 8px 1px rgba(147,163,180,.7); }
+      .rev-hero-float.f1 { right: 9%; top: 26%; }
+      .rev-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .rev-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · contorno topográfico grafite frio como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(108,124,142,.13);
+        background: repeating-radial-gradient(circle at 78% 40%, transparent 0 50px, var(--contour-line) 50px 51px);
+        -webkit-mask-image: radial-gradient(circle at 78% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 78% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--rev-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (silos vs receita unificada) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--rev-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* pilares RevOps */
+      .pilares { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 640px) { .pilares { grid-template-columns: 1fr 1fr; gap: 1.1rem; } }
+      @media (min-width: 1024px) { .pilares { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
+      .pilar-card { position: relative; padding: clamp(1.6rem, 2.2vw, 2rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); display: flex; flex-direction: column; }
+      .pilar-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .pilar-card .p-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(108,124,142,.1); color: var(--rev-steel); font-size: 1.4rem; }
+      .pilar-card .p-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .pilar-card .p-name { font-size: 1.3rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.12; }
+      .pilar-card .p-desc { font-size: .98rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .pilar-card.featured { background: var(--rev-ink); color: #fff; border-color: var(--rev-ink); }
+      .pilar-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(108,124,142,.3) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.12) 0%, transparent 60%); }
+      .pilar-card.featured .p-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .pilar-card.featured .p-id { color: var(--accent); position: relative; z-index: 1; }
+      .pilar-card.featured .p-name, .pilar-card.featured .p-desc { position: relative; z-index: 1; }
+      .pilar-card.featured .p-desc { color: rgba(255,255,255,.75); }
+
+      /* ===========================================================
+         4 · DATAVIZ · pipeline PR -> receita (canvas)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #14171B 0%, #0B0D10 70%); border: 1px solid rgba(255,255,255,.1); }
+      #rev-pipeline-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* pontos / passos (método) */
+      .pontos-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 880px) { .pontos-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .ponto-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 280px; }
+      .ponto-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .ponto-card .pt-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .ponto-card .pt-estagio { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .ponto-card .pt-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .ponto-card .pt-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .ponto-card .pt-ind { margin-top: auto; padding-top: 1.25rem; display: flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: var(--rev-steel); border-top: 1px solid var(--hairline); }
+      .ponto-card .pt-ind iconify-icon { color: var(--accent-deep); font-size: 1.1rem; }
+
+      /* passos (passo a passo) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(3, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 220px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .9rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .7rem; }
+
+      /* stats RevOps */
+      .stats-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .stat-card { padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
+      .stat-card .st-num { font-family: var(--font-display); font-size: clamp(2.6rem, 5vw, 3.6rem); font-weight: 700; letter-spacing: -.04em; line-height: 1; color: var(--accent); }
+      .stat-card .st-desc { font-size: .98rem; line-height: 1.55; color: rgba(255,255,255,.72); margin-top: 1rem; }
+
+      /* duas listas (quando usar / quando não) */
+      .when-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .when-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .when-card { padding: clamp(2rem, 3vw, 2.5rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; }
+      .when-card.is-dark { background: var(--rev-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .when-card .w-tag { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-deep); }
+      .when-card.is-dark .w-tag { color: var(--accent); }
+      .when-card ul { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-direction: column; gap: 1rem; }
+      .when-card li { display: flex; gap: .7rem; font-size: 1rem; line-height: 1.55; color: var(--text-muted); }
+      .when-card.is-dark li { color: rgba(255,255,255,.74); }
+      .when-card li iconify-icon { flex-shrink: 0; margin-top: .15rem; font-size: 1.25rem; color: var(--accent-deep); }
+      .when-card.is-dark li iconify-icon { color: var(--accent); }
+
+      /* erros comuns */
+      .erros-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .erros-grid { grid-template-columns: 1fr 1fr; gap: 1.1rem; } }
+      .erro-card { padding: 1.5rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); display: flex; gap: .85rem; align-items: flex-start; transition: var(--t-smooth); }
+      .erro-card:hover { border-color: rgba(0,0,0,.16); transform: translateY(-3px); box-shadow: 0 18px 36px rgba(0,0,0,.05); }
+      .erro-card iconify-icon { flex-shrink: 0; font-size: 1.4rem; color: var(--rev-steel); margin-top: .1rem; }
+      .erro-card .e-body strong { display: block; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; }
+      .erro-card .e-body span { display: block; font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .35rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 62ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 20ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .rev-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'RevOps: PR deixa de ser custo e vira pipeline',
+        description:
+          'RevOps integra marketing, vendas e sucesso do cliente sob dados e metas de receita comuns. A comunicação e o PR se encaixam na máquina de receita com indicador em cada estágio do funil.',
+        inLanguage: 'pt-BR',
+        about: 'RevOps',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="rev-hero">
+      <canvas id="rev-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="rev-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>Earned media</span>
+      <span class="rev-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Pipeline</span>
+      <div class="wrap hero-inner">
+        <span class="rev-hero-chip reveal"><span class="dot"></span>RevOps · Revenue Operations</span>
+        <h1 class="reveal d1">O PR para de ser custo e vira <span class="accent-serif on-dark">pipeline</span>.</h1>
+        <p class="sub reveal d2">
+          RevOps coloca marketing, vendas e sucesso do cliente sob a mesma meta de receita.
+          A comunicação entra quando deixa de mover vaidade e passa a mover número, medida em cada estágio do funil.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Conectar comunicação à receita<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#virada" class="btn btn-ghost-d">Ver como funciona<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="rev-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · A VIRADA · silos vs receita unificada -->
+    <section id="virada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">silos</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que é RevOps</span>
+          <h2>Uma máquina de receita, não três áreas <span class="accent-serif">soltas</span>.</h2>
+          <p class="lede">RevOps integra marketing, vendas e sucesso do cliente em torno de processos unificados, uma fonte única de dados e metas compartilhadas de receita. Troca a soma de metas individuais por um resultado coletivo, com visibilidade ponta a ponta do funil.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">O modelo antigo</span>
+            <h3>Cada área com sua própria planilha.</h3>
+            <p>Quando cada time tem sua definição de lead qualificado, seu sistema e sua meta, as oportunidades vazam nas passagens de bastão. O cliente cai no vão entre uma área e a seguinte.</p>
+            <div class="steps"><span>Marketing</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Vão</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Vendas</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Vão</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>CS</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">O modelo RevOps</span>
+            <h3>Mesmo dado, mesma meta de receita.</h3>
+            <p>As três áreas trabalham com o mesmo número e o mesmo objetivo. Os vãos se fecham, e o funil inteiro fica visível, da geração de demanda à renovação de contrato.</p>
+            <div class="steps"><span>Demanda</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Venda</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Receita</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">A função existe, mas frequentemente sem verba e sem métrica. É nessa lacuna que comunicação mal estruturada <span class="hl">se perde</span>.</p>
+      </div>
+    </section>
+
+    <!-- 3 · QUATRO PILARES -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quatro pilares</span>
+          <h2>RevOps se sustenta em processo, dado, tecnologia e <span class="accent-serif">cultura</span>.</h2>
+          <p class="lede">A estruturação em quatro frentes aparece de forma consistente na literatura de RevOps. A ordem importa: cultura e meta comum vêm por último, e seguram o resto de pé.</p>
+        </div>
+        <div class="pilares">
+          {pilares.map((p, i) => (
+            <div class:list={['pilar-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3', p.featured && 'featured']}>
+              <div class="p-icon"><iconify-icon icon={p.icon}></iconify-icon></div>
+              <div class="p-id">{p.id}</div>
+              <div class="p-name">{p.nome}</div>
+              <p class="p-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Comprar ferramenta primeiro só automatiza a bagunça. A engenharia resolve um processo definido, <span class="hl">nunca a ausência dele</span>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · POR QUE DEIXOU DE SER JARGÃO · stats -->
+    <section class="section dark has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">receita</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:50ch">
+          <span class="eyebrow on-dark">Por que deixou de ser jargão</span>
+          <h2>A função de receita virou prioridade de <span class="accent-serif on-dark">estrutura</span>.</h2>
+          <p class="lede">Não é especulação de mercado. Em 2021, o Gartner previu que 75% das empresas de maior crescimento adotariam um modelo de RevOps até 2025. No Brasil, o cargo de Diretor de Receita liderou a lista Empregos em Alta 2025 do LinkedIn.</p>
+        </div>
+        <span class="ds-mono reveal" style="color:rgba(255,255,255,.5); display:block; margin-bottom:1.25rem">/// Panorama Brasileiro de Revenue Operations 2025 · 383 profissionais ouvidos</span>
+        <div class="stats-grid">
+          <div class="stat-card reveal">
+            <div class="st-num">76%</div>
+            <p class="st-desc">das empresas já operam com algum nível de maturidade técnica em RevOps.</p>
+          </div>
+          <div class="stat-card reveal d1">
+            <div class="st-num">25%</div>
+            <p class="st-desc">têm orçamento próprio para a área. A função existe, mas em geral sem verba dedicada.</p>
+          </div>
+          <div class="stat-card reveal d2">
+            <div class="st-num">40%</div>
+            <p class="st-desc">não definem KPIs para medir resultados. É a lacuna onde a comunicação se perde.</p>
+          </div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:chart-square-line-duotone"></iconify-icon>
+          <p>A pesquisa foi conduzida pela Revenue Thinkers em parceria com a Receita Previsível, e ouviu profissionais de empresas como Hotmart, Zenvia, Nuvemshop, Pinterest e Cubo Itaú. A maturidade existe, mas frequentemente sem orçamento e sem métrica combinada de antemão.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · DATAVIZ · pipeline PR -> receita -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="rev-pipeline-canvas" role="img" aria-label="Pipeline: partículas de PR e earned media alimentam um funil que afunila em pipeline qualificado e converte em receita."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#93A3B4"></span>Earned media e PR</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Pipeline qualificado</span>
+              <span class="li"><span class="sw" style="background:#FFFFFF"></span>Receita</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>O que move o funil não é o release. É o dado que <span class="accent-serif on-dark">vira pauta</span>.</h2>
+            <p class="lede">Cada partícula de comunicação alimenta o topo do funil. Mas só converte em pipeline quando carrega lastro: uma menção em veículo que o lead respeita, um clipping que o comercial usa como prova, um dado próprio que ninguém mais tem.</p>
+            <p class="lede" style="margin-top:1.25rem">A tese da PiaR é direta: comunicação parte de dados e de relacionamento com a imprensa. Earned media vem antes de mídia paga, e a ferramenta vem por último. RevOps é o que torna essa ordem mensurável, porque obriga a comunicação a apontar para receita, não para vaidade.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · ONDE A COMUNICAÇÃO ENTRA · três pontos -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-14" aria-hidden="true">funil</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Onde a comunicação entra</span>
+          <h2>Comunicação atua nos três estágios do <span class="accent-serif">funil</span>.</h2>
+          <p class="lede">A maior parte dos textos sobre RevOps trata comunicação como apêndice de marketing. É um ângulo pouco coberto, e errado. Comunicação e PR atuam em três pontos da operação de receita, e cada um tem um indicador associado.</p>
+        </div>
+        <div class="pontos-grid">
+          {pontos.map((p, i) => (
+            <div class:list={['ponto-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
+              <span class="pt-num">{p.num}</span>
+              <span class="pt-estagio">{p.estagio}</span>
+              <h3 class="pt-titulo">{p.titulo}</h3>
+              <p class="pt-desc">{p.desc}</p>
+              <div class="pt-ind"><iconify-icon icon="solar:target-line-duotone"></iconify-icon>{p.indicador}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · DATA PR -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:62ch">
+          <span class="eyebrow reveal">Data PR · o elo natural</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            Em vez de release genérico, a comunicação entrega ao jornalista um <span class="hl">dado que ninguém mais tem</span>.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Data PR é a prática de transformar os dados que a empresa já possui, base de clientes, transações, comportamento de uso, em pauta de imprensa. É o ponto onde a comunicação mais se aproxima de RevOps, porque usa a mesma fonte única de verdade da operação de receita para produzir autoridade.
+          </p>
+          <p class="lede reveal d3" style="margin-top:1.25rem">
+            Isso resolve dois problemas ao mesmo tempo. Para a imprensa, dá pauta com lastro. Para o RevOps, conecta a comunicação a um ativo que já existe e já é medido. A pauta orientada a dado é o oposto do disparo em massa de release sem ângulo.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PASSO A PASSO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">circuito</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Passo a passo</span>
+          <h2>Do alinhamento de definições ao <span class="accent-serif">circuito fechado</span>.</h2>
+          <p class="lede">A integração entre comunicação e RevOps segue uma sequência clara, do alinhamento de definições ao fechamento do circuito de receita. Seis passos, na ordem que define o resultado.</p>
+        </div>
+        <div class="steps-grid">
+          {passos.map((s, i) => (
+            <div class:list={['step-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <span class="s-num">{s.num}</span>
+              <h3 class="s-titulo">{s.titulo}</h3>
+              <p class="s-desc">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · QUANDO USAR, QUANDO NÃO -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quando faz sentido</span>
+          <h2>RevOps com comunicação integrada não serve para <span class="accent-serif">todo cenário</span>.</h2>
+          <p class="lede">O modelo organiza o que existe, não substitui a estrutura ausente. Veja quando avançar e quando pensar duas vezes.</p>
+        </div>
+        <div class="when-grid">
+          <div class="when-card reveal">
+            <span class="w-tag"><iconify-icon icon="solar:check-circle-line-duotone"></iconify-icon>Use quando</span>
+            <ul>
+              <li><iconify-icon icon="solar:check-read-line-duotone"></iconify-icon>A empresa tem ciclo de venda B2B com várias áreas tocando o mesmo cliente.</li>
+              <li><iconify-icon icon="solar:check-read-line-duotone"></iconify-icon>Existe dado próprio suficiente para sustentar Data PR.</li>
+              <li><iconify-icon icon="solar:check-read-line-duotone"></iconify-icon>A liderança banca metas de receita compartilhadas entre marketing, vendas e CS.</li>
+              <li><iconify-icon icon="solar:check-read-line-duotone"></iconify-icon>O objetivo é previsibilidade de pipeline, não pico pontual de visibilidade.</li>
+            </ul>
+          </div>
+          <div class="when-card is-dark reveal d1">
+            <span class="w-tag"><iconify-icon icon="solar:danger-triangle-line-duotone"></iconify-icon>Pense duas vezes quando</span>
+            <ul>
+              <li><iconify-icon icon="solar:minus-circle-line-duotone"></iconify-icon>A operação ainda não tem processo comercial mínimo. RevOps organiza o que existe.</li>
+              <li><iconify-icon icon="solar:minus-circle-line-duotone"></iconify-icon>Não há fonte de dados confiável. Integrar comunicação a dados ruins só espalha o erro.</li>
+              <li><iconify-icon icon="solar:minus-circle-line-duotone"></iconify-icon>A expectativa é resultado imediato. Earned media e autoridade compõem ao longo do tempo.</li>
+              <li><iconify-icon icon="solar:minus-circle-line-duotone"></iconify-icon>A empresa quer apenas sair na mídia sem ligar isso a negócio. Aí o problema é de objetivo.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · ERROS COMUNS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Erros comuns</span>
+          <h2>Os equívocos que se repetem fora do <span class="accent-serif">alinhamento</span>.</h2>
+          <p class="lede">Alguns erros voltam sempre que a comunicação não está integrada ao RevOps. Os principais.</p>
+        </div>
+        <div class="erros-grid reveal">
+          <div class="erro-card"><iconify-icon icon="solar:layers-minimalistic-line-duotone"></iconify-icon><div class="e-body"><strong>Comunicação como apêndice de marketing</strong><span>Ela atua nos três estágios do funil. Reduzi-la a topo desperdiça meio e pós-venda.</span></div></div>
+          <div class="erro-card"><iconify-icon icon="solar:document-add-line-duotone"></iconify-icon><div class="e-body"><strong>Não escrever as definições</strong><span>Sem critério combinado de lead, MQL e origem de imprensa, cada área interpreta à sua maneira e a passagem de bastão vaza.</span></div></div>
+          <div class="erro-card"><iconify-icon icon="solar:tuning-square-line-duotone"></iconify-icon><div class="e-body"><strong>Medir comunicação por volume</strong><span>Número de releases enviados ou de matérias publicadas não é resultado de receita. É atividade.</span></div></div>
+          <div class="erro-card"><iconify-icon icon="solar:siren-line-duotone"></iconify-icon><div class="e-body"><strong>Disparo em massa de release</strong><span>Mandar o mesmo texto para uma lista enorme queima relacionamento com a imprensa e não gera earned media de qualidade.</span></div></div>
+          <div class="erro-card"><iconify-icon icon="solar:bill-cross-line-duotone"></iconify-icon><div class="e-body"><strong>Comprar mídia antes de conquistar</strong><span>Inverter a ordem earned-paga encarece o resultado e fragiliza a credibilidade.</span></div></div>
+          <div class="erro-card"><iconify-icon icon="solar:link-broken-line-duotone"></iconify-icon><div class="e-body"><strong>Comunicação fora do sistema de dados</strong><span>Se o clipping não entra na fonte única de verdade, RevOps não consegue medir o que a comunicação moveu.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Comunicação que aponta para pipeline, há <span class="accent-serif on-dark">13 anos</span>.</h2>
+          <p class="lede">A PiaR opera comunicação para empresas de tecnologia e negócios orientados a crescimento desde {site.foundingYear}, em São Paulo. {site.brandsServed} marcas atendidas e {site.exitsSupported} startups acompanhadas até o exit.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A operação combina a metodologia PEP e um processo com revisão jurídica, com comunicação que parte de dados e de relacionamento com a imprensa. Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">RevOps</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Comunicação que aponta para <span class="accent-serif on-dark">pipeline</span>, não para vaidade.</h2>
+        <p class="lede reveal d2">Se a sua operação de receita precisa de comunicação que aponte para pipeline, vale uma conversa. Conectamos earned media, Data PR e clipping à fonte única de verdade que o seu time de receita já consulta.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Conectar comunicação à receita<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · fluxo PR -> funil -> receita (canvas 2D)
+         partículas de PR (grafite) caem por um funil e saem
+         convertidas em receita (amarelo), à direita do herói.
+         ======================================================== */
+      (function heroFunnel() {
+        var canvas = document.getElementById('rev-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(72% 90% at 72% 32%, #1c2530 0%, #11161c 55%, #0B0D10 100%)'; return; }
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+        var W = 0, H = 0;
+        var parts = [];
+        var MAX = 150;
+
+        // geometria do funil, em coordenadas normalizadas (0..1) sobre a metade direita
+        var fx = 0.72;          // centro horizontal do funil
+        var topY = 0.16, neckY = 0.56, outY = 0.92;
+        var topHalf = 0.18;     // meia-largura no topo do funil
+        var neckHalf = 0.028;   // meia-largura no gargalo
+
+        function resize() {
+          var w = canvas.clientWidth, h = canvas.clientHeight;
+          W = Math.max(1, Math.floor(w * dpr));
+          H = Math.max(1, Math.floor(h * dpr));
+          canvas.width = W; canvas.height = H;
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        function halfAt(ny) {
+          // largura do funil em y (parte cônica do topo até o gargalo, depois reto)
+          if (ny <= topY) return topHalf;
+          if (ny >= neckY) return neckHalf;
+          var t = (ny - topY) / (neckY - topY);
+          return topHalf + (neckHalf - topHalf) * t;
+        }
+
+        function spawn() {
+          // nasce no campo de PR (esquerda do funil), migra para a boca do funil
+          var fromX = 0.06 + Math.random() * 0.5;
+          var fromY = topY + Math.random() * 0.05 - 0.05;
+          parts.push({
+            x: fromX, y: fromY,
+            tx: fx + (Math.random() - 0.5) * topHalf * 1.6,
+            phase: 0,                    // 0 = atraído pela boca, 1 = descendo, 2 = receita
+            v: 0.0016 + Math.random() * 0.0016,
+            wob: Math.random() * Math.PI * 2,
+            converted: false
+          });
+        }
+
+        function step(p) {
+          if (p.phase === 0) {
+            // migra horizontalmente para a boca do funil
+            p.x += (p.tx - p.x) * 0.045;
+            p.y += (topY - p.y) * 0.05;
+            if (Math.abs(p.x - p.tx) < 0.01 && Math.abs(p.y - topY) < 0.02) { p.phase = 1; }
+          } else if (p.phase === 1) {
+            // desce pelo funil, comprimido para o gargalo
+            p.y += p.v * 1.4;
+            var hh = halfAt(p.y);
+            var off = (p.x - fx);
+            // empurra para dentro das paredes
+            if (off > hh) p.x = fx + hh - 0.002;
+            if (off < -hh) p.x = fx - hh + 0.002;
+            // afunila suavemente em direção ao centro conforme aperta
+            p.x += (fx - p.x) * (0.04 + (1 - hh / topHalf) * 0.06);
+            p.wob += 0.2;
+            if (p.y >= neckY) { p.phase = 2; p.converted = true; }
+          } else {
+            // sai convertido em receita, espalha levemente para baixo
+            p.y += p.v * 2.2;
+            p.x += Math.sin(p.wob) * 0.0016;
+            p.wob += 0.08;
+            if (p.y > 1.06) return false;
+          }
+          return true;
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // paredes do funil (grafite frio)
+          ctx.save();
+          ctx.lineWidth = Math.max(1.2, 1.4 * dpr);
+          ctx.strokeStyle = 'rgba(147,163,180,.34)';
+          // parede esquerda
+          ctx.beginPath();
+          ctx.moveTo((fx - topHalf) * W, topY * H);
+          ctx.lineTo((fx - neckHalf) * W, neckY * H);
+          ctx.lineTo((fx - neckHalf) * W, outY * H);
+          ctx.stroke();
+          // parede direita
+          ctx.beginPath();
+          ctx.moveTo((fx + topHalf) * W, topY * H);
+          ctx.lineTo((fx + neckHalf) * W, neckY * H);
+          ctx.lineTo((fx + neckHalf) * W, outY * H);
+          ctx.stroke();
+          // linha de conversão (gargalo) em amarelo
+          ctx.strokeStyle = 'rgba(254,209,54,.5)';
+          ctx.lineWidth = Math.max(1, 1 * dpr);
+          ctx.beginPath();
+          ctx.moveTo((fx - neckHalf - 0.01) * W, neckY * H);
+          ctx.lineTo((fx + neckHalf + 0.01) * W, neckY * H);
+          ctx.stroke();
+          ctx.restore();
+
+          // partículas
+          for (var i = parts.length - 1; i >= 0; i--) {
+            var p = parts[i];
+            var alive = step(p);
+            if (!alive) { parts.splice(i, 1); continue; }
+            var px = p.x * W, py = p.y * H;
+            var r = (p.converted ? 2.4 : 1.8) * dpr;
+            if (p.converted) {
+              ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(254,209,54,.95)'; ctx.fill();
+              ctx.beginPath(); ctx.arc(px, py, r * 2.6, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(254,209,54,.14)'; ctx.fill();
+            } else {
+              var a = p.phase === 0 ? 0.42 : 0.7;
+              ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(147,163,180,' + a + ')'; ctx.fill();
+            }
+          }
+
+          if (!prefersReduced) raf = requestAnimationFrame(draw);
+        }
+
+        var spawnTimer = 0;
+        function loop() {
+          spawnTimer++;
+          if (spawnTimer % 5 === 0 && parts.length < MAX) spawn();
+          if (!prefersReduced) requestAnimationFrame(loop);
+        }
+
+        // semeia algumas partículas iniciais
+        for (var s = 0; s < 40; s++) spawn();
+
+        var raf;
+        if (prefersReduced) {
+          // estado estático: avança alguns frames para mostrar o funil cheio
+          for (var f = 0; f < 220; f++) { for (var j = parts.length - 1; j >= 0; j--) { if (!step(parts[j])) parts.splice(j, 1); } if (parts.length < MAX && f % 5 === 0) spawn(); }
+          draw();
+        } else {
+          raf = requestAnimationFrame(draw);
+          requestAnimationFrame(loop);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · pipeline PR -> receita (canvas 2D)
+         fontes de PR (esquerda) -> funil de qualificação ->
+         barra de receita acumulada (direita)
+         ======================================================== */
+      (function pipelineViz() {
+        var canvas = document.getElementById('rev-pipeline-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var sources = ['Imprensa', 'Earned media', 'Data PR', 'Clipping', 'Liderança'];
+        var srcNodes = [], stages = [], pulses = [], revenue = 0, revTarget = 0, hover = -1, mouse = { x: -1, y: -1 };
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var lx = W * 0.15, n = sources.length;
+          srcNodes = sources.map(function (name, i) {
+            var y = H * (0.14 + (0.72 * i) / (n - 1));
+            return { x: lx, y: y, name: name, r: 4.5 };
+          });
+          // estágios do funil
+          stages = [
+            { x: W * 0.46, y: H * 0.5, w: H * 0.46, label: 'Topo' },
+            { x: W * 0.60, y: H * 0.5, w: H * 0.30, label: 'Meio' },
+            { x: W * 0.73, y: H * 0.5, w: H * 0.16, label: 'Decisão' }
+          ];
+        }
+        layout();
+
+        function spawn() {
+          if (prefersReduced) return;
+          var src = Math.floor(Math.random() * srcNodes.length);
+          pulses.push({ src: src, p: 0, sp: 0.006 + Math.random() * 0.005, seg: 0 });
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function bez(x0, y0, cx1, cy1, cx2, cy2, x1, y1, t) {
+          var u = 1 - t;
+          var x = u * u * u * x0 + 3 * u * u * t * cx1 + 3 * u * t * t * cx2 + t * t * t * x1;
+          var y = u * u * u * y0 + 3 * u * u * t * cy1 + 3 * u * t * t * cy2 + t * t * t * y1;
+          return { x: x, y: y };
+        }
+
+        var funnelX = W * 0.46;
+        function draw() {
+          funnelX = W * 0.46;
+          var mouthY = H * 0.5;
+          ctx.clearRect(0, 0, W, H);
+
+          // funil (trapézio) em grafite
+          var fLeft = W * 0.40, fRight = W * 0.80;
+          var topHalf = H * 0.30, botHalf = H * 0.07;
+          ctx.beginPath();
+          ctx.moveTo(fLeft, mouthY - topHalf);
+          ctx.lineTo(fRight, mouthY - botHalf);
+          ctx.lineTo(fRight, mouthY + botHalf);
+          ctx.lineTo(fLeft, mouthY + topHalf);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(108,124,142,.08)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(147,163,180,.34)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          // edges fontes -> boca do funil
+          srcNodes.forEach(function (sn, i) {
+            var active = hover === i;
+            ctx.beginPath();
+            ctx.moveTo(sn.x, sn.y);
+            ctx.bezierCurveTo(lerp(sn.x, fLeft, 0.55), sn.y, lerp(sn.x, fLeft, 0.55), mouthY, fLeft, lerp(sn.y, mouthY, 0.5));
+            ctx.strokeStyle = active ? 'rgba(254,209,54,.55)' : 'rgba(255,255,255,.12)';
+            ctx.lineWidth = active ? 1.6 : 1;
+            ctx.stroke();
+          });
+
+          // barra de receita (direita)
+          var barX = W * 0.9, barTop = H * 0.18, barBot = H * 0.82, barW = W * 0.05;
+          ctx.strokeStyle = 'rgba(255,255,255,.18)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(barX, barTop, barW, barBot - barTop);
+          revenue += (revTarget - revenue) * 0.04;
+          var fillH = (barBot - barTop) * Math.min(1, revenue);
+          var grad = ctx.createLinearGradient(0, barBot, 0, barTop);
+          grad.addColorStop(0, 'rgba(254,209,54,.95)');
+          grad.addColorStop(1, 'rgba(255,255,255,.9)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(barX, barBot - fillH, barW, fillH);
+
+          // pulses: fonte -> boca -> gargalo -> receita
+          for (var k = pulses.length - 1; k >= 0; k--) {
+            var pu = pulses[k];
+            pu.p += pu.sp;
+            var sn = srcNodes[pu.src];
+            var pos;
+            if (pu.seg === 0) {
+              pos = bez(sn.x, sn.y, lerp(sn.x, fLeft, 0.55), sn.y, lerp(sn.x, fLeft, 0.55), mouthY, fLeft, lerp(sn.y, mouthY, 0.5), pu.p);
+              if (pu.p >= 1) { pu.seg = 1; pu.p = 0; pu.entryY = lerp(sn.y, mouthY, 0.5); }
+            } else if (pu.seg === 1) {
+              // dentro do funil: converge para o gargalo
+              var fx2 = lerp(fLeft, fRight, pu.p);
+              var fy2 = lerp(pu.entryY, mouthY, pu.p);
+              pos = { x: fx2, y: fy2 };
+              if (pu.p >= 1) { pu.seg = 2; pu.p = 0; }
+            } else {
+              // gargalo -> barra de receita
+              pos = { x: lerp(fRight, barX, pu.p), y: lerp(mouthY, barBot - fillH - 4, pu.p) };
+              if (pu.p >= 1) {
+                revTarget = Math.min(1, revTarget + 0.012);
+                pulses.splice(k, 1);
+                continue;
+              }
+            }
+            var conv = pu.seg >= 1;
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 2.6, 0, Math.PI * 2);
+            ctx.fillStyle = conv ? 'rgba(254,209,54,.95)' : 'rgba(147,163,180,.9)';
+            ctx.fill();
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = conv ? 'rgba(254,209,54,.16)' : 'rgba(147,163,180,.14)';
+            ctx.fill();
+          }
+
+          // fontes + labels
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          srcNodes.forEach(function (sn, i) {
+            var active = hover === i;
+            ctx.beginPath(); ctx.arc(sn.x, sn.y, sn.r + (active ? 1.5 : 0), 0, Math.PI * 2);
+            ctx.fillStyle = active ? '#FED136' : '#93A3B4'; ctx.fill();
+            ctx.textAlign = 'right';
+            ctx.fillStyle = active ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.55)';
+            ctx.fillText(sn.name, sn.x - 12, sn.y);
+          });
+
+          // label receita
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Receita', barX + barW / 2, barTop - 14);
+          ctx.fillStyle = 'rgba(254,209,54,.95)';
+          ctx.font = '700 13px "JetBrains Mono", monospace';
+          ctx.fillText(Math.round(revenue * 100) + '%', barX + barW / 2, barBot + 18);
+
+          requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+          hover = -1;
+          for (var i = 0; i < srcNodes.length; i++) {
+            var sn = srcNodes[i];
+            if (Math.hypot(sn.x - mouse.x, sn.y - mouse.y) < 26) { hover = i; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          revenue = 0.62; revTarget = 0.62;
+          layout();
+          draw();
+        } else {
+          setInterval(spawn, 720);
+          spawn();
+          requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

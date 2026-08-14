@@ -1,0 +1,311 @@
+---
+// Índice do Blog. Lista a coleção `blog` (cronológica) com a edição mais recente
+// em destaque. A coluna-âncora é "Sala de Sinais" (leitura quinzenal de mídia).
+// Indexável: o "em breve" saiu quando a Edição 01 entrou no ar.
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import SinaisCover from '@components/SinaisCover.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/blog`;
+
+const posts = (await getCollection('blog', (e: CollectionEntry<'blog'>) => !e.data.draft)).sort(
+  (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+const [featured, ...rest] = posts;
+
+const MES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+const fmt = (date: Date) => `${String(date.getUTCDate()).padStart(2, '0')} ${MES[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+const seriesOf = (p: CollectionEntry<'blog'>) =>
+  [p.data.series, p.data.edition ? `Edição ${String(p.data.edition).padStart(2, '0')}` : null].filter(Boolean).join(' · ');
+// Tempo de leitura: frontmatter, ou estimado do corpo (~200 palavras/min).
+const readMin = (p: CollectionEntry<'blog'>) =>
+  p.data.readingTime ?? `${Math.max(1, Math.round((p.body ?? '').trim().split(/\s+/).filter(Boolean).length / 200))} min`;
+
+// As veias editoriais do blog. "Sinais" é a coluna que já está no ar.
+const veias = [
+  { ic: 'solar:soundwave-line-duotone', t: 'Sinais', d: 'A leitura quinzenal: o padrão que conecta as coberturas dos clientes quando se lê a quinzena inteira de uma vez.', live: true },
+  { ic: 'solar:chat-square-like-line-duotone', t: 'Opinião', d: 'Posição curta e datada sobre o que mexe com comunicação, reputação e marca naquela semana.' },
+  { ic: 'solar:notebook-line-duotone', t: 'Bastidor', d: 'Como uma pauta vira cobertura, o que funcionou e o que não, sem o verniz do case pronto.' },
+  { ic: 'solar:graph-up-line-duotone', t: 'Tendência', d: 'O que a busca, a mídia e a IA sinalizam antes de virar consenso, com a leitura da PiaR.' },
+];
+---
+<BaseLayout
+  title="Blog PiaR — Sala de Sinais e a leitura quinzenal da mídia"
+  description="O blog da PiaR Group: Sala de Sinais, a coluna quinzenal que lê o padrão por trás das coberturas de imprensa dos clientes, mais opinião, bastidor e tendência de comunicação, reputação e GEO."
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --primary: #0F0F11;
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper: #FAFAFA;
+        --paper-lifted: #FCFBFA;
+        --text-muted: rgba(15, 15, 17, .6);
+        --text-faint: rgba(15, 15, 17, .4);
+        --hairline: rgba(0, 0, 0, .08);
+        --radius-pill: 999px;
+        --radius-stadium: 40px;
+        --radius-btn: 20px;
+        --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+        --ease-spring: cubic-bezier(.16, 1, .3, 1);
+        --t-smooth: all .6s var(--ease-out-expo);
+        --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-serif: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      ::selection { background: var(--primary); color: var(--accent); }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-body-lg { font-size: 1.25rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-body { font-size: 1.0625rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      .reveal { opacity: 0; transform: translateY(2rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .08s; } .delay-200 { transition-delay: .16s; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .eyebrow-dot { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+
+      .ink-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.6rem; border-radius: var(--radius-btn); background: var(--accent); color: var(--primary); border: 1.5px solid var(--accent); font-size: .94rem; font-weight: 600; transition: var(--t-smooth); text-decoration: none; }
+      .ink-pill:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(254,209,54,.32); }
+      .outline-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .8rem 1.5rem; border-radius: var(--radius-btn); background: #fff; color: var(--primary); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
+      .outline-pill:hover { background: var(--primary); color: var(--paper); }
+
+      /* edição em destaque */
+      .feat-card { display: grid; grid-template-columns: 1fr; background: #fff; border: 1px solid var(--hairline); border-radius: 28px; overflow: hidden; text-decoration: none; color: var(--primary); transition: var(--t-smooth); }
+      .feat-card:hover { transform: translateY(-5px); box-shadow: 0 30px 60px rgba(0,0,0,.09); border-color: rgba(0,0,0,.12); }
+      .feat-cover { position: relative; aspect-ratio: 16 / 10; min-height: 220px; }
+      .feat-body { padding: clamp(1.8rem, 4vw, 3rem); display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+      .feat-series { display: inline-flex; align-items: center; gap: .5rem; width: fit-content; padding: .4rem .85rem; border-radius: var(--radius-pill); background: rgba(254,209,54,.16); color: #7a5f08; font-family: var(--font-mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+      .feat-body h2 { font-size: clamp(1.6rem, 2.6vw, 2.4rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; margin: 0; }
+      .feat-body p { font-size: 1.02rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+      .feat-meta { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .feat-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .6; }
+      .feat-cue { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--primary); font-weight: 700; margin-top: .3rem; }
+      .feat-card:hover .feat-cue iconify-icon { transform: translateX(4px); }
+      .feat-cue iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      @media (min-width: 900px) { .feat-card { grid-template-columns: 1.05fr 1fr; } .feat-cover { aspect-ratio: auto; min-height: 100%; } }
+
+      /* card de edição (grade) */
+      .ed-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--hairline); border-radius: 22px; overflow: hidden; text-decoration: none; color: var(--primary); transition: var(--t-smooth); }
+      .ed-card:hover { transform: translateY(-5px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.12); }
+      .ed-cover { position: relative; aspect-ratio: 16 / 8; }
+      .ed-body { padding: 1.5rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
+      .ed-series { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-deep); font-weight: 700; }
+      .ed-body h3 { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.22; margin: 0; }
+      .ed-body p { font-size: .9rem; color: var(--text-muted); line-height: 1.5; margin: 0; flex: 1; }
+      .ed-date { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); margin-top: auto; }
+
+      /* veias do blog */
+      .vem-card { position: relative; background: #fff; border-radius: 22px; border: 1px solid var(--hairline); padding: 1.8rem; transition: var(--t-smooth); }
+      .vem-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.06); border-color: rgba(0,0,0,.12); }
+      .vem-card .v-ic { display: inline-flex; width: 46px; height: 46px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.4rem; }
+      .vem-card h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; margin: 1rem 0 0; display: flex; align-items: center; gap: .6rem; }
+      .vem-card p { font-size: .95rem; color: var(--text-muted); line-height: 1.5; margin: .5rem 0 0; }
+      .v-live { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: #7a5f08; background: rgba(254,209,54,.22); padding: .2rem .5rem; border-radius: var(--radius-pill); }
+
+      /* boletim */
+      .ghost-watermark { position: absolute; font-family: var(--font-sans); font-weight: 700; font-size: clamp(6rem, 18vw, 16rem); line-height: .85; letter-spacing: -.05em; color: rgba(15,15,17,.04); pointer-events: none; user-select: none; white-space: nowrap; z-index: 0; }
+      .boletim-shell { position: relative; padding: clamp(3rem, 7vw, 6rem) clamp(2rem, 6vw, 5rem); border-radius: var(--radius-stadium); background: var(--paper-lifted); border: 1px solid var(--hairline); overflow: hidden; }
+      .boletim-shell .ghost-watermark { top: -2rem; left: -2rem; }
+      .boletim-form { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: .75rem; max-width: 36rem; margin-top: 2rem; }
+      .boletim-form input { flex: 1 1 240px; padding: .95rem 1.25rem; border-radius: var(--radius-pill); border: 1.5px solid var(--primary); background: #fff; font-size: 1rem; font-family: inherit; color: var(--primary); transition: var(--t-smooth); }
+      .boletim-form input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .boletim-form button { padding: .95rem 1.75rem; border-radius: var(--radius-pill); background: var(--primary); color: var(--paper); border: 1.5px solid var(--primary); font-size: 1rem; font-weight: 500; cursor: pointer; transition: var(--t-smooth); display: inline-flex; align-items: center; gap: .5rem; }
+      .boletim-form button:hover { background: var(--accent); color: var(--primary); border-color: var(--accent); transform: translateY(-2px); }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        name: 'Blog PiaR',
+        url,
+        inLanguage: 'pt-BR',
+        description: 'Blog da PiaR Group: Sala de Sinais (leitura quinzenal de mídia), opinião, bastidor e tendência sobre comunicação, reputação e GEO.',
+        publisher: { '@id': `${site.domain}/#organization` },
+        blogPost: posts.map((p: CollectionEntry<'blog'>) => ({
+          '@type': 'BlogPosting',
+          headline: p.data.title,
+          description: p.data.description,
+          url: `${site.domain}/blog/${p.id}`,
+          datePublished: p.data.pubDate.toISOString(),
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="blog" />
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="relative pt-32 md:pt-40 pb-10 md:pb-14 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
+          <div>
+            <span class="eyebrow-dot">Blog · sala de redação</span>
+            <h1 class="ds-h1 font-semibold tracking-tight mt-5" style="max-width:15ch">
+              O lado mais solto da <span class="italic-serif">casa</span>.
+            </h1>
+          </div>
+          <p class="ds-body text-stone-500 max-w-md">
+            Aqui pensamos em voz alta sobre comunicação, reputação e GEO. No centro está a
+            <strong>Sala de Sinais</strong>: a cada quinzena, lemos o padrão que conecta as coberturas
+            das marcas que acompanhamos desde 2013.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {featured && (
+      <section class="relative px-4 md:px-8 pb-6 md:pb-10">
+        <div class="max-w-[1400px] mx-auto">
+          <a href={`/blog/${featured.id}`} class="feat-card reveal">
+            <div class="feat-cover"><SinaisCover count={featured.data.placements?.length} edition={featured.data.edition} /></div>
+            <div class="feat-body">
+              {seriesOf(featured) && <span class="feat-series">{seriesOf(featured)}</span>}
+              <h2>{featured.data.title}</h2>
+              <p>{featured.data.description}</p>
+              <div class="feat-meta">
+                <span>{fmt(featured.data.pubDate)}</span>
+                <span class="dot"></span><span>{readMin(featured)}</span>
+                {featured.data.placements?.length ? <><span class="dot"></span><span>{featured.data.placements.length} coberturas</span></> : null}
+              </div>
+              <span class="feat-cue">Ler a edição<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></span>
+            </div>
+          </a>
+        </div>
+      </section>
+    )}
+
+    {rest.length > 0 && (
+      <section class="relative px-4 md:px-8 pb-16 md:pb-24">
+        <div class="max-w-[1400px] mx-auto">
+          <span class="eyebrow-dot reveal">Edições anteriores</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {rest.map((p: CollectionEntry<'blog'>) => (
+              <a href={`/blog/${p.id}`} class="ed-card reveal">
+                <div class="ed-cover"><SinaisCover animated={false} count={p.data.placements?.length} edition={p.data.edition} /></div>
+                <div class="ed-body">
+                  <span class="ed-series">{seriesOf(p)}</span>
+                  <h3>{p.data.title}</h3>
+                  <p>{p.data.description}</p>
+                  <span class="ed-date">{fmt(p.data.pubDate)}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- AS VEIAS DO BLOG -->
+    <section class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="reveal" style="max-width:44ch">
+          <span class="eyebrow-dot">O que você lê aqui</span>
+          <h2 class="font-semibold tracking-tight mt-4" style="font-size:clamp(1.8rem,4vw,3rem);line-height:1.05;letter-spacing:-.03em">
+            Quatro formatos, uma <span class="italic-serif">só voz</span>.
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+          {veias.map((v, i) => (
+            <div class:list={['vem-card', 'reveal', i === 1 && 'delay-100', i >= 2 && 'delay-200']}>
+              <span class="v-ic"><iconify-icon icon={v.ic}></iconify-icon></span>
+              <h3>{v.t}{v.live && <span class="v-live">no ar</span>}</h3>
+              <p>{v.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- BOLETIM -->
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28">
+      <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+        <div class="boletim-shell reveal">
+          <span class="ghost-watermark">SINAIS</span>
+          <div class="relative z-10 max-w-3xl">
+            <span class="eyebrow-dot">Boletim PiaR · quinzenal</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:18ch">
+              A próxima leitura, <span class="italic-serif">antes</span> de virar conversa.
+            </h2>
+            <p class="ds-body-lg text-stone-600 mt-6 max-w-2xl">
+              A cada quinze dias, a edição nova da Sala de Sinais chega no seu e-mail no dia em que sai.
+              Sem newsletter genérica, entra só quem leria de qualquer jeito.
+            </p>
+            <form class="boletim-form" onsubmit="event.preventDefault(); alert('Em breve, integração com a infraestrutura de envio.');">
+              <input type="email" placeholder="seu@email.com" aria-label="Seu e-mail" required />
+              <button type="submit">Assinar<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>
+            </form>
+            <p class="ds-mono text-stone-400 mt-4">/// Sem spam · 1 edição a cada 15 dias · cancele em 1 clique</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="relative bg-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1100px] mx-auto px-6 md:px-8 py-24 md:py-32 text-center">
+        <span class="eyebrow-dot reveal" style="display:inline-flex">Próximo passo</span>
+        <h2 class="ds-h1 font-semibold tracking-tight mt-6 mb-6 reveal delay-100" style="max-width:22ch;margin-inline:auto;font-size:clamp(2.5rem,6vw,5rem)">
+          A sua marca pode ser personagem da próxima <span class="italic-serif">leitura</span>.
+        </h2>
+        <p class="ds-body-lg text-stone-500 max-w-2xl mx-auto mb-10 reveal delay-200">
+          Sessão de 45 minutos para mapear onde sua marca tem algo que só ela pode dizer, e qual frente
+          transforma isso em cobertura. Sem custo, sem pitch genérico.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap reveal delay-200">
+          <a href="/contato" class="ink-pill">Agendar diagnóstico<iconify-icon icon="solar:calendar-mark-bold"></iconify-icon></a>
+          <a href="/insights" class="outline-pill">Ver os Insights<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          const lenis = new window.Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add((time) => lenis.raf(time * 1000)); window.gsap.ticker.lagSmoothing(0); }
+        }
+      } catch (e) { /* noop */ }
+      const progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    });
+  </script>
+</BaseLayout>

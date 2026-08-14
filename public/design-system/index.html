@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>PiaR Design System v2 — visualizador local</title>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #F5F5F7; color: #0F0F11; margin: 0; padding: 80px 32px; }
+  main { max-width: 720px; margin: 0 auto; }
+  .eyebrow { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(15,15,17,.6); }
+  h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 600; letter-spacing: -0.04em; line-height: 1; margin: 16px 0 24px; }
+  .underline { position: relative; padding-bottom: 14px; display: inline-block; }
+  .underline::after { content: ""; position: absolute; left: 0; bottom: 0; width: 56px; height: 3px; background: #FED136; }
+  p { font-size: 18px; line-height: 1.55; color: rgba(15,15,17,.7); }
+  code { font-family: 'JetBrains Mono', ui-monospace, monospace; background: #FFF; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,.08); font-size: 14px; }
+  .card { background: #FFF; border: 1px solid rgba(0,0,0,.08); border-radius: 20px; padding: 32px; margin-top: 32px; }
+  .card h2 { font-size: 20px; margin: 0 0 12px; font-weight: 600; }
+  .card ol { margin: 0; padding-left: 20px; line-height: 1.7; color: rgba(15,15,17,.7); }
+</style>
+</head>
+<body>
+<main>
+  <span class="eyebrow">/// PiaR Design System v2</span>
+  <h1 class="underline">Drop o brand book aqui.</h1>
+  <p>
+    O DS oficial vive em <code>design-system/source/piar-ds-v2.html</code> como spec canônica.
+    Este diretório serve a versão renderizável.
+  </p>
+
+  <div class="card">
+    <h2>Como ativar o visualizador local</h2>
+    <ol>
+      <li>Pegue o arquivo <code>PiaR Design System v2 - standalone.html</code> que você tem.</li>
+      <li>Renomeie para <code>index.html</code>.</li>
+      <li>Substitua este arquivo aqui: <code>public/design-system/index.html</code>.</li>
+      <li>Recarregue <a href="/design-system/">/design-system/</a> no navegador.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Por que não fiz isso pra você</h2>
+    <p style="margin:0">
+      A versão que você colou no chat veio com a codificação UTF-8 corrompida
+      (acentos viraram <code>Ã£</code>, <code>Â·</code>, etc.) — provavelmente
+      pela forma como o anexo foi processado. O arquivo original que está no
+      seu disco está intacto e é melhor copiá-lo direto.
+    </p>
+  </div>
+
+  <p style="margin-top: 48px; font-size: 14px;">
+    Enquanto isso, os <strong>tokens canônicos</strong> do DS já foram sincronizados em
+    <code>src/styles/tokens.css</code> e <code>tailwind.config.mjs</code> —
+    qualquer componente novo no site já nasce com o amarelo certo (<code>#FED136</code>),
+    raios, espaços e tipografia oficiais.
+  </p>
+</main>
+</body>
+</html>

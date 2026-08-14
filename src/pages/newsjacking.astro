@@ -1,0 +1,1090 @@
+---
+// ============================================================================
+// Exemplar narrativo · NEWSJACKING
+// Conteúdo voice-backed portado de:
+//   src/content/pages/newsjacking.md
+// Originais preservados. Esta é a versão "narrativa espetacular":
+// herói canvas 2D (a onda do ciclo de notícia) + dataviz interativa da curva
+// da atenção em 3 zonas (canvas 2D) + scroll storytelling (GSAP/Lenis), sobre
+// o DS da PiaR (eyebrow-dot, seções paper/warm/dark, parallax, faq, cta).
+// Assinatura de cor: âmbar/dourado quente (#FFB020 / #FF9A3C) + amarelo PiaR
+// (#FED136). NÃO é o laranja-plasma da GEO. Movimento rápido, vivo.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/newsjacking`;
+
+// As três fases do ciclo de Meerman Scott (curva da atenção).
+const zonas = [
+  {
+    id: 'CEDO DEMAIS',
+    fase: 'Antes do furo',
+    o_que: 'Fatos isolados, poucos detalhes. Quem fala agora está só especulando.',
+    icon: 'solar:clock-circle-line-duotone',
+  },
+  {
+    id: 'A JANELA',
+    fase: 'Na subida da curva',
+    o_que: 'A imprensa já cobre o tema e busca ângulo: dado, fonte, análise. É aqui que a sua marca entra como complemento legítimo.',
+    icon: 'solar:bolt-line-duotone',
+    featured: true,
+  },
+  {
+    id: 'TARDE DEMAIS',
+    fase: 'Depois do pico',
+    o_que: 'A atenção cai, o assunto satura. Quem chega agora só repete o que já foi dito.',
+    icon: 'solar:close-circle-line-duotone',
+  },
+];
+
+// Framework PiaR em 6 passos (reação em horas).
+const passos = [
+  {
+    num: '01',
+    titulo: 'Monitore com intenção',
+    desc: 'Escuta ativa: alertas, ferramentas de monitoramento, os veículos e jornalistas do seu setor, trending topics. O objetivo não é caçar viral, é identificar cedo as pautas em que a sua marca tem algo verdadeiro a dizer.',
+    icon: 'solar:radar-2-line-duotone',
+  },
+  {
+    num: '02',
+    titulo: 'Aplique o teste de relevância',
+    desc: 'Antes de mover, um teste honesto de autoridade: a marca precisa ter peso legítimo sobre o assunto. Quando a resposta sincera é "mais ou menos", pare. Newsjacking só funciona quando a conexão é óbvia para o leitor.',
+    icon: 'solar:checklist-minimalistic-line-duotone',
+  },
+  {
+    num: '03',
+    titulo: 'Defina o ângulo que agrega',
+    desc: 'O jornalista não precisa da sua marca, precisa de algo que melhore a matéria dele: um dado, uma análise técnica, um caso concreto, um contraponto qualificado. Pense como redação, não como anúncio.',
+    icon: 'solar:target-line-duotone',
+  },
+  {
+    num: '04',
+    titulo: 'Porta-voz e material prontos',
+    desc: 'Velocidade vence. Porta-voz preparado para falar, nota curta com a posição da marca e, se houver, um dado proprietário organizado. Se a aprovação interna leva dois dias, a janela já fechou.',
+    icon: 'solar:user-speak-line-duotone',
+  },
+  {
+    num: '05',
+    titulo: 'Acione relacionamento, não disparo',
+    desc: 'O ponto que separa newsjacking de spam. Vá aos jornalistas que já cobrem o tema e com quem você tem histórico. Pitch direto, gancho no assunto do e-mail, fonte e dado no corpo. Disparo idêntico para uma lista queima a marca e o assessor.',
+    icon: 'solar:share-line-duotone',
+  },
+  {
+    num: '06',
+    titulo: 'Acompanhe e meça',
+    desc: 'Registre clipping, alcance, qualidade dos veículos e a posição que a marca ocupou na narrativa. Newsjacking sem mensuração é aposta. Com mensuração, vira aprendizado para a próxima janela.',
+    icon: 'solar:graph-up-line-duotone',
+  },
+];
+
+// Erros comuns.
+const erros = [
+  { e: 'Confundir velocidade com pressa', d: 'Agilidade é ter material pronto e processo afiado. Pressa é publicar sem revisar tom, fato e contexto.' },
+  { e: 'Entrar em pauta sensível', d: 'Os fracassos clássicos envolvem marca tentando vender em cima de tragédia. Errar o tom da conversa não se apaga.' },
+  { e: 'Forçar a conexão', d: 'Quando o público percebe que a marca está só pegando carona, o efeito é o oposto do pretendido.' },
+  { e: 'Disparar para todos iguais', d: 'O disparo em massa queima a relação e marca o assessor como spammer. Relacionamento é seletivo por definição.' },
+  { e: 'Ignorar o jurídico', d: 'Comentário público sobre fato em andamento pode ter implicação legal. Em pauta delicada, revisão antes não é burocracia, é proteção.' },
+  { e: 'Não medir', d: 'Sem clipping e métrica, você não sabe se ganhou cobertura de qualidade ou só barulho.' },
+];
+
+const clientes = ['Endemol Shine Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
+
+const faq = [
+  {
+    q: 'Newsjacking é a mesma coisa que marketing de momento?',
+    a: 'São parentes, mas não iguais. Marketing de momento costuma viver nos canais da própria marca (owned), com peças criativas que reagem ao que está em alta. Newsjacking tem origem em Relações com Mídia: o objetivo central é entrar na reportagem de terceiros (earned), oferecendo dado, fonte ou análise ao jornalista.',
+  },
+  {
+    q: 'Qual o prazo ideal para reagir a uma notícia?',
+    a: 'Não há número fixo, mas a regra é a janela de oportunidade: entre o furo e a saturação da pauta. Na prática, costuma ser questão de horas para temas quentes. Por isso o material e o porta-voz precisam estar prontos antes de a notícia surgir, não depois.',
+  },
+  {
+    q: 'Newsjacking é antiético?',
+    a: 'Não, quando feito com transparência e foco em agregar à informação. Vira problema quando explora tragédia, força conexão inexistente ou empurra publicidade disfarçada de notícia. O critério ético é simples: ou a sua presença melhora a compreensão do leitor, ou só explora a dor e a atenção alheias. Newsjacking legítimo fica sempre do primeiro lado.',
+  },
+  {
+    q: 'Marca pequena consegue fazer newsjacking?',
+    a: 'Sim. Uma das premissas do conceito é nivelar o jogo: porte importa menos do que rapidez, leitura e capacidade de comunicar. O que pesa é ter um ângulo relevante e relacionamento com os jornalistas certos, não verba.',
+  },
+  {
+    q: 'Posso usar ferramenta de IA ou automação para acelerar?',
+    a: 'Como apoio, sim, principalmente no monitoramento. Mas a ferramenta é a última peça, não a primeira. Ela acelera quem já tem critério editorial e relacionamento. Sem isso, automatiza só o erro, e em escala.',
+  },
+  {
+    q: 'Como evitar parecer oportunista?',
+    a: 'Três filtros: relevância real (a marca tem autoridade sobre o tema?), tom adequado (a pauta comporta presença comercial?) e entrega ao jornalista (você oferece algo útil ou só quer aparecer?). Se passar nos três, é newsjacking. Se falhar em qualquer um, é oportunismo.',
+  },
+];
+---
+<BaseLayout
+  title="Newsjacking: como surfar a notícia do momento, com critério"
+  description="Newsjacking é inserir a sua marca, com agilidade e relevância, numa notícia em alta para gerar cobertura espontânea. A PiaR trata como tática de Relações com Mídia desde 2013, não como botão de pânico."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        /* assinatura newsjacking: âmbar/dourado quente */
+        --nj-ink: #0C0A07;
+        --nj-ink-2: #15110A;
+        --nj-amber: #FFB020;
+        --nj-gold: #FF9A3C;
+        --nj-glow: #FFD15C;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · canvas 2D: a onda do ciclo de notícia
+         =========================================================== */
+      .nj-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--nj-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #nj-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      /* video-ready: <video class="hero-bg-video" autoplay muted loop playsinline> pode entrar aqui, object-fit:cover, inset:0 */
+      .hero-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+      .nj-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(115% 85% at 16% 38%, rgba(12,10,7,.82) 0%, rgba(12,10,7,.36) 46%, rgba(12,10,7,0) 72%),
+          linear-gradient(180deg, rgba(12,10,7,.5) 0%, rgba(12,10,7,0) 28%, rgba(12,10,7,.2) 72%, rgba(12,10,7,.92) 100%);
+      }
+      .nj-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .nj-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .nj-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .nj-hero h1 { font-size: clamp(2.7rem, 7.6vw, 7.2rem); font-weight: 700; line-height: .94; letter-spacing: -.04em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .nj-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 50ch; }
+      .nj-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .nj-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .nj-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* chips flutuantes do herói (parallax) */
+      .nj-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .nj-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--nj-amber); box-shadow: 0 0 8px 1px rgba(255,176,32,.75); }
+      .nj-hero-float.f1 { right: 9%; top: 26%; }
+      .nj-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .nj-hero-float { display: none; } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+
+      /* Três Mares · contorno topográfico em cristas (a janela do tempo) */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -16% -12%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(255,176,32,.12);
+        background: repeating-linear-gradient(-22deg, transparent 0 44px, var(--contour-line) 44px 45px);
+        -webkit-mask-image: radial-gradient(120% 90% at 18% 30%, #000 0%, rgba(0,0,0,.45) 46%, transparent 80%);
+                mask-image: radial-gradient(120% 90% at 18% 30%, #000 0%, rgba(0,0,0,.45) 46%, transparent 80%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .5; } }
+      @media (max-width: 900px) { .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--nj-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* compare 2 colunas (tática vs botão de pânico) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .foot { margin-top: auto; padding-top: 1.5rem; display: flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .foot iconify-icon { color: var(--accent-deep); font-size: 1.1rem; }
+      .compare-card.is-dark { background: var(--nj-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .foot { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .foot iconify-icon { color: var(--accent); }
+
+      /* ===========================================================
+         2 · DATAVIZ · a curva da atenção (canvas 2D interativo)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.1fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 16 / 11; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #15110A 0%, #0C0A07 72%); border: 1px solid rgba(255,255,255,.1); }
+      #nj-curve-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
+      .viz-readout { position: absolute; left: 1.1rem; top: 1.1rem; z-index: 2; max-width: 60%; pointer-events: none; }
+      .viz-readout .rk { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--nj-amber); }
+      .viz-readout .rv { font-size: .92rem; line-height: 1.45; color: rgba(255,255,255,.82); margin-top: .35rem; }
+      .viz-hint { position: absolute; right: 1.1rem; bottom: 1rem; z-index: 2; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.4); pointer-events: none; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+
+      /* zonas (cards de apoio à dataviz) */
+      .zonas { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2.5rem; }
+      @media (min-width: 820px) { .zonas { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .zona-card { position: relative; padding: 1.6rem 1.5rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); overflow: hidden; }
+      .zona-card .z-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.06); color: rgba(255,255,255,.7); font-size: 1.3rem; }
+      .zona-card .z-id { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); margin-top: 1.1rem; }
+      .zona-card .z-fase { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; margin-top: .25rem; color: #fff; }
+      .zona-card .z-oque { font-size: .92rem; line-height: 1.55; color: rgba(255,255,255,.68); margin-top: .7rem; }
+      .zona-card.featured { border-color: rgba(254,209,54,.4); background: rgba(254,209,54,.06); }
+      .zona-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 80% at 50% 0%, rgba(255,176,32,.16) 0%, transparent 62%); animation: zonePulse 2.6s var(--ease-out-expo) infinite; }
+      .zona-card.featured .z-icon { background: rgba(254,209,54,.16); color: var(--accent); position: relative; z-index: 1; }
+      .zona-card.featured .z-id { color: var(--accent); position: relative; z-index: 1; }
+      .zona-card.featured .z-fase, .zona-card.featured .z-oque { position: relative; z-index: 1; }
+      @keyframes zonePulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+
+      /* framework 6 passos */
+      .passos-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .passos-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .passos-grid { grid-template-columns: repeat(3, 1fr); } }
+      .passo-card { position: relative; padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 230px; overflow: hidden; }
+      .passo-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--nj-amber), var(--accent)); transform: scaleY(0); transform-origin: top; transition: transform .5s var(--ease-out-expo); }
+      .passo-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .passo-card:hover::before { transform: scaleY(1); }
+      .passo-card .p-top { display: flex; align-items: center; justify-content: space-between; }
+      .passo-card .p-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .passo-card .p-icon { font-size: 1.5rem; color: var(--nj-amber); }
+      .passo-card .p-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.1rem; line-height: 1.2; }
+      .passo-card .p-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .75rem; }
+
+      /* fluxo earned > owned > paga */
+      .flow { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 820px) { .flow { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: stretch; } }
+      .flow-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; }
+      .flow-card .fl-rank { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-faint); }
+      .flow-card .fl-name { font-size: 1.4rem; font-weight: 600; letter-spacing: -.025em; margin-top: .5rem; }
+      .flow-card .fl-tag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-deep); margin-top: .2rem; }
+      .flow-card .fl-desc { font-size: .98rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .flow-card.primary { background: var(--nj-ink); color: #fff; border-color: var(--nj-ink); overflow: hidden; }
+      .flow-card.primary::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(85% 60% at 80% 0%, rgba(255,176,32,.22) 0%, transparent 60%), radial-gradient(70% 55% at 8% 100%, rgba(254,209,54,.14) 0%, transparent 60%); }
+      .flow-card.primary .fl-rank { color: var(--accent); position: relative; z-index: 1; }
+      .flow-card.primary .fl-name, .flow-card.primary .fl-tag { position: relative; z-index: 1; }
+      .flow-card.primary .fl-tag { color: var(--nj-glow); }
+      .flow-card.primary .fl-desc { color: rgba(255,255,255,.75); position: relative; z-index: 1; }
+
+      /* usar / não usar */
+      .usecase { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+      @media (min-width: 900px) { .usecase { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .uc-col { padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
+      .uc-col .uc-head { display: inline-flex; align-items: center; gap: .55rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; }
+      .uc-col .uc-head iconify-icon { font-size: 1.4rem; }
+      .uc-col.go .uc-head iconify-icon { color: var(--nj-glow); }
+      .uc-col.stop .uc-head iconify-icon { color: #ff7a6b; }
+      .uc-list { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-direction: column; gap: 1.1rem; }
+      .uc-list li { position: relative; padding-left: 1.5rem; font-size: .98rem; line-height: 1.55; color: rgba(255,255,255,.78); }
+      .uc-list li strong { color: #fff; font-weight: 600; }
+      .uc-list li::before { content: ''; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 2px; }
+      .uc-col.go .uc-list li::before { background: var(--nj-glow); }
+      .uc-col.stop .uc-list li::before { background: #ff7a6b; }
+      .uc-cases { margin-top: 2rem; padding: 1.4rem 1.6rem; border-radius: var(--radius-card); border: 1px solid rgba(255,122,107,.28); background: rgba(255,122,107,.05); display: flex; gap: .9rem; align-items: flex-start; }
+      .uc-cases iconify-icon { color: #ff7a6b; font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .uc-cases p { margin: 0; font-size: .95rem; line-height: 1.6; color: rgba(255,255,255,.78); }
+      .stat-strip { margin-top: 1.5rem; padding: 1.6rem 1.8rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+      .stat-strip .stat { display: flex; flex-direction: column; }
+      .stat-strip .stat .big { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+      .stat-strip .stat .big.fall { color: #ff9a8c; }
+      .stat-strip .stat .lab { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.55); margin-top: .5rem; }
+      .stat-strip .arrow { font-size: 1.6rem; color: rgba(255,255,255,.4); }
+      .stat-strip .note { flex: 1 1 220px; font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.62); min-width: 200px; }
+
+      /* erros */
+      .erros-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .erros-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .erros-grid { grid-template-columns: repeat(3, 1fr); } }
+      .erro-card { padding: 1.7rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .erro-card:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgba(0,0,0,.05); border-color: rgba(0,0,0,.14); }
+      .erro-card .x { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: rgba(199,65,11,.1); color: #C7410B; font-size: 1.1rem; }
+      .erro-card .e-name { font-size: 1.1rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.1rem; }
+      .erro-card .e-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .6rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 68ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; } .d5 { transition-delay: .4s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .nj-scroll-cue .line { animation: none; }
+        .zona-card.featured::after { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Newsjacking: como surfar a notícia do momento, com critério',
+        description:
+          'Newsjacking é inserir a sua marca, com agilidade e relevância, numa notícia em alta para gerar cobertura espontânea. A PiaR trata como tática de Relações com Mídia.',
+        inLanguage: 'pt-BR',
+        about: 'Newsjacking',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO · a onda do ciclo de notícia -->
+    <section class="nj-hero">
+      <!-- video-ready: <video class="hero-bg-video" autoplay muted loop playsinline poster=""><source src="..." type="video/mp4" /></video> entra aqui, sob o canvas -->
+      <canvas id="nj-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="nj-hero-float f1 px" data-parallax-y="32" aria-hidden="true"><span class="dot"></span>furo</span>
+      <span class="nj-hero-float f2 px" data-parallax-y="-26" aria-hidden="true"><span class="dot"></span>pico de interesse</span>
+      <div class="wrap hero-inner">
+        <span class="nj-hero-chip reveal"><span class="dot"></span>Relações com Mídia · Newsjacking</span>
+        <h1 class="reveal d1">A notícia tem uma janela. Entre antes que ela <span class="accent-serif on-dark">feche</span>.</h1>
+        <p class="sub reveal d2">
+          Newsjacking é inserir a sua marca, com agilidade e relevância, numa pauta em alta, para gerar cobertura espontânea.
+          Não é botão de pânico criativo: funciona quando há autoridade real e relacionamento com o jornalista.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Estruturar o monitoramento<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#curva" class="btn btn-ghost-d">Ver a curva da atenção<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="nj-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · TIMING É TUDO + DATAVIZ (a curva da atenção) -->
+    <section id="curva" class="section dark has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">timing</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:60ch">
+          <span class="eyebrow on-dark">Timing é tudo</span>
+          <h2>O ciclo de uma notícia é uma <span class="accent-serif on-dark">curva</span>.</h2>
+          <p class="lede">David Meerman Scott, que cunhou o termo em 2011, descreve assim: fatos isolados, depois o pico de interesse, quando jornalistas correm atrás de contexto, dados e fontes, e por fim a saturação. O newsjacking acontece na subida, no intervalo em que a imprensa já cobre o tema mas ainda precisa de ângulos.</p>
+        </div>
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="nj-curve-canvas" role="img" aria-label="Curva da atenção de uma notícia dividida em três zonas: cedo demais, a janela e tarde demais. A janela, na subida da curva, é quando jornalistas buscam ângulo."></canvas>
+              <div class="viz-readout" id="nj-readout" aria-hidden="true">
+                <div class="rk" id="nj-readout-k">A janela</div>
+                <div class="rv" id="nj-readout-v">Jornalistas buscam ângulo. Sua marca entra com dado, fonte ou análise.</div>
+              </div>
+              <span class="viz-hint" aria-hidden="true">Passe o mouse pela curva</span>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#6b6457"></span>Cedo demais</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>A janela</span>
+              <span class="li"><span class="sw" style="background:#8a8378"></span>Tarde demais</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">Onde a marca entra</span>
+            <h2 style="font-size:clamp(1.7rem,3vw,2.6rem)">Quem chega antes só <span class="accent-serif on-dark">especula</span>. Quem chega depois só <span class="accent-serif on-dark">repete</span>.</h2>
+            <p class="lede">Um porta-voz com leitura qualificada, um dado proprietário ou uma análise setorial entram como complemento legítimo da reportagem, e só dentro da janela. Por isso o ritmo muda: cronograma fechado e mensagem ensaiada por semanas não se aplicam. Newsjacking exige reação em horas, às vezes minutos, com material pré-aprovado e porta-voz disponível.</p>
+          </div>
+        </div>
+        <div class="zonas reveal d1">
+          {zonas.map((z) => (
+            <div class:list={['zona-card', z.featured && 'featured']}>
+              <div class="z-icon"><iconify-icon icon={z.icon}></iconify-icon></div>
+              <div class="z-id">{z.id}</div>
+              <div class="z-fase">{z.fase}</div>
+              <p class="z-oque">{z.o_que}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · TÁTICA, NÃO BOTÃO DE PÂNICO -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">critério</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Tática de mídia, não botão de pânico</span>
+          <h2>Funciona com autoridade real e <span class="accent-serif">relacionamento</span>.</h2>
+          <p class="lede">Na PiaR, newsjacking é uma tática de Relações com Mídia. Ele só entrega quando há relação verdadeira entre a sua marca e a pauta, e quando existe um jornalista do outro lado que reconhece a sua fonte como útil.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">O jeito que funciona</span>
+            <h3>Ângulo que agrega à reportagem.</h3>
+            <p>Você oferece um dado, uma análise técnica, um caso concreto ou um contraponto qualificado. O jornalista não precisa da sua marca, precisa de algo que melhore a matéria dele. A conexão é óbvia para o leitor.</p>
+            <div class="foot"><iconify-icon icon="solar:check-circle-line-duotone"></iconify-icon><span>Autoridade + relacionamento</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">O jeito que vira ruído</span>
+            <h3>Carona forçada na pauta.</h3>
+            <p>Sem relação real e sem jornalista que reconheça a fonte, vira ruído ou, pior, vira oportunismo registrado para sempre na timeline. Conexão que precisa de três frases para ser explicada não existe.</p>
+            <div class="foot"><iconify-icon icon="solar:danger-triangle-line-duotone"></iconify-icon><span>Oportunismo não se apaga</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Sem relação verdadeira e sem fonte útil, newsjacking <span class="hl">vira spam</span> com data e autor.</p>
+      </div>
+    </section>
+
+    <!-- 4 · FRAMEWORK 6 PASSOS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Framework PiaR · reação em horas</span>
+          <h2>Seis passos, da escuta à <span class="accent-serif">mensuração</span>.</h2>
+          <p class="lede">Os seis passos organizam o processo na ordem em que devem acontecer. A janela é curta, então cada etapa precisa estar pronta antes de a notícia surgir, não depois.</p>
+        </div>
+        <div class="passos-grid">
+          {passos.map((p, i) => (
+            <div class:list={['passo-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="p-top">
+                <span class="p-num">{p.num}</span>
+                <iconify-icon class="p-icon" icon={p.icon}></iconify-icon>
+              </div>
+              <h3 class="p-titulo">{p.titulo}</h3>
+              <p class="p-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · EARNED > OWNED > PAGA -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-22" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A ordem importa</span>
+          <h2>Earned primeiro. Depois owned. <span class="accent-serif">Paga por último</span>.</h2>
+          <p class="lede">Newsjacking nasceu como tática de <a href="/midia-espontanea" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">mídia espontânea</a>, e é assim que ele entrega mais. A força está em aparecer na reportagem de terceiros, com a credibilidade que só a imprensa confere.</p>
+        </div>
+        <div class="flow">
+          <div class="flow-card primary reveal">
+            <div class="fl-rank">/// 01 · onde entrega mais</div>
+            <div class="fl-name">Earned</div>
+            <div class="fl-tag">Mídia espontânea</div>
+            <p class="fl-desc">Aparecer na reportagem de terceiros, com a credibilidade que só a imprensa confere. É a origem do conceito e o que carrega o maior peso de reputação.</p>
+          </div>
+          <div class="flow-card reveal d1">
+            <div class="fl-rank">/// 02 · complemento</div>
+            <div class="fl-name">Owned</div>
+            <div class="fl-tag">Seus canais</div>
+            <p class="fl-desc">Um post, um artigo, uma resposta nas redes que dialoga com o momento. Reforça a presença, mas não substitui a voz de terceiros.</p>
+          </div>
+          <div class="flow-card reveal d2">
+            <div class="fl-rank">/// 03 · por último</div>
+            <div class="fl-name">Paga</div>
+            <div class="fl-tag">Complemento honesto</div>
+            <p class="fl-desc">Pode impulsionar um conteúdo de marca conectado à pauta. Nunca substitui a credibilidade do earned e nunca disfarça publicidade de notícia.</p>
+          </div>
+        </div>
+        <p class="punch reveal d1">Ferramenta de monitoramento acelera quem já tem critério e relacionamento. Ela <span class="hl">não cria nenhum dos dois</span>.</p>
+      </div>
+    </section>
+
+    <!-- 6 · QUANDO USAR E QUANDO NÃO USAR -->
+    <section class="section dark has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-14" aria-hidden="true">tom</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:54ch">
+          <span class="eyebrow on-dark">Quando usar e quando não usar</span>
+          <h2>O tom da conversa decide se a sua marca <span class="accent-serif on-dark">cabe ali</span>.</h2>
+          <p class="lede">Antes de agir, os critérios abaixo ajudam a decidir se a pauta comporta a presença da sua marca. Há linhas que não se cruzam.</p>
+        </div>
+        <div class="usecase">
+          <div class="uc-col go reveal">
+            <span class="uc-head"><iconify-icon icon="solar:check-circle-line-duotone"></iconify-icon>Use quando</span>
+            <ul class="uc-list">
+              <li><strong>A pauta toca o seu setor diretamente.</strong> Mudança regulatória, dado de mercado, lançamento de concorrente, debate público sobre o seu tema.</li>
+              <li><strong>A sua marca tem autoridade real.</strong> Há porta-voz com bagagem, dado proprietário ou experiência concreta a oferecer.</li>
+              <li><strong>A janela ainda está aberta.</strong> O assunto está na subida da curva e jornalistas ainda buscam contexto.</li>
+              <li><strong>O tom comporta a sua presença.</strong> A pauta é neutra, técnica ou celebratória, não trágica.</li>
+            </ul>
+          </div>
+          <div class="uc-col stop reveal d1">
+            <span class="uc-head"><iconify-icon icon="solar:shield-warning-line-duotone"></iconify-icon>Não use quando</span>
+            <ul class="uc-list">
+              <li><strong>A pauta envolve tragédia, luto, violência ou sofrimento.</strong> Capitalizar dor humana é o erro mais caro e mais comum. Não existe ângulo de marca que justifique.</li>
+              <li><strong>A conexão é forçada.</strong> Se você precisa de três frases para explicar a relação, ela não existe.</li>
+              <li><strong>O tema é político ou divisivo sem relação com o seu negócio.</strong> Posicionamento sem relação direta com o produto pesa mais contra do que a favor.</li>
+              <li><strong>Não há tempo de fazer com critério.</strong> Newsjacking apressado e sem revisão é como a maior parte das crises de imagem começa.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="uc-cases reveal d1">
+          <iconify-icon icon="solar:shield-warning-line-duotone"></iconify-icon>
+          <p>Os casos que viraram alerta no mercado: a DiGiorno, em 2014, usou a hashtag #WhyIStayed, que reunia relatos de relações abusivas, para fazer piada sobre pizza, e precisou se desculpar. A Epicurious, em 2013, sugeriu receitas em resposta ao atentado na Maratona de Boston. Errar o tom da conversa não se apaga.</p>
+        </div>
+        <div class="stat-strip reveal d2">
+          <div class="stat">
+            <span class="big">70%</span>
+            <span class="lab">2019 · achavam importante marcas se posicionarem</span>
+          </div>
+          <span class="arrow"><iconify-icon icon="solar:arrow-right-linear"></iconify-icon></span>
+          <div class="stat">
+            <span class="big fall">24%</span>
+            <span class="lab">1º tri de 2026 · mesmo recorte</span>
+          </div>
+          <p class="note">Dados da Sprout Social. O terreno do posicionamento social e político mudou: sem relação direta com o produto, ele pesa contra.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · ERROS COMUNS -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">erros</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Erros comuns</span>
+          <h2>Quase sempre nascem de pressa ou de <span class="accent-serif">leitura errada do tom</span>.</h2>
+          <p class="lede">Os seis erros abaixo aparecem com frequência. Conhecê-los é metade do trabalho de evitá-los na hora da decisão rápida.</p>
+        </div>
+        <div class="erros-grid">
+          {erros.map((er, i) => (
+            <div class:list={['erro-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="x"><iconify-icon icon="solar:close-circle-line-duotone"></iconify-icon></div>
+              <h3 class="e-name">{er.e}</h3>
+              <p class="e-desc">{er.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · SOBRE A PIAR -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:52ch">
+          <span class="eyebrow on-dark">Sobre a PiaR</span>
+          <h2>Imprensa baseada em dados e <span class="accent-serif on-dark">relacionamento real</span>.</h2>
+          <p class="lede">A PiaR é uma agência de comunicação que atua desde {site.foundingYear}, em São Paulo, com foco em relações com a imprensa baseadas em dados e em relacionamento com jornalistas, não em disparo reativo. Também atuamos em gestão de crise, com processo de resposta e revisão antes da exposição pública.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A metodologia PEP da PiaR inclui processo com revisão jurídica, o que importa especialmente quando o assunto é entrar rápido em pauta quente sem expor o cliente. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). O investimento é sob consulta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">janela</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Aproveite as janelas certas, sem correr atrás de <span class="accent-serif on-dark">toda notícia</span>.</h2>
+        <p class="lede reveal d2">Se a sua marca quer entrar em pauta quente com critério, vale uma conversa sobre como estruturar esse monitoramento. Trabalhamos isso no contexto de relações públicas e de reputação. O investimento é sob consulta.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Falar com a PiaR<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* helper: curva da atenção (sino assimétrico) normalizada em [0..1] -> altura [0..1] */
+      function attentionCurve(x) {
+        // pico deslocado para a esquerda do centro: subida rápida, queda lenta.
+        var peak = 0.42;
+        var w = x < peak ? 0.20 : 0.32;
+        var d = (x - peak) / w;
+        var base = Math.exp(-d * d);          // sino gaussiano assimétrico
+        var tail = 0.10 * Math.max(0, x);     // chão residual de atenção
+        return Math.min(1, base + tail * (1 - base));
+      }
+
+      /* ========================================================
+         HERO · a onda do ciclo de notícia (canvas 2D)
+         Curva de atenção que varre da esquerda p/ direita; faixa
+         "janela" na subida; ponto-surfista pega a onda perto do pico.
+         ======================================================== */
+      (function heroWave() {
+        var canvas = document.getElementById('nj-hero-canvas');
+        if (!canvas) return;
+        var ctx;
+        try { ctx = canvas.getContext('2d'); } catch (e) { ctx = null; }
+        if (!ctx) {
+          canvas.style.background = 'radial-gradient(72% 92% at 72% 32%, #4a2e05 0%, #1a1206 55%, #0C0A07 100%)';
+          return;
+        }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+
+        function resize() {
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          W = canvas.clientWidth; H = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        // mapeia x normalizado -> ponto de tela da onda (baseline a ~78% da altura)
+        function pt(xn, amp, baseY) {
+          return { x: xn * W, y: baseY - attentionCurve(xn) * amp };
+        }
+
+        function paint(phase) {
+          ctx.clearRect(0, 0, W, H);
+          var baseY = H * 0.80;
+          var amp = H * 0.52;
+          // janela = faixa na subida da curva (antes do pico)
+          var winA = 0.26, winB = 0.42;
+
+          // faixa luminosa "a janela"
+          var gx = ctx.createLinearGradient(winA * W, 0, winB * W, 0);
+          gx.addColorStop(0, 'rgba(254,209,54,0)');
+          gx.addColorStop(0.5, 'rgba(255,176,32,0.16)');
+          gx.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = gx;
+          ctx.fillRect(winA * W, 0, (winB - winA) * W, H);
+
+          // curvas de eco (fantasmas defasadas, dão sensação de onda viva)
+          var echoes = prefersReduced ? 0 : 3;
+          for (var e = echoes; e >= 1; e--) {
+            var ph = phase - e * 0.18;
+            var off = Math.sin(ph) * (H * 0.012 * e);
+            ctx.beginPath();
+            for (var i = 0; i <= 120; i++) {
+              var xn = i / 120;
+              var wob = prefersReduced ? 0 : Math.sin(xn * 9 + phase * 1.2) * 3 * attentionCurve(xn);
+              var p = pt(xn, amp, baseY);
+              var yy = p.y + off + wob;
+              if (i === 0) ctx.moveTo(p.x, yy); else ctx.lineTo(p.x, yy);
+            }
+            ctx.strokeStyle = 'rgba(255,176,32,' + (0.05 * e) + ')';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+
+          // preenchimento sob a curva principal
+          ctx.beginPath();
+          ctx.moveTo(0, baseY);
+          var pathPts = [];
+          for (var j = 0; j <= 140; j++) {
+            var xn2 = j / 140;
+            var wob2 = prefersReduced ? 0 : Math.sin(xn2 * 9 + phase * 1.2) * 3 * attentionCurve(xn2);
+            var pp = pt(xn2, amp, baseY);
+            pathPts.push({ x: pp.x, y: pp.y + wob2, xn: xn2 });
+            ctx.lineTo(pp.x, pp.y + wob2);
+          }
+          ctx.lineTo(W, baseY);
+          ctx.closePath();
+          var fg = ctx.createLinearGradient(0, baseY - amp, 0, baseY);
+          fg.addColorStop(0, 'rgba(255,176,32,0.20)');
+          fg.addColorStop(0.6, 'rgba(255,154,60,0.06)');
+          fg.addColorStop(1, 'rgba(12,10,7,0)');
+          ctx.fillStyle = fg;
+          ctx.fill();
+
+          // linha principal da curva (âmbar -> amarelo no pico)
+          ctx.beginPath();
+          for (var k = 0; k < pathPts.length; k++) {
+            if (k === 0) ctx.moveTo(pathPts[k].x, pathPts[k].y);
+            else ctx.lineTo(pathPts[k].x, pathPts[k].y);
+          }
+          var lg = ctx.createLinearGradient(0, 0, W, 0);
+          lg.addColorStop(0.0, 'rgba(255,176,32,0.55)');
+          lg.addColorStop(0.42, 'rgba(255,209,92,1)');
+          lg.addColorStop(0.75, 'rgba(255,154,60,0.7)');
+          lg.addColorStop(1.0, 'rgba(255,154,60,0.3)');
+          ctx.strokeStyle = lg;
+          ctx.lineWidth = 2.4;
+          ctx.shadowColor = 'rgba(255,176,32,0.5)';
+          ctx.shadowBlur = prefersReduced ? 0 : 16;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // ponto-surfista percorre a curva
+          var sx = prefersReduced ? winB : ((phase * 0.085) % 1.18) - 0.09;
+          sx = Math.max(0, Math.min(1, sx));
+          var sp = pt(sx, amp, baseY);
+          var inWindow = sx >= winA && sx <= winB;
+          // brilho quando pega a onda (dentro da janela, perto do pico)
+          var glow = inWindow ? 1 : 0.32;
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, inWindow ? 18 : 11, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,209,92,' + (0.12 * glow) + ')';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, inWindow ? 6.5 : 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = inWindow ? '#FFE08A' : '#FFB020';
+          ctx.shadowColor = 'rgba(255,209,92,0.9)';
+          ctx.shadowBlur = inWindow ? 22 : 8;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          // marcação discreta do pico
+          var peak = pt(0.42, amp, baseY);
+          ctx.beginPath();
+          ctx.arc(peak.x, peak.y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.6)';
+          ctx.fill();
+        }
+
+        var startT = 0, rafId = 0;
+        function frame(now) {
+          if (!startT) startT = now;
+          var phase = (now - startT) / 1000 * 1.1;
+          paint(phase);
+          if (!prefersReduced) rafId = requestAnimationFrame(frame);
+        }
+        if (prefersReduced) { paint(0); }
+        else { rafId = requestAnimationFrame(frame); }
+      })();
+
+      /* ========================================================
+         DATAVIZ · a curva da atenção (canvas 2D interativo)
+         3 zonas rotuladas: cedo demais / a janela / tarde demais.
+         Hover/scrub mostra rótulo; "a janela" pulsa em amarelo.
+         ======================================================== */
+      (function attentionViz() {
+        var canvas = document.getElementById('nj-curve-canvas');
+        if (!canvas) return;
+        var ctx;
+        try { ctx = canvas.getContext('2d'); } catch (e) { ctx = null; }
+        if (!ctx) {
+          canvas.style.background = 'linear-gradient(160deg, #15110A 0%, #0C0A07 72%)';
+          return;
+        }
+        var readK = document.getElementById('nj-readout-k');
+        var readV = document.getElementById('nj-readout-v');
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var mouseX = -1, activeZone = 1; // default destaca "A janela"
+
+        // limites das 3 zonas em x normalizado
+        var zCedoEnd = 0.30, zJanelaEnd = 0.55;
+        var zones = [
+          { k: 'Cedo demais', v: 'Só especulação. Fatos isolados, poucos detalhes. Falar agora é chutar.' },
+          { k: 'A janela', v: 'Jornalistas buscam ângulo. Sua marca entra com dado, fonte ou análise.' },
+          { k: 'Tarde demais', v: 'Saturação. A atenção caiu e quem chega agora só repete o que já foi dito.' }
+        ];
+
+        function resize() {
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        function pt(xn, amp, baseY) {
+          return { x: 0.06 * W + xn * (0.88 * W), y: baseY - attentionCurve(xn) * amp };
+        }
+
+        function zoneOf(xn) {
+          if (xn < zCedoEnd) return 0;
+          if (xn < zJanelaEnd) return 1;
+          return 2;
+        }
+
+        function setReadout(z) {
+          if (readK) readK.textContent = zones[z].k;
+          if (readV) readV.textContent = zones[z].v;
+        }
+        setReadout(activeZone);
+
+        function draw(now) {
+          var baseY = H * 0.84;
+          var amp = H * 0.62;
+          ctx.clearRect(0, 0, W, H);
+
+          // grade discreta + baseline
+          ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(0.06 * W, baseY); ctx.lineTo(0.94 * W, baseY); ctx.stroke();
+
+          var pulse = prefersReduced ? 0.5 : (Math.sin(now / 520) + 1) / 2;
+
+          // pinta as bandas das 3 zonas
+          var bands = [
+            { a: 0.0, b: zCedoEnd, idx: 0, col: 'rgba(107,100,87,0.10)', colHi: 'rgba(107,100,87,0.22)' },
+            { a: zCedoEnd, b: zJanelaEnd, idx: 1, col: 'rgba(254,209,54,0.10)', colHi: 'rgba(254,209,54,0.22)' },
+            { a: zJanelaEnd, b: 1.0, idx: 2, col: 'rgba(138,131,120,0.08)', colHi: 'rgba(138,131,120,0.18)' }
+          ];
+          bands.forEach(function (bd) {
+            var x0 = pt(bd.a, amp, baseY).x, x1 = pt(bd.b, amp, baseY).x;
+            var isActive = bd.idx === activeZone;
+            var isJanela = bd.idx === 1;
+            var fill = isActive ? bd.colHi : bd.col;
+            if (isJanela) {
+              // janela pulsa em amarelo independentemente de estar ativa
+              var a = 0.10 + (isActive ? 0.10 : 0.06) * pulse;
+              fill = 'rgba(254,209,54,' + a + ')';
+            }
+            ctx.fillStyle = fill;
+            ctx.fillRect(x0, 0, x1 - x0, baseY);
+            // divisórias
+            ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath(); ctx.moveTo(x1, baseY * 0.06); ctx.lineTo(x1, baseY); ctx.stroke();
+            ctx.setLineDash([]);
+          });
+
+          // rótulos das zonas no topo
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'top';
+          ctx.textAlign = 'center';
+          var labels = [
+            { x: zCedoEnd / 2, t: 'CEDO DEMAIS', idx: 0 },
+            { x: (zCedoEnd + zJanelaEnd) / 2, t: 'A JANELA', idx: 1 },
+            { x: (zJanelaEnd + 1) / 2, t: 'TARDE DEMAIS', idx: 2 }
+          ];
+          labels.forEach(function (lb) {
+            var px = pt(lb.x, amp, baseY).x;
+            if (lb.idx === 1) ctx.fillStyle = 'rgba(255,209,92,' + (0.7 + 0.3 * pulse) + ')';
+            else ctx.fillStyle = lb.idx === activeZone ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.4)';
+            ctx.fillText(lb.t, px, 14);
+          });
+
+          // área sob a curva
+          ctx.beginPath();
+          ctx.moveTo(pt(0, amp, baseY).x, baseY);
+          var pts = [];
+          for (var i = 0; i <= 160; i++) {
+            var xn = i / 160;
+            var p = pt(xn, amp, baseY);
+            pts.push({ x: p.x, y: p.y, xn: xn });
+            ctx.lineTo(p.x, p.y);
+          }
+          ctx.lineTo(pt(1, amp, baseY).x, baseY);
+          ctx.closePath();
+          var fg = ctx.createLinearGradient(0, baseY - amp, 0, baseY);
+          fg.addColorStop(0, 'rgba(255,176,32,0.18)');
+          fg.addColorStop(1, 'rgba(12,10,7,0)');
+          ctx.fillStyle = fg;
+          ctx.fill();
+
+          // linha da curva
+          ctx.beginPath();
+          for (var k = 0; k < pts.length; k++) {
+            if (k === 0) ctx.moveTo(pts[k].x, pts[k].y);
+            else ctx.lineTo(pts[k].x, pts[k].y);
+          }
+          ctx.strokeStyle = 'rgba(255,209,92,0.92)';
+          ctx.lineWidth = 2.2;
+          ctx.shadowColor = 'rgba(255,176,32,0.5)';
+          ctx.shadowBlur = prefersReduced ? 0 : 10;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // marcador interativo (segue mouse; senão repousa no centro da janela)
+          var markXn;
+          if (mouseX >= 0) {
+            markXn = (mouseX - 0.06 * W) / (0.88 * W);
+            markXn = Math.max(0, Math.min(1, markXn));
+          } else {
+            markXn = (zCedoEnd + zJanelaEnd) / 2;
+          }
+          var mp = pt(markXn, amp, baseY);
+          var inJanela = zoneOf(markXn) === 1;
+          // guia vertical
+          ctx.strokeStyle = inJanela ? 'rgba(255,209,92,0.5)' : 'rgba(255,255,255,0.25)';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(mp.x, mp.y); ctx.lineTo(mp.x, baseY); ctx.stroke();
+          // ponto no marcador
+          ctx.beginPath();
+          ctx.arc(mp.x, mp.y, inJanela ? 7 : 5, 0, Math.PI * 2);
+          ctx.fillStyle = inJanela ? '#FFE08A' : '#FFB020';
+          ctx.shadowColor = 'rgba(255,209,92,0.9)';
+          ctx.shadowBlur = inJanela ? 16 : 4;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          if (!prefersReduced) requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouseX = e.clientX - rect.left;
+          var xn = (mouseX - 0.06 * W) / (0.88 * W);
+          xn = Math.max(0, Math.min(1, xn));
+          var z = zoneOf(xn);
+          if (z !== activeZone) { activeZone = z; setReadout(z); }
+        });
+        canvas.addEventListener('mouseleave', function () {
+          mouseX = -1; activeZone = 1; setReadout(1);
+        });
+        // touch scrub
+        canvas.addEventListener('touchmove', function (e) {
+          if (!e.touches || !e.touches[0]) return;
+          var rect = canvas.getBoundingClientRect();
+          mouseX = e.touches[0].clientX - rect.left;
+          var xn = (mouseX - 0.06 * W) / (0.88 * W);
+          xn = Math.max(0, Math.min(1, xn));
+          var z = zoneOf(xn);
+          if (z !== activeZone) { activeZone = z; setReadout(z); }
+        }, { passive: true });
+
+        if (prefersReduced) { draw(0); }
+        else { requestAnimationFrame(draw); }
+      })();
+    });
+  </script>
+</BaseLayout>

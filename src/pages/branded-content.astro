@@ -1,0 +1,949 @@
+---
+// ============================================================================
+// Narrativa espetacular · BRANDED CONTENT
+// Conteúdo voice-backed portado de:
+//   src/content/pages/branded-content.md
+// Original preservado. Esta é a versão "narrativa espetacular":
+// herói com motor de tecido (canvas 2D, fios marca + conteúdo + audiência se
+// entrelaçando) + dataviz "trama de temas" (onde interesse da audiência cruza
+// a mensagem da marca) + scroll storytelling (GSAP/Lenis), sobre o DS da PiaR.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/branded-content`;
+
+// Quatro termos que se confundem · objetivo e quem ocupa o centro.
+const termos = [
+  {
+    id: 'Branded content',
+    objetivo: 'Posicionamento e reputação. O foco é a experiência do público; a marca aparece sutil, às vezes só como quem assina.',
+    centro: 'A audiência',
+    metrica: 'Percepção e autoridade',
+    icon: 'solar:heart-angle-line-duotone',
+    featured: true,
+  },
+  {
+    id: 'Marketing de conteúdo',
+    objetivo: 'Conversão e geração de leads. O conteúdo é útil, mas existe para mover a pessoa por um funil até a compra.',
+    centro: 'O funil',
+    metrica: 'Lead e venda',
+    icon: 'solar:filter-line-duotone',
+  },
+  {
+    id: 'Publicidade tradicional',
+    objetivo: 'Interrompe para vender. A marca é a protagonista explícita e o produto está no centro do quadro.',
+    centro: 'O produto',
+    metrica: 'Alcance e recall',
+    icon: 'solar:tv-line-duotone',
+  },
+  {
+    id: 'Publieditorial',
+    objetivo: 'Publicidade que assume o formato de matéria, com a marca exposta de forma clara. Pago e identificado como tal.',
+    centro: 'A marca',
+    metrica: 'Exposição paga',
+    icon: 'solar:document-add-line-duotone',
+  },
+];
+
+// Passo a passo da produção · conteúdo antes do formato.
+const passos = [
+  {
+    num: '01',
+    titulo: 'Objetivo de reputação, não só de campanha',
+    desc: 'Antes de qualquer ideia, responda o que a marca quer que o público sinta e pense ao final, e qual percepção esse conteúdo deve construir ou corrigir. Sem isso, o resto vira produção sem direção.',
+  },
+  {
+    num: '02',
+    titulo: 'Conheça a audiência de verdade',
+    desc: 'Persona, dor real, contexto de consumo e canais que a pessoa frequenta. Branded content nasce do que importa ao público, não do que a marca quer dizer sobre si.',
+  },
+  {
+    num: '03',
+    titulo: 'A história, com o público no centro',
+    desc: 'Defina o arco de transformação: de onde a pessoa parte, o que muda, onde chega. A marca entra como quem viabiliza ou ilumina essa mudança, não como protagonista.',
+  },
+  {
+    num: '04',
+    titulo: 'Garanta o valor de mão dupla',
+    desc: 'Pergunte, de forma honesta, o que a audiência ganha com esse conteúdo. Se a resposta for fraca, volte ao passo da história. Esse é o filtro que separa narrativa de pitch de vendas.',
+  },
+  {
+    num: '05',
+    titulo: 'Só agora escolha o formato',
+    desc: 'Vídeo, áudio, artigo, série editorial, documentário curto, infográfico ou post. O formato serve à mensagem e ao canal onde o público está, nunca o contrário.',
+  },
+  {
+    num: '06',
+    titulo: 'Sinalize patrocínio com transparência',
+    desc: 'Conteúdo de marca honesto identifica que é conteúdo de marca. No Brasil, isso conversa com as recomendações do CONAR sobre publicidade não enganosa. Esconder o patrocínio vira passivo.',
+  },
+  {
+    num: '07',
+    titulo: 'Distribua pensando em mídia conquistada',
+    desc: 'Uma boa história de marca tem ângulo de notícia. Estruture o conteúdo para que parte dele vire pauta jornalística espontânea, com dado, porta-voz e contexto de mercado prontos.',
+  },
+  {
+    num: '08',
+    titulo: 'Meça por impacto reputacional',
+    desc: 'Likes e views contam audiência, não reputação. Acompanhe share of voice, sentimento, autoridade da fonte e qualidade dos veículos que repercutiram. Esse é o painel que mostra se construiu marca.',
+  },
+];
+
+// Quando usar · cenários que mais se beneficiam.
+const quando = [
+  {
+    nome: 'Construir ou reposicionar percepção',
+    desc: 'Quando o objetivo é o que o mercado pensa e repete sobre você, não a venda da próxima semana.',
+    icon: 'solar:refresh-circle-line-duotone',
+  },
+  {
+    nome: 'Quando há história ou conhecimento que o público valoriza',
+    desc: 'Dados de setor, expertise técnica, ponto de vista sobre uma transformação em curso. Material que sustenta autoridade.',
+    icon: 'solar:book-bookmark-line-duotone',
+  },
+  {
+    nome: 'Em setores regulados, com cuidado redobrado',
+    desc: 'Fintech, banking as a service, saúde e segmentos sob compliance ganham com conteúdo que constrói confiança, desde que cada mensagem passe por controle de risco.',
+    icon: 'solar:shield-check-line-duotone',
+  },
+  {
+    nome: 'Para alongar o ciclo de vida da narrativa',
+    desc: 'Em vez de um pico isolado de campanha, uma série editorial em ritmo constante sustenta a presença da marca entre uma ação e outra.',
+    icon: 'solar:clock-circle-line-duotone',
+  },
+];
+
+// Erros comuns que viram passivo.
+const erros = [
+  'Começar sem objetivo nem definição do que o público deve sentir ao final.',
+  'Tratar o conteúdo como anúncio, com excesso de pitch de vendas.',
+  'Colocar a marca como heroína da história, em vez da audiência.',
+  'Sobrecarregar de logos e identidade visual, sacrificando credibilidade.',
+  'Ignorar o valor para a audiência e quebrar a equação de mão dupla.',
+  'Priorizar quantidade sobre qualidade e diluir tudo de uma vez.',
+  'Decidir o formato antes do conteúdo.',
+  'Forçar autenticidade que a marca não tem.',
+  'Transformar press release em branded content.',
+  'Confundir com publieditorial e não sinalizar patrocínio.',
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Endemol Shine Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
+
+const faq = [
+  {
+    q: 'Qual a diferença entre branded content e marketing de conteúdo?',
+    a: 'O objetivo. Marketing de conteúdo existe para converter e gerar leads, movendo a pessoa por um funil até a compra. Branded content existe para construir posicionamento e reputação, com foco na experiência do público e na percepção de longo prazo. Os dois são legítimos e podem conviver, mas medi-los pela mesma régua leva a frustração.',
+  },
+  {
+    q: 'Branded content e publieditorial são a mesma coisa?',
+    a: 'Não. Publieditorial e advertorial são publicidade que assume formato de matéria, com a marca exposta de forma explícita e identificada. Branded content é mais sutil, centrado na história e na experiência do público, com a marca aparecendo como quem assina ou patrocina. Despejar informação institucional sem contar uma história transforma branded content em publieditorial.',
+  },
+  {
+    q: 'Preciso sinalizar que é conteúdo patrocinado?',
+    a: 'Sim. Conteúdo de marca honesto identifica que é conteúdo de marca, e essa transparência conversa com as recomendações do CONAR sobre publicidade não enganosa no Brasil. Esconder o patrocínio gera risco ético e regulatório e, na prática, custa mais reputação do que o conteúdo constrói.',
+  },
+  {
+    q: 'Como medir o resultado de branded content?',
+    a: 'Por impacto reputacional, não só por likes e views. Acompanhe share of voice, análise de sentimento, autoridade das fontes que repercutiram e a qualidade dos veículos onde o conteúdo gerou cobertura. Métrica de vaidade conta audiência; métrica de reputação mostra se a marca foi construída.',
+  },
+  {
+    q: 'Branded content serve para empresa de setor regulado, como fintech?',
+    a: 'Sim, e tende a ser ainda mais relevante onde confiança é o ativo central, como em banking as a service e saúde. A condição é tratar cada peça com controle de risco, linguagem aprovada e revisão antes de publicar. É um território em que conteúdo de marca e PR estratégico trabalham juntos, não separados.',
+  },
+  {
+    q: 'Branded content substitui assessoria de imprensa?',
+    a: 'Não. Conteúdo de marca é mídia própria e paga; assessoria de imprensa gera mídia conquistada, a cobertura espontânea que carrega credibilidade de terceiro. A combinação mais forte usa o branded content para alimentar a pauta jornalística, somando a história da marca à validação independente da imprensa.',
+  },
+];
+---
+<BaseLayout
+  title="Branded content: o que é e como produzir"
+  description="Branded content é conteúdo de marca em padrão editorial, feito para informar o público e construir reputação. O que é, como produzir passo a passo e como vira pauta. Guia da PiaR Group, em PR desde 2013."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;       /* putty quente */
+        --bc-ink: #0A0A0C;
+        --bc-ink-2: #141417;
+        --bc-amber: #FFB020;
+        --bc-weave: #F2A93B;
+        --bc-thread: #C77A14;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · motor de tecido (canvas 2D, fios se entrelaçando)
+         =========================================================== */
+      .bc-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--bc-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #bc-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .bc-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 95% at 16% 38%, rgba(10,10,12,.84) 0%, rgba(10,10,12,.38) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .bc-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .bc-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .bc-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .bc-hero h1 { font-size: clamp(2.8rem, 8vw, 7.4rem); font-weight: 700; line-height: .94; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 19ch; text-wrap: balance; }
+      .bc-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 50ch; }
+      .bc-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .bc-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .bc-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .bc-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .bc-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--bc-weave); box-shadow: 0 0 8px 1px rgba(242,169,59,.7); }
+      .bc-hero-float.f1 { right: 9%; top: 26%; }
+      .bc-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .bc-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · contorno em grade/tecido (a trama da marca) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(255,176,32,.11);
+        background:
+          repeating-linear-gradient(90deg, transparent 0 40px, var(--contour-line) 40px 41px),
+          repeating-linear-gradient(0deg, transparent 0 40px, var(--contour-line) 40px 41px);
+        -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 50% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--bc-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (a regra de mão dupla) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--bc-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* termos: branded content vs marketing vs publicidade vs publieditorial */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .layers { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1080px) { .layers { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.1rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-name { font-size: 1.3rem; font-weight: 600; letter-spacing: -.025em; margin-top: 1.25rem; line-height: 1.12; }
+      .layer-card .l-otimiza { font-size: .98rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .55rem; }
+      .layer-card .l-meta .row { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; text-align: right; letter-spacing: -.01em; }
+      .layer-card.featured { background: var(--bc-ink); color: #fff; border-color: var(--bc-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(242,169,59,.22) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.14) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .badge { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 1; font-family: var(--font-mono); font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .6rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         4 · DATAVIZ · trama de temas (canvas 2D)
+         interesse da audiência cruza a mensagem da marca
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #bc-weave-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+
+      /* passos (método de produção) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 230px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-titulo { font-size: 1.12rem; font-weight: 600; letter-spacing: -.02em; margin-top: .65rem; line-height: 1.22; }
+      .step-card .s-desc { font-size: .9rem; line-height: 1.55; color: var(--text-muted); margin-top: .7rem; }
+
+      /* quando usar (frentes) */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; line-height: 1.2; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* erros (lista densa) */
+      .err-grid { display: grid; grid-template-columns: 1fr; gap: .75rem; }
+      @media (min-width: 760px) { .err-grid { grid-template-columns: 1fr 1fr; gap: .75rem 1.5rem; } }
+      .err-item { display: flex; gap: .85rem; align-items: flex-start; padding: 1.05rem 0; border-bottom: 1px solid var(--hairline); }
+      .err-item iconify-icon { color: var(--bc-thread); font-size: 1.25rem; flex-shrink: 0; margin-top: .1rem; }
+      .err-item span { font-size: 1rem; line-height: 1.5; color: var(--text-muted); }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 68ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 20ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .bc-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Branded content: o que é e como produzir',
+        description:
+          'Guia de branded content pela lente de PR: o que é, como produzir passo a passo e por que conteúdo de marca constrói reputação e vira pauta.',
+        inLanguage: 'pt-BR',
+        about: 'Branded content',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="bc-hero">
+      <canvas id="bc-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="bc-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>Audiência</span>
+      <span class="bc-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Marca</span>
+      <div class="wrap hero-inner">
+        <span class="bc-hero-chip reveal"><span class="dot"></span>Branded content · Conteúdo de marca</span>
+        <h1 class="reveal d1">Conteúdo que o público <span class="accent-serif on-dark">escolhe</span>, com a marca tecida junto.</h1>
+        <p class="sub reveal d2">
+          Branded content é o conteúdo que a pessoa assistiria, leria ou ouviria mesmo sem ser obrigada,
+          e que ainda assim diz quem é a marca. Não vende, posiciona. E o melhor não termina na mídia paga: vira pauta.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Comece por um diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#mao-dupla" class="btn btn-ghost-d">Ver a regra de mão dupla<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="bc-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · A REGRA DE MÃO DUPLA -->
+    <section id="mao-dupla" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">valor</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A regra que separa tudo</span>
+          <h2>Valor para os <span class="accent-serif">dois lados</span>, ou não é branded content.</h2>
+          <p class="lede">Existe um teste simples. O conteúdo precisa ter valor ao mesmo tempo para a audiência e para a marca. Se ele só serve à marca, é anúncio. Se a audiência não ganha nada, é interrupção com outro nome.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Marca como heroína</span>
+            <h3>O conteúdo soa manipulador e afasta.</h3>
+            <p>Quando a empresa se coloca no centro da narrativa, sobra pitch e falta história. A audiência cética percebe na hora e pula. Logo demais, propósito de menos.</p>
+            <div class="steps"><span>Marca</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Pitch</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Pulou</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">Audiência como heroína</span>
+            <h3>A marca ilumina a transformação do público.</h3>
+            <p>A audiência é a protagonista, a empresa é quem ajuda, dá contexto e patrocina a história. É a equação de valor de mão dupla. Aí o conteúdo é escolhido.</p>
+            <div class="steps"><span>Público</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>História</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Escolheu</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Se ele só serve à marca, é <span class="hl">anúncio</span>. Branded content serve à audiência primeiro.</p>
+      </div>
+    </section>
+
+    <!-- 3 · QUATRO TERMOS QUE SE CONFUNDEM -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quatro termos, não sinônimos</span>
+          <h2>Branded content não é marketing de conteúdo, nem publicidade, nem <span class="accent-serif">publieditorial</span>.</h2>
+          <p class="lede">Os quatro circulam juntos e são tratados como a mesma coisa. Não são. A diferença está no objetivo e em quem ocupa o centro da narrativa. E ela define o que você vai medir e considerar sucesso.</p>
+        </div>
+        <div class="layers">
+          {termos.map((t, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3', t.featured && 'featured']}>
+              {t.featured && <span class="badge">A lente da PiaR</span>}
+              <div class="l-icon"><iconify-icon icon={t.icon}></iconify-icon></div>
+              <div class="l-name">{t.id}</div>
+              <p class="l-otimiza">{t.objetivo}</p>
+              <div class="l-meta">
+                <div class="row"><span class="k">No centro</span><span class="v">{t.centro}</span></div>
+                <div class="row"><span class="k">Mede-se por</span><span class="v">{t.metrica}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Cobrar de branded content métrica de performance é medir a coisa certa com a <span class="hl">régua errada</span>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · trama de temas -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="bc-weave-canvas" role="img" aria-label="Trama de temas: os fios do interesse da audiência cruzam os fios da mensagem da marca, e os nós onde se cruzam são os assuntos onde o branded content funciona."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#FED136"></span>Interesse da audiência</span>
+              <span class="li"><span class="sw" style="background:#F2A93B"></span>Mensagem da marca</span>
+              <span class="li"><span class="sw" style="background:#fff"></span>O cruzamento</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">O ponto de cruzamento</span>
+            <h2>A história mora onde o público e a marca se <span class="accent-serif on-dark">cruzam</span>.</h2>
+            <p class="lede">De um lado, os fios do que a audiência valoriza: a dor real, o contexto, o assunto que ela já procuraria. Do outro, os fios da mensagem da marca: o dado de setor, a expertise, o ponto de vista. O branded content nasce no nó onde eles se entrelaçam.</p>
+            <p class="lede" style="margin-top:1.25rem">Puxar só o fio da marca tece propaganda. Puxar só o fio do público tece conteúdo sem dono. O tecido que segura é o que tem os dois: valor para quem assiste e sentido para quem assina. É a mesma trama que sustenta confiança com a imprensa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · POR QUE É PR -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-22" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:62ch">
+          <span class="eyebrow reveal">A ponte que quase ninguém faz</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            Uma boa história de marca não morre no post patrocinado. Ela <span class="hl">abastece o jornalista</span> e vira reportagem.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Branded content costuma viver entre mídia paga e mídia própria. Falta o terceiro vértice: a mídia conquistada, a <a href="/midia-espontanea" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">cobertura espontânea</a> que carrega a credibilidade de um terceiro independente. Uma história bem construída tem matéria-prima de pauta: um dado inédito do setor, um recorte de mercado, a experiência de um cliente que ilustra uma tendência, um porta-voz com autoridade. Desenhada com esse lastro editorial, ela ganha o tipo de validação que nenhuma verba compra.
+          </p>
+          <p class="lede reveal d3" style="margin-top:1.5rem">
+            Essa é a tese da PiaR aplicada ao tema: conteúdo de marca com lastro editorial e propósito, não publicidade disfarçada. A comunicação parte do dado e do relacionamento com a imprensa, recusa o disparo de release em massa e coloca a mídia conquistada antes da paga.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · PASSO A PASSO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como produzir</span>
+          <h2>Oito passos, da estratégia ao <span class="accent-serif">formato</span>.</h2>
+          <p class="lede">A ordem reduz erro, e há uma regra que governa toda a sequência: conteúdo antes do formato. A mensagem vem primeiro, o canal vem depois.</p>
+        </div>
+        <div class="steps-grid">
+          {passos.map((p, i) => (
+            <div class:list={['step-card', 'reveal', (i % 4 === 1) && 'd1', (i % 4 === 2) && 'd2', (i % 4 === 3) && 'd3']}>
+              <span class="s-num">{p.num}</span>
+              <h3 class="s-titulo">{p.titulo}</h3>
+              <p class="s-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · QUANDO USAR -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quando rende mais</span>
+          <h2>O formato brilha em alguns <span class="accent-serif">contextos</span>.</h2>
+          <p class="lede">Reconhecer os cenários antes de investir evita esforço perdido. Quando o objetivo é conversão de curto prazo, sem história ou sem disposição para sinalizar o patrocínio, é melhor usar outra coisa.</p>
+        </div>
+        <div class="frentes-grid">
+          {quando.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 2 === 1) && 'd1']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · ERROS COMUNS -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-12" aria-hidden="true">passivo</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:50ch">
+          <span class="eyebrow">O que não fazer</span>
+          <h2>Os erros que viram <span class="accent-serif">passivo</span> de reputação.</h2>
+          <p class="lede">A maioria das falhas se repete e é previsível, o que permite evitá-las desde o planejamento.</p>
+        </div>
+        <div class="err-grid reveal d1">
+          {erros.map((e) => (
+            <div class="err-item">
+              <iconify-icon icon="solar:close-circle-line-duotone"></iconify-icon>
+              <span>{e}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · ATENÇÃO E CONFIANÇA (dados) -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:54ch">
+          <span class="eyebrow on-dark">O público está atento, e cético</span>
+          <h2>A atenção existe em volume. O que decide é <span class="accent-serif on-dark">confiança</span>.</h2>
+          <p class="lede">Segundo a Publya, 86% da população brasileira estava conectada às redes em abril de 2025, com média de 48 horas mensais por visitante único. A atenção existe, mas é disputada e fácil de perder.</p>
+        </div>
+        <div class="frentes-grid reveal d1">
+          <div class="frente-card" style="background:var(--bc-ink-2); border-color:rgba(255,255,255,.12)">
+            <div class="f-icon" style="background:rgba(254,209,54,.14)"><iconify-icon icon="solar:verified-check-line-duotone"></iconify-icon></div>
+            <h3 class="f-name" style="color:#fff">Confiança antes de barulho</h3>
+            <p class="f-desc" style="color:rgba(255,255,255,.72)">Pela Opinion Box e Influency.me (2025), 59% dos brasileiros dizem que o conteúdo precisa ser confiável para chamar atenção. O público premia o que parece verdadeiro.</p>
+          </div>
+          <div class="frente-card" style="background:var(--bc-ink-2); border-color:rgba(255,255,255,.12)">
+            <div class="f-icon" style="background:rgba(254,209,54,.14)"><iconify-icon icon="solar:users-group-rounded-line-duotone"></iconify-icon></div>
+            <h3 class="f-name" style="color:#fff">Influência existe, com contrapeso</h3>
+            <p class="f-desc" style="color:rgba(255,255,255,.72)">70% acompanham ao menos um influenciador e 65% já compraram por recomendação. Mas 74% confiam mais em amigos e familiares, e 55% acham que a vida exibida nem sempre é real.</p>
+          </div>
+        </div>
+        <p class="punch reveal d2" style="max-width:30ch">Branded content forçado não passa despercebido. Ele <span class="hl">queima reputação</span>.</p>
+      </div>
+    </section>
+
+    <!-- 10 · PROVA -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">PiaR</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:50ch">
+          <span class="eyebrow">A PiaR e o conteúdo de marca</span>
+          <h2>Reputação operada na imprensa desde <span class="accent-serif">{site.foundingYear}</span>.</h2>
+          <p class="lede">A PiaR Group é uma agência de comunicação para empresas inovadoras, em São Paulo. O trabalho parte do dado e do relacionamento com a imprensa, e aplica a branded content a mesma lente: conteúdo que constrói reputação e tem ângulo de notícia, não publicidade disfarçada.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:var(--text-faint); display:block; margin-bottom:.9rem; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips" style="--chip-on:light">
+            {exits.map((c) => <span class="chip" style="background:rgba(15,15,17,.04); color:var(--primary); border-color:var(--hairline-strong)">{c}</span>)}
+          </div>
+          <span class="ds-mono" style="color:var(--text-faint); display:block; margin:2rem 0 .9rem; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase">/// Entre as empresas atendidas</span>
+          <div class="chips">
+            {clientes.map((c) => <span class="chip" style="background:rgba(15,15,17,.04); color:var(--primary); border-color:var(--hairline-strong)">{c}</span>)}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · LASTRO -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Método próprio, com revisão <span class="accent-serif on-dark">jurídica</span>.</h2>
+          <p class="lede">A operação roda sobre metodologia própria e processo com revisão jurídica, o que pesa em setores regulados, onde cada mensagem precisa passar por controle de risco antes de ir ao público. A casa também atua em gestão de crise, para proteger reputação quando o cenário exige resposta rápida.</p>
+        </div>
+        <div class="honesty reveal d1">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). O conteúdo de marca aqui é mídia própria e paga; a assessoria de imprensa gera a mídia conquistada, e a combinação mais forte usa um para alimentar o outro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">conteúdo</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Conteúdo que o público escolhe e que constrói <span class="accent-serif on-dark">autoridade</span>.</h2>
+        <p class="lede reveal d2">Se a sua marca precisa de conteúdo que o público escolha consumir e que ainda assim ganhe a imprensa, o primeiro passo é um diagnóstico. Conte o seu contexto e a PiaR mostra onde está a oportunidade. O investimento é sob consulta.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · motor de tecido (canvas 2D)
+         fios horizontais (audiência) e verticais (marca) se
+         entrelaçam formando um tecido vivo. Onda suave + brilho
+         viajante nos nós onde os dois se cruzam.
+         ======================================================== */
+      (function heroWeave() {
+        var canvas = document.getElementById('bc-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 75% 30%, #3a2606 0%, #160f06 55%, #0A0A0C 100%)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+        var W = 0, H = 0, t = 0;
+        var GAP = 46;          // distância entre fios
+        var AMP = 9;           // amplitude da ondulação
+        var warp = [], weft = []; // verticais (marca), horizontais (audiência)
+
+        function build() {
+          W = canvas.clientWidth; H = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          warp = []; weft = [];
+          for (var x = -GAP; x <= W + GAP; x += GAP) warp.push({ base: x, phase: Math.random() * 6.28 });
+          for (var y = -GAP; y <= H + GAP; y += GAP) weft.push({ base: y, phase: Math.random() * 6.28 });
+        }
+        build();
+        window.addEventListener('resize', build, { passive: true });
+
+        function draw() {
+          t += 0.006;
+          ctx.clearRect(0, 0, W, H);
+
+          // foco do tecido (canto onde a luz é mais densa)
+          var fx = W * 0.72, fy = H * 0.42;
+
+          // fios verticais · mensagem da marca (âmbar quente)
+          for (var i = 0; i < warp.length; i++) {
+            var wx = warp[i];
+            ctx.beginPath();
+            for (var y = -GAP; y <= H + GAP; y += 6) {
+              var off = Math.sin(y * 0.012 + t + wx.phase) * AMP;
+              var px = wx.base + off;
+              if (y === -GAP) ctx.moveTo(px, y); else ctx.lineTo(px, y);
+            }
+            var d1 = Math.hypot(wx.base - fx, 0) / W;
+            ctx.strokeStyle = 'rgba(199,122,20,' + (0.05 + 0.16 * Math.max(0, 1 - d1)).toFixed(3) + ')';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+
+          // fios horizontais · interesse da audiência (amarelo)
+          for (var j = 0; j < weft.length; j++) {
+            var wy = weft[j];
+            ctx.beginPath();
+            for (var x = -GAP; x <= W + GAP; x += 6) {
+              var off2 = Math.sin(x * 0.012 + t * 1.1 + wy.phase) * AMP;
+              var py = wy.base + off2;
+              if (x === -GAP) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+            }
+            var d2 = Math.hypot(0, wy.base - fy) / H;
+            ctx.strokeStyle = 'rgba(254,209,54,' + (0.05 + 0.15 * Math.max(0, 1 - d2)).toFixed(3) + ')';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+
+          // nós (cruzamentos) com brilho que viaja em diagonal
+          var pulse = (t * 0.5) % 2;
+          for (var a = 0; a < warp.length; a += 1) {
+            for (var b = 0; b < weft.length; b += 1) {
+              var nx = warp[a].base + Math.sin(weft[b].base * 0.012 + t + warp[a].phase) * AMP;
+              var ny = weft[b].base + Math.sin(warp[a].base * 0.012 + t * 1.1 + weft[b].phase) * AMP;
+              var dn = Math.hypot(nx - fx, ny - fy) / Math.hypot(W, H);
+              var diag = ((nx + ny) / (W + H));
+              var glow = Math.max(0, 1 - Math.abs(diag - (pulse - 0.5)) * 5) * Math.max(0, 1 - dn * 1.6);
+              if (glow <= 0.02) continue;
+              ctx.beginPath();
+              ctx.arc(nx, ny, 1.4 + glow * 2.2, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(255,224,150,' + (0.12 + glow * 0.7).toFixed(3) + ')';
+              ctx.fill();
+            }
+          }
+
+          if (!prefersReduced) requestAnimationFrame(draw);
+        }
+
+        if (prefersReduced) { draw(); }
+        else requestAnimationFrame(draw);
+      })();
+
+      /* ========================================================
+         DATAVIZ · trama de temas (canvas 2D)
+         fios do interesse da audiência cruzam os fios da
+         mensagem da marca; os nós de cruzamento acendem como
+         os assuntos onde o branded content funciona.
+         ======================================================== */
+      (function themeWeave() {
+        var canvas = document.getElementById('bc-weave-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, t = 0;
+        var rows = 6, cols = 7;
+        var topics = ['Dado de setor', 'Dor real', 'Tendência', 'Caso de cliente', 'Ponto de vista'];
+        var marks = []; // nós quentes (cruzamentos que viram pauta)
+        var hover = -1, mouse = { x: -1, y: -1 };
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // posições fixas dos cruzamentos quentes (assuntos)
+          marks = [
+            { c: 1.4, r: 1.3, name: topics[0] },
+            { c: 3.0, r: 2.6, name: topics[1] },
+            { c: 4.7, r: 1.7, name: topics[2] },
+            { c: 2.1, r: 4.0, name: topics[3] },
+            { c: 4.9, r: 4.1, name: topics[4] }
+          ];
+        }
+        layout();
+
+        function gx(c) { var padX = W * 0.1; return padX + (c / cols) * (W - 2 * padX); }
+        function gy(r) { var padY = H * 0.12; return padY + (r / rows) * (H - 2 * padY); }
+
+        function draw() {
+          t += 0.01;
+          ctx.clearRect(0, 0, W, H);
+
+          // fios verticais · mensagem da marca (âmbar)
+          for (var c = 0; c <= cols; c++) {
+            ctx.beginPath();
+            for (var ry = 0; ry <= rows; ry += 0.25) {
+              var x = gx(c) + Math.sin(ry * 0.8 + t + c) * 5;
+              var y = gy(ry);
+              if (ry === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = 'rgba(242,169,59,.16)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+          // fios horizontais · interesse da audiência (amarelo)
+          for (var r = 0; r <= rows; r++) {
+            ctx.beginPath();
+            for (var cx = 0; cx <= cols; cx += 0.25) {
+              var x2 = gx(cx);
+              var y2 = gy(r) + Math.sin(cx * 0.8 + t * 1.05 + r) * 5;
+              if (cx === 0) ctx.moveTo(x2, y2); else ctx.lineTo(x2, y2);
+            }
+            ctx.strokeStyle = 'rgba(254,209,54,.15)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+
+          // nós quentes · onde audiência e marca se cruzam
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          for (var m = 0; m < marks.length; m++) {
+            var mk = marks[m];
+            var mx = gx(mk.c) + Math.sin(mk.r * 0.8 + t + mk.c) * 5;
+            var my = gy(mk.r) + Math.sin(mk.c * 0.8 + t * 1.05 + mk.r) * 5;
+            var beat = 0.5 + 0.5 * Math.sin(t * 1.6 + m);
+            var active = hover === m;
+            // halo
+            ctx.beginPath(); ctx.arc(mx, my, 9 + beat * 6 + (active ? 5 : 0), 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,' + (0.05 + beat * 0.08).toFixed(3) + ')';
+            ctx.fill();
+            // nó
+            ctx.beginPath(); ctx.arc(mx, my, active ? 6 : 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = active ? '#FFFFFF' : '#FED136';
+            ctx.fill();
+            // rótulo
+            if (active) {
+              ctx.textAlign = 'center';
+              ctx.fillStyle = 'rgba(255,255,255,.95)';
+              ctx.fillText(mk.name, mx, my - 18);
+            }
+            mk._x = mx; mk._y = my;
+          }
+
+          requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+          hover = -1;
+          for (var m = 0; m < marks.length; m++) {
+            if (marks[m]._x != null && Math.hypot(marks[m]._x - mouse.x, marks[m]._y - mouse.y) < 22) { hover = m; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) { layout(); draw(); }
+        else requestAnimationFrame(draw);
+      })();
+    });
+  </script>
+</BaseLayout>

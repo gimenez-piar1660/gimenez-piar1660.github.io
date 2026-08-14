@@ -1,0 +1,916 @@
+---
+// ============================================================
+// FORMULÁRIO DE CONTATO · spec v2 (agosto de 2026)
+// Dois passos com gravação parcial · classificação MQL automática
+// ============================================================
+//
+// ---- ONDE OS LEADS CAEM ------------------------------------
+// O form envia para dois destinos, os dois opcionais e independentes.
+// Se os dois estiverem vazios, o form entra em modo demo e avisa na tela.
+//
+// 1) RD STATION (destino oficial do lead)
+//    Painel RD → Integrações → API → copie a "Chave de API Pública".
+//    Cole em RD_PUBLIC_KEY abaixo.
+//    Antes de publicar, criar no RD os campos personalizados da spec:
+//      cf_cargo · cf_frente_interesse · cf_assessoria_previa · cf_gatilho
+//      cf_faturamento_faixa · cf_origem_declarada · cf_indicado_por
+//      cf_contexto · cf_classificacao
+//      cf_utm_source · cf_utm_medium · cf_utm_campaign · cf_utm_content
+//      cf_pagina_conversao · cf_landing_page · cf_referrer
+//    As automações do RD escutam estes dois identificadores de conversão:
+//      RD_ID_PARCIAL  → passo 1 concluído (aplicar tag form-parcial)
+//      RD_ID_COMPLETO → passo 2 concluído (gravar classificação, mover estágio)
+//
+// 2) WEB3FORMS (cópia por e-mail, útil enquanto o RD não está pronto)
+//    https://web3forms.com → cole seu e-mail → "Create Access Key".
+//    250 envios/mês no plano gratuito. Manda um e-mail no passo 1 e outro
+//    no passo 2, então o mesmo lead gera duas mensagens. É de propósito:
+//    quem abandona no meio ainda dá para ligar.
+// ============================================================
+const RD_PUBLIC_KEY = 'COLE-SUA-CHAVE-PUBLICA-RD-AQUI';
+const RD_ID_PARCIAL = 'piar-site-contato-passo-1';
+const RD_ID_COMPLETO = 'piar-site-contato-briefing';
+const WEB3FORMS_KEY = 'COLE-SUA-CHAVE-WEB3FORMS-AQUI';
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+---
+<BaseLayout
+  title="Contato — PiaR Group"
+  description="Agende um diagnóstico de 45 minutos com a PiaR Group. Sem custo, sem pitch genérico, uma conversa para entender onde sua narrativa está vazando valor."
+  canonical={`${site.domain}/contato`}
+>
+  <Fragment slot="head">
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          { '@type': 'Question', name: 'O diagnóstico tem mesmo custo zero?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. 45 minutos sem cobrança, sem compromisso, sem "primeiro pedaço grátis do projeto pago depois". É como começamos toda conversa há treze anos. A hipótese editorial preliminar (1 página) também é gratuita e fica com você mesmo que a parceria não avance.' } },
+          { '@type': 'Question', name: 'Vocês assinam NDA antes da conversa?', acceptedAnswer: { '@type': 'Answer', text: 'Se a sua área jurídica pedir, sim, mandamos um NDA mútuo padrão. Mas no diagnóstico nunca trocamos informação confidencial; a conversa é sobre contexto público mais hipótese editorial. NDA fica útil só se a parceria avançar pro escopo.' } },
+          { '@type': 'Question', name: 'Atendem clientes fora de São Paulo?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. A operação rodou em SP, RJ, BH, Floripa, Porto Alegre e Recife, e atualmente atendemos cliente baseado em Lisboa. O ritual semanal funciona perfeitamente remoto; presencial é sob demanda do cliente.' } },
+          { '@type': 'Question', name: 'Trabalham com setores regulados (Bacen, CVM, ANS)?', acceptedAnswer: { '@type': 'Answer', text: 'A maioria do portfólio é setor regulado. Cada peça passa por revisão jurídica e regulatória antes de circular, e o protocolo de crise já considera Bacen, CVM, ANS, Anatel e Senacon conforme o caso.' } },
+          { '@type': 'Question', name: 'Quanto tempo de contrato vocês exigem?', acceptedAnswer: { '@type': 'Answer', text: 'Ciclos de 6 meses como base. Um trimestre de instalação mais um trimestre de cadência plena para medir impacto com honestidade. Projetos PEP modulares podem entrar isolados em ciclos mais curtos.' } },
+        ],
+      })}
+    />
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      ::selection { background: var(--primary); color: var(--accent); }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 10px; }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-body-lg { font-size: 1.25rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-body { font-size: 1.0625rem; font-weight: 400; line-height: 1.55; letter-spacing: -.01em; }
+      .ds-body-sm { font-size: .875rem; font-weight: 400; line-height: 1.55; }
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      .reveal { opacity: 0; transform: translateY(2rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .1s; } .delay-200 { transition-delay: .2s; }
+      .delay-300 { transition-delay: .3s; } .delay-400 { transition-delay: .4s; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .eyebrow-dot { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow-dot.on-dark { color: rgba(255,255,255,.72); }
+
+      .ink-pill { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; padding: .95rem 1.8rem; border-radius: var(--radius-btn); background: var(--primary); color: var(--paper); border: 1.5px solid var(--primary); font-size: .98rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; cursor: pointer; font-family: inherit; }
+      .ink-pill:hover { background: #000; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(0,0,0,.18); }
+      .ink-pill:disabled { opacity: .5; cursor: wait; }
+      .ink-pill iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .ink-pill:hover iconify-icon { transform: translateX(4px); }
+      .ink-pill.yellow { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .ink-pill.yellow:hover { background: #FFD84A; box-shadow: 0 14px 28px rgba(254,209,54,.32); }
+      .outline-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.55rem; border-radius: var(--radius-btn); background: #fff; color: var(--primary); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
+      .outline-pill:hover { background: var(--primary); color: var(--paper); }
+
+      /* ============================================================
+         HERO · light, editorial, sem stadium dark (mais convidativo)
+         ============================================================ */
+      .contato-hero { position: relative; padding: 10rem 1.5rem 4rem; overflow: hidden; background: linear-gradient(180deg, #fff 0%, var(--paper) 100%); border-bottom: 1px solid var(--hairline); }
+      .contato-hero::before {
+        content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .8;
+        background:
+          radial-gradient(45% 35% at 88% 18%, rgba(254,209,54,.28) 0%, rgba(254,209,54,0) 60%),
+          radial-gradient(30% 25% at 8% 80%, rgba(255,154,60,.14) 0%, transparent 60%);
+      }
+      .contato-hero .inner { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+      /* ============================================================
+         FORM SHELL · 2 colunas no desktop · sidebar com expectativa
+         ============================================================ */
+      .form-section { padding: 4rem 1.5rem 6rem; }
+      .form-shell { max-width: 1400px; margin: 0 auto; display: grid; gap: 3rem; grid-template-columns: 1fr; }
+      @media (min-width: 1024px) { .form-shell { grid-template-columns: 1.4fr 1fr; gap: 5rem; align-items: start; } }
+
+      /* Form card · paper-lifted, hairline, padding generoso */
+      .form-card { background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-stadium); padding: clamp(2rem, 4vw, 3.5rem); }
+      .form-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+      @media (min-width: 640px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+      .form-grid .full { grid-column: 1 / -1; }
+
+      .field { display: flex; flex-direction: column; gap: .5rem; }
+      .field label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .field label .req { color: var(--accent-deep); margin-left: .25rem; }
+      .field input,
+      .field select,
+      .field textarea { width: 100%; padding: .95rem 1.1rem; border-radius: var(--radius-input); border: 1.5px solid var(--hairline); background: #fff; font-family: inherit; font-size: 1rem; color: var(--primary); transition: var(--t-smooth); }
+      .field input:hover, .field select:hover, .field textarea:hover { border-color: var(--hairline-strong); }
+      .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(254,209,54,.22); }
+      .field textarea { resize: vertical; min-height: 130px; line-height: 1.5; }
+      .field select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230F0F11' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1.1rem center; padding-right: 2.5rem; cursor: pointer; }
+      /* Select sem opção escolhida fica cinza; ao escolher, vira texto normal */
+      .field select:invalid { color: var(--text-faint); }
+
+      /* Microcopy de apoio sob o campo */
+      .field-hint { font-size: .8rem; line-height: 1.45; color: var(--text-muted); }
+
+      /* Erro inline, no campo · nunca em bloco no topo */
+      .field-error { display: flex; align-items: center; gap: .4rem; font-size: .8rem; line-height: 1.4; color: #a83232; font-weight: 500; }
+      .field-error::before { content: '!'; flex-shrink: 0; width: 15px; height: 15px; border-radius: 50%; background: #a83232; color: #fff; font-size: .62rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+      .field.is-invalid input, .field.is-invalid select, .field.is-invalid textarea { border-color: #a83232; background: rgba(168,50,50,.02); }
+      .field.is-invalid .consent { border-color: #a83232; }
+      .field-warn { display: flex; align-items: flex-start; gap: .45rem; font-size: .8rem; line-height: 1.45; color: var(--accent-deep); }
+      .field-warn::before { content: ''; flex-shrink: 0; width: 8px; height: 8px; margin-top: .38rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgba(254,209,54,.24); }
+
+      /* Campo condicional (quem indicou) */
+      .field-conditional { display: none; }
+      .field-conditional.is-visible { display: flex; animation: fieldIn .35s var(--ease-out-expo); }
+      @keyframes fieldIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+      /* ============================================================
+         DOIS PASSOS · barra de progresso + navegação
+         ============================================================ */
+      .form-progress { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 2.25rem; }
+      .form-progress .prog-step { display: flex; flex-direction: column; justify-content: space-between; gap: .55rem; }
+      .form-progress .prog-bar { height: 3px; border-radius: 3px; background: var(--hairline-strong); overflow: hidden; }
+      .form-progress .prog-bar::after { content: ''; display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s var(--ease-out-expo); }
+      .form-progress .prog-step.is-done .prog-bar::after,
+      .form-progress .prog-step.is-current .prog-bar::after { width: 100%; }
+      .form-progress .prog-step.is-done .prog-bar::after { background: var(--primary); }
+      .form-progress .prog-label { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; transition: color .4s; }
+      .form-progress .prog-step.is-current .prog-label { color: var(--primary); }
+      .form-progress .prog-step.is-done .prog-label { color: var(--text-muted); }
+
+      .form-step { display: none; }
+      .form-step.is-active { display: block; animation: stepIn .45s var(--ease-out-expo); }
+      @keyframes stepIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+      .step-intro { margin-bottom: 1.75rem; }
+      .step-intro h2 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
+      .step-intro p { font-size: .92rem; color: var(--text-muted); line-height: 1.55; margin-top: .5rem; max-width: 52ch; }
+      .back-link { display: inline-flex; align-items: center; gap: .45rem; background: none; border: 0; padding: 0; font-family: inherit; font-size: .88rem; color: var(--text-muted); cursor: pointer; transition: color .3s; }
+      .back-link:hover { color: var(--primary); }
+
+      /* Consent checkbox — single visual */
+      .consent { display: flex; gap: .85rem; align-items: flex-start; padding: 1rem 1.25rem; background: var(--paper-lifted); border: 1px solid var(--hairline); border-radius: var(--radius-input); }
+      .consent input[type="checkbox"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--primary); margin-top: 1px; }
+      /* Reset explicito: o aceite mora dentro de um .field, entao precisa desfazer
+         o label mono/caixa-alta dos outros campos. */
+      .consent label { font-family: var(--font-sans); font-size: .85rem; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--text-muted); line-height: 1.5; cursor: pointer; }
+      .consent label a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+
+      /* Honeypot — fica visualmente oculto mas detectável por bots */
+      .botcheck { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+
+      /* Submit row */
+      .submit-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding-top: 1rem; }
+      .submit-row .submit-note { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
+
+      /* Form feedback states */
+      .form-feedback { display: none; margin-top: 1.25rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-input); }
+      .form-feedback.is-visible { display: block; }
+      .form-feedback.error { background: rgba(168,50,50,.06); border: 1px solid rgba(168,50,50,.32); color: #a83232; }
+      .form-feedback strong { display: block; margin-bottom: .25rem; }
+
+      .success-screen { display: none; padding: 3rem 2rem; text-align: center; border-radius: var(--radius-stadium); background: linear-gradient(135deg, var(--accent) 0%, #FFD84A 100%); color: var(--primary); }
+      .success-screen.is-visible { display: block; }
+      .success-screen .check-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: var(--accent); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
+      .success-screen .check-icon iconify-icon { font-size: 2.5rem; }
+      .confirm-path { display: none; }
+      .confirm-path.is-visible { display: block; }
+
+      /* Sidebar · expectativa + alternativas */
+      .sidebar-block { background: var(--paper-lifted); border: 1px solid var(--hairline); border-radius: 24px; padding: 2rem 2rem; }
+      .sidebar-block + .sidebar-block { margin-top: 1rem; }
+      .sidebar-block.dark { background: var(--primary); color: #fff; border-color: var(--primary); }
+      .sidebar-block.dark a { color: #fff; }
+
+      .step-list { display: flex; flex-direction: column; gap: 1.25rem; }
+      .step-item { display: flex; gap: 1rem; align-items: flex-start; }
+      .step-item .step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: .72rem; font-weight: 700; }
+      .sidebar-block.dark .step-item .step-num { background: var(--accent); color: var(--primary); }
+      .step-item .step-body .step-titulo { font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
+      .step-item .step-body .step-desc { font-size: .88rem; color: var(--text-muted); line-height: 1.5; margin-top: .35rem; }
+      .sidebar-block.dark .step-item .step-body .step-desc { color: rgba(255,255,255,.7); }
+      .step-item .step-body .step-cad { display: inline-block; margin-top: .5rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); font-weight: 600; }
+      .sidebar-block.dark .step-item .step-body .step-cad { color: var(--accent); }
+
+      .contact-direct { display: flex; flex-direction: column; gap: .85rem; }
+      .contact-direct a { display: flex; align-items: center; gap: .85rem; padding: .85rem 1rem; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); text-decoration: none; transition: var(--t-smooth); font-size: .95rem; }
+      .contact-direct a:hover { background: rgba(254,209,54,.12); border-color: rgba(254,209,54,.32); transform: translateX(2px); }
+      .contact-direct a iconify-icon { color: var(--accent); font-size: 1.3rem; }
+
+      /* FAQ */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item:last-child { border-bottom: 0; }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.05rem; font-weight: 500; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--primary); }
+      .faq-item .faq-body { padding: 0 0 1.5rem; color: var(--text-muted); max-width: 65ch; line-height: 1.6; }
+
+      @media (max-width: 768px) {
+        .contato-hero { padding: 8rem 1.25rem 3rem; }
+      }
+      /* Na coluna estreita o numero do passo nao cabe junto do nome */
+      @media (max-width: 640px) {
+        .form-progress .prog-num { display: none; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="contato" />
+
+  <main id="main">
+
+    <!-- 1 · HERO -->
+    <section class="contato-hero">
+      <div class="inner">
+        <span class="eyebrow-dot reveal">Contato · diagnóstico de 45 minutos</span>
+        <h1 class="ds-h1 font-semibold tracking-tight mt-8 reveal delay-100" style="max-width:18ch">
+          Antes de marcar,<br/>queremos <span class="italic-serif" style="color:var(--accent-deep)">entender</span>.
+        </h1>
+        <p class="ds-body-lg text-stone-500 mt-8 max-w-2xl reveal delay-200">
+          Diagnóstico de 45 minutos com a PiaR Group, agência boutique de relações
+          públicas em São Paulo desde 2013. Resposta em até 1 dia útil. WhatsApp:
+          (11) 97563-3655. Para o caso já estar quente: chame direto no WhatsApp ou
+          em <a href={`mailto:${site.email}`} style="color:var(--accent-deep);text-decoration:underline;">{site.email}</a>.
+          Sem custo, sem pitch genérico, sem proposta no follow-up imediato.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2 · FORM PRINCIPAL -->
+    <section class="form-section">
+      <div class="form-shell">
+
+        <!-- COLUNA ESQUERDA · O FORMULÁRIO -->
+        <div class="reveal">
+          <div class="form-card" id="form-card">
+            <!-- Progresso · dois passos -->
+            <div class="form-progress" id="form-progress">
+              <div class="prog-step is-current" data-prog="1">
+                <span class="prog-label"><span class="prog-num">01 · </span>Identificação</span>
+                <div class="prog-bar"></div>
+              </div>
+              <div class="prog-step" data-prog="2">
+                <span class="prog-label"><span class="prog-num">02 · </span>Briefing</span>
+                <div class="prog-bar"></div>
+              </div>
+            </div>
+
+            <form id="contato-form" novalidate>
+              <!-- Honeypot anti-spam · invisível pra humanos -->
+              <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" />
+
+              <!-- Rastreio · preenchido por JS na carga da página (cookie de 90 dias) -->
+              <input type="hidden" name="cf_utm_source" id="h-utm-source" />
+              <input type="hidden" name="cf_utm_medium" id="h-utm-medium" />
+              <input type="hidden" name="cf_utm_campaign" id="h-utm-campaign" />
+              <input type="hidden" name="cf_utm_content" id="h-utm-content" />
+              <input type="hidden" name="cf_pagina_conversao" id="h-pagina-conversao" />
+              <input type="hidden" name="cf_landing_page" id="h-landing-page" />
+              <input type="hidden" name="cf_referrer" id="h-referrer" />
+              <input type="hidden" name="cf_classificacao" id="h-classificacao" />
+
+              <!-- ============ PASSO 1 · IDENTIFICAÇÃO ============ -->
+              <div class="form-step is-active" id="step-1" data-step="1">
+                <div class="step-intro">
+                  <h2>Quem está do outro lado.</h2>
+                  <p>Quatro campos. Depois deles a gente já consegue te procurar, mesmo que você precise sair no meio.</p>
+                </div>
+
+                <div class="form-grid">
+                  <div class="field full">
+                    <label for="f-nome">Nome completo <span class="req">*</span></label>
+                    <input id="f-nome" name="name" type="text" required autocomplete="name" placeholder="Como podemos te chamar?" />
+                  </div>
+
+                  <div class="field">
+                    <label for="f-email">E-mail corporativo <span class="req">*</span></label>
+                    <input id="f-email" name="email" type="email" required autocomplete="email" placeholder="voce@suaempresa.com" />
+                  </div>
+                  <div class="field">
+                    <label for="f-empresa">Empresa <span class="req">*</span></label>
+                    <input id="f-empresa" name="company_name" type="text" required autocomplete="organization" placeholder="Razão social ou marca" />
+                  </div>
+
+                  <div class="field">
+                    <label for="f-cargo">Cargo <span class="req">*</span></label>
+                    <select id="f-cargo" name="cf_cargo" required>
+                      <option value="" disabled selected>Selecione</option>
+                      <option>CEO, fundador ou sócio</option>
+                      <option>CMO ou diretor de marketing</option>
+                      <option>Diretor de comunicação</option>
+                      <option>Head ou gerente de marketing / comunicação</option>
+                      <option>Coordenador ou analista</option>
+                      <option>Consultor, parceiro ou agência</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="f-telefone">Telefone (opcional)</label>
+                    <input id="f-telefone" name="personal_phone" type="tel" autocomplete="tel" placeholder="(11) 9 9999-9999" />
+                  </div>
+
+                  <div class="full submit-row">
+                    <span class="submit-note">/// Passo 1 de 2</span>
+                    <button type="button" class="ink-pill yellow" id="next-btn">
+                      <span class="btn-label">Continuar</span>
+                      <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ============ PASSO 2 · BRIEFING ============ -->
+              <div class="form-step" id="step-2" data-step="2">
+                <div class="step-intro">
+                  <button type="button" class="back-link" id="back-btn">
+                    <iconify-icon icon="solar:arrow-left-linear"></iconify-icon>Voltar
+                  </button>
+                  <h2 style="margin-top:.85rem">O briefing que encurta a primeira conversa.</h2>
+                  <p>Cada resposta aqui muda o que a gente leva para a reunião: o material, o case que abre, o ângulo.</p>
+                </div>
+
+                <div class="form-grid">
+                  <div class="field full">
+                    <label for="f-frente">Frente de interesse principal <span class="req">*</span></label>
+                    <select id="f-frente" name="cf_frente_interesse" required>
+                      <option value="" disabled selected>Selecione</option>
+                      <option>Presença da marca em busca e em respostas de IA (GEO PR)</option>
+                      <option>Cobertura de imprensa recorrente</option>
+                      <option>Autoridade e narrativa do porta-voz</option>
+                      <option>Gestão de crise</option>
+                      <option>Projetos especiais: eventos, conteúdo próprio, ghostwriting</option>
+                      <option>Diagnóstico de visibilidade em IA: o ponto de partida</option>
+                    </select>
+                  </div>
+
+                  <div class="field full">
+                    <label for="f-assessoria">A empresa já teve assessoria de imprensa? <span class="req">*</span></label>
+                    <select id="f-assessoria" name="cf_assessoria_previa" required>
+                      <option value="" disabled selected>Selecione</option>
+                      <option>Sim, temos assessoria hoje</option>
+                      <option>Sim, tivemos até recentemente</option>
+                      <option>Sim, mas há mais de dois anos</option>
+                      <option>Não, seria a primeira vez</option>
+                    </select>
+                  </div>
+
+                  <div class="field full">
+                    <label for="f-gatilho">O que motivou essa busca agora? <span class="req">*</span></label>
+                    <select id="f-gatilho" name="cf_gatilho" required>
+                      <option value="" disabled selected>Selecione</option>
+                      <option>Crescimento, lançamento ou entrada em novo mercado</option>
+                      <option>Rodada, aporte ou preparação para um evento de liquidez</option>
+                      <option>Mudança na liderança ou nova estrutura de marketing</option>
+                      <option>Um concorrente está ocupando o espaço que era nosso</option>
+                      <option>Momento sensível ou risco de reputação</option>
+                      <option>Insatisfação com a comunicação atual</option>
+                      <option>Não houve um gatilho específico, é planejamento</option>
+                    </select>
+                  </div>
+
+                  <div class="field full">
+                    <label for="f-faturamento">Faturamento anual aproximado <span class="req">*</span></label>
+                    <select id="f-faturamento" name="cf_faturamento_faixa" required>
+                      <option value="" disabled selected>Selecione</option>
+                      <option>Acima de R$ 150 milhões</option>
+                      <option>De R$ 80 a 150 milhões</option>
+                      <option>De R$ 15 a 80 milhões</option>
+                      <option>Até R$ 15 milhões</option>
+                      <option>Prefiro não informar</option>
+                    </select>
+                    <p class="field-hint">A faixa nos ajuda a calibrar escopo. Não define preço.</p>
+                  </div>
+
+                  <div class="field full">
+                    <label for="f-origem">Como conheceu a PiaR <span class="req">*</span></label>
+                    <select id="f-origem" name="cf_origem_declarada" required>
+                      <option value="" disabled selected>Selecione</option>
+                      <option>Indicação de alguém</option>
+                      <option>LinkedIn</option>
+                      <option>Instagram</option>
+                      <option>Busca no Google</option>
+                      <option>Resposta de IA (ChatGPT, Gemini, Perplexity)</option>
+                      <option>Matéria ou entrevista na imprensa</option>
+                      <option>Evento</option>
+                      <option>Já fomos clientes</option>
+                      <option>Outro</option>
+                    </select>
+                  </div>
+
+                  <div class="field full field-conditional" id="field-indicacao">
+                    <label for="f-indicado">Quem indicou?</label>
+                    <input id="f-indicado" name="cf_indicado_por" type="text" placeholder="Nome da pessoa ou da empresa" />
+                    <p class="field-hint">Indicação é como a maior parte dos nossos clientes chega. A gente gosta de saber a quem agradecer.</p>
+                  </div>
+
+                  <div class="field full">
+                    <label for="f-contexto">Conte um pouco do contexto <span class="req">*</span></label>
+                    <textarea id="f-contexto" name="cf_contexto" required placeholder="Qual o momento da marca? Qual narrativa está vazando valor? 3 ou 4 linhas já bastam, a conversa abre o resto."></textarea>
+                  </div>
+
+                  <div class="full field field-consent">
+                    <div class="consent">
+                      <input type="checkbox" id="f-consent" name="consent" required />
+                      <label for="f-consent">
+                        Concordo em compartilhar essas informações com a PiaR Group para fins de qualificação de diagnóstico, conforme nossa política de privacidade. Os dados não são compartilhados com terceiros.
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="full submit-row">
+                    <span class="submit-note">/// Resposta em até 1 dia útil</span>
+                    <button type="submit" class="ink-pill yellow" id="submit-btn">
+                      <span class="btn-label">Enviar pedido de diagnóstico</span>
+                      <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="form-feedback" class="form-feedback" role="status" aria-live="polite"></div>
+            </form>
+          </div>
+
+          <!-- Success screen · escondida até o submit dar certo.
+               Dois caminhos de confirmação, escolhidos pela classificação. -->
+          <div class="success-screen" id="success-screen">
+            <div class="check-icon"><iconify-icon icon="solar:check-circle-bold"></iconify-icon></div>
+            <h2 class="ds-h3 font-semibold tracking-tight mb-3">Recebido. Obrigado pela confiança.</h2>
+            <p class="ds-body confirm-path" id="confirm-mql" style="max-width:48ch;margin:0 auto">
+              Respondemos em até 1 dia útil com proposta de horário para a conversa de 45 minutos.
+              Chega também um e-mail de confirmação com uma pergunta só, que ajuda a gente a
+              preparar melhor esses 45 minutos. Se a janela for urgente, mande WhatsApp em
+              <strong>{site.phone}</strong> que aceleramos.
+            </p>
+            <p class="ds-body confirm-path" id="confirm-lead" style="max-width:48ch;margin:0 auto">
+              Seu pedido está com o time. Em instantes chega um e-mail com o boletim quinzenal e
+              dois materiais dos Insights que costumam responder as primeiras dúvidas.
+              Se precisar falar com alguém agora, o WhatsApp <strong>{site.phone}</strong> é o caminho mais curto.
+            </p>
+            <a href="/" class="outline-pill" style="margin-top:2rem">Voltar para a home<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          </div>
+        </div>
+
+        <!-- COLUNA DIREITA · O QUE ACONTECE DEPOIS + ALTERNATIVAS -->
+        <aside class="reveal delay-100">
+          <div class="sidebar-block">
+            <span class="eyebrow-dot">O que acontece depois</span>
+            <h3 class="ds-h4 font-semibold tracking-tight mt-4 mb-6">Quatro passos · sem surpresas no meio.</h3>
+            <div class="step-list">
+              <div class="step-item">
+                <div class="step-num">01</div>
+                <div class="step-body">
+                  <p class="step-titulo">Recebemos seu pedido</p>
+                  <p class="step-desc">Lemos com atenção · sem fluxo automático · você não cai em sequência de e-mail.</p>
+                  <span class="step-cad">~1 dia útil</span>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">02</div>
+                <div class="step-body">
+                  <p class="step-titulo">Proposta de horário</p>
+                  <p class="step-desc">Mandamos 2-3 janelas pra você escolher · presencial em SP ou Google Meet.</p>
+                  <span class="step-cad">~1 dia útil</span>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">03</div>
+                <div class="step-body">
+                  <p class="step-titulo">Conversa de 45 minutos</p>
+                  <p class="step-desc">Você fala 60% do tempo. A gente devolve hipótese editorial e onde a narrativa pode estar vazando.</p>
+                  <span class="step-cad">Sem custo</span>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">04</div>
+                <div class="step-body">
+                  <p class="step-titulo">Material em até 5 dias</p>
+                  <p class="step-desc">Mapa editorial preliminar · um documento de 1 página · sem proposta comercial automática.</p>
+                  <span class="step-cad">~5 dias úteis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-block dark">
+            <span class="eyebrow-dot on-dark">Prefere ir direto?</span>
+            <h3 class="ds-h4 font-semibold tracking-tight mt-4 mb-5" style="color:#fff">Canais diretos · sem formulário.</h3>
+            <div class="contact-direct">
+              <a href="https://wa.me/5511975633655" target="_blank" rel="noopener">
+                <iconify-icon icon="solar:phone-rounded-line-duotone"></iconify-icon>
+                <span><strong style="color:#fff">(11) 97563-3655</strong><br/><span style="color:rgba(255,255,255,.6);font-size:.82rem">WhatsApp · mais rápido para janelas urgentes</span></span>
+              </a>
+              <a href={`mailto:${site.email}`}>
+                <iconify-icon icon="solar:letter-line-duotone"></iconify-icon>
+                <span><strong style="color:#fff">{site.email}</strong><br/><span style="color:rgba(255,255,255,.6);font-size:.82rem">E-mail direto · resposta em 1 dia útil</span></span>
+              </a>
+              <a href="https://www.linkedin.com/company/piargroup" target="_blank" rel="noopener">
+                <iconify-icon icon="solar:link-circle-line-duotone"></iconify-icon>
+                <span><strong style="color:#fff">PiaR Group no LinkedIn</strong><br/><span style="color:rgba(255,255,255,.6);font-size:.82rem">Para conhecer melhor antes de marcar</span></span>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 3 · FAQ DO CONTATO -->
+    <section class="bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1100px] mx-auto">
+        <div class="mb-10 reveal">
+          <span class="eyebrow-dot">Perguntas comuns antes da conversa</span>
+          <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:18ch">
+            O que <span class="italic-serif">já</span> dá pra responder por aqui.
+          </h2>
+        </div>
+        <div class="reveal delay-100">
+          <details class="faq-item">
+            <summary>O diagnóstico tem mesmo custo zero?<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+            <div class="faq-body">Sim. 45 minutos sem cobrança, sem compromisso, sem "primeiro pedaço grátis do projeto pago depois". É como começamos toda conversa há treze anos. A hipótese editorial preliminar (1 página) também é gratuita e fica com você mesmo que a parceria não avance.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Vocês assinam NDA antes da conversa?<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+            <div class="faq-body">Se a sua área jurídica pedir, sim, mandamos um NDA mútuo padrão. Mas no diagnóstico nunca trocamos informação confidencial; a conversa é sobre contexto público mais hipótese editorial. NDA fica útil só se a parceria avançar pro escopo.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Atendem clientes fora de São Paulo?<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+            <div class="faq-body">Sim. A operação rodou em SP, RJ, BH, Floripa, Porto Alegre e Recife, e atualmente atendemos cliente baseado em Lisboa. O ritual semanal funciona perfeitamente remoto; presencial é sob demanda do cliente.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Trabalham com setores regulados (Bacen, CVM, ANS)?<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+            <div class="faq-body">A maioria do portfólio é setor regulado. Cada peça passa por revisão jurídica e regulatória antes de circular, e o protocolo de crise já considera Bacen, CVM, ANS, Anatel e Senacon conforme o caso.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Quanto tempo de contrato vocês exigem?<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+            <div class="faq-body">Ciclos de 6 meses como base. Um trimestre de instalação mais um trimestre de cadência plena para medir impacto com honestidade. Projetos PEP modulares (veja a página /pep) podem entrar isolados em ciclos mais curtos.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · NOTA FECHAMENTO · ENXUTA -->
+    <section class="relative bg-[var(--paper)] py-16 md:py-24 px-4 md:px-8">
+      <div class="max-w-[900px] mx-auto text-center reveal">
+        <p class="italic-serif text-stone-500" style="font-size:clamp(1.25rem,2.5vw,1.65rem);line-height:1.4">
+          "Cada cliente que sustenta uma década começa com uma única decisão: parar de pedir cobertura e começar a oferecer tese."
+        </p>
+        <p class="ds-mono text-stone-400 mt-6">/// PiaR Group · 13 anos · 470+ marcas · 8 exits · São Paulo desde 2013</p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+
+  <script is:inline define:vars={{ WEB3FORMS_KEY, RD_PUBLIC_KEY, RD_ID_PARCIAL, RD_ID_COMPLETO }}>
+    document.addEventListener('DOMContentLoaded', function () {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      gsap.registerPlugin(ScrollTrigger);
+      if (!prefersReduced) {
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smooth: true,
+          lerp: 0.1,
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      const progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // ============================================================
+      // FORMULÁRIO · dois passos, gravação parcial, classificação MQL
+      // ============================================================
+      const form = document.getElementById('contato-form');
+      const formCard = document.getElementById('form-card');
+      const formProgress = document.getElementById('form-progress');
+      const successScreen = document.getElementById('success-screen');
+      const submitBtn = document.getElementById('submit-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const backBtn = document.getElementById('back-btn');
+      const feedback = document.getElementById('form-feedback');
+      if (!form) return;
+
+      const RD_ATIVO = RD_PUBLIC_KEY && RD_PUBLIC_KEY.indexOf('COLE-SUA') !== 0;
+      const WEB3_ATIVO = WEB3FORMS_KEY && WEB3FORMS_KEY.indexOf('COLE-SUA') !== 0;
+
+      // ---- 1. Rastreio: lê o cookie de atribuição gravado no BaseLayout ----
+      // O cookie guarda o primeiro toque (90 dias). A página de conversão é
+      // sempre a atual, por isso ela não vem do cookie.
+      (function preencherRastreio() {
+        let atrib = {};
+        const bruto = document.cookie.split('; ').find((c) => c.indexOf('piar_atrib=') === 0);
+        if (bruto) {
+          try { atrib = JSON.parse(decodeURIComponent(bruto.slice('piar_atrib='.length))); } catch (err) { atrib = {}; }
+        }
+        // Se o cookie não existir (bloqueio de cookies), usa a URL desta visita.
+        const qs = new URLSearchParams(location.search);
+        const set = (id, valor) => { const el = document.getElementById(id); if (el) el.value = valor || ''; };
+        set('h-utm-source', atrib.utm_source || qs.get('utm_source'));
+        set('h-utm-medium', atrib.utm_medium || qs.get('utm_medium'));
+        set('h-utm-campaign', atrib.utm_campaign || qs.get('utm_campaign'));
+        set('h-utm-content', atrib.utm_content || qs.get('utm_content'));
+        set('h-landing-page', atrib.landing_page || (location.pathname + location.search));
+        set('h-referrer', atrib.referrer || (document.referrer && document.referrer.indexOf(location.origin) !== 0 ? document.referrer : ''));
+        set('h-pagina-conversao', location.pathname);
+      })();
+
+      // ---- 2. Regra de MQL · calculada, sem julgamento humano ----
+      const DOMINIOS_GRATUITOS = [
+        'gmail.com', 'googlemail.com', 'hotmail.com', 'hotmail.com.br', 'outlook.com',
+        'outlook.com.br', 'live.com', 'msn.com', 'yahoo.com', 'yahoo.com.br', 'ymail.com',
+        'icloud.com', 'me.com', 'mac.com', 'aol.com', 'bol.com.br', 'uol.com.br',
+        'terra.com.br', 'ig.com.br', 'globo.com', 'globomail.com', 'r7.com', 'zipmail.com.br',
+        'protonmail.com', 'proton.me', 'gmx.com', 'gmx.net', 'yandex.com', 'zoho.com', 'mail.com',
+      ];
+      const CARGOS_MQL = [
+        'CEO, fundador ou sócio',
+        'CMO ou diretor de marketing',
+        'Diretor de comunicação',
+        'Head ou gerente de marketing / comunicação',
+      ];
+      const dominioDe = (email) => (email || '').trim().toLowerCase().split('@')[1] || '';
+      const ehCorporativo = (email) => {
+        const d = dominioDe(email);
+        return !!d && DOMINIOS_GRATUITOS.indexOf(d) === -1;
+      };
+      const classificar = () =>
+        ehCorporativo(form.email.value) && CARGOS_MQL.indexOf(form.cf_cargo.value) !== -1 ? 'MQL' : 'Lead';
+
+      // ---- 3. Validação inline · erro no campo, nunca em bloco no topo ----
+      function mensagemDe(campo) {
+        if (campo.validity.valueMissing) {
+          if (campo.type === 'checkbox') return 'Precisamos do seu aceite para seguir.';
+          if (campo.tagName === 'SELECT') return 'Escolha uma opção.';
+          return 'Preencha este campo.';
+        }
+        if (campo.validity.typeMismatch && campo.type === 'email') return 'Confira o e-mail: parece faltar alguma coisa.';
+        return campo.validationMessage || 'Confira este campo.';
+      }
+      function caixaDe(campo, classe) {
+        const wrap = campo.closest('.field');
+        if (!wrap) return null;
+        let box = wrap.querySelector('.' + classe);
+        if (!box) {
+          box = document.createElement('p');
+          box.className = classe;
+          wrap.appendChild(box);
+        }
+        return box;
+      }
+      function limparErro(campo) {
+        const wrap = campo.closest('.field');
+        if (!wrap) return;
+        wrap.classList.remove('is-invalid');
+        const box = wrap.querySelector('.field-error');
+        if (box) box.remove();
+        campo.removeAttribute('aria-invalid');
+      }
+      function mostrarErro(campo) {
+        const wrap = campo.closest('.field');
+        if (!wrap) return;
+        wrap.classList.add('is-invalid');
+        const box = caixaDe(campo, 'field-error');
+        if (box) box.textContent = mensagemDe(campo);
+        campo.setAttribute('aria-invalid', 'true');
+      }
+      function validarPasso(passo) {
+        const campos = Array.from(passo.querySelectorAll('input, select, textarea'))
+          .filter((c) => c.name !== 'botcheck' && !c.disabled && c.offsetParent !== null);
+        let primeiroInvalido = null;
+        campos.forEach((campo) => {
+          if (campo.checkValidity()) { limparErro(campo); return; }
+          mostrarErro(campo);
+          if (!primeiroInvalido) primeiroInvalido = campo;
+        });
+        if (primeiroInvalido) {
+          primeiroInvalido.focus({ preventScroll: true });
+          primeiroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return false;
+        }
+        return true;
+      }
+      // Erro some assim que a pessoa corrige
+      form.addEventListener('input', (e) => { if (e.target.closest('.field.is-invalid')) limparErro(e.target); });
+      form.addEventListener('change', (e) => { if (e.target.closest('.field.is-invalid')) limparErro(e.target); });
+
+      // Aviso de e-mail gratuito · avisa, não bloqueia
+      const campoEmail = form.email;
+      campoEmail.addEventListener('blur', () => {
+        const wrap = campoEmail.closest('.field');
+        const existente = wrap.querySelector('.field-warn');
+        const gratuito = campoEmail.value.indexOf('@') > -1 && !ehCorporativo(campoEmail.value);
+        if (gratuito && !existente) {
+          const box = caixaDe(campoEmail, 'field-warn');
+          if (box) box.textContent = 'Se puder, use o e-mail da empresa. Ajuda a gente a chegar preparado na conversa.';
+        } else if (!gratuito && existente) {
+          existente.remove();
+        }
+      });
+
+      // ---- 4. Campo condicional · quem indicou ----
+      const campoOrigem = form.cf_origem_declarada;
+      const blocoIndicacao = document.getElementById('field-indicacao');
+      campoOrigem.addEventListener('change', () => {
+        const abrir = campoOrigem.value === 'Indicação de alguém';
+        blocoIndicacao.classList.toggle('is-visible', abrir);
+        if (!abrir) form.cf_indicado_por.value = '';
+      });
+
+      // ---- 5. Navegação entre os passos ----
+      const passos = { 1: document.getElementById('step-1'), 2: document.getElementById('step-2') };
+      let passoAtual = 1;
+      function irPara(n) {
+        passoAtual = n;
+        Object.keys(passos).forEach((k) => passos[k].classList.toggle('is-active', Number(k) === n));
+        formProgress.querySelectorAll('.prog-step').forEach((el) => {
+          const i = Number(el.dataset.prog);
+          el.classList.toggle('is-current', i === n);
+          el.classList.toggle('is-done', i < n);
+        });
+        formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const primeiro = passos[n].querySelector('input, select, textarea');
+        if (primeiro) primeiro.focus({ preventScroll: true });
+      }
+      if (backBtn) backBtn.addEventListener('click', () => irPara(1));
+
+      // ---- 6. Envio ----
+      function dadosDoForm() {
+        const dados = {};
+        new FormData(form).forEach((valor, chave) => {
+          if (chave === 'botcheck' || chave === 'consent') return;
+          if (typeof valor === 'string' && valor.trim()) dados[chave] = valor.trim();
+        });
+        return dados;
+      }
+
+      // RD Station · API de conversões com chave pública
+      async function enviarRD(dados, identificador) {
+        const resp = await fetch('https://api.rd.services/platform/conversions?api_key=' + encodeURIComponent(RD_PUBLIC_KEY), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_type: 'CONVERSION',
+            event_family: 'CDP',
+            payload: Object.assign({}, dados, {
+              conversion_identifier: identificador,
+              traffic_source: dados.cf_utm_source || '',
+              traffic_medium: dados.cf_utm_medium || '',
+              traffic_campaign: dados.cf_utm_campaign || '',
+            }),
+          }),
+        });
+        if (!resp.ok) throw new Error('RD Station respondeu ' + resp.status);
+        return true;
+      }
+
+      // Web3Forms · cópia por e-mail, com rótulos legíveis
+      const ROTULOS = {
+        name: 'Nome', email: 'E-mail', company_name: 'Empresa', personal_phone: 'Telefone',
+        cf_cargo: 'Cargo', cf_frente_interesse: 'Frente de interesse',
+        cf_assessoria_previa: 'Histórico de assessoria', cf_gatilho: 'Gatilho',
+        cf_faturamento_faixa: 'Faturamento', cf_origem_declarada: 'Como conheceu',
+        cf_indicado_por: 'Quem indicou', cf_contexto: 'Contexto', cf_classificacao: 'Classificação',
+        cf_pagina_conversao: 'Página de conversão', cf_landing_page: 'Página de entrada',
+        cf_referrer: 'Referrer', cf_utm_source: 'UTM source', cf_utm_medium: 'UTM medium',
+        cf_utm_campaign: 'UTM campaign', cf_utm_content: 'UTM content',
+      };
+      async function enviarWeb3(dados, parcial) {
+        const corpo = { access_key: WEB3FORMS_KEY, from_name: 'Formulário PiaR Group' };
+        corpo.subject = parcial
+          ? 'Lead parcial (passo 1) · /contato · piar.group'
+          : (dados.cf_classificacao || 'Lead') + ' · /contato · piar.group';
+        Object.keys(dados).forEach((chave) => { corpo[ROTULOS[chave] || chave] = dados[chave]; });
+        const resp = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(corpo),
+        });
+        const json = await resp.json();
+        if (!resp.ok || !json.success) throw new Error(json.message || 'Web3Forms respondeu ' + resp.status);
+        return true;
+      }
+
+      async function enviar(dados, { identificador, parcial }) {
+        const tarefas = [];
+        if (RD_ATIVO) tarefas.push(enviarRD(dados, identificador));
+        if (WEB3_ATIVO) tarefas.push(enviarWeb3(dados, parcial));
+        if (!tarefas.length) return { ok: false, motivo: 'demo' };
+        const resultados = await Promise.allSettled(tarefas);
+        resultados.forEach((r) => { if (r.status === 'rejected') console.warn('[form PiaR]', r.reason); });
+        const algumOk = resultados.some((r) => r.status === 'fulfilled');
+        return { ok: algumOk, motivo: algumOk ? '' : (resultados[0].reason && resultados[0].reason.message) || 'falha' };
+      }
+
+      const avisoDemo = '<strong>Formulário em modo demo.</strong>O envio ainda não foi conectado. Quem configura o site precisa colar a chave pública do RD Station (ou a do Web3Forms) no topo do arquivo src/pages/contato.astro.';
+
+      // Passo 1 · grava parcial e avança. Falha de rede não trava a pessoa.
+      let parcialEnviado = false;
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          if (!validarPasso(passos[1])) return;
+          feedback.classList.remove('is-visible');
+          if (!RD_ATIVO && !WEB3_ATIVO) {
+            feedback.className = 'form-feedback error is-visible';
+            feedback.innerHTML = avisoDemo;
+          } else if (!parcialEnviado) {
+            parcialEnviado = true;
+            const dados = dadosDoForm();
+            dados.cf_classificacao = 'Parcial';
+            enviar(dados, { identificador: RD_ID_PARCIAL, parcial: true }).catch(() => {});
+          }
+          irPara(2);
+        });
+      }
+
+      // Passo 2 · envio completo
+      const btnLabel = submitBtn ? submitBtn.querySelector('.btn-label') : null;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (passoAtual !== 2 || !validarPasso(passos[2])) return;
+        if (form.botcheck && form.botcheck.checked) return;
+
+        feedback.classList.remove('is-visible');
+        if (!RD_ATIVO && !WEB3_ATIVO) {
+          feedback.className = 'form-feedback error is-visible';
+          feedback.innerHTML = avisoDemo;
+          return;
+        }
+
+        const classificacao = classificar();
+        document.getElementById('h-classificacao').value = classificacao;
+        const dados = dadosDoForm();
+
+        submitBtn.disabled = true;
+        if (btnLabel) btnLabel.textContent = 'Enviando…';
+
+        const resultado = await enviar(dados, { identificador: RD_ID_COMPLETO, parcial: false });
+
+        if (resultado.ok) {
+          formProgress.style.display = 'none';
+          formCard.style.display = 'none';
+          const caminho = document.getElementById(classificacao === 'MQL' ? 'confirm-mql' : 'confirm-lead');
+          if (caminho) caminho.classList.add('is-visible');
+          successScreen.classList.add('is-visible');
+          successScreen.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          form.reset();
+        } else {
+          feedback.className = 'form-feedback error is-visible';
+          feedback.innerHTML = '<strong>Algo deu errado no envio.</strong>Tente de novo em alguns minutos, ou fale direto no WhatsApp (11) 97563-3655.';
+          submitBtn.disabled = false;
+          if (btnLabel) btnLabel.textContent = 'Enviar pedido de diagnóstico';
+        }
+      });
+    });
+  </script>
+</BaseLayout>

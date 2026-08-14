@@ -1,0 +1,122 @@
+---
+// Footer — fonte única. Editar uma vez, propaga para todas as páginas.
+import { site } from '@/data/site';
+const year = new Date().getFullYear();
+---
+<footer class="relative z-20 bg-white border-t border-[rgba(0,0,0,.08)] py-16">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-10 mb-16">
+      <div class="col-span-2">
+        <a href="/" class="brand-mark flex items-center mb-5" aria-label="PiaR Group">
+          <img
+            src="/brand/piar-horizontal-positivo.png"
+            alt="PiaR Group"
+            class="brand-logo brand-logo--footer"
+          />
+        </a>
+        <p class="ds-body-sm text-stone-500 max-w-sm">
+          {site.slogan}
+        </p>
+      </div>
+
+      <div>
+        <h5 class="ds-caption mb-4 text-stone-400">Serviços</h5>
+        <ul class="space-y-3">
+          <li><a class="footer-link" href="/relacoes-publicas">Relações Públicas</a></li>
+          <li><a class="footer-link" href="/media-training">Media Training</a></li>
+          <li><a class="footer-link" href="/reputacao">Reputação & Branding</a></li>
+          <li><a class="footer-link" href="/comunicacao-integrada">Comunicação Integrada</a></li>
+          <li><a class="footer-link" href="/geo">Dados & GEO</a></li>
+          <li><a class="footer-link" href="/pep">Projetos Especiais (PEP)</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="ds-caption mb-4 text-stone-400">Empresa</h5>
+        <ul class="space-y-3">
+          <li><a class="footer-link" href="/sobre">Sobre</a></li>
+          <li><a class="footer-link" href="/cases">Cases</a></li>
+          <li><a class="footer-link" href="/insights">Insights</a></li>
+          <li><a class="footer-link" href="/blog">Blog</a></li>
+          <li><a class="footer-link" href="/contato">Contato</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="ds-caption mb-4 text-stone-400">Contato</h5>
+        <ul class="space-y-3">
+          <li><a class="footer-link" href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li class="ds-body-sm text-stone-500">São Paulo · SP</li>
+        </ul>
+        <div class="flex items-center gap-3 mt-5" aria-label="Redes sociais">
+          <a
+            class="footer-social"
+            href="https://www.linkedin.com/company/piargroup/"
+            target="_blank"
+            rel="noopener"
+            aria-label="LinkedIn da PiaR Group"
+          >
+            <iconify-icon icon="lucide:linkedin" width="18" height="18"></iconify-icon>
+          </a>
+          <a
+            class="footer-social"
+            href="https://www.instagram.com/group.piar/"
+            target="_blank"
+            rel="noopener"
+            aria-label="Instagram da PiaR Group"
+          >
+            <iconify-icon icon="lucide:instagram" width="18" height="18"></iconify-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-8 border-t border-[rgba(0,0,0,.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <span class="ds-mono text-stone-400">© {year} PiaR Group · PR System</span>
+      <span class="ds-caption text-stone-400">PiaR OS v1.0 · Narrative Edition</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-link {
+    color: rgba(15, 15, 17, 0.6);
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: color 0.3s;
+    text-decoration: none;
+  }
+  .footer-link:hover { color: #0F0F11; }
+
+  .footer-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    color: rgba(15, 15, 17, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+  }
+  .footer-social:hover {
+    color: #0F0F11;
+    border-color: rgba(0, 0, 0, 0.24);
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+
+  .brand-mark {
+    text-decoration: none;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.3s;
+  }
+  .brand-mark:hover { opacity: 0.75; }
+  .brand-logo { height: 32px; width: auto; display: block; user-select: none; }
+  .brand-logo--footer { height: 40px; }
+  @media (max-width: 768px) {
+    .brand-logo { height: 28px; }
+    .brand-logo--footer { height: 34px; }
+  }
+</style>

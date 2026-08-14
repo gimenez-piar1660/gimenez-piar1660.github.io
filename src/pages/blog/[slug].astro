@@ -1,0 +1,275 @@
+---
+// Template de post do Blog. Renderiza src/content/blog/<slug>.md em /blog/<slug>.
+// Casca editorial (selo da série + dateline + capa) sobre o corpo Markdown, mais
+// a lista de prova das coberturas (placements) e o JSON-LD BlogPosting, ambos
+// vindos da MESMA fonte de dados (o frontmatter), sem duplicar verdade.
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import SinaisCover from '@components/SinaisCover.astro';
+import { site } from '@/data/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (e: CollectionEntry<'blog'>) => !e.data.draft);
+  return posts.map((post: CollectionEntry<'blog'>) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: CollectionEntry<'blog'> };
+const { Content } = await render(post);
+const d = post.data;
+const url = `${site.domain}/blog/${post.id}`;
+
+// Datas em pt-BR sem depender de ICU/locale do build (determinístico).
+const MES_CURTO = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+const MES_LONGO = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const dd = String(d.pubDate.getUTCDate()).padStart(2, '0');
+const mi = d.pubDate.getUTCMonth();
+const yy = d.pubDate.getUTCFullYear();
+const badgeDate = `${dd} ${MES_CURTO[mi]} ${yy}`;
+const longDate = `${d.pubDate.getUTCDate()} de ${MES_LONGO[mi]} de ${yy}`;
+const isoDate = d.pubDate.toISOString();
+
+type Placement = { client: string; outlet: string; title: string; url?: string; date?: string };
+const placements: Placement[] = d.placements ?? [];
+const outletsCount = new Set(placements.map((p) => p.outlet)).size;
+const editionLabel = d.edition ? `Edição ${String(d.edition).padStart(2, '0')}` : null;
+const seriesLabel = [d.series, editionLabel].filter(Boolean).join(' · ');
+
+// Tempo de leitura: usa o do frontmatter se houver; senão estima do corpo (~200 palavras/min).
+const wordCount = (post.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = d.readingTime ?? `${Math.max(1, Math.round(wordCount / 200))} min`;
+
+const seoTitle = d.seoTitle ?? d.title;
+const ldImage = d.heroImage ? new URL(d.heroImage, site.domain).href : `${site.domain}/brand/piar-horizontal-positivo.png`;
+
+const blogPosting = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.title,
+  alternativeHeadline: d.seoTitle,
+  description: d.description,
+  inLanguage: 'pt-BR',
+  datePublished: isoDate,
+  dateModified: isoDate,
+  author: { '@id': `${site.domain}/#organization` },
+  publisher: { '@id': `${site.domain}/#organization` },
+  mainEntityOfPage: url,
+  url,
+  image: ldImage,
+  articleSection: d.category,
+  isPartOf: { '@type': 'Blog', name: d.series ?? 'Blog PiaR', url: `${site.domain}/blog` },
+  keywords: placements.length ? placements.map((p) => p.client).join(', ') : undefined,
+  mentions: placements.length ? placements.map((p) => ({ '@type': 'Organization', name: p.client })) : undefined,
+  citation: placements.filter((p) => p.url).map((p) => ({
+    '@type': 'NewsArticle',
+    headline: p.title,
+    url: p.url,
+    publisher: { '@type': 'Organization', name: p.outlet },
+  })),
+};
+---
+<BaseLayout
+  title={seoTitle}
+  description={d.description}
+  noindex={d.noindex}
+  canonical={url}
+  ogImage={d.heroImage ?? '/brand/piar-horizontal-positivo.png'}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --primary: #0F0F11;
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --yellow-700: #8F710A;
+        --paper: #FAFAFA;
+        --paper-lifted: #FCFBFA;
+        --text-muted: rgba(15, 15, 17, .62);
+        --text-faint: rgba(15, 15, 17, .42);
+        --hairline: rgba(0, 0, 0, .08);
+        --radius-btn: 20px;
+        --radius-pill: 999px;
+        --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+        --ease-spring: cubic-bezier(.16, 1, .3, 1);
+        --t-smooth: all .6s var(--ease-out-expo);
+        --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-serif: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      ::selection { background: var(--primary); color: var(--accent); }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+      .reveal { opacity: 0; transform: translateY(1.4rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .08s; } .delay-200 { transition-delay: .16s; }
+
+      .eyebrow-dot { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+
+      .post-main { background: var(--paper); }
+      .post-shell { max-width: 760px; margin: 0 auto; padding: 0 1.5rem; }
+      .post-top { padding-top: 8.5rem; }
+
+      .back-link { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .3s; }
+      .back-link:hover { color: var(--primary); }
+      .back-link iconify-icon { font-size: 1rem; }
+
+      .post-series { display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.8rem; padding: .4rem .85rem; border-radius: var(--radius-pill); background: rgba(254,209,54,.16); color: #7a5f08; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+      .post-title { font-size: clamp(2.1rem, 4.6vw, 3.5rem); font-weight: 700; line-height: 1.06; letter-spacing: -.035em; margin: 1.1rem 0 0; }
+      .post-lede { font-size: 1.25rem; line-height: 1.5; letter-spacing: -.01em; color: var(--text-muted); margin: 1.25rem 0 0; max-width: 60ch; }
+      .post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-top: 1.5rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .post-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .6; }
+
+      /* capa larga entre o cabeçalho e o corpo */
+      .post-cover-wrap { max-width: 1080px; margin: 2.75rem auto 0; padding: 0 1.5rem; }
+      .post-cover { position: relative; aspect-ratio: 21 / 9; border-radius: 24px; overflow: hidden; border: 1px solid rgba(0,0,0,.10); box-shadow: var(--shadow-lg, 0 20px 48px rgba(0,0,0,.10)); }
+      @media (max-width: 640px) { .post-cover { aspect-ratio: 16 / 10; border-radius: 18px; } }
+
+      .post-rule { height: 1px; background: var(--hairline); margin: 3rem auto 0; max-width: 760px; border: 0; }
+
+      /* prosa do corpo Markdown — herda do padrão de artigo da casa */
+      .prose-piar { font-size: 1.0625rem; line-height: 1.75; color: rgba(15,15,17,.80); padding-top: 2.5rem; }
+      .prose-piar > :global(* + *) { margin-top: 1.3rem; }
+      .prose-piar > :global(p:first-of-type) { font-size: 1.22rem; line-height: 1.55; color: var(--primary); font-weight: 500; letter-spacing: -.01em; }
+      .prose-piar :global(h2) { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 600; color: var(--primary); margin-top: 3rem; margin-bottom: .25rem; letter-spacing: -.025em; line-height: 1.15; font-family: var(--font-serif); }
+      .prose-piar :global(p) { margin: 0; }
+      .prose-piar :global(em) { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--primary); }
+      .prose-piar :global(strong) { color: var(--primary); font-weight: 700; }
+      .prose-piar :global(.warm-t) { font-weight: 600; background: linear-gradient(transparent 58%, rgba(254,209,54,.55) 0); padding: 0 .05em; border-radius: 2px; }
+      .prose-piar :global(a) { color: var(--primary); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; text-decoration-thickness: 2px; transition: color .25s; }
+      .prose-piar :global(a:hover) { color: var(--accent-deep); }
+
+      /* lista de prova — as coberturas da quinzena */
+      .proof { max-width: 760px; margin: 4rem auto 0; padding: 0 1.5rem; }
+      .proof-sub { font-size: .98rem; color: var(--text-muted); line-height: 1.5; margin: .8rem 0 0; max-width: 54ch; }
+      .proof-list { list-style: none; margin: 2rem 0 0; padding: 0; border-top: 1px solid var(--hairline); }
+      .proof-item { display: grid; grid-template-columns: 1fr; gap: .35rem; padding: 1.15rem 0; border-bottom: 1px solid var(--hairline); }
+      @media (min-width: 680px) { .proof-item { grid-template-columns: 200px 1fr; gap: 1.25rem; align-items: baseline; } }
+      .proof-client { font-weight: 700; letter-spacing: -.01em; color: var(--primary); }
+      .proof-detail { display: flex; flex-direction: column; gap: .25rem; }
+      .proof-detail a, .proof-detail > span:first-child { font-size: 1.02rem; line-height: 1.35; color: var(--primary); text-decoration: none; letter-spacing: -.01em; }
+      .proof-detail a { display: inline-flex; gap: .35rem; align-items: baseline; }
+      .proof-detail a:hover { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+      .proof-detail a iconify-icon { font-size: .8rem; color: var(--accent-deep); transform: translateY(1px); flex-shrink: 0; }
+      .proof-outlet { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); }
+      .proof-note { font-size: .82rem; color: var(--text-faint); margin: 1.1rem 0 0; font-style: italic; }
+
+      /* CTA de rodapé */
+      .post-cta { max-width: 760px; margin: 3.5rem auto 0; padding: 2.5rem; border-radius: 24px; background: var(--paper-lifted); border: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
+      .post-cta .cta-copy { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; max-width: 30ch; }
+      .ink-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.6rem; border-radius: var(--radius-btn); background: var(--accent); color: var(--primary); border: 1.5px solid var(--accent); font-size: .94rem; font-weight: 600; transition: var(--t-smooth); text-decoration: none; white-space: nowrap; }
+      .ink-pill:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(254,209,54,.32); }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(blogPosting)}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="blog" />
+
+  <main id="main" class="post-main">
+    <article>
+      <!-- cabeçalho -->
+      <div class="post-shell post-top">
+        <a href="/blog" class="back-link"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon>Blog</a>
+        {seriesLabel && <div><span class="post-series">{seriesLabel}</span></div>}
+        <h1 class="post-title reveal">{d.title}</h1>
+        <p class="post-lede reveal delay-100">{d.description}</p>
+        <div class="post-meta reveal delay-100">
+          <time datetime={isoDate}>{longDate}</time>
+          {readingTime && <><span class="dot"></span><span>{readingTime} de leitura</span></>}
+          {placements.length > 0 && <><span class="dot"></span><span>{placements.length} coberturas</span></>}
+        </div>
+      </div>
+
+      <!-- capa larga -->
+      <div class="post-cover-wrap reveal delay-200">
+        <div class="post-cover">
+          <SinaisCover count={placements.length} edition={d.edition} />
+        </div>
+      </div>
+
+      <!-- corpo -->
+      <div class="post-shell">
+        <div class="prose-piar">
+          <Content />
+        </div>
+
+        {placements.length > 0 && (
+          <section class="proof reveal">
+            <span class="eyebrow-dot">As {placements.length} matérias desta quinzena</span>
+            <p class="proof-sub">
+              Nesta quinzena, {placements.length} marcas que acompanhamos apareceram em {outletsCount} veículos, por relevância editorial e sem mídia paga. A leitura acima é o padrão que conecta todas; abaixo, cada cobertura, com o link para a original.
+            </p>
+            <ol class="proof-list">
+              {placements.map((p) => (
+                <li class="proof-item">
+                  <div class="proof-client">{p.client}</div>
+                  <div class="proof-detail">
+                    {p.url
+                      ? <a href={p.url} target="_blank" rel="noopener">{p.title}<iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+                      : <span>{p.title}</span>}
+                    <span class="proof-outlet">{p.outlet}{p.date ? ` · ${p.date}` : ''}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p class="proof-note">Nenhuma dessas saiu de release em massa: cada pauta tinha um fato que só aquela marca podia dizer.</p>
+          </section>
+        )}
+
+        <div class="post-cta reveal">
+          <span class="cta-copy">Faz 13 anos que colocamos marcas em leituras como esta. O diagnóstico mostra por onde a sua entra.</span>
+          <a href="/contato" class="ink-pill">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          const lenis = new window.Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add((time) => lenis.raf(time * 1000)); window.gsap.ticker.lagSmoothing(0); }
+        }
+      } catch (e) { /* noop */ }
+      const progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    });
+  </script>
+</BaseLayout>

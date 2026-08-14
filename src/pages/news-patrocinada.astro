@@ -1,0 +1,1002 @@
+---
+// ============================================================================
+// Exemplar narrativo · News patrocinada e publieditorial
+// Conteudo voice-backed portado de:
+//   src/content/pages/news-patrocinada.md
+// Original preservado. Esta pagina e a versao "narrativa espetacular":
+// heroi canvas 2D (a fronteira earned x paga, duotom) + dataviz de espectro
+// earned/pago com transparencia (canvas 2D) + scroll storytelling (GSAP/Lenis),
+// sobre o DS da PiaR (eyebrow-dot, watermarks, inversao dark, contorno,
+// lerp mouse-parallax).
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/news-patrocinada`;
+
+// Os tres formatos: anuncio, news patrocinada, midia espontanea.
+const formatos = [
+  {
+    id: 'PAGO',
+    nome: 'Anúncio tradicional',
+    tag: 'Display, banner',
+    o: 'Espaço pago, formato declaradamente publicitário. Ninguém confunde com matéria.',
+    fonte: 'A marca',
+    decisao: 'Comercial',
+    icon: 'solar:gallery-wide-line-duotone',
+  },
+  {
+    id: 'HIBRIDO',
+    nome: 'News patrocinada',
+    tag: 'Publieditorial, branded content',
+    o: 'Conteúdo pago em formato editorial, com sinalização clara de patrocínio. Fica entre o anúncio e a matéria.',
+    fonte: 'A marca, com etiqueta',
+    decisao: 'Comercial, sinalizada',
+    icon: 'solar:feed-line-duotone',
+    featured: true,
+  },
+  {
+    id: 'EARNED',
+    nome: 'Mídia espontânea',
+    tag: 'Earned media',
+    o: 'O veículo publica porque a pauta tem interesse jornalístico. Sem pagamento. Constrói credibilidade.',
+    fonte: 'O jornalista',
+    decisao: 'Editorial',
+    icon: 'solar:medal-ribbons-star-line-duotone',
+  },
+];
+
+// O passo a passo de producao com transparencia.
+const passos = [
+  {
+    num: '01',
+    titulo: 'Decida a rota antes de gastar',
+    desc: 'Tem gancho jornalístico de verdade, a pauta vai à redação como earned media. Não tem gancho, mas tem valor real para o leitor, entra a rota paga. Essa triagem evita pagar pelo que sairia de graça.',
+  },
+  {
+    num: '02',
+    titulo: 'Escolha o veículo pelo público',
+    desc: 'O leitor do veículo precisa ser seu público-alvo, não o alcance bruto. Verifique a política de sinalização antes de fechar: como ele etiqueta o patrocínio e onde a etiqueta aparece.',
+  },
+  {
+    num: '03',
+    titulo: 'Defina o ângulo por dado e utilidade',
+    desc: 'O publieditorial bom entrega informação que serve ao leitor, não um folheto de vendas. Comece pela pergunta que o público tem, não pelo recado da marca.',
+  },
+  {
+    num: '04',
+    titulo: 'Produza no padrão editorial',
+    desc: 'Estrutura de matéria, dados verificáveis, citação nomeada. Mas sem imitar a voz jornalística do veículo a ponto de enganar. O leitor deve reconhecer que é conteúdo de marca.',
+  },
+  {
+    num: '05',
+    titulo: 'Sinalize de forma ostensiva',
+    desc: 'A etiqueta precisa estar visível e imediata, no topo, sem depender de interação do usuário. O guia do CONAR recomenda sinalização ostensiva, visível e imediata.',
+  },
+  {
+    num: '06',
+    titulo: 'Submeta à revisão jurídica',
+    desc: 'Claims sobre produto, comparações, dados de mercado e setores regulados (saúde, finanças) passam por checagem antes de publicar. É o passo que a pressa costuma pular.',
+  },
+  {
+    num: '07',
+    titulo: 'Meça o que importa',
+    desc: 'Defina antes se o objetivo é alcance, leitura qualificada ou conversão. Acompanhe e registre o resultado com clipping e dados do veículo, para alimentar a próxima decisão.',
+  },
+];
+
+// Quando usar o formato pago.
+const quandoUsar = [
+  {
+    nome: 'Controle de mensagem e timing',
+    desc: 'Lançamento com data fixa, posicionamento sobre tema sensível, produto complexo que o jornalista não cobriria em profundidade. O pago garante espaço que a pauta espontânea não garante.',
+    icon: 'solar:calendar-mark-line-duotone',
+  },
+  {
+    nome: 'Pauta sem gancho, com valor',
+    desc: 'Conteúdo educativo, guia técnico, contexto de mercado. Não vira matéria espontânea, mas serve à audiência do veículo.',
+    icon: 'solar:book-2-line-duotone',
+  },
+  {
+    nome: 'Presença em veículo de nicho',
+    desc: 'Quando o público do veículo é exatamente seu público-alvo e a marca quer estar lá de forma recorrente.',
+    icon: 'solar:target-line-duotone',
+  },
+  {
+    nome: 'Amplificação de um earned',
+    desc: 'Uma conquista real (prêmio, dado de mercado, estudo próprio) pode render matéria espontânea e, em paralelo, um publieditorial que aprofunda o tema.',
+    icon: 'solar:volume-loud-line-duotone',
+  },
+];
+
+// Quando NAO usar.
+const quandoNao = [
+  'Para fabricar autoridade que você não tem. Pagar por espaço editorial não constrói reputação se o conteúdo não se sustenta. O leitor percebe.',
+  'Como substituto da assessoria de imprensa. Se a única presença da marca na mídia é paga, a ausência de cobertura espontânea fica evidente e enfraquece o posicionamento.',
+  'Quando a pauta tem gancho noticioso real. Se o fato é notícia, leve à redação primeiro. Pagar por algo que sairia de graça desperdiça orçamento e retira a credibilidade da cobertura espontânea.',
+  'Sem orçamento para sinalização honesta. Se o veículo se recusa a etiquetar com clareza, recuse a publicação. Publicidade velada é risco jurídico e reputacional, não economia.',
+];
+
+// Erros comuns.
+const erros = [
+  { t: 'Sinalização escondida ou ambígua', d: 'Etiqueta em cinza-claro no fim do texto, ou termos vagos como "em colaboração". O leitor precisa saber que é pago antes de começar a ler.' },
+  { t: 'Imitar a voz do veículo para enganar', d: 'Copiar a identidade jornalística a ponto de o leitor não distinguir. O formato editorial é legítimo; o disfarce não.' },
+  { t: 'Pagar pelo que sairia de graça', d: 'Transformar em publieditorial uma pauta que tem gancho noticioso real. Desperdício de orçamento e perda da credibilidade da cobertura espontânea.' },
+  { t: 'Tratar o pago como atalho', d: 'Comprar espaço não constrói autoridade sozinho. Sem lastro de conteúdo e sem presença editorial espontânea, o efeito é raso.' },
+  { t: 'Pular a revisão jurídica', d: 'Claims sem comprovação, comparações diretas com concorrentes, dados sem fonte. Em setores regulados, isso vira passivo.' },
+  { t: 'Confundir a métrica', d: 'Cobrar de um publieditorial a credibilidade que só a mídia espontânea entrega, ou vice-versa. Cada formato cumpre um papel.' },
+];
+
+const clientes = ['Endemol Shine Brasil', 'Big Brother Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
+
+const faq = [
+  {
+    q: 'News patrocinada é a mesma coisa que publieditorial?',
+    a: 'Na prática, sim. "Publieditorial" é o termo tradicional para conteúdo editorial pago em veículos; "news patrocinada", "branded content" e "native advertising" são variações mais recentes do mesmo princípio: conteúdo pago em formato editorial, com sinalização de patrocínio.',
+  },
+  {
+    q: 'Publieditorial é jornalismo?',
+    a: 'Não. Tem formato jornalístico, mas a decisão de publicar é comercial e o ângulo é definido pela marca. Por isso a sinalização de patrocínio é obrigatória: é o que diferencia publieditorial de publicidade velada.',
+  },
+  {
+    q: 'Preciso sinalizar mesmo se não houve pagamento em dinheiro?',
+    a: 'Sim. Segundo o guia do CONAR de 2026, a caracterização de publicidade independe de pagamento direto: permuta, benefício indireto ou qualquer relação comercial que influencie o conteúdo exige sinalização.',
+  },
+  {
+    q: 'News patrocinada substitui assessoria de imprensa?',
+    a: 'Não. Earned media constrói credibilidade porque a decisão de publicar é do jornalista. O pago garante espaço e controle, mas não entrega a mesma credibilidade. Os dois se complementam; um não troca pelo outro.',
+  },
+  {
+    q: 'Onde a etiqueta de patrocínio deve aparecer?',
+    a: 'No topo, de forma ostensiva, visível e imediata, sem depender de o leitor clicar ou rolar a página, conforme a orientação do CONAR. Termos inequívocos como "Conteúdo patrocinado" ou "Publicidade" funcionam melhor que expressões vagas.',
+  },
+  {
+    q: 'Quanto custa um publieditorial?',
+    a: 'Varia por veículo, formato, tempo de permanência e produção. Não há tabela única de mercado. O custo deve ser avaliado contra o objetivo definido (alcance, leitura qualificada ou conversão) e comparado ao que a rota earned entregaria pelo mesmo orçamento. O investimento da PiaR é sob consulta.',
+  },
+  {
+    q: 'O publieditorial prejudica a credibilidade da marca?',
+    a: 'Não, se for sinalizado com honestidade e tiver conteúdo que serve ao leitor. Prejudica quando tenta se passar por matéria espontânea. A transparência é o que preserva a confiança de quem lê.',
+  },
+];
+---
+<BaseLayout
+  title="News patrocinada: a fronteira entre o que você conquista e o que você paga"
+  description="News patrocinada (publieditorial) é conteúdo pago em formato editorial, com sinalização clara de patrocínio. O que é, quando usar, quando evitar e como manter a transparência. Na PiaR, paga complementa earned, nunca substitui."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --np-ink: #0A0A0C;
+        --np-ink-2: #141417;
+        --np-earned: #3DD8A4;      /* territorio conquistado */
+        --np-paid: #FED136;        /* territorio pago */
+        --np-line: #FF7A5B;        /* a fronteira */
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botoes */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · canvas 2D · a fronteira earned x paga (duotom)
+         =========================================================== */
+      .np-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--np-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #np-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .np-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 20% 38%, rgba(10,10,12,.84) 0%, rgba(10,10,12,.36) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .np-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .np-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .np-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .np-hero h1 { font-size: clamp(2.8rem, 8vw, 7.4rem); font-weight: 700; line-height: .94; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 18ch; text-wrap: balance; }
+      .np-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 50ch; }
+      .np-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .np-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .np-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .np-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .np-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--np-earned); box-shadow: 0 0 8px 1px rgba(61,216,164,.7); }
+      .np-hero-float.f2 .dot { background: var(--np-paid); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .np-hero-float.f1 { right: 9%; top: 26%; }
+      .np-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .np-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Tres Mares · contorno (a divisa earned/paga) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.09);
+        background:
+          linear-gradient(91deg, transparent 0 49.4%, rgba(255,122,91,.16) 49.4% 50.6%, transparent 50.6% 100%),
+          repeating-linear-gradient(0deg, transparent 0 44px, var(--contour-line) 44px 45px);
+        -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 0%, rgba(0,0,0,.55) 44%, transparent 80%);
+                mask-image: radial-gradient(circle at 50% 45%, #000 0%, rgba(0,0,0,.55) 44%, transparent 80%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         secoes base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--np-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (earned x paga) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--np-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* tres formatos */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 980px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.4rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.12; }
+      .layer-card .l-tag { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-deep); margin-top: .45rem; }
+      .layer-card .l-otimiza { font-size: 1rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .55rem; }
+      .layer-card .l-meta .row { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; text-align: right; letter-spacing: -.01em; }
+      .layer-card.featured { background: var(--np-ink); color: #fff; border-color: var(--np-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(254,209,54,.20) 0%, transparent 60%), radial-gradient(70% 50% at 8% 100%, rgba(61,216,164,.14) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-tag { color: var(--np-earned); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .badge { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 1; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .6rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         4 · DATAVIZ · espectro earned x paga + transparencia (canvas 2D)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #np-spectrum-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* passos (metodo) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 230px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .8rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* frentes (quando usar) */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* quando NAO usar · lista dark com X */
+      .nogo-list { display: grid; grid-template-columns: 1fr; gap: .85rem; margin-top: 2rem; }
+      @media (min-width: 820px) { .nogo-list { grid-template-columns: 1fr 1fr; gap: 1rem; } }
+      .nogo { display: flex; gap: .85rem; align-items: flex-start; padding: 1.4rem 1.6rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
+      .nogo iconify-icon { color: var(--np-line); font-size: 1.35rem; flex-shrink: 0; margin-top: .1rem; }
+      .nogo p { font-size: .98rem; line-height: 1.55; color: rgba(255,255,255,.78); margin: 0; }
+
+      /* erros · grade clara */
+      .erros-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .erros-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .erros-grid { grid-template-columns: repeat(3, 1fr); } }
+      .erro-card { padding: 1.75rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); }
+      .erro-card .e-t { font-size: 1.08rem; font-weight: 600; letter-spacing: -.015em; display: flex; gap: .55rem; align-items: flex-start; line-height: 1.25; }
+      .erro-card .e-t iconify-icon { color: var(--np-line); font-size: 1.2rem; flex-shrink: 0; margin-top: .12rem; }
+      .erro-card .e-d { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .7rem; }
+
+      /* sinalizacao · etiqueta de exemplo */
+      .signal-demo { margin-top: 2.5rem; border-radius: var(--radius-card); overflow: hidden; border: 1px solid rgba(255,255,255,.14); max-width: 56ch; }
+      .signal-demo .tape { background: var(--accent); color: var(--primary); font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: .7rem 1.1rem; display: flex; align-items: center; gap: .5rem; }
+      .signal-demo .body { background: rgba(255,255,255,.04); padding: 1.4rem 1.4rem 1.5rem; }
+      .signal-demo .body .ttl { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; color: #fff; }
+      .signal-demo .body .ln { height: 8px; border-radius: 4px; background: rgba(255,255,255,.1); margin-top: .85rem; }
+      .signal-demo .body .ln.s { width: 72%; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 20ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .np-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'News patrocinada: a fronteira entre o que você conquista e o que você paga',
+        description:
+          'News patrocinada (publieditorial) é conteúdo pago em formato editorial, com sinalização clara de patrocínio. Na PiaR, paga complementa earned, nunca substitui.',
+        inLanguage: 'pt-BR',
+        about: 'News patrocinada',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="np-hero">
+      <canvas id="np-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="np-hero-float f1 px" data-parallax-y="28" aria-hidden="true"><span class="dot"></span>Earned</span>
+      <span class="np-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Paga</span>
+      <div class="wrap hero-inner">
+        <span class="np-hero-chip reveal"><span class="dot"></span>Conteúdo · News patrocinada e publieditorial</span>
+        <h1 class="reveal d1">A fronteira entre o que você <span class="accent-serif on-dark">conquista</span> e o que você paga.</h1>
+        <p class="sub reveal d2">
+          Earned media constrói credibilidade porque quem decidiu publicar foi o jornalista.
+          News patrocinada garante espaço, formato e timing porque você pagou. Confundir os dois é onde os erros acontecem.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Mapear a rota antes de investir<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#virada" class="btn btn-ghost-d">Entender a diferença<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="np-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · A VIRADA · earned x paga -->
+    <section id="virada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">earned</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Origem e contrato</span>
+          <h2>News patrocinada não é mídia <span class="accent-serif">espontânea</span>.</h2>
+          <p class="lede">A diferença não é estilística, é de origem e de contrato. Os dois geram resultados diferentes, e tentar fazer um passar pelo outro é onde a maioria dos erros começa.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Mídia espontânea · earned</span>
+            <h3>O veículo decide. Sem pagamento.</h3>
+            <p>A pauta sai porque tem interesse jornalístico. Se a marca não existisse ou o fato não fosse relevante, a matéria não sairia. O custo está no relacionamento e na construção da pauta, não no espaço.</p>
+            <div class="steps"><span>Pauta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Redação</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Decisão editorial</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Credibilidade</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">News patrocinada · paga</span>
+            <h3>A marca paga. Define o ângulo.</h3>
+            <p>O veículo entrega produção e distribuição com a etiqueta de conteúdo patrocinado. A decisão sobre publicar foi comercial, não jornalística. Você ganha espaço, formato e timing.</p>
+            <div class="steps"><span>Briefing</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Contrato</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Etiqueta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Espaço</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">News patrocinada empresta a credibilidade do veículo, mas <span class="hl">não a transfere</span> de forma permanente.</p>
+      </div>
+    </section>
+
+    <!-- 3 · TRES FORMATOS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Três formatos, não sinônimos</span>
+          <h2>O publieditorial fica entre o anúncio e a <span class="accent-serif">matéria</span>.</h2>
+          <p class="lede">Anúncio, news patrocinada e <a href="/midia-espontanea" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">mídia espontânea</a> fazem coisas diferentes. A diferença está na origem do sinal: quem decidiu publicar, e se houve pagamento pelo espaço. Por ficar no meio, o publieditorial exige cuidado redobrado com a sinalização.</p>
+        </div>
+        <div class="layers">
+          {formatos.map((c, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', c.featured && 'featured']}>
+              {c.featured && <span class="badge">O foco desta página</span>}
+              <div class="l-icon"><iconify-icon icon={c.icon}></iconify-icon></div>
+              <div class="l-id">{c.id}</div>
+              <div class="l-name">{c.nome}</div>
+              <div class="l-tag">{c.tag}</div>
+              <p class="l-otimiza">{c.o}</p>
+              <div class="l-meta">
+                <div class="row"><span class="k">Quem decide</span><span class="v">{c.fonte}</span></div>
+                <div class="row"><span class="k">Natureza</span><span class="v">{c.decisao}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Segundo a Wikipedia, o publieditorial avisa o leitor de que <span class="hl">se trata de conteúdo patrocinado</span>. O aviso não é detalhe.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · espectro earned x paga + transparencia -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="np-spectrum-canvas" role="img" aria-label="Espectro de credibilidade: a mídia espontânea entrega mais credibilidade, o conteúdo pago entrega mais controle. A transparência da sinalização move o conteúdo pago de volta para perto da confiança."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#3DD8A4"></span>Earned · credibilidade</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Paga · controle</span>
+              <span class="li"><span class="sw" style="background:#FF7A5B"></span>A fronteira: a etiqueta</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>O que você conquista entrega credibilidade. O que você paga entrega <span class="accent-serif on-dark">controle</span>.</h2>
+            <p class="lede">Earned media constrói confiança porque a decisão de publicar foi do jornalista. News patrocinada garante espaço, formato e timing, mas a credibilidade só se sustenta enquanto a etiqueta de patrocínio estiver visível e honesta.</p>
+            <p class="lede" style="margin-top:1.25rem">No momento em que a sinalização some ou engana, o efeito se inverte, e o dano respinga no veículo e na marca ao mesmo tempo. A transparência não é custo. É o que mantém o conteúdo pago perto da confiança, em vez de empurrá-lo para a publicidade velada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · POR QUE EARNED VEM PRIMEIRO -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:60ch">
+          <span class="eyebrow reveal">Por que earned vem primeiro</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            Pagar por espaço editorial não constrói reputação se o conteúdo <span class="hl">não se sustenta</span>. O leitor percebe.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Comunicação séria começa por dados e por relacionamento com a imprensa. Earned media vem primeiro. Conteúdo pago entra como complemento honesto, com sinalização clara, nunca como substituto do trabalho editorial. Use o formato pago depois de esgotar, ou em paralelo à, a rota editorial. Se a única presença da marca na mídia é paga, a ausência de cobertura espontânea fica evidente e enfraquece o posicionamento.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · QUANDO USAR -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quando faz sentido</span>
+          <h2>O formato pago entra como <span class="accent-serif">complemento</span>.</h2>
+          <p class="lede">News patrocinada faz sentido depois de esgotar, ou em paralelo à, a rota editorial. Quatro situações em que o pago resolve o que a pauta espontânea não garante.</p>
+        </div>
+        <div class="frentes-grid">
+          {quandoUsar.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 2 === 1) && 'd1']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · QUANDO NAO USAR -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Quando não usar</span>
+          <h2>Há situações em que o pago <span class="accent-serif on-dark">atrapalha</span> mais do que ajuda.</h2>
+          <p class="lede">Quatro casos em que news patrocinada custa caro e entrega pouco, ou pior, queima a credibilidade que o trabalho editorial já construiu.</p>
+        </div>
+        <div class="nogo-list reveal d1">
+          {quandoNao.map((q) => (
+            <div class="nogo"><iconify-icon icon="solar:close-circle-line-duotone"></iconify-icon><p>{q}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PASSO A PASSO -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">transparência</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Passo a passo</span>
+          <h2>Como produzir com <span class="accent-serif">transparência</span>.</h2>
+          <p class="lede">Sete passos do diagnóstico de rota à medição, com um princípio que não muda: nada vai a público sem passar por revisão jurídica.</p>
+        </div>
+        <div class="steps-grid">
+          {passos.map((e, i) => (
+            <div class:list={['step-card', 'reveal', (i % 4 === 1) && 'd1', (i % 4 === 2) && 'd2', (i % 4 === 3) && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · COMO SINALIZAR · regra brasileira -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <span class="eyebrow on-dark">A regra brasileira</span>
+            <h2>A etiqueta no topo, <span class="accent-serif on-dark">inequívoca</span> e imediata.</h2>
+            <p class="lede">Segundo o Código de Defesa do Consumidor, toda informação publicitária deve ser clara e ostensiva, permitindo identificar de imediato sua natureza comercial. Publicidade que não se identifica como tal é publicidade velada, vedada.</p>
+            <p class="lede" style="margin-top:1.25rem">O CONAR publicou em maio de 2026 nova edição do Guia de Publicidade por Influenciadores Digitais. A sinalização deve ser ostensiva, visível e imediata, sem depender de interação. E a caracterização de publicidade independe de pagamento direto: permuta ou benefício indireto também exigem sinalização.</p>
+          </div>
+          <div class="reveal d1">
+            <div class="signal-demo">
+              <div class="tape"><iconify-icon icon="solar:tag-line-duotone"></iconify-icon>Conteúdo patrocinado por sua marca</div>
+              <div class="body">
+                <div class="ttl">O título da matéria entra aqui</div>
+                <div class="ln"></div>
+                <div class="ln"></div>
+                <div class="ln s"></div>
+              </div>
+            </div>
+            <p class="ds-mono" style="color:rgba(255,255,255,.5); margin-top:1.1rem">/// etiqueta no topo, não em letra pequena no rodapé</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · ERROS COMUNS -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-14" aria-hidden="true">erros</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Erros comuns</span>
+          <h2>O que separa o formato legítimo do <span class="accent-serif">disfarce</span>.</h2>
+          <p class="lede">O formato editorial é legítimo. O que arrisca a confiança de quem lê é a falta de transparência, a métrica trocada e a pressa que pula a checagem.</p>
+        </div>
+        <div class="erros-grid">
+          {erros.map((e, i) => (
+            <div class:list={['erro-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="e-t"><iconify-icon icon="solar:danger-triangle-line-duotone"></iconify-icon>{e.t}</div>
+              <p class="e-d">{e.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · O MERCADO -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:54ch">
+          <span class="eyebrow">Por que o formato cresce</span>
+          <h2>O formato editorial pago resolve o que o banner <span class="accent-serif">não resolve</span>.</h2>
+          <p class="lede">O investimento em publicidade digital no Brasil somou R$ 37,9 bilhões em 2024, alta de 8% sobre 2023, segundo estudo do IAB Brasil com a Kantar Ibope Media. Portais de conteúdo e verticais responderam por 19% desse total. O publieditorial cresce porque entrega contexto e se hospeda no ambiente de credibilidade do veículo. Estudos de mercado citados pelo setor indicam recall assistido alto para branded content. Use esse argumento com cautela e sempre nomeando a fonte: a métrica só vale com origem pública nomeada.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · COMO A PiaR TRATA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">A posição da PiaR</span>
+          <h2>Paga complementa earned, e <span class="accent-serif on-dark">nunca substitui</span>.</h2>
+          <p class="lede">A PiaR é uma agência de comunicação em São Paulo desde {site.foundingYear}, com relações com a imprensa para clientes reais. Nossa posição sobre conteúdo pago é consistente com a metodologia PEP e com o processo que inclui revisão jurídica.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// Entre os clientes atendidos em relações com a imprensa</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Recusamos o disparo em massa. A pauta certa vai para a redação certa, e o formato pago entra quando resolve um problema que a mídia espontânea não resolve. A gestão de crise sustenta esse trabalho quando a pauta exige resposta rápida e coordenada. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">rota</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Mapeie a rota antes de <span class="accent-serif on-dark">investir</span>.</h2>
+        <p class="lede reveal d2">Se você está avaliando onde o publieditorial encaixa no seu plano, e onde ele atrapalharia mais do que ajudaria, vale uma conversa para mapear a rota antes de gastar. O investimento da PiaR é sob consulta.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Falar com a PiaR<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no heroi (Tres Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · canvas 2D · a fronteira earned x paga (duotom)
+         Uma linha viva divide o territorio conquistado (verde) do
+         territorio pago (amarelo). Pontos de cada lado pulsam,
+         a fronteira ondula, e o titulo fica por cima.
+         ======================================================== */
+      (function frontierField() {
+        var canvas = document.getElementById('np-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 70% 35%, #103a2c 0%, #0c1612 55%, #0A0A0C 100%)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        var W = 0, H = 0, t = 0;
+        var EARNED = [61, 216, 164];   // verde · conquistado
+        var PAID = [254, 209, 54];     // amarelo · pago
+        var LINE = [255, 122, 91];     // a fronteira
+        var earnedDots = [], paidDots = [];
+
+        function seed() {
+          earnedDots = []; paidDots = [];
+          var n = Math.max(26, Math.floor(W / 26));
+          for (var i = 0; i < n; i++) {
+            earnedDots.push({ bx: Math.random(), by: Math.random(), ph: Math.random() * 6.28, sp: 0.4 + Math.random() * 0.8, r: 0.8 + Math.random() * 1.8 });
+            paidDots.push({ bx: Math.random(), by: Math.random(), ph: Math.random() * 6.28, sp: 0.4 + Math.random() * 0.8, r: 0.8 + Math.random() * 1.8 });
+          }
+        }
+
+        function resize() {
+          W = canvas.clientWidth; H = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          seed();
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        // a fronteira: curva que desce a tela, ondulando no tempo.
+        function frontierX(y, time) {
+          var base = W * (0.52 + 0.13 * Math.sin(y * 0.0024 + time * 0.22));
+          base += 26 * Math.sin(y * 0.011 - time * 0.4);
+          return base;
+        }
+
+        function rgba(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // bandas de territorio (gradientes suaves dos dois lados)
+          var gE = ctx.createLinearGradient(0, 0, W, 0);
+          gE.addColorStop(0, rgba(EARNED, 0.10)); gE.addColorStop(0.5, rgba(EARNED, 0.02)); gE.addColorStop(1, rgba(EARNED, 0));
+          ctx.fillStyle = gE; ctx.fillRect(0, 0, W, H);
+          var gP = ctx.createLinearGradient(W, 0, 0, 0);
+          gP.addColorStop(0, rgba(PAID, 0.09)); gP.addColorStop(0.5, rgba(PAID, 0.015)); gP.addColorStop(1, rgba(PAID, 0));
+          ctx.fillStyle = gP; ctx.fillRect(0, 0, W, H);
+
+          // dots conquistados (lado esquerdo da fronteira)
+          for (var i = 0; i < earnedDots.length; i++) {
+            var d = earnedDots[i];
+            var x = d.bx * W * 0.46;
+            var y = d.by * H;
+            var pulse = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(t * d.sp + d.ph));
+            ctx.beginPath(); ctx.arc(x, y, d.r, 0, 6.2832);
+            ctx.fillStyle = rgba(EARNED, 0.22 + 0.5 * pulse); ctx.fill();
+          }
+          // dots pagos (lado direito da fronteira)
+          for (var j = 0; j < paidDots.length; j++) {
+            var p = paidDots[j];
+            var px = W * 0.56 + p.bx * W * 0.44;
+            var py = p.by * H;
+            var pp = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(t * p.sp + p.ph));
+            ctx.beginPath(); ctx.arc(px, py, p.r, 0, 6.2832);
+            ctx.fillStyle = rgba(PAID, 0.20 + 0.5 * pp); ctx.fill();
+          }
+
+          // a fronteira (glow + linha)
+          ctx.beginPath();
+          for (var y2 = -10; y2 <= H + 10; y2 += 8) {
+            var fx = frontierX(y2, t);
+            if (y2 <= -10) ctx.moveTo(fx, y2); else ctx.lineTo(fx, y2);
+          }
+          ctx.lineWidth = 8; ctx.strokeStyle = rgba(LINE, 0.10);
+          ctx.lineJoin = 'round'; ctx.stroke();
+          ctx.lineWidth = 1.6; ctx.strokeStyle = rgba(LINE, 0.55); ctx.stroke();
+
+          // marcador que desce a fronteira (a etiqueta cruzando o territorio)
+          var my = (H * 0.5) + Math.sin(t * 0.5) * H * 0.34;
+          var mx = frontierX(my, t);
+          ctx.beginPath(); ctx.arc(mx, my, 3.2, 0, 6.2832);
+          ctx.fillStyle = rgba(LINE, 0.95); ctx.fill();
+          ctx.beginPath(); ctx.arc(mx, my, 9, 0, 6.2832);
+          ctx.fillStyle = rgba(LINE, 0.16); ctx.fill();
+
+          t += 0.016;
+          if (!prefersReduced) requestAnimationFrame(draw);
+        }
+
+        if (prefersReduced) { t = 12; draw(); } else { requestAnimationFrame(draw); }
+      })();
+
+      /* ========================================================
+         DATAVIZ · espectro earned x paga + transparencia (canvas 2D)
+         Eixo de credibilidade (vertical) x controle (horizontal).
+         Tres marcadores: earned (alto, esquerda), pago-honesto
+         (medio), pago-velado (baixo). A etiqueta de transparencia
+         puxa o pago para cima.
+         ======================================================== */
+      (function spectrumViz() {
+        var canvas = document.getElementById('np-spectrum-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, t = 0;
+        var pad = { l: 56, r: 30, t: 28, b: 46 };
+        var points = [
+          { kx: 0.16, ky: 0.16, c: [61, 216, 164], label: 'Earned', sub: 'credibilidade alta' },
+          { kx: 0.62, ky: 0.40, c: [254, 209, 54], label: 'Pago honesto', sub: 'etiqueta visível' },
+          { kx: 0.84, ky: 0.84, c: [255, 122, 91], label: 'Pago velado', sub: 'sinalização some' }
+        ];
+        var hover = -1, mouse = { x: -1, y: -1 };
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        layout();
+
+        function px(kx) { return pad.l + kx * (W - pad.l - pad.r); }
+        function py(ky) { return pad.t + ky * (H - pad.t - pad.b); }
+        function rgba(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // grade
+          ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1;
+          for (var g = 0; g <= 4; g++) {
+            var gx = px(g / 4);
+            ctx.beginPath(); ctx.moveTo(gx, py(0)); ctx.lineTo(gx, py(1)); ctx.stroke();
+            var gy = py(g / 4);
+            ctx.beginPath(); ctx.moveTo(px(0), gy); ctx.lineTo(px(1), gy); ctx.stroke();
+          }
+
+          // eixos
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.fillStyle = 'rgba(255,255,255,.5)';
+          ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+          ctx.save();
+          ctx.translate(16, py(0.5)); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center';
+          ctx.fillText('CREDIBILIDADE', 0, 0);
+          ctx.restore();
+          ctx.textAlign = 'center';
+          ctx.fillText('CONTROLE DA MARCA', (px(0) + px(1)) / 2, H - 12);
+
+          // a fronteira: linha diagonal viva que separa "perto da confianca"
+          // de "publicidade velada"; a etiqueta honesta mantem o pago acima.
+          ctx.beginPath();
+          for (var s = 0; s <= 1.001; s += 0.04) {
+            var fx = px(s);
+            var fy = py(0.30 + s * 0.42 + 0.03 * Math.sin(s * 9 + t));
+            if (s === 0) ctx.moveTo(fx, fy); else ctx.lineTo(fx, fy);
+          }
+          ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(255,122,91,.5)'; ctx.stroke();
+          ctx.font = '600 9px "JetBrains Mono", monospace';
+          ctx.fillStyle = 'rgba(255,122,91,.7)'; ctx.textAlign = 'right';
+          ctx.fillText('A ETIQUETA', px(0.98), py(0.30 + 0.42) - 8);
+
+          // seta de transparencia: do pago-velado de volta para o pago-honesto
+          var a0 = points[2], a1 = points[1];
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(px(a0.kx), py(a0.ky));
+          ctx.lineTo(px(a1.kx), py(a1.ky));
+          ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.lineWidth = 1.2; ctx.stroke();
+          ctx.setLineDash([]);
+
+          // pontos
+          ctx.textBaseline = 'middle';
+          for (var i = 0; i < points.length; i++) {
+            var p = points[i];
+            var X = px(p.kx), Y = py(p.ky);
+            var active = hover === i;
+            var ring = 7 + (Math.sin(t * 1.4 + i) + 1) * 2;
+            ctx.beginPath(); ctx.arc(X, Y, ring + (active ? 3 : 0), 0, 6.2832);
+            ctx.fillStyle = rgba(p.c, 0.14); ctx.fill();
+            ctx.beginPath(); ctx.arc(X, Y, active ? 6.5 : 5, 0, 6.2832);
+            ctx.fillStyle = rgba(p.c, 0.96); ctx.fill();
+            ctx.font = '700 11px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(255,255,255,.94)';
+            ctx.textAlign = X > W * 0.6 ? 'right' : 'left';
+            var ox = X > W * 0.6 ? -12 : 12;
+            ctx.fillText(p.label, X + ox, Y - 6);
+            ctx.font = '600 9px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(255,255,255,.55)';
+            ctx.fillText(p.sub, X + ox, Y + 8);
+          }
+
+          t += 0.02;
+          if (!prefersReduced) requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+          hover = -1;
+          for (var i = 0; i < points.length; i++) {
+            if (Math.hypot(px(points[i].kx) - mouse.x, py(points[i].ky) - mouse.y) < 22) { hover = i; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', function () { layout(); }, { passive: true });
+
+        if (prefersReduced) { t = 6; draw(); } else { requestAnimationFrame(draw); }
+      })();
+    });
+  </script>
+</BaseLayout>

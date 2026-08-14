@@ -1,0 +1,924 @@
+---
+// ============================================================================
+// Narrativa espetacular · BRANDING
+// Conteudo voice-backed portado de:
+//   src/content/pages/branding.md
+// Original preservado. Esta pagina e a versao "narrativa espetacular":
+// heroi com motor proprio em canvas 2D (formas dispersas que convergem para
+// um eixo de coerencia) + dataviz de eixos de percepcao (o que voce diz x o
+// que percebem) que se alinham quando ha coerencia + scroll storytelling
+// (GSAP/Lenis), sobre o DS canonico da PiaR (eyebrow-dot, ghost-marks,
+// secoes paper/warm/dark, contorno Tres Mares, lerp mouse-parallax).
+// A cor-assinatura desta pagina vive no motor (amarelo PiaR) e no contorno.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/branding`;
+
+// O que entra no escopo: camadas estrategica e verbal, ancoradas na presenca publica.
+const escopo = [
+  {
+    nome: 'Estratégia de marca',
+    desc: 'Definição de territórios, atributos e a percepção que a empresa precisa ocupar no mercado.',
+    icon: 'solar:target-line-duotone',
+  },
+  {
+    nome: 'Posicionamento',
+    desc: 'O lugar que a marca defende contra concorrentes e categorias, traduzido em uma tese que a imprensa entende.',
+    icon: 'solar:map-point-wave-line-duotone',
+  },
+  {
+    nome: 'Narrativa',
+    desc: 'A história da marca de ponta a ponta, do propósito ao produto, pronta para virar pauta e cobertura.',
+    icon: 'solar:book-2-line-duotone',
+  },
+  {
+    nome: 'Identidade verbal',
+    desc: 'Tom de voz, mensagens-chave e vocabulário que a marca usa em release, entrevista, redes e site, com consistência.',
+    icon: 'solar:chat-square-like-line-duotone',
+  },
+  {
+    nome: 'Voz executiva',
+    desc: 'Posicionamento de porta-vozes e construção de autoridade de fundadores e lideranças na mídia.',
+    icon: 'solar:microphone-3-line-duotone',
+  },
+  {
+    nome: 'Conexão com a imprensa',
+    desc: 'Messaging framework que alimenta diretamente a ativação editorial, para que branding e cobertura falem a mesma língua.',
+    icon: 'solar:link-circle-line-duotone',
+  },
+];
+
+// As quatro etapas do metodo aplicadas a branding.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico e mapeamento',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Leitura da percepção atual, dos concorrentes, da cobertura existente e do que o mercado já diz sobre a marca.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging framework',
+    prazo: 'Semanas 3 e 4',
+    desc: 'A base da narrativa, com posicionamento, atributos, mensagens-chave e identidade verbal documentados.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Semanas 5 a 12',
+    desc: 'O branding sai do papel e vira presença, na imprensa, na voz dos porta-vozes e nos canais próprios.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Ciclos quinzenais',
+    desc: 'Acompanhamento de como a percepção evolui na mídia, na busca e nas respostas de inteligência artificial.',
+  },
+];
+
+// PEP · vetores que costumam ancorar branding.
+const vetores = [
+  { nome: 'Narrativa', desc: 'A história da marca contada de ponta a ponta, do propósito ao produto.', eixo: true },
+  { nome: 'Cadência', desc: 'Ritmo constante de presença pública, não picos isolados.', eixo: true },
+  { nome: 'Palco', desc: 'Os momentos e espaços onde a marca aparece e é ouvida.', eixo: false },
+  { nome: 'Conversa', desc: 'O diálogo com públicos, imprensa e mercado.', eixo: false },
+  { nome: 'Alcance', desc: 'A amplitude da mensagem entre os públicos certos.', eixo: false },
+  { nome: 'Veículo', desc: 'Os canais que carregam a narrativa até o destino.', eixo: false },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Endemol Shine Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia', 'Sambatech', 'Liga Ventures', 'Printi', 'Corning', 'PagBrasil', 'FluencyPass'];
+
+const faq = [
+  {
+    q: 'Branding e identidade visual são a mesma coisa?',
+    a: 'Não. Identidade visual (logotipo, cores, tipografia) é uma camada do branding, a mais visível, mas não a que sustenta a marca no longo prazo. Branding na PiaR começa na estratégia, no posicionamento e na narrativa, as camadas que definem o que a marca significa e como ela é percebida. A identidade visual entra como entrega complementar, com parceiros de design sob a nossa direção.',
+  },
+  {
+    q: 'Por que uma agência de comunicação faz branding?',
+    a: 'Porque marca e reputação não se separam na prática. A percepção de uma empresa é construída tanto pelo que ela diz de si quanto pelo que a imprensa, o mercado e a busca dizem sobre ela. A PiaR opera relações com a imprensa desde 2013 e trata branding como o trabalho que dá consistência a essa presença pública, da narrativa interna à cobertura externa.',
+  },
+  {
+    q: 'A PiaR faz logotipo e manual de marca?',
+    a: 'A camada visual entra quando o projeto exige, conduzida por parceiros especializados sob a direção de marca da PiaR. O núcleo do nosso trabalho é a estratégia, o posicionamento, a narrativa e a identidade verbal, as bases que sustentam qualquer identidade visual.',
+  },
+  {
+    q: 'Para que tipo de empresa esse serviço é feito?',
+    a: 'Startups, scale-ups e empresas de tecnologia que precisam construir ou reposicionar a marca e querem que esse trabalho se traduza em presença real na mídia e na percepção do mercado. A exigência sobe em setores regulados, como fintech e saúde, onde cada mensagem passa por revisão jurídica.',
+  },
+  {
+    q: 'Quanto tempo leva um projeto de branding?',
+    a: 'O diagnóstico e o mapeamento ficam nas duas primeiras semanas. O messaging framework vem em seguida, e a partir dele a ativação roda em ciclos quinzenais de monitoramento e escala. O prazo total depende da profundidade do projeto e é definido no diagnóstico, antes de qualquer entrega.',
+  },
+];
+---
+<BaseLayout
+  title="Branding que se sustenta na mídia, não só no logotipo"
+  description="A PiaR Group constrói marca para startups, scale-ups e empresas de tecnologia a partir de posicionamento, narrativa e identidade verbal conectados à imprensa."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --br-ink: #0A0A0C;
+        --br-ink-2: #141417;
+        --br-amber: #FFB020;
+        --br-gold: #FED136;
+        --br-glow: #FFE48A;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botoes */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · campo de coerencia (canvas 2D)
+         formas dispersas que convergem para um eixo
+         =========================================================== */
+      .br-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--br-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #br-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .br-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(115% 90% at 16% 38%, rgba(10,10,12,.85) 0%, rgba(10,10,12,.4) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .br-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .br-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .br-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .br-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .br-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 47ch; }
+      .br-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .br-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .br-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .br-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .br-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .br-hero-float.f1 { right: 9%; top: 27%; }
+      .br-hero-float.f2 { right: 17%; bottom: 21%; }
+      @media (max-width: 900px) { .br-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Tres Mares · contorno topografico (eixo de coerencia) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.10);
+        background: repeating-radial-gradient(circle at 24% 50%, transparent 0 50px, var(--contour-line) 50px 51px);
+        -webkit-mask-image: radial-gradient(circle at 24% 50%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 24% 50%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         secoes base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--br-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (fachada x reputacao) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--br-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* ===========================================================
+         4 · DATAVIZ · eixos de percepcao (canvas 2D)
+         o que voce diz x o que percebem, alinhando com coerencia
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #br-perception-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: ew-resize; }
+      .viz-hint { position: absolute; left: 1rem; bottom: .9rem; z-index: 2; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.5); pointer-events: none; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* escopo (frentes) */
+      .escopo-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .escopo-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .escopo-grid { grid-template-columns: repeat(3, 1fr); } }
+      .escopo-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .escopo-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .escopo-card .e-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .escopo-card .e-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .escopo-card .e-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* etapas (metodo) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 240px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* PEP · vetores */
+      .vetores-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .vetores-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .vetores-grid { grid-template-columns: repeat(3, 1fr); } }
+      .vetor-card { position: relative; padding: 1.75rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); transition: var(--t-smooth); overflow: hidden; }
+      .vetor-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.22); }
+      .vetor-card.eixo { border-color: rgba(254,209,54,.4); background: rgba(254,209,54,.05); }
+      .vetor-card.eixo::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(80% 60% at 85% 0%, rgba(254,209,54,.16) 0%, transparent 60%); }
+      .vetor-card .v-name { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; position: relative; z-index: 1; }
+      .vetor-card.eixo .v-name { color: var(--accent); }
+      .vetor-card .v-desc { font-size: .92rem; line-height: 1.55; color: rgba(255,255,255,.7); margin-top: .6rem; position: relative; z-index: 1; }
+      .vetor-card .v-flag { position: absolute; top: 1.1rem; right: 1.1rem; z-index: 1; font-family: var(--font-mono); font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .26rem .55rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 62ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* lideranca */
+      .leads-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 820px) { .leads-grid { grid-template-columns: repeat(3, 1fr); } }
+      .lead-card { padding: 1.85rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); }
+      .lead-card .l-name { font-size: 1.22rem; font-weight: 700; letter-spacing: -.02em; }
+      .lead-card .l-role { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-deep); margin-top: .4rem; }
+      .lead-card .l-note { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .9rem; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .br-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Branding que se sustenta na mídia, não só no logotipo',
+        description:
+          'A PiaR Group constrói marca para startups, scale-ups e empresas de tecnologia a partir de posicionamento, narrativa e identidade verbal conectados à imprensa.',
+        inLanguage: 'pt-BR',
+        about: 'Branding',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="br-hero">
+      <canvas id="br-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="br-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>O que você promete</span>
+      <span class="br-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>O que percebem</span>
+      <div class="wrap hero-inner">
+        <span class="br-hero-chip reveal"><span class="dot"></span>Branding · Estratégia, narrativa e identidade verbal</span>
+        <h1 class="reveal d1">Sua marca é o que o mercado <span class="accent-serif on-dark">percebe</span>.</h1>
+        <p class="sub reveal d2">
+          Coerência entre o que você promete e o que o mercado percebe. Marca não é só identidade visual, é reputação construída onde a imprensa repete a sua história.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Começar pelo diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#fachada" class="btn btn-ghost-d">Ver como funciona<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="br-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · FACHADA x REPUTACAO -->
+    <section id="fachada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">fachada</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A virada</span>
+          <h2>Marca não é só identidade visual. É <span class="accent-serif">reputação</span>.</h2>
+          <p class="lede">A maioria das agências de branding entrega um manual de marca e encerra ali: logotipo, paleta, tipografia, um documento bonito que dorme numa pasta. O problema aparece depois, quando a marca precisa existir fora do PowerPoint.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Manual de marca</span>
+            <h3>Um documento bonito. Que dorme na pasta.</h3>
+            <p>Logotipo, paleta e tipografia entregues e arquivados. A marca fica linda na apresentação e some quando precisa falar na entrevista, no anúncio de rodada, na crise.</p>
+            <div class="steps"><span>Brief</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Manual</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Pasta</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">Marca na mídia</span>
+            <h3>Uma percepção que o mercado repete.</h3>
+            <p>Posicionamento, narrativa e identidade verbal definidos para sustentar a presença pública. A marca aparece no veículo certo, com a mensagem certa, do jeito que o jornalista entende e o mercado lembra.</p>
+            <div class="steps"><span>Diagnóstico</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Narrativa</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Cobertura</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Percepção</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Identidade visual sem narrativa pública é <span class="hl">fachada</span>.</p>
+      </div>
+    </section>
+
+    <!-- 3 · DATAVIZ · eixos de percepcao -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="br-perception-canvas" role="img" aria-label="Dois eixos de percepção: o que a marca promete e o que o mercado percebe. Com coerência, os dois eixos se alinham; sem coerência, eles divergem."></canvas>
+              <span class="viz-hint">Arraste para alinhar a coerência</span>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#9aa0aa"></span>O que você promete</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>O que percebem</span>
+              <span class="li"><span class="sw" style="background:#FFE48A"></span>Eixo de coerência</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>Marca é a distância entre o que você diz e o que <span class="accent-serif on-dark">ouvem</span>.</h2>
+            <p class="lede">A PiaR parte da pergunta de qual percepção a sua empresa precisa construir e de quem precisa repeti-la. Posicionamento, narrativa e identidade verbal são definidos para sustentar a presença na mídia, e não o contrário.</p>
+            <p class="lede" style="margin-top:1.25rem">Quando os dois eixos se alinham, a marca soa igual no release, na entrevista, na busca e na resposta de IA. Quando divergem, cada canal conta uma história diferente, e o mercado não sabe no que acreditar. Coerência é o trabalho que fecha essa distância.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · ESCOPO -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que entra no escopo</span>
+          <h2>As camadas estratégica e verbal, ancoradas na <span class="accent-serif">presença pública</span>.</h2>
+          <p class="lede">Branding na PiaR cobre as camadas estratégica e verbal da marca, ancoradas na presença pública. Cada frente entra conforme o momento da empresa, sempre a partir do diagnóstico.</p>
+        </div>
+        <div class="escopo-grid">
+          {escopo.map((e, i) => (
+            <div class:list={['escopo-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="e-icon"><iconify-icon icon={e.icon}></iconify-icon></div>
+              <h3 class="e-name">{e.nome}</h3>
+              <p class="e-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Identidade visual entra como entrega <span class="hl">complementar</span>, com parceiros de design sob direção da PiaR.</p>
+      </div>
+    </section>
+
+    <!-- 5 · POR QUE E PR, NAO ESTETICA -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:60ch">
+          <span class="eyebrow reveal">Por que comunicação faz branding</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            A percepção de uma empresa é construída pelo que ela diz de si e pelo que <span class="hl">a imprensa diz dela</span>.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            É branding lido pela lente de quem opera relações com a imprensa todos os dias. A PiaR opera mídia desde {site.foundingYear} e trata branding como o trabalho que dá consistência à presença pública, da narrativa interna à cobertura externa. O que a PiaR não faz é tratar marca como exercício estético desconectado da reputação que ela deveria gerar. Design de identidade visual entra quando o projeto pede, conduzido por parceiros sob a nossa direção de marca.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · METODO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como funciona</span>
+          <h2>Quatro etapas, do diagnóstico ao <span class="accent-serif">loop</span>.</h2>
+          <p class="lede">O branding segue o mesmo processo de quatro etapas que rege toda a comunicação da PiaR, e o mesmo princípio: nada vai para o mercado sem passar por revisão jurídica.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · PEP · vetores -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:52ch">
+          <span class="eyebrow on-dark">Quando o projeto vai além do dia a dia</span>
+          <h2>O PEP entra, e para branding o eixo é Narrativa e <span class="accent-serif on-dark">Cadência</span>.</h2>
+          <p class="lede">Projetos Especiais de PR, metodologia própria da PiaR lançada em 2023. Seis vetores editoriais que trabalham coordenados, combinados conforme o objetivo da empresa. Para branding, a história contada de ponta a ponta, em ritmo constante, não em picos isolados. O investimento é sob consulta.</p>
+        </div>
+        <div class="vetores-grid">
+          {vetores.map((v, i) => (
+            <div class:list={['vetor-card', 'reveal', v.eixo && 'eixo', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              {v.eixo && <span class="v-flag">Eixo de branding</span>}
+              <div class="v-name">{v.nome}</div>
+              <p class="v-desc">{v.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PROVA -->
+    <section class="section dark" style="border-top:none">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:50ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Trabalho de marca se mede pela percepção que <span class="accent-serif on-dark">constrói</span>.</h2>
+          <p class="lede">A PiaR conduz capacidade de gestão de crise, com narrativa e resposta coordenadas para momentos sensíveis. Opera comunicação para inovação desde {site.foundingYear}, em São Paulo.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// Clientes reais em frentes de marca e comunicação</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Marcas que precisavam ser entendidas pelo mercado antes de serem compradas por ele. A relação completa de marcas atendidas está disponível sob consulta. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · QUEM LIDERA -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quem lidera</span>
+          <h2>Um time que vive comunicação para <span class="accent-serif">inovação</span>.</h2>
+        </div>
+        <div class="leads-grid reveal d1">
+          <div class="lead-card">
+            <div class="l-name">Bruno Pinheiro</div>
+            <div class="l-role">Fundador e CEO</div>
+            <p class="l-note">Eleito Profissional de imprensa no Startup Awards da ABStartups, em 2018.</p>
+          </div>
+          <div class="lead-card">
+            <div class="l-name">Renniê Paro</div>
+            <div class="l-role">COO</div>
+            <p class="l-note">Responde pela operação, garantindo que estratégia e entrega andem no mesmo ritmo.</p>
+          </div>
+          <div class="lead-card">
+            <div class="l-name">Gabriela Calencautcy</div>
+            <div class="l-role">Projetos especiais</div>
+            <p class="l-note">Lidera os projetos especiais, frente onde a construção de narrativa de marca aparece com mais força.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · FAQ -->
+    <section class="section warm">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">marca</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Se a sua marca precisa de mais do que um <span class="accent-serif on-dark">logotipo novo</span>.</h2>
+        <p class="lede reveal d2">De uma narrativa que se sustente na imprensa e na percepção pública, o primeiro passo é um diagnóstico. Conte o seu contexto e a PiaR mostra onde está a oportunidade.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no heroi (Tres Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · campo de coerencia (canvas 2D)
+         formas dispersas que convergem para um eixo central
+         ======================================================== */
+      (function coherenceField() {
+        var canvas = document.getElementById('br-hero-canvas');
+        if (!canvas) { return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 75% 30%, #3a2f08 0%, #14110a 55%, #0A0A0C 100%)'; return; }
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, axisX = 0;
+        var N = 78;
+        var shapes = [];
+        var t0 = 0;
+
+        function rand(a, b) { return a + Math.random() * (b - a); }
+
+        function build() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // eixo de coerencia: linha vertical no terco direito (atras do conteudo a esquerda)
+          axisX = W * 0.72;
+          shapes = [];
+          for (var i = 0; i < N; i++) {
+            var targetY = rand(H * 0.08, H * 0.92);
+            shapes.push({
+              // posicao dispersa de origem
+              ox: rand(W * 0.42, W * 1.04),
+              oy: rand(-H * 0.1, H * 1.1),
+              // destino: alinhado no eixo
+              tx: axisX + rand(-10, 10),
+              ty: targetY,
+              size: rand(2, 7),
+              kind: Math.random() < 0.5 ? 0 : 1, // 0 ponto, 1 traco
+              phase: rand(0, Math.PI * 2),
+              speed: rand(0.18, 0.5),
+              hue: Math.random() < 0.34 ? 1 : 0 // 1 dourado, 0 neutro
+            });
+          }
+        }
+        build();
+        window.addEventListener('resize', build, { passive: true });
+
+        function draw(now) {
+          if (!t0) { t0 = now; }
+          var t = (now - t0) / 1000;
+          ctx.clearRect(0, 0, W, H);
+
+          // ciclo de coerencia: 0 disperso -> 1 alinhado -> volta
+          var cycle = (Math.sin(t * 0.22) * 0.5 + 0.5); // 0..1 suave
+          var align = cycle * cycle * (3 - 2 * cycle); // smoothstep
+
+          // eixo central luminoso, intensidade conforme alinhamento
+          var axisGlow = 0.06 + align * 0.5;
+          var grad = ctx.createLinearGradient(axisX, 0, axisX, H);
+          grad.addColorStop(0, 'rgba(254,209,54,0)');
+          grad.addColorStop(0.5, 'rgba(254,209,54,' + (axisGlow * 0.85).toFixed(3) + ')');
+          grad.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1 + align * 1.6;
+          ctx.beginPath();
+          ctx.moveTo(axisX, 0);
+          ctx.lineTo(axisX, H);
+          ctx.stroke();
+
+          for (var i = 0; i < shapes.length; i++) {
+            var s = shapes[i];
+            // jitter organico quando disperso
+            var jx = Math.sin(t * s.speed + s.phase) * (1 - align) * 36;
+            var jy = Math.cos(t * s.speed * 0.8 + s.phase) * (1 - align) * 24;
+            var x = s.ox + (s.tx - s.ox) * align + jx;
+            var y = s.oy + (s.ty - s.oy) * align + jy;
+
+            var op = 0.12 + align * 0.55;
+            if (s.hue === 1) {
+              ctx.fillStyle = 'rgba(254,209,54,' + (op).toFixed(3) + ')';
+              ctx.strokeStyle = 'rgba(254,209,54,' + (op).toFixed(3) + ')';
+            } else {
+              ctx.fillStyle = 'rgba(214,214,222,' + (op * 0.7).toFixed(3) + ')';
+              ctx.strokeStyle = 'rgba(214,214,222,' + (op * 0.7).toFixed(3) + ')';
+            }
+
+            if (s.kind === 0) {
+              ctx.beginPath();
+              ctx.arc(x, y, s.size * (0.55 + align * 0.6), 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              // traco que rotaciona para vertical conforme alinha
+              var ang = (1 - align) * (s.phase) ; // disperso: angulo solto
+              var len = s.size * 2.4;
+              var dx = Math.sin(ang) * len, dy = Math.cos(ang) * len;
+              ctx.lineWidth = 1.4;
+              ctx.beginPath();
+              ctx.moveTo(x - dx, y - dy);
+              ctx.lineTo(x + dx, y + dy);
+              ctx.stroke();
+            }
+
+            // fio fino ligando ao eixo quando ja perto do alinhamento
+            if (align > 0.55) {
+              ctx.strokeStyle = 'rgba(254,209,54,' + ((align - 0.55) * 0.4).toFixed(3) + ')';
+              ctx.lineWidth = 0.6;
+              ctx.beginPath();
+              ctx.moveTo(x, y);
+              ctx.lineTo(axisX, y);
+              ctx.stroke();
+            }
+          }
+
+          if (!prefersReduced) { raf = requestAnimationFrame(draw); }
+        }
+
+        var raf;
+        if (prefersReduced) {
+          // estado alinhado estatico
+          (function staticFrame() {
+            ctx.clearRect(0, 0, W, H);
+            ctx.strokeStyle = 'rgba(254,209,54,.4)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath(); ctx.moveTo(axisX, 0); ctx.lineTo(axisX, H); ctx.stroke();
+            for (var i = 0; i < shapes.length; i++) {
+              var s = shapes[i];
+              ctx.fillStyle = s.hue === 1 ? 'rgba(254,209,54,.6)' : 'rgba(214,214,222,.4)';
+              ctx.beginPath(); ctx.arc(s.tx, s.ty, s.size * 0.9, 0, Math.PI * 2); ctx.fill();
+            }
+          })();
+        } else {
+          raf = requestAnimationFrame(draw);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · eixos de percepcao (canvas 2D)
+         o que voce diz x o que percebem; coerencia alinha os dois
+         arraste para fechar a distancia
+         ======================================================== */
+      (function perceptionAxes() {
+        var canvas = document.getElementById('br-perception-canvas');
+        if (!canvas) { return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        // coerencia: 0 totalmente divergente, 1 alinhado. auto-anima, mas o usuario pode arrastar.
+        var coh = 0.32;
+        var dragging = false, autoT = 0, userActive = false, lastUser = 0;
+
+        var atributos = ['Confiável', 'Inovadora', 'Próxima', 'Líder', 'Clara'];
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        layout();
+        window.addEventListener('resize', layout, { passive: true });
+
+        function draw(now) {
+          if (!userActive && !prefersReduced) {
+            autoT += 0.0065;
+            coh = 0.5 + 0.42 * Math.sin(autoT);
+          }
+          // se o usuario interagiu ha pouco, segura o valor dele por um tempo
+          if (userActive && now - lastUser > 2600) { userActive = false; }
+
+          var spanY = (1 - coh) * (H * 0.16); // separacao dos dois eixos
+
+          // dois eixos horizontais: promessa (cinza, em cima) e percepcao (dourado, embaixo)
+          var midY = H * 0.5;
+          var yProm = midY - spanY;
+          var yPerc = midY + spanY;
+          var x0 = W * 0.12, x1 = W * 0.88;
+
+          ctx.clearRect(0, 0, W, H);
+
+          // faixa de coerencia entre os eixos (quando alinha, vira um corredor luminoso)
+          var bandOp = coh * 0.22;
+          var bg = ctx.createLinearGradient(0, yProm, 0, yPerc);
+          bg.addColorStop(0, 'rgba(254,209,54,0)');
+          bg.addColorStop(0.5, 'rgba(254,209,54,' + bandOp.toFixed(3) + ')');
+          bg.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(x0, Math.min(yProm, yPerc), x1 - x0, Math.abs(yPerc - yProm));
+
+          // eixo promessa
+          ctx.strokeStyle = 'rgba(154,160,170,.7)';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.moveTo(x0, yProm); ctx.lineTo(x1, yProm); ctx.stroke();
+          // eixo percepcao
+          ctx.strokeStyle = 'rgba(254,209,54,.85)';
+          ctx.beginPath(); ctx.moveTo(x0, yPerc); ctx.lineTo(x1, yPerc); ctx.stroke();
+
+          // pontos de atributo: posicao horizontal igual; a coerencia aproxima o ponto de percepcao do de promessa
+          var n = atributos.length;
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          for (var i = 0; i < n; i++) {
+            var px = x0 + (x1 - x0) * (i / (n - 1));
+            // deriva: sem coerencia, percepcao escorrega no eixo X
+            var drift = (1 - coh) * (W * 0.10) * Math.sin(i * 1.7 + 1.3);
+            var ppx = px + drift;
+
+            // linha conectando promessa -> percepcao do atributo
+            var matched = Math.abs(drift) < 7 && coh > 0.78;
+            ctx.strokeStyle = matched ? 'rgba(254,209,54,.6)' : 'rgba(255,255,255,.14)';
+            ctx.lineWidth = matched ? 1.4 : 0.8;
+            ctx.beginPath(); ctx.moveTo(px, yProm); ctx.lineTo(ppx, yPerc); ctx.stroke();
+
+            // ponto promessa
+            ctx.beginPath(); ctx.arc(px, yProm, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#9aa0aa'; ctx.fill();
+            // ponto percepcao
+            ctx.beginPath(); ctx.arc(ppx, yPerc, matched ? 5.5 : 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#FED136'; ctx.fill();
+            if (matched) {
+              ctx.beginPath(); ctx.arc(ppx, yPerc, 9 + Math.sin(now / 360 + i) * 2, 0, Math.PI * 2);
+              ctx.strokeStyle = 'rgba(254,209,54,.4)'; ctx.lineWidth = 1; ctx.stroke();
+            }
+
+            // rotulo do atributo abaixo do eixo de percepcao
+            ctx.textAlign = 'center';
+            ctx.fillStyle = matched ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.5)';
+            ctx.fillText(atributos[i], ppx, yPerc + 18);
+          }
+
+          // rotulos dos eixos
+          ctx.textAlign = 'left';
+          ctx.fillStyle = 'rgba(154,160,170,.85)';
+          ctx.fillText('O QUE VOCÊ PROMETE', x0, yProm - 16);
+          ctx.fillStyle = 'rgba(254,209,54,.95)';
+          ctx.fillText('O QUE PERCEBEM', x0, yPerc + 36);
+
+          // medidor de coerencia
+          ctx.textAlign = 'right';
+          ctx.fillStyle = coh > 0.78 ? 'rgba(254,209,54,.95)' : 'rgba(255,255,255,.6)';
+          ctx.fillText('COERÊNCIA ' + Math.round(coh * 100) + '%', x1, H * 0.5);
+
+          requestAnimationFrame(draw);
+        }
+
+        function setFromX(clientX) {
+          var rect = canvas.getBoundingClientRect();
+          var nx = (clientX - rect.left) / rect.width;
+          coh = Math.max(0, Math.min(1, nx));
+          userActive = true; lastUser = performance.now();
+        }
+        canvas.addEventListener('mousedown', function (e) { dragging = true; setFromX(e.clientX); });
+        window.addEventListener('mouseup', function () { dragging = false; });
+        canvas.addEventListener('mousemove', function (e) { if (dragging) setFromX(e.clientX); });
+        canvas.addEventListener('touchstart', function (e) { if (e.touches[0]) setFromX(e.touches[0].clientX); }, { passive: true });
+        canvas.addEventListener('touchmove', function (e) { if (e.touches[0]) setFromX(e.touches[0].clientX); }, { passive: true });
+
+        if (prefersReduced) {
+          coh = 0.92; userActive = true; lastUser = performance.now() + 1e9;
+          requestAnimationFrame(function single(n) { draw(n); });
+        } else {
+          requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

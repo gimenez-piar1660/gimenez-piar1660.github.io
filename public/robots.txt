@@ -1,0 +1,45 @@
+# PiaR Group — robots.txt
+# Política: liberar todos os crawlers de IA (search-time + training)
+# para maximizar citação em ChatGPT, Claude, Perplexity, Gemini e AI Overviews.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# Common Crawl — base de muitos LLMs open-source
+User-agent: CCBot
+Allow: /
+
+User-agent: *
+Allow: /
+Disallow: /_assets/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://pep.piar.group/sitemap-index.xml

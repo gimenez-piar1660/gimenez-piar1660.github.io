@@ -1,0 +1,933 @@
+---
+// ============================================================================
+// Narrativa espetacular · O QUE E GEO PR
+// Conteudo voice-backed portado de:
+//   src/content/pages/o-que-e-geo-pr.md
+// Original preservado. Esta pagina e a versao "narrativa espetacular":
+// heroi canvas 2D (a resposta da IA se montando: tokens e fragmentos se
+// juntando para formar uma frase citavel, ambar suave) + dataviz de
+// fontes de autoridade que viram resposta citada + scroll storytelling
+// (GSAP/Lenis) sobre o DS da PiaR. Angulo introdutorio: "o que e GEO PR".
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/o-que-e-geo-pr`;
+
+// As tres camadas: SEO / GEO / GEO PR (a fonte do sinal e o que separa).
+const camadas = [
+  {
+    id: 'SEO',
+    nome: 'Search Engine Optimization',
+    otimiza: 'A sua própria página, para ranquear no buscador tradicional.',
+    metrica: 'Posição e clique',
+    sinal: 'O seu domínio',
+    icon: 'solar:magnifer-line-duotone',
+  },
+  {
+    id: 'GEO',
+    nome: 'Generative Engine Optimization',
+    otimiza: 'O conteúdo do seu próprio domínio, para ser citável pela IA.',
+    metrica: 'A citação',
+    sinal: 'O seu domínio',
+    icon: 'solar:chat-square-code-line-duotone',
+  },
+  {
+    id: 'GEO PR',
+    nome: 'GEO operado por relações públicas',
+    otimiza: 'O que terceiros de autoridade dizem sobre você.',
+    metrica: 'A citação',
+    sinal: 'Imprensa e especialistas',
+    icon: 'solar:cpu-bolt-line-duotone',
+    featured: true,
+  },
+];
+
+// O framework de quatro passos (espelha as quatro etapas da PiaR).
+const passos = [
+  {
+    num: '01',
+    titulo: 'Medir a presença atual em IA',
+    prazo: 'Linha de base',
+    desc: 'Montamos as perguntas que o seu público de fato faria a um assistente, rodamos essas perguntas nos principais motores generativos e registramos se a marca aparece, em que posição, com que frase e ao lado de quais concorrentes. Esse é o diagnóstico que vira ponto de partida.',
+  },
+  {
+    num: '02',
+    titulo: 'Estruturar a sala de imprensa e os dados',
+    prazo: 'Arrumar a casa',
+    desc: 'Descrição factual e consistente da empresa em todo lugar onde ela aparece, dados que não se contradigam entre site, redes e materiais, e schema para organização, pessoas-chave e fatos verificáveis. Entidade consistente dá menos margem para a IA errar ou ignorar você.',
+  },
+  {
+    num: '03',
+    titulo: 'Transformar cobertura em citação',
+    prazo: 'Ativação editorial',
+    desc: 'Nem toda cobertura vira citação. O que vira é a menção factual e atribuível: a marca nomeada em contexto claro, em veículo que o modelo trata como confiável, com dado ou posição associada. É o oposto do disparo de release em massa.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitorar e iterar',
+    prazo: 'Ciclo contínuo',
+    desc: 'Com a linha de base do passo 1, repetimos as mesmas perguntas em cadência fixa e observamos o que mudou. Cruzamos isso com a cobertura conquistada para entender qual menção moveu o ponteiro. Medição contínua, não foto única.',
+  },
+];
+
+// As cinco frentes / capacidades que GEO PR coloca em jogo.
+const frentes = [
+  {
+    nome: 'Diagnóstico de presença em IA',
+    desc: 'Mapeamos as perguntas que decidem a compra no seu mercado, perguntamos a elas nos mecanismos generativos e medimos onde a marca aparece, onde não aparece e quem a IA cita no seu lugar.',
+    icon: 'solar:chart-2-line-duotone',
+  },
+  {
+    nome: 'Sala de imprensa legível para a máquina',
+    desc: 'Uma sala de imprensa serve tanto para o jornalista quanto para o modelo que lê a sua página. Entidade consistente, dados sem contradição e schema correto reduzem o ruído que faz marcas sumirem das respostas.',
+    icon: 'solar:server-square-line-duotone',
+  },
+  {
+    nome: 'Cobertura que vira menção atribuível',
+    desc: 'Pauta e relacionamento com a imprensa para mapear veículo e jornalista certos, construir ângulo de dado e garantir que a marca apareça nomeada e em contexto. A unidade de valor para a IA não é o link, é a afirmação atribuível.',
+    icon: 'solar:document-text-line-duotone',
+  },
+  {
+    nome: 'Representação correta da marca',
+    desc: 'Monitoramento de como ChatGPT, Gemini e os resumos generativos descrevem a sua empresa e os seus porta-vozes, e plano de resposta quando a representação está errada ou desatualizada.',
+    icon: 'solar:shield-check-line-duotone',
+  },
+  {
+    nome: 'Revisão jurídica antes de publicar',
+    desc: 'A revisão jurídica de todos os ativos, parte do nosso processo, importa ainda mais quando a afirmação pode ser reproduzida por um modelo em escala. Nada vai a público sem passar por ela.',
+    icon: 'solar:scale-line-duotone',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'FluencyPass', 'Unlimitail'];
+
+const faq = [
+  {
+    q: 'O que significa GEO PR?',
+    a: 'GEO PR é Generative Engine Optimization aplicada a relações públicas: o trabalho de estruturar imprensa, conteúdo e dados para que a marca seja citada nas respostas de inteligência artificial, e não apenas listada em buscadores.',
+  },
+  {
+    q: 'Qual a diferença entre GEO PR e SEO?',
+    a: 'SEO otimiza páginas do seu próprio site para ranquear em buscadores, e a métrica é posição e clique. GEO PR trabalha o que fontes externas de autoridade, como a imprensa, dizem sobre a sua marca, e a métrica é a citação dentro de respostas geradas por IA. SEO atua sobre o seu domínio; GEO PR atua sobre o que terceiros confiáveis afirmam sobre você.',
+  },
+  {
+    q: 'Qual a diferença entre GEO PR e GEO?',
+    a: 'GEO é o conceito amplo de otimizar presença para motores generativos, focado principalmente no conteúdo do próprio domínio. GEO PR é o recorte operado por relações públicas, que constrói o sinal externo: menção em mídia de autoridade. As duas práticas se somam.',
+  },
+  {
+    q: 'Por que menção na imprensa importaria mais que backlink para a IA?',
+    a: 'É uma tese de mercado, não um fato fechado. A leitura é que modelos de linguagem reproduzem afirmações atribuíveis de fontes que tratam como confiáveis. Uma menção nominal e factual em veículo de autoridade é texto que tende a sobreviver à síntese de uma resposta, enquanto o backlink é um sinal de busca que move ranking, mas não vira frase gerada. Números que quantifiquem esse peso variam por método e por isso não os tratamos como universais.',
+  },
+  {
+    q: 'Como medir a presença da minha marca em IA?',
+    a: 'Monte as perguntas que o seu público faria a um assistente, rode essas perguntas nos principais motores generativos e registre se a marca aparece, em que posição, com que frase e ao lado de quais concorrentes. Isso vira linha de base e se repete em cadência fixa para medir movimento.',
+  },
+  {
+    q: 'Disparo de release ajuda em GEO PR?',
+    a: 'Não da forma como costuma ser feito. Disparo de release em massa produz volume sem afirmação nominal e atribuível, que é justamente o material que a IA usa para citar. GEO PR depende de menção factual, em contexto e em veículo certo, o que exige relacionamento com a imprensa, não envio em escala.',
+  },
+  {
+    q: 'GEO PR substitui o trabalho de assessoria de imprensa tradicional?',
+    a: 'Não. É uma extensão dele. O relacionamento com a imprensa continua sendo o ponto de partida. GEO PR adiciona a leitura de como essa cobertura se converte em citação por IA e a medição contínua dessa presença.',
+  },
+];
+---
+<BaseLayout
+  title="O que é GEO PR: ser citável dentro da resposta da IA"
+  description="GEO PR é estruturar relações com a imprensa para que marcas sejam citadas pelas respostas de IA, e não só listadas em uma página de busca. Guia introdutório pela ótica de relações públicas."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --geo-ink: #0A0A0C;
+        --geo-ink-2: #141417;
+        --geo-amber: #FFB020;
+        --geo-amber-soft: #FFC65A;
+        --geo-honey: #F0A028;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botoes */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · a resposta da IA se montando (canvas 2D, ambar)
+         =========================================================== */
+      .gp-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--geo-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #gp-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .gp-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 16% 38%, rgba(10,10,12,.84) 0%, rgba(10,10,12,.38) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .gp-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .gp-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .gp-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .gp-hero h1 { font-size: clamp(2.8rem, 8vw, 7.6rem); font-weight: 700; line-height: .93; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 18ch; text-wrap: balance; }
+      .gp-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 48ch; }
+      .gp-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .gp-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .gp-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .gp-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .gp-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--geo-amber); box-shadow: 0 0 8px 1px rgba(255,176,32,.7); }
+      .gp-hero-float.f1 { right: 9%; top: 26%; }
+      .gp-hero-float.f2 { right: 17%; bottom: 22%; }
+      @media (max-width: 900px) { .gp-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Tres Mares · contorno topografico (terreno de autoridade) */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(255,176,32,.10);
+        background: repeating-radial-gradient(circle at 72% 38%, transparent 0 48px, var(--contour-line) 48px 49px);
+        -webkit-mask-image: radial-gradient(circle at 72% 38%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 72% 38%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         secoes base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--geo-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (a virada) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--geo-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* camadas SEO/GEO/GEO PR */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 980px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.4rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.12; }
+      .layer-card .l-otimiza { font-size: 1rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .55rem; }
+      .layer-card .l-meta .row { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; text-align: right; letter-spacing: -.01em; }
+      .layer-card.featured { background: var(--geo-ink); color: #fff; border-color: var(--geo-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(255,176,32,.22) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.14) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .badge { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 1; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .6rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         DATAVIZ · fontes de autoridade -> resposta citada (canvas)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #gp-network-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* passos (framework) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 260px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* frentes */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 62ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .gp-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'O que é GEO PR: ser citável dentro da resposta da IA',
+        description:
+          'GEO PR é estruturar relações com a imprensa para que marcas sejam citadas pelas respostas de IA, e não só listadas em uma página de busca.',
+        inLanguage: 'pt-BR',
+        about: 'GEO PR',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="gp-hero">
+      <canvas id="gp-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="gp-hero-float f1 px" data-parallax-y="28" aria-hidden="true"><span class="dot"></span>token</span>
+      <span class="gp-hero-float f2 px" data-parallax-y="-22" aria-hidden="true"><span class="dot"></span>fonte citada</span>
+      <div class="wrap hero-inner">
+        <span class="gp-hero-chip reveal"><span class="dot"></span>GEO PR · Generative Engine Optimization para PR</span>
+        <h1 class="reveal d1">Ser <span class="accent-serif on-dark">citável</span> dentro da resposta da IA.</h1>
+        <p class="sub reveal d2">
+          O que é GEO PR: estruturar imprensa, conteúdo e dados para que a sua marca seja a fonte que o assistente nomeia, e não mais um link perdido numa lista. A citação se decide onde sempre se decidiu: na imprensa.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Diagnóstico de presença em IA<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#definicao" class="btn btn-ghost-d">Começar pela definição<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="gp-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · A DEFINICAO -->
+    <section id="definicao" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">definição</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A definição, antes de tudo</span>
+          <h2>GEO PR é mirar a <span class="accent-serif">citação</span>, não o clique.</h2>
+          <p class="lede">GEO PR (Generative Engine Optimization para Relações Públicas) é o trabalho de comunicação que mira ser citado por motores generativos, modelos de linguagem e respostas de IA quando alguém pergunta sobre um mercado, uma categoria ou uma empresa. O objetivo não é aparecer em uma lista de dez links azuis. É ser a fonte que o assistente resume, parafraseia ou nomeia diretamente. GEO PR é o recorte de relações públicas do GEO; para o panorama geral, veja <a href="/geo" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">o que é GEO</a>.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Busca tradicional</span>
+            <h3>Dez links azuis. Você clica.</h3>
+            <p>O usuário pesquisa, percorre os resultados e chega ao seu site. A disputa é por posição na página, e o clique ainda é o destino.</p>
+            <div class="steps"><span>Pergunta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Lista</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Clique</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Site</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">Busca generativa</span>
+            <h3>Resposta pronta. Zero clique.</h3>
+            <p>O usuário recebe uma síntese e pode nunca clicar em nada. A disputa não é mais por posição, é por ser material de origem da resposta.</p>
+            <div class="steps"><span>Pergunta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Resposta da IA</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Decisão</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Se a sua marca não está dentro dessa resposta, ela <span class="hl">deixou de existir</span> naquela conversa.</p>
+      </div>
+    </section>
+
+    <!-- 3 · TRES CAMADAS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">GEO PR vs GEO vs SEO</span>
+          <h2>Três camadas que fazem coisas <span class="accent-serif">diferentes</span>.</h2>
+          <p class="lede">Aqui o foco é a terceira camada, a que a PiaR opera. A comparação completa entre SEO, GEO e GEO PR está em <a href="/geo" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">o que é GEO</a>; abaixo, por que a camada de relações públicas é a mais difícil de fabricar.</p>
+        </div>
+        <div class="layers">
+          {camadas.map((c, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', c.featured && 'featured']}>
+              {c.featured && <span class="badge">O que a PiaR opera</span>}
+              <div class="l-icon"><iconify-icon icon={c.icon}></iconify-icon></div>
+              <div class="l-id">{c.id}</div>
+              <div class="l-name">{c.nome}</div>
+              <p class="l-otimiza">{c.otimiza}</p>
+              <div class="l-meta">
+                <div class="row"><span class="k">Métrica</span><span class="v">{c.metrica}</span></div>
+                <div class="row"><span class="k">Fonte do sinal</span><span class="v">{c.sinal}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Quem corta a terceira camada deixa de fora o sinal <span class="hl">mais difícil de fabricar</span> e de copiar.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · fontes de autoridade -> resposta citada -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="gp-network-canvas" role="img" aria-label="Fontes de autoridade citadas pela imprensa alimentam a marca, e a resposta da IA repete a afirmação atribuível."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#9aa0aa"></span>Fontes de autoridade</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Sua marca citada</span>
+              <span class="li"><span class="sw" style="background:#FFB020"></span>Resposta da IA</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">Por que a IA cita quem a imprensa cita</span>
+            <h2>A unidade de valor não é o link. É a <span class="accent-serif on-dark">afirmação atribuível</span>.</h2>
+            <p class="lede">Quando um veículo publica que a sua empresa opera no setor X e foi citada como referência em Y, esse trecho é texto de autoridade que o modelo lê, associa e pode reproduzir. O backlink move ranking, mas não necessariamente vira frase dentro de uma resposta gerada.</p>
+            <p class="lede" style="margin-top:1.25rem">O link ajuda a busca a encontrar a página. A menção ajuda a IA a saber o que dizer sobre você. Apresentamos isso como tese de mercado, não como fato fechado: o que sustentamos é a direção, e a direção é clara. Comunicação que produz menção atribuível e factual é o ativo que conversa com o modo como a IA constrói respostas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · POR QUE E PR (Tres Mares · contour) -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:60ch">
+          <span class="eyebrow reveal">Por que é PR, e não só SEO</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            Um modelo não cita uma marca porque o site dela está <span class="hl">bem formatado</span>. Cita porque a imprensa de autoridade já fala dela.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            A maioria das agências de SEO vende GEO como pacote técnico: dados estruturados, formato de pergunta e resposta. Isso ajuda o modelo a ler a sua página, e a PiaR também faz essa parte. Mas resolve só metade do problema. Disparo de release em massa nunca construiu autoridade com jornalista, e também não constrói com modelo de linguagem. A engenharia entra por último, depois da autoridade. É a ordem que define o resultado.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · FRAMEWORK -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">framework</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como construir e medir presença em IA</span>
+          <h2>Quatro passos, do diagnóstico ao <span class="accent-serif">loop</span>.</h2>
+          <p class="lede">O trabalho de GEO PR se organiza em quatro passos, na mesma lógica do processo de quatro etapas da PiaR (Diagnóstico, Messaging Framework, Ativação Editorial e Monitoramento), aplicada ao objetivo de citação por IA.</p>
+        </div>
+        <div class="steps-grid">
+          {passos.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · FRENTES / QUEM OPERA -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que GEO PR coloca em jogo</span>
+          <h2>Cinco frentes no cruzamento de PR e <span class="accent-serif">dados</span>.</h2>
+          <p class="lede">GEO PR fica no ponto de cruzamento entre relações públicas e dados, e por isso costuma escapar das estruturas tradicionais. Exige relacionamento com redação e leitura técnica de como a presença em IA se constrói e se mede, na mesma operação.</p>
+        </div>
+        <div class="frentes-grid">
+          {frentes.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Método com <span class="accent-serif on-dark">13 anos</span> de estrada.</h2>
+          <p class="lede">A autoridade que coloca uma marca nas respostas de IA é a mesma que sempre colocou marcas na imprensa. A PiaR opera comunicação para startups, scale-ups e empresas de tecnologia desde {site.foundingYear}, em São Paulo, com {site.yearsOperating} anos de operação e {site.brandsServed} marcas atendidas.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Não colamos número de mercado sem fonte. Estudos sobre quanto a citação em fontes de autoridade influencia respostas generativas existem, mas variam em método e recorte, e tratá-los como verdade universal seria desonesto. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação é tocada com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">GEO PR</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Comece pelo diagnóstico de <span class="accent-serif on-dark">presença em IA</span>.</h2>
+        <p class="lede reveal d2">Medimos onde a sua marca está, com que frase a IA descreve você, quem ela cita no seu lugar e qual o caminho mais curto para entrar na conversa. O investimento é sob consulta, definido conforme o diagnóstico de cada marca.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no heroi (Tres Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · a resposta da IA se montando (canvas 2D, ambar)
+         tokens e fragmentos flutuam, convergem e se assentam em
+         linhas, como uma frase citavel ganhando forma.
+         ======================================================== */
+      (function answerAssembling() {
+        var canvas = document.getElementById('gp-hero-canvas');
+        if (!canvas) {
+          return;
+        }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) {
+          canvas.style.background = 'radial-gradient(70% 90% at 72% 38%, #3a2606 0%, #160f06 55%, #0A0A0C 100%)';
+          return;
+        }
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+        var W = 0, H = 0, t = 0;
+        var tokens = [];
+        var COUNT = 150;
+
+        function rand(a, b) { return a + Math.random() * (b - a); }
+
+        function build() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+          // alvos: linhas de texto se formando no canto direito (a resposta).
+          var lines = 5;
+          var lineGapY = H * 0.072;
+          var baseY = H * 0.34;
+          var leftX = W * 0.46;
+          tokens = [];
+          for (var i = 0; i < COUNT; i++) {
+            var li = i % lines;
+            // cada linha tem largura propria, simulando texto justificado.
+            var lineW = W * (0.30 + ((li * 0.11) % 0.34));
+            var along = Math.random();
+            var tx = leftX + along * lineW;
+            var ty = baseY + li * lineGapY + rand(-2, 2);
+            tokens.push({
+              // posicao inicial: espalhada (o token solto, ainda nao citado).
+              x: rand(0, W), y: rand(0, H),
+              tx: tx, ty: ty,
+              w: rand(7, 26), h: rand(3.5, 5.5),
+              // fase de assentamento, ciclica, defasada por token.
+              ph: Math.random(),
+              sp: rand(0.045, 0.09),
+              hue: rand(0, 1),
+              line: li
+            });
+          }
+        }
+        build();
+
+        function settleColor(s) {
+          // do cinza-frio (token solto) ao ambar quente (frase citavel).
+          var r = Math.round(110 + s * (255 - 110));
+          var g = Math.round(116 + s * (176 - 116));
+          var b = Math.round(130 + s * (32 - 130));
+          return r + ',' + g + ',' + b;
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // veu de profundidade quente atras da "resposta".
+          var grad = ctx.createRadialGradient(W * 0.72, H * 0.5, 0, W * 0.72, H * 0.5, W * 0.7);
+          grad.addColorStop(0, 'rgba(60,40,8,.55)');
+          grad.addColorStop(0.5, 'rgba(24,16,8,.2)');
+          grad.addColorStop(1, 'rgba(10,10,12,0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          for (var i = 0; i < tokens.length; i++) {
+            var k = tokens[i];
+            // s vai de 0 (solto) a 1 (assentado) e volta, em loop suave.
+            var phase = (t * k.sp + k.ph) % 2;
+            var s = phase < 1 ? phase : 2 - phase;
+            var ease = s * s * (3 - 2 * s);
+
+            var x = k.x + (k.tx - k.x) * ease;
+            var y = k.y + (k.ty - k.y) * ease;
+
+            // largura cresce ao assentar (vira "palavra").
+            var w = k.w * (0.4 + 0.6 * ease);
+            var alpha = 0.12 + 0.7 * ease;
+
+            ctx.fillStyle = 'rgba(' + settleColor(ease) + ',' + alpha.toFixed(3) + ')';
+            ctx.beginPath();
+            roundRect(ctx, x, y - k.h / 2, w, k.h, k.h / 2);
+            ctx.fill();
+
+            // brilho do token quando quase assentado (fica citavel).
+            if (ease > 0.82) {
+              ctx.fillStyle = 'rgba(255,198,90,' + ((ease - 0.82) * 1.6).toFixed(3) + ')';
+              ctx.beginPath();
+              ctx.arc(x + w + 4, y, 1.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+
+          // cursor pulsante no fim da ultima linha (a resposta sendo escrita).
+          var cy = H * 0.34 + 4 * (H * 0.072);
+          var cx = W * 0.46 + W * 0.20;
+          var blink = 0.4 + 0.6 * Math.abs(Math.sin(t * 1.6));
+          ctx.fillStyle = 'rgba(255,176,32,' + blink.toFixed(3) + ')';
+          ctx.fillRect(cx, cy - 7, 2, 14);
+
+          t += prefersReduced ? 0 : 0.016;
+          if (!prefersReduced) raf = requestAnimationFrame(draw);
+        }
+
+        function roundRect(c, x, y, w, h, r) {
+          if (w < 2 * r) r = w / 2;
+          c.moveTo(x + r, y);
+          c.arcTo(x + w, y, x + w, y + h, r);
+          c.arcTo(x + w, y + h, x, y + h, r);
+          c.arcTo(x, y + h, x, y, r);
+          c.arcTo(x, y, x + w, y, r);
+        }
+
+        window.addEventListener('resize', build, { passive: true });
+        var raf;
+        if (prefersReduced) {
+          t = 0.5;
+          draw();
+        } else {
+          raf = requestAnimationFrame(draw);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · fontes de autoridade -> resposta citada
+         a imprensa cita fontes; a marca aparece nessa cobertura;
+         a IA repete a afirmacao atribuivel. canvas 2D.
+         ======================================================== */
+      (function authorityFlow() {
+        var canvas = document.getElementById('gp-network-canvas');
+        if (!canvas) {
+          return;
+        }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return;
+        }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var sources = ['Exame', 'Forbes', 'Valor', 'TechCrunch', 'Veja'];
+        var srcNodes = [], brand = null, ai = null, pulses = [], hover = -1, mouse = { x: -1, y: -1 };
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var lx = W * 0.18, n = sources.length;
+          srcNodes = sources.map(function (name, i) {
+            var y = H * (0.16 + (0.68 * i) / (n - 1));
+            return { x: lx, y: y, name: name, r: 4.5 };
+          });
+          brand = { x: W * 0.54, y: H * 0.5, r: 9, name: 'Sua marca' };
+          ai = { x: W * 0.86, y: H * 0.5, r: 7, name: 'Resposta da IA' };
+        }
+        layout();
+
+        function spawn() {
+          if (prefersReduced) return;
+          var src = Math.floor(Math.random() * srcNodes.length);
+          pulses.push({ src: src, seg: 0, p: 0, sp: 0.006 + Math.random() * 0.006 });
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function bez(x0, y0, cx1, cy1, cx2, cy2, x1, y1, t) {
+          var u = 1 - t;
+          var x = u * u * u * x0 + 3 * u * u * t * cx1 + 3 * u * t * t * cx2 + t * t * t * x1;
+          var y = u * u * u * y0 + 3 * u * u * t * cy1 + 3 * u * t * t * cy2 + t * t * t * y1;
+          return { x: x, y: y };
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // arestas fonte -> marca
+          srcNodes.forEach(function (pn, i) {
+            var active = hover === i;
+            ctx.beginPath();
+            ctx.moveTo(pn.x, pn.y);
+            ctx.bezierCurveTo(lerp(pn.x, brand.x, 0.5), pn.y, lerp(pn.x, brand.x, 0.5), brand.y, brand.x, brand.y);
+            ctx.strokeStyle = active ? 'rgba(254,209,54,.55)' : 'rgba(255,255,255,.12)';
+            ctx.lineWidth = active ? 1.6 : 1;
+            ctx.stroke();
+          });
+          // aresta marca -> ia
+          ctx.beginPath();
+          ctx.moveTo(brand.x, brand.y);
+          ctx.bezierCurveTo(lerp(brand.x, ai.x, 0.5), brand.y, lerp(brand.x, ai.x, 0.5), ai.y, ai.x, ai.y);
+          ctx.strokeStyle = 'rgba(255,176,32,.35)';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+
+          // pulsos
+          for (var k = pulses.length - 1; k >= 0; k--) {
+            var pu = pulses[k];
+            pu.p += pu.sp;
+            var pos;
+            if (pu.seg === 0) {
+              var pn = srcNodes[pu.src];
+              pos = bez(pn.x, pn.y, lerp(pn.x, brand.x, 0.5), pn.y, lerp(pn.x, brand.x, 0.5), brand.y, brand.x, brand.y, pu.p);
+              if (pu.p >= 1) { pu.seg = 1; pu.p = 0; }
+            } else {
+              pos = bez(brand.x, brand.y, lerp(brand.x, ai.x, 0.5), brand.y, lerp(brand.x, ai.x, 0.5), ai.y, ai.x, ai.y, pu.p);
+              if (pu.p >= 1) { pulses.splice(k, 1); continue; }
+            }
+            var col = pu.seg === 0 ? '254,209,54' : '255,176,32';
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 2.6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.95)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.18)'; ctx.fill();
+          }
+
+          // nos de fonte + rotulos
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          srcNodes.forEach(function (pn, i) {
+            var active = hover === i;
+            ctx.beginPath(); ctx.arc(pn.x, pn.y, pn.r + (active ? 1.5 : 0), 0, Math.PI * 2);
+            ctx.fillStyle = active ? '#FED136' : '#9aa0aa'; ctx.fill();
+            ctx.textAlign = 'right';
+            ctx.fillStyle = active ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.55)';
+            ctx.fillText(pn.name, pn.x - 12, pn.y);
+          });
+
+          // no da marca (accent, anel pulsante)
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, brand.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.fill();
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, brand.r + 6 + (Math.sin(Date.now() / 600) + 1) * 3, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(254,209,54,.35)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Sua marca', brand.x, brand.y + brand.r + 16);
+
+          // no da ia
+          ctx.beginPath(); ctx.arc(ai.x, ai.y, ai.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FFB020'; ctx.fill();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Resposta da IA', ai.x, ai.y + ai.r + 16);
+
+          requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+          hover = -1;
+          for (var i = 0; i < srcNodes.length; i++) {
+            var pn = srcNodes[i];
+            if (Math.hypot(pn.x - mouse.x, pn.y - mouse.y) < 26) { hover = i; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          layout();
+          draw();
+        } else {
+          setInterval(spawn, 850);
+          spawn();
+          requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

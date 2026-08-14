@@ -1,0 +1,969 @@
+---
+// ============================================================================
+// Narrativa espetacular · RP para Startups
+// Conteúdo voice-backed portado de:
+//   src/content/pages/relacoes-publicas-para-startups.md
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói canvas 2D (trajetória de rounds: linha ascendente com marcos e a
+// cobertura de imprensa acompanhando a curva) + dataviz de timeline de rounds
+// versus cobertura (canvas 2D) + scroll storytelling (GSAP/Lenis), sobre o DS
+// da PiaR (eyebrow-dot, watermarks, seções paper/warm/dark, contorno Três Mares,
+// lerp mouse-parallax).
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/relacoes-publicas-para-startups`;
+
+// Os três estágios e o que a RP entrega em cada um.
+const estagios = [
+  {
+    id: 'Pre-seed',
+    nome: 'Existir antes de pedir atenção',
+    foco: 'Construção de existência, não assessoria intensiva.',
+    entrega: 'Presença básica e verdadeira, narrativa de fundação, voz do fundador e pauta de categoria.',
+    risco: 'Querer parecer maior do que se é. Cobertura inflada envelhece mal.',
+    // solar nao tem "seedling": o nome antigo nao existia no set e o card ficava sem icone.
+    icon: 'solar:leaf-line-duotone',
+  },
+  {
+    id: 'Seed',
+    nome: 'Transformar tração em narrativa',
+    foco: 'O fundador ainda é o maior ativo de comunicação.',
+    entrega: 'Anúncio de rodada bem feito, tração como prova, autoridade do fundador e base de reputação.',
+    risco: 'Depender só do anúncio de rodada e sumir entre uma captação e outra.',
+    icon: 'solar:graph-up-line-duotone',
+  },
+  {
+    id: 'Series A',
+    nome: 'Deixar de ser promessa, virar referência',
+    foco: 'Avaliada com régua de empresa, não de aposta.',
+    entrega: 'Posicionamento contra concorrentes, voz executiva, pauta de dados próprios e preparo para escrutínio.',
+    risco: 'Confundir volume com posição. Aparecer muito sem dominar a conversa.',
+    icon: 'solar:crown-line-duotone',
+    featured: true,
+  },
+];
+
+// O que a RP entrega em cada estágio, detalhado por frente.
+const frentes = [
+  {
+    estagio: 'Pre-seed',
+    nome: 'Presença básica e verdadeira',
+    desc: 'O nome da empresa e do fundador retornando algo correto na busca, sem promessa que o produto ainda não cumpre.',
+    icon: 'solar:user-id-line-duotone',
+  },
+  {
+    estagio: 'Pre-seed',
+    nome: 'Narrativa de fundação',
+    desc: 'Por que essa empresa existe, qual problema ela ataca e por que esse time. A base de tudo que vem depois.',
+    icon: 'solar:notebook-line-duotone',
+  },
+  {
+    estagio: 'Seed',
+    nome: 'Anúncio de rodada bem feito',
+    desc: 'A captação rende cobertura, mas dura um dia. O trabalho é usar a rodada como gancho de uma narrativa de categoria que sobrevive à notícia.',
+    icon: 'solar:money-bag-line-duotone',
+  },
+  {
+    estagio: 'Seed',
+    nome: 'Autoridade do fundador',
+    desc: 'Artigos assinados, participação em pauta de setor e presença em eventos constroem o fundador como fonte que o jornalista procura.',
+    icon: 'solar:microphone-large-line-duotone',
+  },
+  {
+    estagio: 'Series A',
+    nome: 'Posicionamento contra concorrentes',
+    desc: 'Qual fatia da conversa do setor pertence à sua marca e qual está sendo ocupada por outros. A mira é share of voice, não volume.',
+    icon: 'solar:chart-square-line-duotone',
+  },
+  {
+    estagio: 'Series A',
+    nome: 'Reputação na busca, na mídia e na IA',
+    desc: 'Due diligence informal acontece no Google e em ChatGPT, Gemini e Perplexity. O que esses lugares respondem entra na avaliação.',
+    icon: 'solar:shield-check-line-duotone',
+  },
+];
+
+// As quatro etapas do playbook.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico e mapeamento',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Escuta do time, leitura do que a busca, a mídia e a IA já dizem sobre a empresa, e mapeamento dos veículos e jornalistas que importam. O entregável é o gap: a distância entre o posicionamento desejado e a percepção que existe hoje.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging Framework',
+    prazo: 'Semanas 3 e 4',
+    desc: 'Definição das afirmações centrais que a empresa precisa sustentar, dos públicos de cada uma e do que está fora dos limites. São 14 dias do briefing ao primeiro framework.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Semanas 5 a 12',
+    desc: 'Produção da prova pública e relacionamento com a imprensa: pauta, artigo assinado, dado próprio, no formato que cada canal indexa. 100% dos ativos passam por revisão jurídica antes de chegar ao jornalista.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Ciclos quinzenais',
+    desc: 'Acompanhamento do que mudou na busca, na mídia e na IA, ajuste de ângulo e cadência, com protocolo de resposta a crises já definido. Aqui a empresa decide o que escala para o estágio seguinte.',
+  },
+];
+
+// Como medir RP sem inventar número.
+const metricas = [
+  {
+    nome: 'Presença na busca',
+    desc: 'Posição do nome da empresa, do fundador e dos termos da categoria nas primeiras páginas do Google, e onde há vácuo de conteúdo próprio.',
+    icon: 'solar:magnifer-line-duotone',
+  },
+  {
+    nome: 'Share of voice na mídia',
+    desc: 'Quanto da conversa do setor a marca ocupa contra concorrentes diretos, não só o volume bruto de menções.',
+    icon: 'solar:chart-2-line-duotone',
+  },
+  {
+    nome: 'Qualidade da cobertura',
+    desc: 'O ângulo com que os jornalistas descrevem a empresa e se a narrativa central aparece de forma espontânea quando ela é citada.',
+    icon: 'solar:document-text-line-duotone',
+  },
+  {
+    nome: 'Presença em respostas de IA',
+    desc: 'O que ChatGPT, Gemini, Perplexity e Claude respondem sobre a empresa e a categoria, e quais fontes esses modelos citam.',
+    icon: 'solar:cpu-bolt-line-duotone',
+  },
+  {
+    nome: 'Ativos de prova publicados',
+    desc: 'Artigos assinados, dados próprios e posicionamentos que ficam indexados e sustentam a reputação entre uma cobertura e outra.',
+    icon: 'solar:bookmark-square-line-duotone',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Endemol Shine Brasil', 'Big Brother Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
+
+const faq = [
+  {
+    q: 'Quando uma startup deve começar a investir em RP?',
+    a: 'Mais cedo do que a maioria pensa, mas com o escopo certo para o estágio. Em pre-seed, RP é construção de existência e voz de fundador, não assessoria intensiva. A partir do seed, quando há tração e rodada para mostrar, faz sentido um trabalho contínuo. Começar só na Series A significa chegar à disputa de categoria sem prova pública acumulada.',
+  },
+  {
+    q: 'RP de startup é a mesma coisa que assessoria de imprensa?',
+    a: 'Assessoria de imprensa é uma parte. RP inclui também a narrativa de marca, a voz do fundador e do time, a reputação na busca e nas respostas de IA, e o protocolo de crise. Cobertura na mídia é o meio mais visível, não o trabalho inteiro.',
+  },
+  {
+    q: 'Quanto tempo até aparecer resultado?',
+    a: 'O primeiro messaging framework sai em 14 dias do briefing. Cobertura editorial relevante depende de pauta, momento e relacionamento, e costuma ganhar consistência ao longo das semanas de ativação editorial, entre a quinta e a décima segunda. RP é construção, não disparo: resultado de uma única semana raramente é resultado de verdade.',
+  },
+  {
+    q: 'RP ajuda a captar investimento?',
+    a: 'Ajuda a percepção que cerca a empresa quando o investidor pesquisa sobre ela na busca, na mídia e na IA, e a posiciona na conversa da categoria. Não promete e não fecha rodada. Quem garante captação a partir de assessoria de imprensa está vendendo o que não controla.',
+  },
+  {
+    q: 'Como vocês cobrem startup de setor regulado, como fintech ou saúde?',
+    a: 'Todos os ativos passam por revisão jurídica antes de chegar ao jornalista. Em setores como fintech e saúde, isso significa tratar temas sensíveis, segurança, compliance, regulação, como diferencial bem comunicado e não como assunto a esconder, sempre com aprovação antes da publicação.',
+  },
+  {
+    q: 'Qual a diferença entre RP de startup e de empresa grande?',
+    a: 'O estágio. Startup tem menos histórico público, depende mais do fundador como porta-voz e precisa construir existência antes de disputar posição. O método de quatro etapas é o mesmo; o que muda é o que cada etapa precisa entregar e o risco de cada movimento.',
+  },
+  {
+    q: 'Vocês trabalham com disparo de release para muitos veículos?',
+    a: 'Não. Mapeamos o veículo e o jornalista certo antes de escrever, e o ângulo nasce do dado e do relacionamento. Disparo em massa gera ruído, queima relacionamento com a imprensa e não constrói reputação.',
+  },
+];
+---
+<BaseLayout
+  title="Relações Públicas para Startups: pre-seed, seed e Series A"
+  description="O que a RP entrega por estágio, como medir sem inventar número e como a comunicação se conecta ao exit. A PiaR acompanhou 8 startups até lá desde 2013."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --rp-ink: #0A0A0C;
+        --rp-ink-2: #141417;
+        --rp-amber: #FFB020;
+        --rp-gold: #FED136;
+        --rp-rust: #C7410B;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · trajetória de rounds (canvas 2D)
+         =========================================================== */
+      .rp-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--rp-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #rp-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .rp-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 16% 40%, rgba(10,10,12,.86) 0%, rgba(10,10,12,.4) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 72%, rgba(10,10,12,.92) 100%);
+      }
+      .rp-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .rp-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .rp-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rp-hero h1 { font-size: clamp(2.7rem, 8vw, 7.4rem); font-weight: 700; line-height: .94; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .rp-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 48ch; }
+      .rp-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .rp-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .rp-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .rp-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .rp-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rp-amber); box-shadow: 0 0 8px 1px rgba(255,176,32,.7); }
+      .rp-hero-float.f1 { right: 9%; top: 24%; }
+      .rp-hero-float.f2 { right: 18%; bottom: 22%; }
+      @media (max-width: 900px) { .rp-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · contorno ascendente (a curva de rounds) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(255,176,32,.12);
+        background: repeating-linear-gradient(-20deg, transparent 0 44px, var(--contour-line) 44px 45px);
+        -webkit-mask-image: radial-gradient(circle at 18% 30%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 18% 30%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--rp-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--rp-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* estágios pre-seed / seed / Series A */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 980px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.32rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.14; }
+      .layer-card .l-otimiza { font-size: 1rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .85rem; }
+      .layer-card .l-meta .blk .k { display: block; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); margin-bottom: .25rem; }
+      .layer-card .l-meta .blk .v { font-size: .9rem; line-height: 1.5; color: var(--text-muted); }
+      .layer-card.featured { background: var(--rp-ink); color: #fff; border-color: var(--rp-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(255,176,32,.22) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.14) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .blk .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .l-meta .blk .v { color: rgba(255,255,255,.74); }
+      .layer-card.featured .badge { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 1; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .6rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         4 · DATAVIZ · timeline de rounds x cobertura (canvas)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #rp-timeline-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* etapas (playbook) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 250px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* frentes / métricas */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { position: relative; padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-stage { font-family: var(--font-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.1rem; }
+      .frente-card .f-name { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; margin-top: .25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 62ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 68ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .rp-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Relações Públicas para Startups: pre-seed, seed e Series A',
+        description:
+          'O que a RP entrega em cada estágio da startup, o passo a passo de ativação, como medir sem inventar número e onde a comunicação se conecta ao exit.',
+        inLanguage: 'pt-BR',
+        about: 'Relações Públicas para Startups',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="rp-hero">
+      <canvas id="rp-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="rp-hero-float f1 px" data-parallax-y="28" aria-hidden="true"><span class="dot"></span>Series A</span>
+      <span class="rp-hero-float f2 px" data-parallax-y="-22" aria-hidden="true"><span class="dot"></span>Pre-seed</span>
+      <div class="wrap hero-inner">
+        <span class="rp-hero-chip reveal"><span class="dot"></span>Relações Públicas · Startups</span>
+        <h1 class="reveal d1">A comunicação sobe junto com o seu <span class="accent-serif on-dark">round</span>.</h1>
+        <p class="sub reveal d2">
+          Uma startup em pre-seed e uma scale-up em Series A precisam de coisas diferentes da imprensa.
+          A RP que acompanha cada estágio constrói a prova pública que sustenta o próximo, do seed ao exit.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Começar pelo diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#regua" class="btn btn-ghost-d">Ver por estágio<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="rp-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · O QUE É -->
+    <section id="regua" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">prova pública</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que é RP para startups</span>
+          <h2>Fazer as pessoas certas encontrarem a versão <span class="accent-serif">correta</span> da empresa.</h2>
+          <p class="lede">Jornalistas, investidores, clientes e talentos decidem com base no que encontram. RP para startups é construir prova pública que sustente o estágio atual e o próximo que a empresa quer alcançar. Não é sair na mídia por sair.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">O erro comum</span>
+            <h3>Uma régua só, para qualquer empresa.</h3>
+            <p>Cobrar uma startup de três pessoas e uma de trezentas com o mesmo escopo é o que produz cobertura que não move o ponteiro do negócio. O estágio muda o ângulo, o porta-voz e o veículo.</p>
+            <div class="steps"><span>Release</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Disparo em massa</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Ruído</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">O ponto de partida</span>
+            <h3>Quem precisa ouvir, e por quê, agora.</h3>
+            <p>Mapeamos o veículo e o jornalista antes de escrever a primeira linha, e usamos dados para decidir o ângulo, o momento e a voz. Vale para uma empresa de três pessoas e para uma de trezentas.</p>
+            <div class="steps"><span>Dado</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Ângulo</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Pauta certa</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">A pergunta não é como sair na mídia. É <span class="hl">quem precisa ouvir</span> essa história, e por quê, agora.</p>
+      </div>
+    </section>
+
+    <!-- 3 · TRÊS ESTÁGIOS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Três estágios, não uma régua só</span>
+          <h2>Pre-seed, seed e Series A pedem coisas <span class="accent-serif">diferentes</span>.</h2>
+          <p class="lede">Em pre-seed quase ninguém conhece a empresa. Em seed já existe tração, mas o fundador segue como o ativo mais forte. Em Series A a startup deixa de ser promessa e passa a ser comparada com concorrentes, com a imprensa de negócios olhando de perto.</p>
+        </div>
+        <div class="layers">
+          {estagios.map((c, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', c.featured && 'featured']}>
+              {c.featured && <span class="badge">Disputa de posição</span>}
+              <div class="l-icon"><iconify-icon icon={c.icon}></iconify-icon></div>
+              <div class="l-id">{c.id}</div>
+              <div class="l-name">{c.nome}</div>
+              <p class="l-otimiza">{c.foco}</p>
+              <div class="l-meta">
+                <div class="blk"><span class="k">A RP entrega</span><span class="v">{c.entrega}</span></div>
+                <div class="blk"><span class="k">O risco do estágio</span><span class="v">{c.risco}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">O método é o mesmo. O que muda é <span class="hl">o que cada etapa precisa entregar</span> e o risco de cada movimento.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="rp-timeline-canvas" role="img" aria-label="Timeline de rounds e cobertura de imprensa: a comunicação escala junto com o crescimento, do pre-seed à Series A."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#FED136"></span>Trajetória de rounds</span>
+              <span class="li"><span class="sw" style="background:#FFB020"></span>Cobertura de imprensa</span>
+              <span class="li"><span class="sw" style="background:#9aa0aa"></span>Marcos de captação</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A comunicação que escala</span>
+            <h2>A cobertura acompanha a <span class="accent-serif on-dark">curva</span>, não chega depois dela.</h2>
+            <p class="lede">A captação rende cobertura, mas o anúncio sozinho dura um dia. A prova pública construída em seed é o que sustenta a Series A, quando a due diligence informal acontece no Google e em ChatGPT, Gemini e Perplexity.</p>
+            <p class="lede" style="margin-top:1.25rem">Empresa que só aparece quando capta some entre uma rodada e outra, justamente quando precisa estar presente para a próxima. A comunicação que escala junto com o crescimento é a que coloca a marca na conversa antes de a régua mudar.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · COMO MEDIR -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:60ch">
+          <span class="eyebrow reveal">Como medir sem inventar número</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            Cobertura não é resultado por si só. É <span class="hl">insumo</span>. O que importa é se a prova certa chegou a quem decide.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Métrica sem fonte não vira número em relatório. Volume de mídia espontânea sem critério claro de cálculo não é indicador de negócio, é vaidade. Quando a meta é uma transação, rodada, fusão ou aquisição, a RP contribui para a percepção que cerca a empresa, mas não promete o resultado da negociação.
+          </p>
+        </div>
+        <div class="frentes-grid reveal d2" style="margin-top:clamp(2.5rem,5vw,3.5rem)">
+          {metricas.map((m, i) => (
+            <div class:list={['frente-card', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={m.icon}></iconify-icon></div>
+              <h3 class="f-name" style="margin-top:1.25rem">{m.nome}</h3>
+              <p class="f-desc">{m.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · PLAYBOOK -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">playbook</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O playbook</span>
+          <h2>Quatro etapas, do briefing ao primeiro <span class="accent-serif">framework</span>.</h2>
+          <p class="lede">Independente do estágio, o trabalho segue quatro etapas. O que muda entre pre-seed, seed e Series A é a profundidade de cada uma, não a ordem. O ponto de partida é sempre o dado, não o release.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · FRENTES POR ESTÁGIO -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que a RP entrega, na prática</span>
+          <h2>Cada frente conforme o <span class="accent-serif">estágio</span>.</h2>
+          <p class="lede">Da presença básica em pre-seed à disputa de share of voice em Series A, o escopo se ajusta ao momento. Tudo conectado ao trabalho de relações públicas e ao PEP, a metodologia própria da casa para comunicação integrada.</p>
+        </div>
+        <div class="frentes-grid">
+          {frentes.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <span class="f-stage">{f.estagio}</span>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PROVA E EXITS -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Do pre-seed ao <span class="accent-serif on-dark">exit</span>, com data e lastro.</h2>
+          <p class="lede">Comunicação não fecha uma aquisição, mas uma empresa que construiu reputação consistente em seed e Series A chega à mesa de negociação sendo conhecida pela versão correta da sua história. A PiaR acompanha tech desde {site.foundingYear}, em São Paulo.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Clientes reais, RP adequada ao estágio e ao setor</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Trabalho de comunicação se mede por resultado, e resultado precisa de data e lastro. A gestão de crise é uma capacidade do trabalho, com protocolo de resposta definido antes do problema, e não no meio dele. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). Renniê Paro responde pela operação como COO, e Gabriela Calencautcy lidera os projetos especiais.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">exit</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Uma narrativa que se sustenta do seed ao <span class="accent-serif on-dark">exit</span>.</h2>
+        <p class="lede reveal d2">Se a sua startup precisa de cobertura qualificada e de uma narrativa que sobreviva entre uma rodada e outra, o primeiro passo é um diagnóstico. Conte o contexto e o estágio da empresa, e a PiaR mostra onde está a oportunidade.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · trajetória de rounds (canvas 2D)
+         linha ascendente com marcos pre-seed, seed, A, B e a
+         cobertura de imprensa acompanhando a curva. amarelo -> âmbar.
+         ======================================================== */
+      (function roundsTrajectory() {
+        var canvas = document.getElementById('rp-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 75% 30%, #3a2c05 0%, #160f06 55%, #0A0A0C 100%)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+
+        // marcos de round em coordenadas normalizadas (x cresce, y sobe)
+        var marks = [
+          { t: 0.10, v: 0.12, label: 'Pre-seed' },
+          { t: 0.36, v: 0.34, label: 'Seed' },
+          { t: 0.64, v: 0.62, label: 'Series A' },
+          { t: 0.90, v: 0.88, label: 'Series B' }
+        ];
+
+        function resize() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        // smoothstep entre marcos para a curva ascendente
+        function curveV(t) {
+          if (t <= marks[0].t) return marks[0].v;
+          if (t >= marks[marks.length - 1].t) return marks[marks.length - 1].v;
+          for (var i = 0; i < marks.length - 1; i++) {
+            var a = marks[i], b = marks[i + 1];
+            if (t >= a.t && t <= b.t) {
+              var u = (t - a.t) / (b.t - a.t);
+              var s = u * u * (3 - 2 * u);
+              return a.v + (b.v - a.v) * s;
+            }
+          }
+          return marks[marks.length - 1].v;
+        }
+
+        // mapeia normalizado para tela. y sobe -> menor pixel
+        function px(t) { return W * (0.06 + t * 0.9); }
+        function py(v) { return H * (0.9 - v * 0.74); }
+
+        var start = 0, raf = 0;
+
+        function frame(now) {
+          if (!start) start = now;
+          var el = (now - start) / 1000;
+          ctx.clearRect(0, 0, W, H);
+
+          // grade sutil de fundo
+          ctx.strokeStyle = 'rgba(255,255,255,.04)';
+          ctx.lineWidth = 1;
+          for (var g = 1; g < 5; g++) {
+            var gy = H * (0.18 + g * 0.16);
+            ctx.beginPath(); ctx.moveTo(W * 0.04, gy); ctx.lineTo(W * 0.97, gy); ctx.stroke();
+          }
+
+          // progressão animada de revelação da curva (loop suave)
+          var prog = (Math.sin(el * 0.35 - Math.PI / 2) + 1) / 2;
+          prog = 0.18 + prog * 0.82;
+          if (prefersReduced) prog = 1;
+
+          var steps = 120;
+          var maxT = prog;
+
+          // 1) faixa de cobertura de imprensa (área âmbar abaixo da curva)
+          ctx.beginPath();
+          ctx.moveTo(px(0), py(0));
+          for (var k = 0; k <= steps; k++) {
+            var tt = (k / steps) * maxT;
+            ctx.lineTo(px(tt), py(curveV(tt)));
+          }
+          ctx.lineTo(px(maxT), py(0));
+          ctx.closePath();
+          var gradA = ctx.createLinearGradient(0, py(1), 0, py(0));
+          gradA.addColorStop(0, 'rgba(255,176,32,.20)');
+          gradA.addColorStop(0.55, 'rgba(255,176,32,.07)');
+          gradA.addColorStop(1, 'rgba(255,176,32,0)');
+          ctx.fillStyle = gradA;
+          ctx.fill();
+
+          // 2) linha de cobertura (oscila levemente acompanhando a curva, mais espessa onde há mais mídia)
+          ctx.beginPath();
+          for (var c = 0; c <= steps; c++) {
+            var ct = (c / steps) * maxT;
+            var jitter = Math.sin(ct * 26 + el * 1.4) * (3 + ct * 9);
+            var cy = py(curveV(ct)) + 16 + ct * 10 + jitter;
+            if (c === 0) ctx.moveTo(px(ct), cy); else ctx.lineTo(px(ct), cy);
+          }
+          ctx.strokeStyle = 'rgba(255,176,32,.55)';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+
+          // 3) curva de rounds (linha principal, gradiente amarelo -> âmbar)
+          var gradL = ctx.createLinearGradient(px(0), 0, px(1), 0);
+          gradL.addColorStop(0, '#FED136');
+          gradL.addColorStop(1, '#FFB020');
+          ctx.beginPath();
+          for (var m = 0; m <= steps; m++) {
+            var mt = (m / steps) * maxT;
+            if (m === 0) ctx.moveTo(px(mt), py(curveV(mt))); else ctx.lineTo(px(mt), py(curveV(mt)));
+          }
+          ctx.strokeStyle = gradL;
+          ctx.lineWidth = 3;
+          ctx.lineJoin = 'round';
+          ctx.shadowColor = 'rgba(254,209,54,.5)';
+          ctx.shadowBlur = 18;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // 4) marcos (círculos + label) revelados conforme a progressão
+          ctx.font = '600 12px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          for (var n = 0; n < marks.length; n++) {
+            var mk = marks[n];
+            if (mk.t > maxT + 0.02) continue;
+            var mx = px(mk.t), myy = py(mk.v);
+            var pulse = (Math.sin(el * 1.6 + n) + 1) * 3;
+            ctx.beginPath(); ctx.arc(mx, myy, 9 + pulse, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(254,209,54,.3)'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.beginPath(); ctx.arc(mx, myy, 5.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#FED136'; ctx.fill();
+            ctx.beginPath(); ctx.arc(mx, myy, 2.4, 0, Math.PI * 2);
+            ctx.fillStyle = '#0A0A0C'; ctx.fill();
+            ctx.textAlign = 'left';
+            ctx.fillStyle = 'rgba(255,255,255,.7)';
+            ctx.fillText(mk.label, mx + 14, myy - 14);
+          }
+
+          // 5) ponto de cabeça brilhante na ponta da curva
+          var ht = maxT, hx = px(ht), hy = py(curveV(ht));
+          ctx.beginPath(); ctx.arc(hx, hy, 4, 0, Math.PI * 2);
+          ctx.fillStyle = '#FFE89A'; ctx.fill();
+          ctx.beginPath(); ctx.arc(hx, hy, 11, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,232,154,.16)'; ctx.fill();
+
+          if (!prefersReduced) raf = requestAnimationFrame(frame);
+        }
+        raf = requestAnimationFrame(frame);
+      })();
+
+      /* ========================================================
+         DATAVIZ · timeline de rounds x cobertura (canvas 2D)
+         barras de cobertura por trimestre subindo junto dos rounds
+         ======================================================== */
+      (function roundsTimeline() {
+        var canvas = document.getElementById('rp-timeline-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+
+        // 8 trimestres: cobertura crescente, com saltos nos rounds
+        var bars = [
+          { q: 'T1', cov: 0.10, round: null },
+          { q: 'T2', cov: 0.16, round: null },
+          { q: 'T3', cov: 0.30, round: 'Pre-seed' },
+          { q: 'T4', cov: 0.34, round: null },
+          { q: 'T5', cov: 0.52, round: 'Seed' },
+          { q: 'T6', cov: 0.58, round: null },
+          { q: 'T7', cov: 0.80, round: 'Series A' },
+          { q: 'T8', cov: 0.92, round: null }
+        ];
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        layout();
+
+        var t0 = 0;
+
+        function draw(now) {
+          if (!t0) t0 = now;
+          var el = (now - t0) / 1000;
+          var grow = prefersReduced ? 1 : Math.min(1, el / 1.4);
+
+          ctx.clearRect(0, 0, W, H);
+
+          var padL = W * 0.08, padR = W * 0.06, padB = H * 0.16, padT = H * 0.12;
+          var plotW = W - padL - padR, plotH = H - padB - padT;
+          var n = bars.length;
+          var slot = plotW / n;
+          var bw = slot * 0.46;
+
+          // baseline
+          ctx.strokeStyle = 'rgba(255,255,255,.12)';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+
+          // barras de cobertura
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          for (var i = 0; i < n; i++) {
+            var b = bars[i];
+            var cx = padL + slot * i + slot / 2;
+            var hgt = plotH * b.cov * grow;
+            var bx = cx - bw / 2, by = padT + plotH - hgt;
+
+            var g = ctx.createLinearGradient(0, by, 0, padT + plotH);
+            g.addColorStop(0, b.round ? '#FED136' : '#FFB020');
+            g.addColorStop(1, 'rgba(255,176,32,.15)');
+            ctx.fillStyle = g;
+            var rr = Math.min(5, bw / 2);
+            ctx.beginPath();
+            ctx.moveTo(bx, by + rr);
+            ctx.arcTo(bx, by, bx + rr, by, rr);
+            ctx.arcTo(bx + bw, by, bx + bw, by + rr, rr);
+            ctx.lineTo(bx + bw, padT + plotH);
+            ctx.lineTo(bx, padT + plotH);
+            ctx.closePath();
+            ctx.fill();
+
+            // rótulo do trimestre
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255,255,255,.4)';
+            ctx.fillText(b.q, cx, padT + plotH + 14);
+
+            // marco de round
+            if (b.round && grow > 0.85) {
+              ctx.beginPath(); ctx.arc(cx, by - 12, 4, 0, Math.PI * 2);
+              ctx.fillStyle = '#FED136'; ctx.fill();
+              ctx.fillStyle = 'rgba(255,255,255,.8)';
+              ctx.fillText(b.round, cx, by - 26);
+            }
+          }
+
+          // linha de tendência da cobertura sobre os topos
+          ctx.beginPath();
+          for (var k = 0; k < n; k++) {
+            var kx = padL + slot * k + slot / 2;
+            var ky = padT + plotH - plotH * bars[k].cov * grow;
+            if (k === 0) ctx.moveTo(kx, ky); else ctx.lineTo(kx, ky);
+          }
+          ctx.strokeStyle = 'rgba(254,209,54,.5)';
+          ctx.lineWidth = 1.6;
+          ctx.stroke();
+
+          if (!prefersReduced && grow < 1) requestAnimationFrame(draw);
+          else if (!prefersReduced) { /* mantém estático após crescer */ }
+        }
+
+        window.addEventListener('resize', function () { layout(); t0 = 0; requestAnimationFrame(draw); }, { passive: true });
+
+        if (prefersReduced) { layout(); draw(performance.now()); }
+        else requestAnimationFrame(draw);
+      })();
+    });
+  </script>
+</BaseLayout>

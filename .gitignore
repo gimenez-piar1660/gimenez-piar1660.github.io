@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+.astro/
+.output/
+.vercel/
+.netlify/
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+logs/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.idea/
+*.iml
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Test / coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Lock files for non-canonical managers
+yarn.lock
+bun.lockb
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+
+# Raw / heavy media (kept outside repo)
+raw_files/
+*.mp4
+*.mov
+*.avi
+*.psd
+*.ai
+*.sketch
+# allow optimized assets explicitly committed
+!public/videos/hero.mp4
+
+# Legacy
+package.json.old
+package-lock.json.old
+
+# Deploy artifacts (regenerable)
+# Os manifests e notes de cada deploy (deploys/**/manifest.json, notes.md) SAO versionados.
+# Ja os .zip de cada deploy sao regeneraveis (git checkout <tag> && npm run build), entao ficam de fora.
+piar-site-netlify.zip
+*.zip

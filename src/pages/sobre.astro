@@ -1,0 +1,793 @@
+---
+// ============================================================================
+// SOBRE · NARRATIVA "SER INEVITAVEL E RARO"
+// Tese unica (livro Super Apresentacoes): uma mensagem, enquadrada como
+//   beneficio, em tres atos. A PiaR existe para tornar a marca do cliente
+//   inevitavel. Nada de "quem somos / missao / valores".
+// Cinema claro->dark: o scroll comeca claro e barulhento (todo mundo aparece)
+//   e escurece ate virar campo gravitacional (ser inevitavel e raro). A
+//   transicao encena a tese. O canvas fixo faz o ruido virar gravidade.
+// Voz: humano contando historia, 1a pessoa do plural (verbo carrega o nos),
+//   sem "a gente", sem antitese empilhada, sem jargao, sem travessao.
+//   Toda frase grande paga uma divida concreta (um fato da casa).
+// Fatos travados em site.ts: 2013, 13 anos, 470+ marcas, 8 exits nomeados,
+//   premio ABStartups 2018. Sem Constellation/CS-pioneer (nao confirmados).
+// Pagina indexada (nao e noindex). JSON-LD AboutPage + Breadcrumb + ItemList
+//   + FAQPage. Vídeo entra depois, por cima da narrativa (dobra #manifesto).
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+
+const clientes = [
+  'Sambatech', 'Liga Ventures', 'Printi', 'Qranio', 'Unifisa', 'Livup', 'Doctoralia',
+  'Solides', 'Corning', 'PagBrasil', 'Sidia', 'Investidores.vc', 'FluencyPass',
+  'Layer Up', 'Wylinka', 'Inovativa', 'Unlimitail', 'Endemol Shine Brasil',
+  'Mastercard Agro', 'AgroSmart', 'Vila 11',
+];
+
+const verdades = [
+  { n: '01', t: 'Tudo começa no dado', d: 'Antes de escrever a primeira linha, já mapeamos quem precisa ouvir a sua história, em que veículo e por quê. O texto vem depois que a estratégia está de pé.' },
+  { n: '02', t: 'Quem dirige está na sala', d: 'Quem assina a estratégia está na reunião semanal, no funil e na edição de cada entrega. Sócio não terceiriza a sua conta para estagiário.' },
+  { n: '03', t: 'A inteligência artificial virou leitora', d: 'Hoje a IA cita quem a imprensa já citou. Construímos a sua marca para ser a fonte que ela escolhe quando perguntam sobre o seu mercado.' },
+];
+
+const corpos = [
+  { ic: 'solar:cart-check-line-duotone', t: 'O comprador', d: 'Chega já convencido, e o time comercial fecha com menos objeção. A reputação trabalha antes da reunião de venda.' },
+  { ic: 'solar:chart-2-line-duotone', t: 'O investidor', d: 'Valida a empresa porque o mercado já fala dela. Confiança pública faz a due diligence começar com o sinal verde.' },
+  { ic: 'solar:crown-line-duotone', t: 'A liderança', d: 'O CEO e os fundadores viram referência do setor, procurados pela imprensa pelo nome.' },
+  { ic: 'solar:users-group-rounded-line-duotone', t: 'O talento', d: 'As pessoas certas querem trabalhar onde a marca já é uma referência. Reputação também contrata.' },
+];
+
+// a tradução de PR para a língua de quem aprova o orçamento (o que entregamos -> o que vira no relatório).
+const traducoes = [
+  { de: 'Cobertura relevante', para: 'Custo de mídia que você não pagou' },
+  { de: 'Autoridade pública', para: 'Pipeline que chega com menos objeção' },
+  { de: 'Confiança de mercado', para: 'Validação na frente de fundos e parceiros' },
+  { de: 'Presença constante', para: 'Consideração de compra antes do primeiro contato' },
+];
+
+const lideranca = [
+  { nome: 'Bruno Pinheiro', cargo: 'Fundador e CEO', foto: '/brand/Brunotrofeu.webp', flip: true, desc: 'Fundou a PiaR em 2013 e dirige a estratégia desde então. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
+  { nome: 'Renniê Paro', cargo: 'COO', foto: '/brand/team/rennie.png', flip: false, desc: 'Cuida da operação e de manter a mesma qualidade de entrega em todas as frentes da casa.' },
+  { nome: 'Gabriela Calencautcy', cargo: 'Projetos Especiais', foto: '/brand/team/gabriela.png', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
+];
+
+const faq = [
+  { q: 'O que a PiaR faz?', a: 'Construímos a reputação de empresas inovadoras em três lugares ao mesmo tempo: na imprensa, na percepção do mercado e nas respostas de inteligência artificial. Cada frente entra conforme o diagnóstico.' },
+  { q: 'O que diferencia a PiaR de uma assessoria tradicional?', a: 'A ordem do trabalho. Começamos pelo dado e pela mídia certa, mapeamos jornalista e veículo antes de escrever, e só então definimos abordagem e conteúdo. Disparo de release em massa não é o que fazemos.' },
+  { q: 'Desde quando a PiaR existe?', a: `Desde ${site.foundingYear}, em São Paulo. Ao longo desses ${site.yearsOperating} anos, acompanhamos a comunicação de ${site.exitsSupported} startups que chegaram ao exit.` },
+  { q: 'A PiaR atende setores regulados como fintech e saúde?', a: 'Sim. Todo material passa por revisão jurídica antes de chegar ao jornalista, o que importa especialmente quando o tema é compliance, regulação ou dado sensível.' },
+  { q: 'Como começa um trabalho com a PiaR?', a: 'Por um diagnóstico. Você conta o contexto da empresa e mostramos onde está a oportunidade na busca, na imprensa e na IA. Do briefing ao primeiro framework são 14 dias.' },
+];
+
+const url = `https://${site.brandDomain}/sobre`;
+---
+<BaseLayout
+  title="Sobre a PiaR · 13 anos tornando marcas inevitáveis"
+  description="A PiaR é uma agência de comunicação para empresas inovadoras, em São Paulo desde 2013. Construímos reputação na imprensa, no mercado e nas respostas de inteligência artificial."
+>
+  <Fragment slot="head">
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        name: 'Sobre a PiaR Group',
+        url,
+        description: 'Há 13 anos a PiaR constrói a reputação de empresas inovadoras na imprensa, no mercado e nas respostas de inteligência artificial. Agência de comunicação em São Paulo desde 2013.',
+        about: { '@id': `${site.domain}/#organization` },
+        mainEntity: { '@id': `${site.domain}/#organization` },
+        inLanguage: 'pt-BR',
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'PiaR', item: `https://${site.brandDomain}/` },
+          { '@type': 'ListItem', position: 2, name: 'Sobre', item: url },
+        ],
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Marcas atendidas pela PiaR Group',
+        itemListElement: clientes.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c })),
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress" aria-hidden="true"></div>
+  <Nav current="sobre" />
+
+  <!-- Campo fixo: ruido (claro) que vira gravidade (dark) conforme o scroll. -->
+  <canvas id="field-bg" aria-hidden="true"></canvas>
+  <!-- labels removidos de proposito: colidiam com o texto central. O campo gravitacional (nucleo + corpos em orbita) carrega a metafora sozinho, e a copy nomeia os corpos nos cards. -->
+
+
+  <main id="main">
+    <!-- ============ ATO 1 · HERO (claro) ============ -->
+    <section class="sec clear hero" id="hero">
+      <div class="hero-scrim light" aria-hidden="true"></div>
+      <div class="wrap hero-inner">
+        <span class="eyebrow reveal"><span class="dot"></span>Sobre a PiaR</span>
+        <h1 class="reveal d1">Há 13 anos transformamos a marca dos outros em algo <span class="serif">inevitável</span>.</h1>
+        <p class="hero-sub reveal d2">
+          Começamos em São Paulo, em 2013, quando comunicação para startup ainda era terra de ninguém. Sair na imprensa todo mundo sai. Difícil é virar a marca que a imprensa procura, o mercado lembra e a inteligência artificial cita quando perguntam onde. É esse o trabalho da casa.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#turn" class="btn btn-ghost-l">Como chegamos aqui</a>
+        </div>
+      </div>
+      <span class="cue" aria-hidden="true"><span class="l"></span>role</span>
+    </section>
+
+    <!-- ============ ATO 1 · O RUIDO (claro) ============ -->
+    <section class="sec light tight" id="ruido">
+      <div class="wrap narrow">
+        <span class="eyebrow reveal"><span class="dot"></span>O problema</span>
+        <h2 class="big reveal d1">O mercado está barulhento.</h2>
+        <p class="lede reveal d2">
+          Todo dia tem mais gente gritando para aparecer. Mais release, mais post, mais ruído. E quanto mais todo mundo grita, menos alguém de fato escuta. Percebemos isso cedo, e decidimos jogar um jogo diferente.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ A VIRADA (claro vira dark) ============ -->
+    <section class="sec clear turn" id="turn">
+      <div class="turn-scrim" aria-hidden="true"></div>
+      <div class="wrap narrow turn-inner">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>A virada</span>
+        <p class="turn-pre reveal d1">Por isso paramos de tentar gritar mais alto.</p>
+        <h2 class="hero-line reveal d2">Ser inevitável é <span class="serif warm-t">raro</span>.</h2>
+        <p class="lede on-dark reveal d3">
+          Ninguém empurra marca goela abaixo do mercado e faz durar. Marca de verdade vira aquilo que o mercado procura sozinho. Passamos os dias construindo essa força: a gravidade que faz a imprensa, o cliente e o investidor virem até você.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ ATO 2 · A CRENCA (dark) ============ -->
+    <section class="sec dark" id="reputacao">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>No que acreditamos</span>
+          <h2>Reputação, para nós, vale o que aparece na conta quando a empresa é vendida.</h2>
+          <p class="lede on-dark">
+            Acompanhamos {site.exitsSupported} startups da primeira rodada até o exit. Na mesa de negociação, reputação deixa de ser discurso e vira número, e por isso a tratamos como ativo desde o primeiro dia.
+          </p>
+        </div>
+        <p class="punch reveal d1">Aparecer dura um dia. Reputação é o que falam de você quando você <span class="warm-t">não está na sala</span>.</p>
+      </div>
+    </section>
+
+    <!-- ============ ATO CMO · A CONVERSA QUE AMPLIAMOS (dark) ============ -->
+    <section class="sec dark tight" id="cmo">
+      <div class="wrap narrow">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>A conversa que ampliamos</span>
+        <p class="strike reveal d1">"Saímos na Exame essa semana."</p>
+        <p class="reply reveal d2">"Ótimo. E daí?"</p>
+        <p class="lede on-dark reveal d3">
+          Toda reunião de marketing tem um momento parecido com esse. A pergunta carrega uma distância real: entre quem fala em cobertura e quem responde por receita. Passamos anos fechando essa distância, e foi assim que a nossa conversa com o marketing ficou maior.
+        </p>
+      </div>
+    </section>
+
+    <section class="sec dark has-g" id="atrai">
+      <span class="gword" data-parallax-y="-12" aria-hidden="true" style="top:6%; left:-3%">massa</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>O que o marketing espera de nós</span>
+          <h2>Quando a massa cresce, o mercado inteiro vem junto, e a imprensa é só o primeiro a chegar.</h2>
+          <p class="lede on-dark">Quem responde por receita quer a força que move o pipeline, muito mais do que outra matéria na parede. A mesma gravidade que constrói reputação puxa quatro pessoas para perto da marca ao mesmo tempo.</p>
+        </div>
+        <div class="corpos">
+          {corpos.map((c, i) => (
+            <div class:list={['corpo-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="c-ic"><iconify-icon icon={c.ic}></iconify-icon></span>
+              <h3>{c.t}</h3>
+              <p>{c.d}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal">Um CMO chama isso de pipeline, de validação, de employer branding. Para nós, é a mesma <span class="warm-t">gravidade</span> agindo em quatro lugares de uma vez.</p>
+      </div>
+    </section>
+
+    <section class="sec dark tight" id="idioma">
+      <div class="wrap narrow">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>A língua de quem decide o orçamento</span>
+          <h2>Aprendemos a relatar no idioma de quem aprova o orçamento.</h2>
+          <p class="lede on-dark">Uma matéria na parede não sobrevive a uma reunião de conselho, mas receita, pipeline e crescimento sobrevivem. Sentamos desse lado da mesa vezes suficientes para aprender a falar assim, e é nessa língua que entregamos o relatório.</p>
+        </div>
+        <ul class="trad reveal d1">
+          {traducoes.map((t) => (
+            <li>
+              <span class="de">{t.de}</span>
+              <span class="ar" aria-hidden="true">&rarr;</span>
+              <span class="para">{t.para}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="punch reveal d2">A pergunta que mais abre orçamento é direta: quanto custa comprar todo esse espaço em mídia paga? Quando a resposta aparece, relações públicas deixam de ser linha de custo e viram linha de <span class="warm-t">retorno</span>.</p>
+      </div>
+    </section>
+
+    <section class="sec dark tight" id="traducao">
+      <div class="wrap narrow">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Da cobertura à receita</span>
+          <h2>Traduzir cobertura em receita é parte do trabalho.</h2>
+          <p class="lede on-dark">Reputação não aparece no relatório como um número solto. Ela percorre um caminho até a venda, e acompanhamos cada passo dele.</p>
+        </div>
+        <ol class="path reveal d1">
+          <li><span>Publicação</span></li>
+          <li><span>Credibilidade</span></li>
+          <li><span>Confiança</span></li>
+          <li><span>Consideração</span></li>
+          <li><span>Venda</span></li>
+        </ol>
+        <p class="lede on-dark reveal d2">Essa é a conversa inteira, da cadeira do CMO. Ela continua, com calma e com método, na página <a href="/para-cmos" class="ln">Para CMOs</a>.</p>
+      </div>
+    </section>
+
+    <!-- ============ ATO 2 · O NOSSO JEITO (dark) ============ -->
+    <section class="sec dark has-g" id="jeito">
+      <span class="gword" data-parallax-y="-14" aria-hidden="true" style="top:6%; right:-3%">gravidade</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>O nosso jeito</span>
+          <h2>Três coisas das quais não abrimos mão.</h2>
+          <p class="lede on-dark">O método inteiro mora em <a href="/processos" class="ln">outra página</a>. Aqui ficam só os princípios que não mudam desde 2013.</p>
+        </div>
+        <div class="trio">
+          {verdades.map((v, i) => (
+            <div class:list={['truth-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
+              <span class="t-n">{v.n}</span>
+              <h3>{v.t}</h3>
+              <p>{v.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MANIFESTO (dark, pronto para receber video) ============ -->
+    <section class="sec clear manifesto" id="manifesto">
+      <div class="mani-scrim" aria-hidden="true"></div>
+      <div class="wrap mani-inner">
+        <h2 class="hero-line reveal">Atenção se <span class="serif warm-t">conquista</span>, nunca se exige.</h2>
+        <p class="lede on-dark reveal d1">
+          Relevância cria campo. Marca relevante faz o mercado vir até ela, sem precisar correr atrás. Foi por isso que a PiaR nasceu, e é o que continuamos construindo, marca por marca.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ ATO 3 · A PROVA (dark) ============ -->
+    <section class="sec dark" id="prova">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>A prova</span>
+          <h2>Em vez de encher esta página de prêmio, vamos contar o que dá para conferir.</h2>
+        </div>
+        <div class="stats reveal d1">
+          <div class="stat"><span class="stat-n" data-count="13">13</span><span class="stat-l">anos puxando a conversa, desde 2013</span></div>
+          <div class="stat"><span class="stat-n" data-count="470" data-suffix="+">470+</span><span class="stat-l">marcas atendidas em comunicação</span></div>
+          <div class="stat"><span class="stat-n" data-count="8">8</span><span class="stat-l">startups acompanhadas até o exit</span></div>
+        </div>
+        <p class="lede on-dark reveal d2">
+          Entramos cedo nessas histórias e ficamos até o fim: {exits.join(', ')}. Acompanhar uma empresa da primeira rodada até a venda ensina sobre reputação o que disparo nenhum ensina.
+        </p>
+        <div class="chips reveal d2">
+          {exits.map((e) => <span class="chip warm-chip">{e}</span>)}
+        </div>
+        <p class="mono-note reveal d2">Entre as marcas atendidas</p>
+        <div class="chips reveal d2">
+          {clientes.map((c) => <span class="chip">{c}</span>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ATO 3 · QUEM ESTA NA SALA (dark) ============ -->
+    <section class="sec dark has-g" id="lideranca">
+      <span class="gword" data-parallax-y="16" aria-hidden="true" style="bottom:-6%; left:-2%">inevitável</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Quem faz</span>
+          <h2>Quem assina está na sala.</h2>
+          <p class="lede on-dark">Reunião semanal, funil de prospecção, edição de cada entrega. Quem dirige a PiaR está dentro de tudo isso, todo dia. Mais rotina do que organograma.</p>
+        </div>
+        <div class="leaders">
+          {lideranca.map((l, i) => (
+            <div class:list={['leader', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
+              <div class="leader-photo">
+                <img src={l.foto} alt={`${l.nome}, ${l.cargo} da PiaR`} class:list={[l.flip && 'flip']} loading="lazy" decoding="async" />
+              </div>
+              <span class="leader-chip">{l.cargo}</span>
+              <h3>{l.nome}</h3>
+              <p>{l.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CLIMAX + CTA (dark) ============ -->
+    <section class="sec dark climax has-g" id="climax">
+      <span class="gword big" data-parallax-y="-10" aria-hidden="true" style="top:50%; left:50%; transform:translate(-50%,-50%)">PiaR</span>
+      <div class="wrap climax-inner">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>O próximo passo</span>
+        <h2 class="reveal d1">Vamos tornar a sua marca <span class="serif warm-t">inevitável</span>.</h2>
+        <p class="lede on-dark reveal d2">
+          Começa com um diagnóstico, sem pitch genérico. Olhamos onde a sua marca está vazando narrativa e por onde ela vira a referência do mercado. Você conta o contexto, mostramos a oportunidade na busca, na imprensa e na IA. Respondemos em até 1 dia útil.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href={`mailto:${site.email}`} class="btn btn-ghost-d">{site.email}</a>
+        </div>
+        <p class="cta-foot reveal d4">{site.address.street}, {site.address.locality} · CEP {site.address.postalCode}</p>
+      </div>
+    </section>
+
+    <!-- ============ FAQ (dark) ============ -->
+    <section class="sec dark tight" id="faq">
+      <div class="wrap narrow">
+        <div class="sec-head reveal">
+          <span class="eyebrow on-dark"><span class="dot"></span>Perguntas frequentes</span>
+          <h2>O que já dá para responder por aqui.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <style is:global>
+    :root {
+      --space: #07080C;
+      --cream: #FAFAFA;
+      --cold: #5B7B9A;
+      --amber: #EBC456;
+      --warm: #FED136;
+      --ink-muted: rgba(15, 15, 17, .6);
+      --text-d: #FFFFFF;
+      --text-d-muted: rgba(255, 255, 255, .68);
+      --text-d-faint: rgba(255, 255, 255, .42);
+      --hairline-l: rgba(0, 0, 0, .08);
+      --r-card: 22px;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -.03em; margin: 0; }
+    body { font-family: var(--font-sans); background: var(--cream); color: var(--ink); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    .serif { font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+    .warm-t { color: var(--warm); }
+    .ln { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--warm); }
+
+    #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--warm); z-index: 9999; width: 0; transition: width .1s linear; }
+
+    /* canvas fixo (ruido -> gravidade) */
+    #field-bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; background: var(--cream); }
+    .body-label { position: fixed; left: 0; top: 0; z-index: 3; display: inline-flex; align-items: center; gap: .5rem; padding: .42rem .85rem; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; backdrop-filter: blur(6px); pointer-events: none; white-space: nowrap; opacity: 0; will-change: transform, opacity; }
+    .body-label.warm { color: rgba(255,236,176,.95); background: rgba(254,209,54,.1); border: 1px solid rgba(254,209,54,.34); }
+    .body-label.warm .wb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 12px 2px rgba(254,209,54,.85); }
+    .body-label.cold { color: rgba(186,206,224,.92); background: rgba(91,123,154,.14); border: 1px solid rgba(110,147,184,.32); }
+    .body-label.cold .cb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cold); box-shadow: 0 0 10px 1px rgba(110,147,184,.7); }
+    @media (max-width: 820px) { .body-label { display: none; } }
+
+    .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 2; }
+    @media (min-width: 768px) { .wrap { padding-inline: 2.5rem; } }
+    .wrap.narrow { max-width: 820px; }
+    main { position: relative; z-index: 1; }
+
+    .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600; }
+    .eyebrow.on-dark { color: var(--text-d-muted); }
+    .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warm); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .9rem 1.7rem; border-radius: 20px; font-family: var(--font-display); font-size: .92rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+    .btn iconify-icon { transition: transform .4s var(--ease); }
+    .btn:hover iconify-icon { transform: translateX(4px); }
+    .btn-accent { background: var(--warm); color: #15130C; border-color: var(--warm); }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(254,209,54,.34); }
+    .btn-ghost-l { background: transparent; color: var(--ink); border-color: rgba(0,0,0,.18); }
+    .btn-ghost-l:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.4); }
+    .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.26); }
+    .btn-ghost-d:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.55); }
+
+    .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.4rem; }
+
+    /* palavra-fantasma com parallax */
+    .has-g { overflow: hidden; }
+    .gword { position: absolute; z-index: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(6rem, 22vw, 22rem); line-height: .8; letter-spacing: -.05em; color: rgba(255,255,255,.03); pointer-events: none; user-select: none; white-space: nowrap; }
+    .gword.big { color: rgba(254,209,54,.04); }
+
+    /* secoes: claras (ato 1), dark (ato 2/3), clear (hero/turn/manifesto) */
+    .sec { position: relative; z-index: 1; padding-block: clamp(5rem, 10vw, 8.5rem); }
+    .sec.light { background: rgba(250, 250, 250, .8); border-top: 1px solid var(--hairline-l); color: var(--ink); }
+    .sec.dark { background: rgba(7, 8, 12, .82); border-top: 1px solid var(--hairline-d); color: var(--text-d); }
+    .sec.clear { background: transparent; }
+    .sec.tight { padding-block: clamp(4rem, 8vw, 6.5rem); }
+
+    .sec-head { max-width: 64ch; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
+    .sec h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 24ch; text-wrap: balance; }
+    .sec h2.big { font-size: clamp(2.4rem, 6vw, 5rem); max-width: 18ch; }
+    .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--ink-muted); margin-top: 1.4rem; max-width: 60ch; }
+    .lede.on-dark { color: var(--text-d-muted); }
+    .punch { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.18; letter-spacing: -.025em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 28ch; color: #fff; }
+
+    /* HERO (claro) */
+    .hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
+    .hero-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .hero-scrim.light { background:
+      radial-gradient(120% 90% at 28% 42%, rgba(250,250,250,.86) 0%, rgba(250,250,250,.4) 44%, rgba(250,250,250,0) 66%),
+      linear-gradient(180deg, rgba(250,250,250,.55) 0%, rgba(250,250,250,0) 24%, rgba(250,250,250,0) 60%, rgba(250,250,250,.6) 100%); }
+    .hero-inner { position: relative; z-index: 2; padding-block: 9rem 5rem; }
+    .hero h1 { font-size: clamp(2.7rem, 7vw, 6rem); font-weight: 600; line-height: .98; letter-spacing: -.04em; margin: 1.5rem 0 0; max-width: 18ch; text-wrap: balance; }
+    .hero-sub { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--ink-muted); margin-top: 1.7rem; max-width: 56ch; }
+
+    .cue { position: absolute; left: 50%; bottom: 1.6rem; transform: translateX(-50%); z-index: 3; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint, rgba(15,15,17,.4)); }
+    .cue .l { width: 1px; height: 36px; background: linear-gradient(180deg, rgba(15,15,17,.4), transparent); animation: cue 2.2s var(--ease) infinite; }
+    @keyframes cue { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+    /* A VIRADA */
+    .turn { min-height: 92vh; display: flex; align-items: center; }
+    .turn-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(90% 70% at 50% 50%, rgba(7,8,12,.5) 0%, rgba(7,8,12,.78) 60%, rgba(7,8,12,.9) 100%); }
+    .turn-inner { position: relative; z-index: 2; text-align: center; margin-inline: auto; }
+    .turn-pre { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.2rem, 2.4vw, 1.8rem); color: var(--text-d-muted); margin: 1.2rem 0 0; }
+    .hero-line { font-size: clamp(2.8rem, 8vw, 6.5rem); font-weight: 700; line-height: .98; letter-spacing: -.04em; color: #fff; margin: .6rem auto 0; max-width: 16ch; }
+    .turn .lede { margin-inline: auto; }
+
+    /* truth cards */
+    .trio { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 760px) { .trio { grid-template-columns: repeat(3, 1fr); } }
+    .truth-card { padding: clamp(1.6rem, 2.4vw, 2.1rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(13,15,22,.6); transition: var(--t-smooth); }
+    .truth-card:hover { border-color: rgba(254,209,54,.28); transform: translateY(-4px); }
+    .truth-card .t-n { font-family: var(--font-mono); font-size: .8rem; font-weight: 700; letter-spacing: .08em; color: var(--warm); }
+    .truth-card h3 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; margin: .7rem 0 0; color: #fff; }
+    .truth-card p { font-size: 1rem; line-height: 1.55; color: var(--text-d-muted); margin: .6rem 0 0; }
+
+    /* ato CMO: a cena, os corpos que a massa atrai, o caminho ate a venda */
+    .strike { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3.4vw, 2.6rem); letter-spacing: -.02em; color: rgba(180,200,220,.7); margin: 1.5rem 0 0; }
+    .reply { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.03em; color: var(--warm); margin: .4rem 0 0; }
+    .corpos { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 560px) { .corpos { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 980px) { .corpos { grid-template-columns: repeat(4, 1fr); } }
+    .corpo-card { padding: clamp(1.5rem, 2.2vw, 1.9rem); border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(13,15,22,.6); transition: var(--t-smooth); }
+    .corpo-card:hover { border-color: rgba(254,209,54,.28); transform: translateY(-4px); }
+    .corpo-card h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; margin: .8rem 0 0; color: #fff; }
+    .corpo-card p { font-size: .92rem; line-height: 1.5; color: var(--text-d-muted); margin: .5rem 0 0; }
+    .c-ic { display: inline-flex; width: 46px; height: 46px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(254,209,54,.1); color: var(--warm); font-size: 1.4rem; }
+    .path { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; padding: 0; margin: 2rem 0 1.5rem; }
+    .path li { display: flex; align-items: center; gap: .55rem; }
+    .path li span { display: inline-flex; align-items: center; padding: .55rem 1rem; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid var(--hairline-d); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-d-muted); }
+    .path li:last-child span { background: rgba(254,209,54,.14); border-color: rgba(254,209,54,.4); color: var(--warm); }
+    .path li::after { content: ''; width: 14px; height: 1px; background: rgba(255,255,255,.2); }
+    .path li:last-child::after { display: none; }
+    /* idioma: a traducao para a lingua do CMO (o que entregamos -> o que vira no relatorio) */
+    .trad { list-style: none; padding: 0; margin: 2rem 0 1.5rem; display: grid; gap: .7rem; }
+    .trad li { display: grid; grid-template-columns: 1fr auto 1.15fr; align-items: center; gap: 1.1rem; padding: 1rem 1.3rem; border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(13,15,22,.5); transition: var(--t-smooth); }
+    .trad li:hover { border-color: rgba(254,209,54,.24); transform: translateX(4px); }
+    .trad .de { color: var(--text-d-muted); font-size: 1rem; }
+    .trad .ar { color: var(--warm); font-size: 1.2rem; line-height: 1; }
+    .trad .para { color: #fff; font-weight: 500; font-size: 1.05rem; letter-spacing: -.01em; }
+    @media (max-width: 560px) { .trad li { grid-template-columns: 1fr; gap: .3rem; } .trad .ar { display: none; } .trad .de { font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; font-family: var(--font-mono); } }
+
+    /* MANIFESTO (pronto para video) */
+    .manifesto { min-height: 86vh; display: flex; align-items: center; }
+    .mani-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(100% 80% at 50% 50%, rgba(7,8,12,.35) 0%, rgba(7,8,12,.7) 65%, rgba(7,8,12,.88) 100%); }
+    .mani-inner { position: relative; z-index: 2; text-align: center; margin-inline: auto; max-width: 60ch; }
+    .mani-inner .lede { margin-inline: auto; }
+
+    /* PROVA: stats + chips */
+    .stats { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+    @media (min-width: 720px) { .stats { grid-template-columns: repeat(3, 1fr); } }
+    .stat { border-left: 2px solid rgba(254,209,54,.4); padding-left: 1.2rem; }
+    .stat-n { display: block; font-family: var(--font-display); font-weight: 700; font-size: clamp(3rem, 7vw, 5.5rem); line-height: .9; letter-spacing: -.04em; color: #fff; }
+    .stat-l { display: block; font-size: .92rem; color: var(--text-d-muted); margin-top: .6rem; max-width: 26ch; }
+    .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .chip { display: inline-flex; align-items: center; padding: .5rem .9rem; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid var(--hairline-d); font-size: .8rem; font-weight: 500; color: var(--text-d-muted); transition: var(--t-smooth); }
+    .chip:hover { border-color: rgba(254,209,54,.4); color: #fff; }
+    .chip.warm-chip { background: rgba(254,209,54,.08); border-color: rgba(254,209,54,.28); color: rgba(255,236,176,.95); }
+    .mono-note { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-d-faint); margin-top: 2.5rem; }
+
+    /* LIDERANCA */
+    .leaders { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    @media (min-width: 760px) { .leaders { grid-template-columns: repeat(3, 1fr); } }
+    .leader { border-radius: var(--r-card); border: 1px solid var(--hairline-d); background: rgba(13,15,22,.55); overflow: hidden; transition: var(--t-smooth); padding-bottom: 1.5rem; }
+    .leader:hover { border-color: rgba(255,255,255,.18); transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.3); }
+    .leader-photo { aspect-ratio: 4 / 5; overflow: hidden; background: #0d0f16; position: relative; }
+    .leader-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,8,12,0) 55%, rgba(7,8,12,.55) 100%); }
+    .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; filter: grayscale(.15) contrast(1.02); }
+    .leader-photo img.flip { transform: scaleX(-1); }
+    .leader-chip { display: inline-flex; align-items: center; gap: .35rem; margin: 1.2rem 1.5rem 0; padding: .3rem .7rem; border-radius: 999px; background: rgba(254,209,54,.12); color: var(--warm); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; }
+    .leader h3 { font-size: 1.4rem; font-weight: 600; letter-spacing: -.02em; margin: .7rem 1.5rem 0; color: #fff; }
+    .leader p { font-size: .95rem; line-height: 1.55; color: var(--text-d-muted); margin: .5rem 1.5rem 0; }
+
+    /* CLIMAX */
+    .climax { padding-block: clamp(6rem, 13vw, 10rem); }
+    .climax-inner { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
+    .climax h2 { font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 600; line-height: 1.06; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 20ch; }
+    .climax .lede { margin-inline: auto; }
+    .climax .cta-row { justify-content: center; }
+    .cta-foot { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; color: var(--text-d-faint); margin-top: 2.6rem; }
+
+    /* FAQ */
+    .faq-item { border-bottom: 1px solid var(--hairline-d); }
+    .faq-item:last-child { border-bottom: 0; }
+    .faq-item summary { list-style: none; cursor: pointer; padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; letter-spacing: -.01em; color: #fff; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--warm); }
+    .faq-item summary iconify-icon { transition: transform .4s var(--ease); font-size: 1.4rem; color: var(--text-d-faint); flex-shrink: 0; }
+    .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--warm); }
+    .faq-item .faq-body { padding: 0 0 1.5rem; color: var(--text-d-muted); max-width: 72ch; line-height: 1.6; }
+
+    .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.active { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: .1s; } .reveal.d2 { transition-delay: .2s; } .reveal.d3 { transition-delay: .3s; } .reveal.d4 { transition-delay: .4s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .cue .l { animation: none; }
+    }
+  </style>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf0 = function (t) { lenis.raf(t); requestAnimationFrame(raf0); }; requestAnimationFrame(raf0); }
+        }
+      } catch (e) { /* noop */ }
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      var bar = document.getElementById('scroll-progress');
+      var scrollP = 0;
+      function onScroll() {
+        var h = document.documentElement;
+        scrollP = h.scrollTop / ((h.scrollHeight - h.clientHeight) || 1);
+        if (bar) bar.style.width = (scrollP * 100) + '%';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      // contadores da prova (disparam ao revelar)
+      document.querySelectorAll('.stat-n[data-count]').forEach(function (el) {
+        var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+        var suffix = el.getAttribute('data-suffix') || '';
+        var seen = false;
+        var ob = new IntersectionObserver(function (ents) {
+          ents.forEach(function (e) {
+            if (e.isIntersecting && !seen) {
+              seen = true; ob.disconnect();
+              if (prefersReduced) { el.textContent = target + suffix; return; }
+              var t0 = null, dur = 1100;
+              function step(ts) {
+                if (!t0) t0 = ts;
+                var p = Math.min((ts - t0) / dur, 1);
+                var eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(target * eased) + suffix;
+                if (p < 1) requestAnimationFrame(step);
+              }
+              requestAnimationFrame(step);
+            }
+          });
+        }, { threshold: 0.6 });
+        ob.observe(el);
+      });
+
+      /* ========================================================
+         CAMPO FIXO: RUIDO (claro) -> GRAVIDADE (dark)
+         No topo, fundo creme com pontos espalhados, tremendo, sem
+         centro (todo mundo aparece). Conforme a dobra #turn sobe, o
+         fundo escurece, um nucleo quente acende e os pontos sao
+         puxados para orbita (a marca vira inevitavel). No #climax o
+         nucleo incha. Dirigido por marcadores, nao por fracao fixa.
+         ======================================================== */
+      (function inevitableField() {
+        var canvas = document.getElementById('field-bg');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        function resize() { W = window.innerWidth; H = window.innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+        resize();
+        window.addEventListener('resize', resize);
+        function smooth(t) { return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        var turnEl = document.getElementById('turn');
+        var climaxEl = document.getElementById('climax');
+        var lblCore = document.getElementById('lbl-core');
+        var atraiEl = document.getElementById('atrai');
+        var bLbls = [document.getElementById('lbl-b0'), document.getElementById('lbl-b1'), document.getElementById('lbl-b2')];
+
+        // pontos: cada um tem um lar espalhado e um destino orbital
+        var N = 210;
+        var P = [];
+        for (var i = 0; i < N; i++) {
+          P.push({
+            hx: Math.random(), hy: Math.random(),
+            jt: Math.random() * Math.PI * 2, js: 0.4 + Math.random() * 0.9,
+            ang: Math.random() * Math.PI * 2,
+            rr: 0.12 + Math.random() * 0.46,
+            sp: (0.2 + Math.random() * 0.5) * (Math.random() < 0.5 ? 1 : -1),
+            sz: 0.7 + Math.random() * 1.6,
+            br: 0.5 + Math.random() * 0.5
+          });
+        }
+        // quatro corpos maiores (o mercado: comprador, investidor, lideranca, talento) que orbitam na fase dark
+        var bodies = [
+          { ang: 0.4, rr: 0.30, sp: 0.5, col: [254, 209, 54] },
+          { ang: 2.3, rr: 0.42, sp: -0.36, col: [235, 196, 86] },
+          { ang: 4.1, rr: 0.52, sp: 0.28, col: [120, 150, 184] },
+          { ang: 5.6, rr: 0.37, sp: -0.2, col: [255, 232, 150] }
+        ];
+        var T = 0;
+
+        function frame() {
+          T += prefersReduced ? 0 : 0.006;
+
+          // tr: 0 antes da virada entrar, 1 quando ela chega ao topo
+          var tr = 0;
+          if (turnEl) { var rt = turnEl.getBoundingClientRect(); tr = 1 - (rt.top / (H || 1)); }
+          tr = smooth(tr < 0 ? 0 : tr > 1 ? 1 : tr);
+          // fin: clima no fim (a dobra climax preenchendo a tela)
+          var fin = 0;
+          if (climaxEl) { var rc = climaxEl.getBoundingClientRect(); fin = 1 - (rc.top / ((H * 0.75) || 1)); }
+          fin = smooth(fin < 0 ? 0 : fin > 1 ? 1 : fin);
+          // clarao quando a gravidade acende (a virada)
+          var ignite = Math.max(0, 1 - Math.abs(tr - 0.5) / 0.16);
+          // act: a massa cresce no ato CMO (a dobra "o mercado vem") e relaxa depois
+          var act = 0;
+          if (atraiEl) { var rA = atraiEl.getBoundingClientRect(); act = 1 - Math.abs((rA.top + rA.height * 0.5) - H * 0.5) / (H * 0.9); }
+          act = smooth(act < 0 ? 0 : act > 1 ? 1 : act);
+
+          var base = Math.min(W, H);
+          var cx = W * 0.5, cy = H * (0.46 + 0.04 * Math.sin(T * 0.2));
+
+          // fundo: creme -> espaco
+          var bg0 = lerp(250, 7, tr), bg1 = lerp(250, 8, tr), bg2 = lerp(250, 12, tr);
+          ctx.clearRect(0, 0, W, H);
+          ctx.fillStyle = 'rgb(' + (bg0 | 0) + ',' + (bg1 | 0) + ',' + (bg2 | 0) + ')';
+          ctx.fillRect(0, 0, W, H);
+
+          // brilho do nucleo (so na fase dark)
+          if (tr > 0.02) {
+            var glowR = base * (0.26 + tr * 0.16 + fin * 0.28 + act * 0.12);
+            var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+            g.addColorStop(0, 'rgba(254,209,54,' + (tr * (0.12 + fin * 0.14 + act * 0.08)).toFixed(3) + ')');
+            g.addColorStop(0.4, 'rgba(254,209,54,' + (tr * 0.04).toFixed(3) + ')');
+            g.addColorStop(1, 'rgba(254,209,54,0)');
+            ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          }
+
+          var tilt = 0.42;
+          // pontos: lar espalhado -> orbita
+          for (var i = 0; i < N; i++) {
+            var p = P[i];
+            var jx = Math.cos(p.jt + T * p.js) * 6, jy = Math.sin(p.jt + T * p.js * 1.3) * 6;
+            var sxp = p.hx * W + jx, syp = p.hy * H + jy;
+            var a = p.ang + T * p.sp;
+            var orr = p.rr * base * (1 - fin * 0.12 - act * 0.06);
+            var oxp = cx + Math.cos(a) * orr, oyp = cy + Math.sin(a) * orr * tilt;
+            var x = lerp(sxp, oxp, tr), y = lerp(syp, oyp, tr);
+            // cor: escuro sobre creme -> claro/quente sobre espaco
+            var r = lerp(24, 255, tr), gg = lerp(24, 224, tr), b = lerp(28, 138, tr);
+            var alpha = (0.32 + p.br * 0.4) * (1 - tr * 0.15);
+            ctx.beginPath(); ctx.arc(x, y, p.sz + tr * 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + (r | 0) + ',' + (gg | 0) + ',' + (b | 0) + ',' + alpha.toFixed(3) + ')';
+            ctx.fill();
+          }
+
+          // corpos maiores + tethers (so quando a gravidade ligou)
+          if (tr > 0.05) {
+            for (var k = 0; k < bodies.length; k++) {
+              var bd = bodies[k];
+              var ba = bd.ang + T * bd.sp;
+              var brr = bd.rr * base * (1 - fin * 0.14 - act * 0.13);
+              var bx = cx + Math.cos(ba) * brr, by = cy + Math.sin(ba) * brr * tilt;
+              bd._x = bx; bd._y = by;
+              ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(bx, by);
+              ctx.strokeStyle = 'rgba(' + bd.col[0] + ',' + bd.col[1] + ',' + bd.col[2] + ',' + (tr * (0.07 + act * 0.08)).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.stroke();
+              var rad = (3 + fin * 5 + act * 3) * tr + 1;
+              ctx.beginPath(); ctx.arc(bx, by, rad, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(' + bd.col[0] + ',' + bd.col[1] + ',' + bd.col[2] + ',' + tr.toFixed(3) + ')';
+              ctx.shadowColor = 'rgba(' + bd.col[0] + ',' + bd.col[1] + ',' + bd.col[2] + ',.7)'; ctx.shadowBlur = (10 + fin * 16 + act * 14) * tr; ctx.fill(); ctx.shadowBlur = 0;
+            }
+          }
+
+          // clarao da virada: flash radial quando a gravidade acende
+          if (ignite > 0.01 && tr > 0.02) {
+            var fr = base * (0.3 + ignite * 0.55);
+            var fg2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, fr);
+            fg2.addColorStop(0, 'rgba(254,209,54,' + (ignite * 0.2).toFixed(3) + ')');
+            fg2.addColorStop(1, 'rgba(254,209,54,0)');
+            ctx.fillStyle = fg2; ctx.fillRect(0, 0, W, H);
+          }
+
+          // o nucleo (a marca): acende com tr, incha no clima
+          if (tr > 0.02) {
+            var coreR = (4 + tr * 4 + fin * fin * 26 + ignite * 6 + act * 7);
+            var bloom = Math.sin(fin * Math.PI);
+            if (bloom > 0.002) {
+              ctx.beginPath(); ctx.arc(cx, cy, coreR + bloom * base * 0.16, 0, Math.PI * 2);
+              ctx.strokeStyle = 'rgba(254,209,54,' + (bloom * 0.4).toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.stroke();
+            }
+            ctx.beginPath(); ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,' + tr.toFixed(3) + ')';
+            ctx.shadowColor = 'rgba(254,209,54,.9)'; ctx.shadowBlur = (18 + fin * 30) * tr; ctx.fill(); ctx.shadowBlur = 0;
+          }
+
+          if (lblCore) {
+            var show = tr > 0.5 && fin < 0.85;
+            lblCore.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%, 18px)';
+            lblCore.style.opacity = show ? ((tr - 0.5) * 2).toFixed(3) : '0';
+          }
+
+          // nomes dos corpos (o comprador / o investidor / o talento) durante o ato CMO
+          var showB = false;
+          if (atraiEl) { var ra = atraiEl.getBoundingClientRect(); showB = ra.top < H * 0.6 && ra.bottom > H * 0.25; }
+          for (var li = 0; li < bLbls.length; li++) {
+            var L = bLbls[li]; if (!L) continue;
+            var bb = bodies[li];
+            if (showB && bb && bb._x != null && tr > 0.6) {
+              L.style.transform = 'translate(' + bb._x + 'px,' + bb._y + 'px) translate(-50%, 14px)';
+              L.style.opacity = '0.9';
+            } else { L.style.opacity = '0'; }
+          }
+
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      })();
+    });
+  </script>
+</BaseLayout>

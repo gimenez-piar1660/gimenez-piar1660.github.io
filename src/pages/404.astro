@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Página não encontrada"
+  description="A página que você procurou não existe ou foi movida."
+  noindex={true}
+>
+  <main id="main" class="min-h-screen grid place-items-center px-6">
+    <div class="text-center max-w-xl">
+      <p class="ds-mono mb-4 text-[color:var(--text-muted)]">Erro 404</p>
+      <h1 class="ds-h2 mb-6">Esta página saiu de cena.</h1>
+      <p class="ds-body mb-10 text-[color:var(--text-muted)]">
+        O endereço pode ter mudado ou o link está incorreto. Volte ao início para continuar navegando.
+      </p>
+      <a href="/" class="inline-flex items-center gap-2 bg-primary text-accent px-6 py-3 rounded-full font-semibold">
+        Voltar ao início
+      </a>
+    </div>
+  </main>
+</BaseLayout>

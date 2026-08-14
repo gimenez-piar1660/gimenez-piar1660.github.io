@@ -1,0 +1,966 @@
+---
+// ============================================================================
+// Exemplar narrativo · ROI de assessoria de imprensa (Data PR)
+// Conteúdo voice-backed portado de:
+//   src/content/pages/roi.md (fonte; renomeado de roi-assessoria-de-imprensa.md)
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói canvas 2D (o ledger: dígitos mono que acendem e sobem para uma cifra)
+// + dataviz interativa (o AVE que esvazia: cifra oca que murcha a cada premissa)
+// + scroll storytelling (GSAP/Lenis), sobre o DS da PiaR.
+// Assinatura de cor: financeira/ledger, preto + amarelo, mono em destaque.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/roi`;
+
+// As três exigências do ROI de PR.
+const exigencias = [
+  {
+    id: '01',
+    nome: 'Janela de tempo definida',
+    desc: 'O retorno de uma matéria não acontece no instante da publicação. Escolha um período, trimestre ou semestre, e compare o que entrou e o que saiu dentro dele.',
+    icon: 'solar:calendar-mark-line-duotone',
+  },
+  {
+    id: '02',
+    nome: 'Atribuição honesta',
+    desc: 'A imprensa contribui para o resultado, mas dificilmente é a única causa. Quem credita 100% da venda ao PR está enganando a si mesmo.',
+    icon: 'solar:scale-line-duotone',
+    featured: true,
+  },
+  {
+    id: '03',
+    nome: 'Métrica conectada a negócio',
+    desc: 'Número de matérias não é resultado. Resultado é o que muda no funil, na reputação ou na decisão de quem importa para a empresa.',
+    icon: 'solar:graph-up-line-duotone',
+  },
+];
+
+// Passo a passo do exemplo numérico ilustrativo.
+const passos = [
+  {
+    num: '01',
+    titulo: 'Defina o investimento no período',
+    valor: 'R$ 100.000',
+    desc: 'Um trimestre com R$ 90.000 de honorário de assessoria e R$ 10.000 em horas internas e produção. Investimento total no período.',
+  },
+  {
+    num: '02',
+    titulo: 'Isole o resultado que você consegue medir',
+    valor: '50 leads',
+    desc: 'Tráfego vindo de veículos onde a empresa foi pautada gerou 50 leads qualificados rastreáveis, por UTM, por pergunta no formulário ou por origem declarada.',
+  },
+  {
+    num: '03',
+    titulo: 'Converta em valor com a sua taxa real',
+    valor: 'R$ 100.000',
+    desc: 'Taxa de fechamento de 8% e ticket médio de R$ 25.000: 50 leads vezes 8% igual a 4 contratos, vezes R$ 25.000 igual a R$ 100.000 de resultado bruto atribuível.',
+  },
+  {
+    num: '04',
+    titulo: 'Aplique a atribuição e calcule',
+    valor: 'ROI menos 50%',
+    desc: 'Atribuindo ao PR metade do resultado, o retorno atribuível é R$ 50.000. No trimestre: (50.000 menos 100.000) dividido por 100.000, vezes 100, igual a menos 50%.',
+  },
+];
+
+// Métodos de valoração (a tabela limpa).
+const metodos = [
+  {
+    nome: 'Centimetragem / AVE',
+    mede: 'Espaço ocupado em mídia convertido em preço de anúncio equivalente',
+    quando: 'Quase nunca. Evite como prova de retorno',
+    limite: 'Confunde espaço com resultado e ignora tom, contexto e credibilidade',
+    evite: true,
+  },
+  {
+    nome: 'Share of voice',
+    mede: 'Sua presença na cobertura de um tema frente a concorrentes',
+    quando: 'Disputa de narrativa, lançamento de categoria, posicionamento',
+    limite: 'Mede presença relativa, não decisão de compra nem qualidade da menção',
+  },
+  {
+    nome: 'Leads atribuídos',
+    mede: 'Contatos qualificados originados de cobertura rastreável',
+    quando: 'Funil B2B com origem rastreável: UTM, formulário, declaração',
+    limite: 'Captura só a parcela rastreável; subestima o efeito reputacional e o boca a boca',
+  },
+  {
+    nome: 'Receita influenciada',
+    mede: 'Negócio fechado em que a cobertura participou da decisão',
+    quando: 'Ciclo de venda médio com CRM que registra o histórico de contato',
+    limite: 'Exige atribuição multi-toque e disciplina de dados; raramente isola o PR sozinho',
+  },
+];
+
+// As quatro etapas da medição na PiaR.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico e Mapeamento',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Levantamos a situação atual, os objetivos de negócio e quais métricas vão valer como prova de retorno antes de qualquer publicação. Sem linha de base, não há ROI possível.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging Framework',
+    prazo: 'Semanas 3 e 4',
+    desc: 'Estruturamos as mensagens e os ângulos. Aqui se define o que é share of voice relevante para a sua categoria e qual narrativa vamos disputar.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação Editorial',
+    prazo: 'Semanas 5 a 12',
+    desc: 'Execução com a imprensa, sempre por relacionamento e pauta, nunca por disparo em massa. 100% dos ativos passam por revisão jurídica antes de ir para fora.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e Escala',
+    prazo: 'Ciclos quinzenais',
+    desc: 'O que foi publicado, em que tom, com que presença relativa, e o que disso conversou com o funil. O número é revisitado, não apresentado uma vez e esquecido.',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+
+const faq = [
+  {
+    q: 'Dá para calcular ROI de assessoria de imprensa de verdade?',
+    a: 'Dá, desde que você aceite duas condições: janela de tempo longa o suficiente para o efeito reputacional aparecer, e atribuição honesta, reconhecendo que o PR contribui para o resultado sem ser a única causa. O que não dá é produzir um número exato fingindo que a matéria vendeu sozinha.',
+  },
+  {
+    q: 'Quanto tempo leva para PR mostrar retorno?',
+    a: 'Depende do objetivo e do ciclo de venda. Resultados de presença na narrativa, como share of voice, aparecem em semanas. Efeito sobre funil e reputação se acumula ao longo de meses. Por isso medimos em cadência quinzenal e olhamos a tendência, não um print isolado.',
+  },
+  {
+    q: 'Por que vocês não usam equivalência publicitária, se o número fica alto?',
+    a: 'Porque o número alto não se sustenta. AVE confunde espaço com resultado, ignora o tom da cobertura e inventa um preço de anúncio que você nunca pagaria. Apresentar AVE como ROI é entregar uma conta que não resiste à primeira pergunta de quem aprova o orçamento.',
+  },
+  {
+    q: 'Qual métrica eu deveria pedir para a minha assessoria?',
+    a: 'Peça a combinação: share of voice para saber se você está ganhando a conversa na sua categoria, qualidade da cobertura (veículo, posicionamento da mensagem, tom) e métricas de funil rastreáveis (tráfego, leads, conversão). Desconfie de quem entrega só volume de matérias ou só AVE.',
+  },
+  {
+    q: 'Vocês têm uma planilha para eu calcular isso?',
+    a: 'Estamos produzindo um mini-modelo de cálculo de ROI de PR com os campos deste guia: investimento, resultado atribuível, taxa de conversão, janela e atribuição.',
+  },
+];
+---
+<BaseLayout
+  title="ROI de assessoria de imprensa: como calcular"
+  description="Como calcular o ROI de assessoria de imprensa com método honesto: janela de tempo, atribuição e métricas conectadas a negócio, sem AVE."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --ledger-ink: #0A0A0C;
+        --ledger-ink-2: #141417;
+        --ledger-grid: rgba(255,255,255,.045);
+        --neg: #C44536;          /* vermelho-ledger sóbrio para o número negativo */
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · canvas 2D "o ledger"
+         =========================================================== */
+      .roi-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--ledger-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      .hero-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+      #roi-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .roi-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 22% 40%, rgba(10,10,12,.85) 0%, rgba(10,10,12,.4) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.55) 0%, rgba(10,10,12,0) 28%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .roi-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .roi-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .roi-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .roi-hero h1 { font-size: clamp(2.6rem, 7.4vw, 7rem); font-weight: 700; line-height: .96; letter-spacing: -.04em; margin: 1.6rem 0 0; max-width: 18ch; text-wrap: balance; }
+      .roi-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 52ch; }
+      .roi-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .roi-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .roi-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-mono); font-weight: 700; font-size: clamp(7rem, 24vw, 22rem); line-height: .78; letter-spacing: -.06em; color: rgba(15,15,17,.04); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.038); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+
+      /* Três Mares · contorno topográfico (densidade de ledger) */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.10);
+        background: repeating-radial-gradient(circle at 84% 32%, transparent 0 38px, var(--contour-line) 38px 39px);
+        -webkit-mask-image: radial-gradient(circle at 84% 32%, #000 0%, rgba(0,0,0,.5) 40%, transparent 76%);
+                mask-image: radial-gradient(circle at 84% 32%, #000 0%, rgba(0,0,0,.5) 40%, transparent 76%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .55; } }
+      .roi-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .roi-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .roi-hero-float.f1 { right: 9%; top: 26%; }
+      .roi-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .roi-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--ledger-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* exigências (3 cards) */
+      .reqs { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 980px) { .reqs { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .req-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); display: flex; flex-direction: column; }
+      .req-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .req-card .r-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.4rem; position: relative; z-index: 1; }
+      .req-card .r-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; position: relative; z-index: 1; }
+      .req-card .r-name { font-size: 1.32rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.14; position: relative; z-index: 1; }
+      .req-card .r-desc { font-size: 1rem; line-height: 1.6; color: var(--text-muted); margin-top: .85rem; position: relative; z-index: 1; }
+      .req-card.featured { background: var(--ledger-ink); color: #fff; border-color: var(--ledger-ink); }
+      .req-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(254,209,54,.18) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.10) 0%, transparent 60%); }
+      .req-card.featured .r-icon { background: rgba(255,255,255,.08); color: var(--accent); }
+      .req-card.featured .r-id { color: var(--accent); }
+      .req-card.featured .r-desc { color: rgba(255,255,255,.75); }
+
+      /* fórmula + exemplo passo a passo */
+      .formula-bar { font-family: var(--font-mono); font-size: clamp(.95rem, 1.7vw, 1.35rem); line-height: 1.5; letter-spacing: -.01em; background: var(--ledger-ink); color: #fff; border-radius: var(--radius-card); padding: clamp(1.5rem, 3vw, 2.25rem); margin-top: 1.75rem; border: 1px solid rgba(255,255,255,.1); }
+      .formula-bar .fx { color: var(--accent); }
+      .formula-bar .fm { color: rgba(255,255,255,.55); }
+      .illus-tag { display: inline-flex; align-items: center; gap: .5rem; margin-top: 2.25rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(196,69,54,.1); border: 1px solid rgba(196,69,54,.25); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--neg); font-weight: 600; }
+      .illus-tag iconify-icon { font-size: 1rem; }
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.5rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 270px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-valor { font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700; letter-spacing: -.02em; margin-top: .75rem; line-height: 1; font-variant-numeric: tabular-nums; }
+      .step-card.is-neg .s-valor { color: var(--neg); }
+      .step-card .s-titulo { font-size: 1.05rem; font-weight: 600; letter-spacing: -.02em; margin-top: .85rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .9rem; line-height: 1.55; color: var(--text-muted); margin-top: .7rem; }
+
+      /* ===========================================================
+         5 · DATAVIZ · "o AVE que esvazia" (DOM interativo, seção escura)
+         =========================================================== */
+      .ave-stage { position: relative; }
+      .ave-figure { position: relative; text-align: center; padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(1rem, 3vw, 2rem); }
+      .ave-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+      .ave-number {
+        font-family: var(--font-mono); font-weight: 800; letter-spacing: -.04em; line-height: .9;
+        font-size: clamp(3rem, 13vw, 11rem); margin: .5rem 0 0; font-variant-numeric: tabular-nums;
+        color: transparent;
+        -webkit-text-stroke: 2px rgba(254,209,54,.85);
+        text-stroke: 2px rgba(254,209,54,.85);
+        transition: transform 1s var(--ease-out-expo), opacity 1s var(--ease-out-expo), -webkit-text-stroke-width .8s var(--ease-out-expo);
+        transform-origin: center top;
+        display: inline-block;
+      }
+      .ave-number.deflated { opacity: .28; -webkit-text-stroke-width: 1px; }
+      .ave-strut { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.32); margin-top: .9rem; min-height: 1.2em; transition: color .5s; }
+      .ave-strut.warned { color: var(--neg); }
+
+      .ave-premises { display: grid; grid-template-columns: 1fr; gap: .75rem; margin-top: 2.5rem; }
+      @media (min-width: 720px) { .ave-premises { grid-template-columns: repeat(3, 1fr); } }
+      .premise {
+        text-align: left; cursor: pointer; padding: 1.25rem 1.35rem; border-radius: var(--radius-card);
+        background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.14); color: #fff;
+        font-family: inherit; transition: var(--t-smooth);
+      }
+      .premise:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.3); transform: translateY(-3px); }
+      .premise:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .premise .p-k { display: flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .premise .p-k iconify-icon { font-size: 1rem; color: var(--accent); }
+      .premise .p-name { font-size: 1.05rem; font-weight: 600; letter-spacing: -.02em; margin-top: .55rem; line-height: 1.2; }
+      .premise .p-why { font-size: .86rem; line-height: 1.5; color: rgba(255,255,255,.6); margin-top: .55rem; }
+      .premise.active { background: rgba(254,209,54,.08); border-color: rgba(254,209,54,.45); }
+      .premise.active .p-k { color: var(--accent); }
+
+      .ave-honest {
+        margin-top: 2.5rem; border-radius: var(--radius-card); border: 1px solid rgba(254,209,54,.3);
+        background: rgba(254,209,54,.06); padding: clamp(1.5rem, 3vw, 2.25rem);
+        max-height: 0; opacity: 0; overflow: hidden; transform: translateY(10px);
+        transition: max-height .9s var(--ease-out-expo), opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo), padding .7s var(--ease-out-expo);
+      }
+      .ave-honest.revealed { max-height: 520px; opacity: 1; transform: none; }
+      .ave-honest .h-eyebrow { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+      .ave-honest .h-title { font-size: clamp(1.3rem, 2.4vw, 1.75rem); font-weight: 600; letter-spacing: -.02em; margin-top: .65rem; color: #fff; line-height: 1.2; }
+      .ave-honest .h-list { display: grid; grid-template-columns: 1fr; gap: .75rem; margin-top: 1.25rem; }
+      @media (min-width: 720px) { .ave-honest .h-list { grid-template-columns: repeat(3, 1fr); } }
+      .ave-honest .h-item { padding: 1rem 1.1rem; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); }
+      .ave-honest .h-item .hi-k { display: flex; align-items: center; gap: .45rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+      .ave-honest .h-item .hi-k iconify-icon { color: var(--accent); font-size: .95rem; }
+      .ave-honest .h-item .hi-d { font-size: .86rem; line-height: 1.5; color: rgba(255,255,255,.72); margin-top: .5rem; }
+
+      /* tabela de métodos */
+      .methods-wrap { margin-top: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; }
+      .methods { width: 100%; border-collapse: collapse; min-width: 720px; }
+      .methods th, .methods td { text-align: left; padding: 1.1rem 1.25rem; vertical-align: top; border-bottom: 1px solid var(--hairline); }
+      .methods thead th { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; background: var(--paper); position: sticky; top: 0; }
+      .methods tbody tr:last-child td { border-bottom: 0; }
+      .methods tbody tr { transition: background-color .25s; }
+      .methods tbody tr:hover { background: rgba(254,209,54,.05); }
+      .methods .m-name { font-weight: 700; font-size: .98rem; letter-spacing: -.01em; white-space: nowrap; }
+      .methods td { font-size: .9rem; line-height: 1.5; color: var(--text-muted); }
+      .methods .m-evite .m-name { color: var(--neg); }
+      .methods .m-flag { display: inline-flex; align-items: center; gap: .35rem; margin-top: .4rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--neg); font-weight: 700; }
+      .methods .m-flag iconify-icon { font-size: .85rem; }
+
+      /* etapas (medição) */
+      .etapas-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .etapas-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .etapas-grid { grid-template-columns: repeat(4, 1fr); } }
+      .etapa-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 260px; }
+      .etapa-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .etapa-card .e-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .etapa-card .e-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .etapa-card .e-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .etapa-card .e-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+      .ds-mono { font-family: var(--font-mono); font-size: .8rem; letter-spacing: .02em; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 68ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 20ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .roi-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'ROI de assessoria de imprensa: como calcular',
+        description:
+          'Como calcular o ROI de assessoria de imprensa com método honesto: janela de tempo, atribuição e métricas conectadas a negócio, sem AVE.',
+        inLanguage: 'pt-BR',
+        about: 'ROI de assessoria de imprensa',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO · o ledger -->
+    <section class="roi-hero">
+      <!-- video-ready: <video class="hero-bg-video" autoplay muted loop playsinline> pode entrar aqui, object-fit:cover, inset:0 -->
+      <canvas id="roi-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="roi-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>Investimento</span>
+      <span class="roi-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Retorno</span>
+      <div class="wrap hero-inner">
+        <span class="roi-hero-chip reveal"><span class="dot"></span>Data PR · ROI de assessoria de imprensa</span>
+        <h1 class="reveal d1">O número bonito que não resiste à <span class="accent-serif on-dark">primeira pergunta</span>.</h1>
+        <p class="sub reveal d2">
+          A maior parte das contas de ROI de PR parte de uma métrica enganosa, a equivalência publicitária. Dá para medir retorno de PR com método honesto: janela de tempo, atribuição e métrica conectada a negócio.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Comece pelo diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#conta-errada" class="btn btn-ghost-d">Ver o método<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="roi-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · A CONTA MAIS COMUM COMEÇA ERRADA -->
+    <section id="conta-errada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">AVE</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:62ch">
+          <span class="eyebrow">A conta mais comum começa errada</span>
+          <h2>Número sem fonte não é prova, é <span class="accent-serif">decoração</span>.</h2>
+          <p class="lede">ROI de assessoria de imprensa é a relação entre o que a sua empresa investe em PR e o que essa atividade gera de resultado mensurável ao longo do tempo. Este guia é para quem aprova ou defende orçamento de comunicação e precisa de um número honesto, com método, em vez de uma estimativa inflada.</p>
+          <p class="lede">A PiaR opera comunicação para startups, scale-ups e empresas de tecnologia desde {site.foundingYear}, em São Paulo. Trabalhamos PR a partir de dados e de relações públicas com a imprensa. Disparo de release em massa não é estratégia, é ruído, e a PiaR não trabalha assim. O mesmo princípio vale para a medição.</p>
+        </div>
+        <p class="punch reveal d1">A maior parte das contas de ROI de PR parte de uma métrica enganosa, e isso <span class="hl">precisa parar</span>.</p>
+      </div>
+    </section>
+
+    <!-- 3 · AS TRÊS EXIGÊNCIAS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que é ROI de PR</span>
+          <h2>PR raramente vende em linha reta. O cálculo exige <span class="accent-serif">três coisas</span>.</h2>
+          <p class="lede">A matéria influencia a decisão de compra dias ou meses depois, ao lado de outros pontos de contato. Por isso o cálculo de ROI em comunicação exige três coisas que muita gente pula.</p>
+        </div>
+        <div class="reqs">
+          {exigencias.map((c, i) => (
+            <div class:list={['req-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', c.featured && 'featured']}>
+              <div class="r-icon"><iconify-icon icon={c.icon}></iconify-icon></div>
+              <div class="r-id">{c.id}</div>
+              <div class="r-name">{c.nome}</div>
+              <p class="r-desc">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · A FÓRMULA + EXEMPLO -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">ROI</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:60ch">
+          <span class="eyebrow">A fórmula, e um exemplo honesto</span>
+          <h2>A conta é simples. O difícil é o que <span class="accent-serif">entra nela</span>.</h2>
+          <p class="lede">Investimento é a parte fácil: honorário, horas internas, custo de produção. O retorno gerado é onde a maioria erra, porque tenta transformar visibilidade em dinheiro com um atalho que não se sustenta.</p>
+        </div>
+        <div class="formula-bar reveal d1">
+          <span class="fx">ROI (%)</span> <span class="fm">=</span> ( retorno gerado <span class="fm">menos</span> investimento ) <span class="fm">÷</span> investimento <span class="fm">×</span> 100
+        </div>
+        <span class="illus-tag reveal d1"><iconify-icon icon="solar:info-circle-linear"></iconify-icon>Números ilustrativos. Substitua pelos seus dados reais antes de concluir</span>
+        <div class="steps-grid">
+          {passos.map((p, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3', i === 3 && 'is-neg']}>
+              <span class="s-num">{p.num}</span>
+              <span class="s-valor">{p.valor}</span>
+              <h3 class="s-titulo">{p.titulo}</h3>
+              <p class="s-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1" style="max-width:36ch">O exemplo termina negativo de propósito: PR raramente paga a conta em um único trimestre olhando <span class="hl">só para leads</span>, porque boa parte do retorno é reputacional e se acumula.</p>
+      </div>
+    </section>
+
+    <!-- 5 · DATAVIZ · o AVE que esvazia -->
+    <section class="section dark has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">×3?</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:54ch">
+          <span class="eyebrow on-dark">Por que o AVE engana</span>
+          <h2>O número sai grande e bonito. E não significa <span class="accent-serif on-dark">quase nada</span>.</h2>
+          <p class="lede">AVE pega o espaço que uma matéria ocupou e multiplica pelo preço que custaria comprar aquele espaço como anúncio. Às vezes ainda aplica um multiplicador arbitrário. Acione cada premissa abaixo e veja a cifra murchar.</p>
+        </div>
+
+        <div class="ave-stage reveal d1">
+          <div class="ave-figure">
+            <div class="ave-label">Equivalência publicitária (AVE)</div>
+            <div class="ave-number" id="ave-number">R$ 1.200.000</div>
+            <div class="ave-strut" id="ave-strut">Cifra cheia, sustentação vazia</div>
+          </div>
+
+          <div class="ave-premises" role="group" aria-label="Premissas que esvaziam o AVE">
+            <button type="button" class="premise" data-prem="0" aria-pressed="false">
+              <span class="p-k"><iconify-icon icon="solar:ruler-cross-pen-linear"></iconify-icon>Premissa A</span>
+              <span class="p-name">Espaço não é resultado</span>
+              <span class="p-why">Ocupar uma página inteira não move o ponteiro do negócio se ninguém do seu público leu, ou se leu e não mudou de opinião. AVE confunde tamanho com efeito.</span>
+            </button>
+            <button type="button" class="premise" data-prem="1" aria-pressed="false">
+              <span class="p-k"><iconify-icon icon="solar:smile-circle-linear"></iconify-icon>Premissa B</span>
+              <span class="p-name">Ignora o tom</span>
+              <span class="p-why">A fórmula dá o mesmo valor para uma matéria elogiosa e para uma que cita a sua empresa em contexto de crise. Um vale ouro, o outro custa caro.</span>
+            </button>
+            <button type="button" class="premise" data-prem="2" aria-pressed="false">
+              <span class="p-k"><iconify-icon icon="solar:tag-price-linear"></iconify-icon>Premissa C</span>
+              <span class="p-name">Inventa um preço que você nunca pagaria</span>
+              <span class="p-why">A premissa é comprar aquele espaço como anúncio. Você não compraria, e o valor editorial vem justamente de não ser anúncio. A conta se contradiz.</span>
+            </button>
+          </div>
+
+          <div class="ave-honest" id="ave-honest" aria-live="polite">
+            <span class="h-eyebrow">O que usar no lugar</span>
+            <h3 class="h-title">O método honesto, dentro de uma janela de tempo.</h3>
+            <div class="h-list">
+              <div class="h-item">
+                <span class="hi-k"><iconify-icon icon="solar:ranking-linear"></iconify-icon>Share of voice</span>
+                <span class="hi-d">Presença na narrativa frente aos concorrentes. Responde se você está ganhando a conversa.</span>
+              </div>
+              <div class="h-item">
+                <span class="hi-k"><iconify-icon icon="solar:medal-ribbon-star-linear"></iconify-icon>Qualidade da cobertura</span>
+                <span class="hi-d">Veículo, posicionamento da mensagem e tom. O que o AVE joga fora vira o critério central.</span>
+              </div>
+              <div class="h-item">
+                <span class="hi-k"><iconify-icon icon="solar:filter-linear"></iconify-icon>Métricas de funil</span>
+                <span class="hi-d">Tráfego rastreável, leads e conversão. Menos vistoso, mais defensável diante de quem aprova o orçamento.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A própria comunidade global de medição desencoraja o uso de AVE como prova de valor, em princípios públicos de medição de PR. Apresentar AVE como ROI é entregar uma conta que não resiste à primeira pergunta de quem aprova o orçamento.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · MÉTODOS DE VALORAÇÃO (tabela) -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:58ch">
+          <span class="eyebrow">Métodos de valoração</span>
+          <h2>Não existe métrica única. Existem <span class="accent-serif">métodos</span>, cada um com um limite.</h2>
+          <p class="lede">Cada método tem um uso legítimo e uma limitação que você precisa declarar antes de apresentar o número. Use share of voice para saber se está ganhando a conversa, leads e conversão para saber se a conversa vira negócio, e combine os dois ao longo do tempo.</p>
+        </div>
+        <div class="methods-wrap reveal d1">
+          <table class="methods">
+            <thead>
+              <tr>
+                <th scope="col">Método</th>
+                <th scope="col">O que mede</th>
+                <th scope="col">Quando usar</th>
+                <th scope="col">Limitação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {metodos.map((m) => (
+                <tr class:list={[m.evite && 'm-evite']}>
+                  <td>
+                    <span class="m-name">{m.nome}</span>
+                    {m.evite && <span class="m-flag"><iconify-icon icon="solar:danger-triangle-linear"></iconify-icon>Evite como prova</span>}
+                  </td>
+                  <td>{m.mede}</td>
+                  <td>{m.quando}</td>
+                  <td>{m.limite}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="punch reveal d1" style="max-width:34ch">Nenhum deles sozinho conta a história inteira. Medir PR com uma métrica só quase sempre <span class="hl">engana</span>.</p>
+      </div>
+    </section>
+
+    <!-- 7 · COMO A PIAR MEDE -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">15d</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:58ch">
+          <span class="eyebrow">Como a PiaR mede</span>
+          <h2>Medição não é relatório bonito no fim do mês. Nasce no <span class="accent-serif">começo</span>.</h2>
+          <p class="lede">Ela nasce quando se define o que conta como resultado, antes de qualquer publicação. O nosso processo embute isso em quatro etapas com prazos, e a medição vem junto desde o primeiro dia.</p>
+        </div>
+        <div class="etapas-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['etapa-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="e-num">{e.num}</span>
+              <span class="e-prazo">{e.prazo}</span>
+              <h3 class="e-titulo">{e.titulo}</h3>
+              <p class="e-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PROVA E LASTRO -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:46ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Método com <span class="accent-serif on-dark">13 anos</span> de estrada.</h2>
+          <p class="lede">A disciplina de medir o que importa, e não o que enche o olho, é a mesma que sempre regeu a comunicação séria. A PiaR opera para tech desde {site.foundingYear}, em São Paulo.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A PiaR não publica número de retorno que não consegue comprovar. Cada métrica de prova separa o que é resultado observado do que é estimativa, e declara a fonte. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">ROI</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Comece pelo <span class="accent-serif on-dark">diagnóstico</span>.</h2>
+        <p class="lede reveal d2">Se você precisa defender o orçamento de comunicação com um número que resiste a perguntas, o ponto de partida é definir o que conta como resultado antes de publicar qualquer coisa. É isso que fazemos no diagnóstico, com resposta em até 1 dia útil.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · o ledger (canvas 2D)
+         dígitos mono caindo, quase todos apagados (grafite, baixo alpha).
+         alguns acendem em amarelo e convergem/sobem para uma cifra no canto.
+         ======================================================== */
+      (function ledgerField() {
+        var canvas = document.getElementById('roi-hero-canvas');
+        if (!canvas) { return; }
+        var ctx = null;
+        try { ctx = canvas.getContext('2d'); } catch (e) { ctx = null; }
+        if (!ctx) {
+          canvas.style.background = 'radial-gradient(70% 90% at 78% 32%, #1c1c22 0%, #101014 55%, #0A0A0C 100%)';
+          return;
+        }
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var cols = [];          // colunas de dígitos derivando
+        var sparks = [];        // dígitos que acenderam e sobem para a cifra
+        var target = { x: 0, y: 0 };   // canto onde mora a cifra que se torna visível
+        var glyphSize = 16;
+        var spawnAcc = 0;
+
+        function rand(a, b) { return a + Math.random() * (b - a); }
+
+        function layout() {
+          W = canvas.clientWidth; H = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          target.x = W * 0.84; target.y = H * 0.30;
+          glyphSize = Math.max(13, Math.min(20, Math.floor(W / 70)));
+          buildColumns();
+        }
+
+        function buildColumns() {
+          cols = [];
+          var step = glyphSize * 1.5;
+          var n = Math.max(8, Math.floor(W / step));
+          for (var i = 0; i < n; i++) {
+            cols.push({
+              x: (i + 0.5) * (W / n),
+              y: rand(-H, H),
+              speed: rand(8, 26),
+              ch: String(Math.floor(rand(0, 10))),
+              alpha: rand(0.05, 0.16),
+              swap: rand(0.6, 2.2),
+              t: 0,
+            });
+          }
+        }
+        layout();
+
+        function spawnSpark() {
+          if (cols.length === 0) { return; }
+          var c = cols[Math.floor(rand(0, cols.length))];
+          sparks.push({
+            x: c.x, y: c.y,
+            ch: String(Math.floor(rand(0, 10))),
+            p: 0,
+            sp: rand(0.004, 0.0085),
+            sx: c.x, sy: c.y,
+            wob: rand(-18, 18),
+          });
+        }
+
+        function paintFrame(dt) {
+          ctx.clearRect(0, 0, W, H);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = '600 ' + glyphSize + 'px "JetBrains Mono", ui-monospace, monospace';
+
+          // colunas apagadas = valor invisível
+          for (var i = 0; i < cols.length; i++) {
+            var c = cols[i];
+            c.y += c.speed * dt;
+            c.t += dt;
+            if (c.t > c.swap) { c.t = 0; c.ch = String(Math.floor(rand(0, 10))); }
+            if (c.y > H + glyphSize) { c.y = -glyphSize; c.x = rand(0, W); c.alpha = rand(0.05, 0.16); }
+            ctx.fillStyle = 'rgba(150,156,166,' + c.alpha + ')';
+            ctx.fillText(c.ch, c.x, c.y);
+          }
+
+          // faísca de luz fraca atrás da cifra-alvo
+          var glow = ctx.createRadialGradient(target.x, target.y, 0, target.x, target.y, glyphSize * 7);
+          glow.addColorStop(0, 'rgba(254,209,54,0.16)');
+          glow.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(target.x - glyphSize * 7, target.y - glyphSize * 7, glyphSize * 14, glyphSize * 14);
+
+          // sparks: dígitos que acenderam e sobem/convergem para a cifra
+          for (var k = sparks.length - 1; k >= 0; k--) {
+            var s = sparks[k];
+            s.p += s.sp * (dt * 60);
+            if (s.p >= 1) { sparks.splice(k, 1); continue; }
+            var ease = 1 - Math.pow(1 - s.p, 3);
+            var cx = s.sx + (target.x - s.sx) * ease + Math.sin(s.p * Math.PI) * s.wob;
+            var cy = s.sy + (target.y - s.sy) * ease;
+            var a = 0.35 + 0.6 * Math.sin(s.p * Math.PI);
+            ctx.fillStyle = 'rgba(254,209,54,' + a.toFixed(3) + ')';
+            ctx.fillText(s.ch, cx, cy);
+          }
+
+          // a cifra que se torna visível e defensável (canto)
+          ctx.font = '700 ' + (glyphSize * 1.55) + 'px "JetBrains Mono", ui-monospace, monospace';
+          ctx.fillStyle = 'rgba(254,209,54,0.92)';
+          ctx.fillText('R$', target.x - glyphSize * 2.2, target.y);
+          ctx.fillStyle = 'rgba(255,255,255,0.95)';
+          ctx.fillText('+50k', target.x + glyphSize * 0.9, target.y);
+          ctx.font = '600 ' + Math.max(9, glyphSize * 0.6) + 'px "JetBrains Mono", ui-monospace, monospace';
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          ctx.fillText('RETORNO ATRIBUÍVEL', target.x, target.y + glyphSize * 1.5);
+        }
+
+        function paintStatic() {
+          // reduced-motion: um quadro estático com alguns dígitos amarelos
+          ctx.clearRect(0, 0, W, H);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = '600 ' + glyphSize + 'px "JetBrains Mono", ui-monospace, monospace';
+          var step = glyphSize * 1.6;
+          for (var y = glyphSize; y < H; y += step) {
+            for (var x = glyphSize; x < W; x += step) {
+              var lit = (Math.abs(Math.sin(x * 0.21 + y * 0.13)) > 0.93);
+              ctx.fillStyle = lit ? 'rgba(254,209,54,0.7)' : 'rgba(150,156,166,0.10)';
+              ctx.fillText(String(Math.floor(Math.abs(Math.sin(x * y)) * 10) % 10), x, y);
+            }
+          }
+          var glow = ctx.createRadialGradient(target.x, target.y, 0, target.x, target.y, glyphSize * 7);
+          glow.addColorStop(0, 'rgba(254,209,54,0.16)');
+          glow.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(target.x - glyphSize * 7, target.y - glyphSize * 7, glyphSize * 14, glyphSize * 14);
+          ctx.font = '700 ' + (glyphSize * 1.55) + 'px "JetBrains Mono", ui-monospace, monospace';
+          ctx.fillStyle = 'rgba(254,209,54,0.92)';
+          ctx.fillText('R$', target.x - glyphSize * 2.2, target.y);
+          ctx.fillStyle = 'rgba(255,255,255,0.95)';
+          ctx.fillText('+50k', target.x + glyphSize * 0.9, target.y);
+        }
+
+        var last = 0;
+        function frame(now) {
+          if (!last) last = now;
+          var dt = Math.min(0.05, (now - last) / 1000);
+          last = now;
+          spawnAcc += dt;
+          if (spawnAcc > 0.42) { spawnAcc = 0; spawnSpark(); }
+          paintFrame(dt);
+          raf = requestAnimationFrame(frame);
+        }
+
+        var raf;
+        window.addEventListener('resize', function () {
+          layout();
+          if (prefersReduced) paintStatic();
+        }, { passive: true });
+
+        if (prefersReduced) {
+          paintStatic();
+        } else {
+          for (var s0 = 0; s0 < 5; s0++) spawnSpark();
+          raf = requestAnimationFrame(frame);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · o AVE que esvazia (DOM interativo)
+         cada premissa acionada murcha a cifra e revela o método honesto.
+         ======================================================== */
+      (function aveDeflate() {
+        var numberEl = document.getElementById('ave-number');
+        var strutEl = document.getElementById('ave-strut');
+        var honestEl = document.getElementById('ave-honest');
+        var premises = Array.prototype.slice.call(document.querySelectorAll('.premise'));
+        if (!numberEl || premises.length === 0) { return; }
+
+        // estágios de murchamento: a cifra inflada deflaciona a cada premissa.
+        var stages = ['R$ 1.200.000', 'R$ 520.000', 'R$ 180.000', 'R$ 0'];
+        var scales = [1, 0.74, 0.52, 0.34];
+        var struts = [
+          'Cifra cheia, sustentação vazia',
+          'Tira o espaço puro, e ela cai',
+          'Tira o tom, e cai mais',
+          'Sem o preço inventado, sobra zero',
+        ];
+        var fired = [false, false, false];
+
+        function update() {
+          var count = fired.filter(Boolean).length;
+          numberEl.textContent = stages[count];
+          numberEl.style.transform = 'scale(' + scales[count] + ')';
+          numberEl.classList.toggle('deflated', count > 0);
+          strutEl.textContent = struts[count];
+          strutEl.classList.toggle('warned', count >= 1);
+          if (count >= 3 && honestEl) { honestEl.classList.add('revealed'); }
+        }
+
+        premises.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var idx = parseInt(btn.getAttribute('data-prem'), 10);
+            if (isNaN(idx) || fired[idx]) { return; }
+            fired[idx] = true;
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+            btn.disabled = false;
+            update();
+          });
+        });
+      })();
+    });
+  </script>
+</BaseLayout>

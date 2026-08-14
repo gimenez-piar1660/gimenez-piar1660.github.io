@@ -1,0 +1,967 @@
+---
+// ============================================================================
+// Exemplar narrativo · REBRANDING
+// Conteúdo voice-backed portado de:
+//   src/content/pages/rebranding.md
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói canvas 2D (morph duotom: a forma antiga vira nova sem perder
+// continuidade) + dataviz "antes para depois com fios de continuidade"
+// (canvas 2D) + scroll storytelling (GSAP/Lenis), sobre o DS da PiaR.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/rebranding`;
+
+// Refreshing vs Rebranding: o tamanho do movimento.
+const movimentos = [
+  {
+    tag: 'Atualização',
+    nome: 'Refreshing',
+    desc: 'A marca continua reconhecida como a mesma, com uma camada modernizada. Tipografia mais limpa, paleta ajustada, logotipo refinado, sem mexer no nome nem no que a empresa significa.',
+    comunicacao: 'Leve',
+    risco: 'Indiferença',
+    reaprender: 'Quase nada',
+  },
+  {
+    tag: 'Reposicionamento',
+    nome: 'Rebranding',
+    desc: 'A marca passa a ser entendida de outra forma. Muda o posicionamento, a narrativa, às vezes o nome e o público. O reconhecimento anterior é, em parte, abandonado de propósito.',
+    comunicacao: 'Pesada',
+    risco: 'Reputação',
+    reaprender: 'Quem você é',
+    featured: true,
+  },
+];
+
+// Sinais de que é hora de fazer um rebranding.
+const sinais = [
+  {
+    nome: 'A empresa mudou e a marca ficou para trás',
+    desc: 'O produto, o público ou o modelo evoluíram, e a comunicação atual descreve uma empresa que não existe mais. A startup que virou scale-up, a marca regional que passou a operar nacional.',
+    icon: 'solar:graph-up-line-duotone',
+  },
+  {
+    nome: 'O posicionamento não diferencia mais',
+    desc: 'A categoria se encheu de concorrentes que dizem a mesma coisa. Quando a sua descrição cabe perfeitamente em qualquer competidor, a marca parou de defender um lugar.',
+    icon: 'solar:copy-line-duotone',
+  },
+  {
+    nome: 'O nome virou um obstáculo',
+    desc: 'Limita a expansão, gera confusão com outra empresa, não funciona em outro idioma ou carrega uma associação que você não quer mais. A decisão mais delicada, porque arrasta busca e reconhecimento.',
+    icon: 'solar:text-cross-line-duotone',
+  },
+  {
+    nome: 'Houve fusão, aquisição ou exit',
+    desc: 'Duas marcas precisam virar uma, ou a empresa adquirida precisa ser integrada sem destruir o valor da marca comprada. A comunicação é tão estratégica quanto a integração operacional.',
+    icon: 'solar:square-academic-cap-line-duotone',
+  },
+  {
+    nome: 'A reputação precisa de um corte',
+    desc: 'O cenário mais sensível. Rebranding feito para fugir de uma crise sem resolver a causa costuma ser lido como tentativa de apagar o passado, e a imprensa nota.',
+    icon: 'solar:shield-warning-line-duotone',
+  },
+];
+
+// As quatro etapas do método aplicadas ao rebranding.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico e mapeamento',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Levantamos o que o mercado entende sobre a marca hoje: o que a busca mostra, o que a imprensa escreveu, o que os clientes associam ao nome. O entregável é a distância entre a percepção que existe e a que o rebranding pretende construir.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging Framework',
+    prazo: 'Em seguida',
+    desc: 'Definimos a narrativa única que explica a mudança: por que agora, o que muda, o que permanece e o que isso significa para cada público. Mapeamos as objeções previsíveis e as respostas, e o que está fora dos limites do que a marca vai dizer.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Lançamento',
+    desc: 'O rebranding sai do papel. Preparamos o anúncio com o enquadramento certo, os porta-vozes treinados, os materiais de apoio e a sequência de quem fica sabendo primeiro: time interno e clientes antes do público. Tudo passa por revisão jurídica antes de ir ao ar.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Ciclos quinzenais',
+    desc: 'Acompanhamos como a mudança é repercutida e absorvida: o que a imprensa escreveu, como a busca responde pelo nome novo e pelo antigo, e qual foi a reação real contra a prevista. Rebranding termina quando o mercado usa a versão nova da sua história sozinho.',
+  },
+];
+
+// Erros comuns no rebranding.
+const erros = [
+  {
+    nome: 'Anunciar a estética, não o significado',
+    desc: 'O comunicado fala de cores e formas e esquece a única pergunta que o mercado faz: o que muda para mim. Rebranding sem narrativa de significado é troca de logo com press release.',
+    icon: 'solar:palette-line-duotone',
+  },
+  {
+    nome: 'Esquecer a busca e a base instalada',
+    desc: 'No dia do lançamento, o Google ainda indexa a marca antiga e os clientes ainda procuram pelo nome velho. Sem plano de transição, parte do reconhecimento construído evapora.',
+    icon: 'solar:magnifer-bug-line-duotone',
+  },
+  {
+    nome: 'Dar versões diferentes para públicos diferentes',
+    desc: 'Imprensa ouve uma coisa, cliente lê outra, time interno entende uma terceira. A inconsistência é o que abre espaço para a interpretação mais desfavorável.',
+    icon: 'solar:users-group-rounded-line-duotone',
+  },
+  {
+    nome: 'Tratar o rebranding como fuga de crise',
+    desc: 'Mudar de marca para escapar de um problema não resolvido raramente engana a imprensa, e quando descoberto, agrava a reputação que se tentava limpar.',
+    icon: 'solar:running-line-duotone',
+  },
+  {
+    nome: 'Não preparar a resposta à reação negativa',
+    desc: 'Toda mudança relevante gera reação. Quem não antecipa, improvisa sob pressão, e improviso em rebranding vira manchete.',
+    icon: 'solar:siren-line-duotone',
+  },
+  {
+    nome: 'Encerrar a comunicação no dia do anúncio',
+    desc: 'O lançamento é o começo da transição, não o fim. Sem sustentação nas semanas seguintes, a marca nova não fixa e o mercado volta a usar a referência antiga.',
+    icon: 'solar:flag-line-duotone',
+  },
+];
+
+const faq = [
+  {
+    q: 'Qual a diferença entre rebranding e refreshing?',
+    a: 'Refreshing atualiza a marca sem mudar o que ela significa: a empresa continua reconhecida como a mesma, com uma camada visual modernizada. Rebranding muda a percepção: posicionamento, narrativa, às vezes o nome e o público. A regra prática é o esforço de comunicação. Se o mercado precisa reaprender quem você é, é rebranding, e a comunicação tem que ser planejada do início.',
+  },
+  {
+    q: 'Rebranding é só trocar o logotipo?',
+    a: 'Não. Trocar o logotipo é uma entrega possível, muitas vezes a menos importante. O que define um rebranding é a mudança de significado da marca, não a de imagem. É possível fazer um rebranding profundo de posicionamento mantendo o símbolo, e é possível trocar todo o visual sem reposicionar nada, o que em geral confunde o mercado em vez de esclarecer.',
+  },
+  {
+    q: 'Como saber se a minha empresa precisa de rebranding?',
+    a: 'Quando há descompasso entre o que a marca diz e o que a empresa é: o negócio evoluiu e a comunicação ficou para trás, o posicionamento não diferencia mais, o nome virou obstáculo, houve fusão ou aquisição, ou a reputação precisa de um corte. Se nenhum desses sinais está presente, o provável é que você precise de um refreshing ou de melhorar a comunicação da marca atual.',
+  },
+  {
+    q: 'Como anunciar um rebranding sem perder clientes e reconhecimento?',
+    a: 'Planejando a comunicação antes do design, não depois. Isso significa definir a narrativa que explica a mudança, preparar o time interno e os clientes antes do público, gerenciar a transição de busca para que o nome novo seja encontrado, e antecipar as reações negativas com respostas prontas. O anúncio é o começo da transição, não o fim.',
+  },
+  {
+    q: 'O rebranding pode dar errado? Quais os riscos?',
+    a: 'Sim. Os riscos não estão no design, estão na comunicação: perda de busca pelo nome antigo, clientes que não reconhecem mais a empresa, imprensa que escreve a história errada por falta de enquadramento, e reação negativa não antecipada. Todos são gerenciáveis quando a comunicação é planejada desde o início e sustentada nas semanas após o lançamento.',
+  },
+  {
+    q: 'Quanto tempo leva um projeto de rebranding?',
+    a: 'O diagnóstico e o mapeamento ficam nas duas primeiras semanas. O messaging framework vem em seguida, e a partir dele a ativação e a sustentação rodam em ciclos quinzenais de monitoramento. O prazo total depende da profundidade da mudança, troca de nome leva mais tempo que reposicionamento sem troca de nome, e é definido no diagnóstico, antes de qualquer entrega.',
+  },
+  {
+    q: 'A PiaR faz a identidade visual do rebranding?',
+    a: 'O núcleo do trabalho da PiaR é a camada estratégica e verbal, posicionamento, narrativa, identidade verbal e a comunicação da mudança, e a frente de imprensa e reputação que sustenta o lançamento. A identidade visual entra como entrega complementar, com parceiros de design sob a direção de marca da PiaR, quando o projeto exige a camada visual.',
+  },
+];
+---
+<BaseLayout
+  title="Rebranding: mudar sem perder o reconhecimento"
+  description="Rebranding muda a percepção da empresa: posicionamento, narrativa, nome e identidade. Veja como comunicar a mudança sem perder a reputação que você levou anos construindo."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --rb-ink: #0A0A0C;
+        --rb-ink-2: #141417;
+        --rb-amber: #FFB020;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · morph duotom (canvas 2D): a forma antiga vira nova
+         =========================================================== */
+      .rb-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--rb-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #rb-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .rb-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 20% 38%, rgba(10,10,12,.82) 0%, rgba(10,10,12,.35) 45%, rgba(10,10,12,0) 70%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 75%, rgba(10,10,12,.92) 100%);
+      }
+      .rb-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .rb-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .rb-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rb-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .rb-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 47ch; }
+      .rb-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .rb-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .rb-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .rb-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .rb-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .rb-hero-float.f1 { right: 9%; top: 26%; }
+      .rb-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .rb-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · contorno em diagonal (continuidade que atravessa a transição) */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.09);
+        background: repeating-linear-gradient(28deg, transparent 0 42px, var(--contour-line) 42px 43px);
+        -webkit-mask-image: radial-gradient(circle at 70% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 70% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--rb-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* movimento: refreshing vs rebranding (a virada) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { position: relative; padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 300px; display: flex; flex-direction: column; overflow: hidden; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .cmeta { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; }
+      .compare-card .cmeta .cm { display: flex; flex-direction: column; gap: .25rem; }
+      .compare-card .cmeta .k { font-family: var(--font-mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .cmeta .v { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+      .compare-card.is-dark { background: var(--rb-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 82% 0%, rgba(254,209,54,.18) 0%, transparent 60%), radial-gradient(70% 50% at 8% 100%, rgba(255,176,32,.1) 0%, transparent 60%); }
+      .compare-card.is-dark > * { position: relative; z-index: 1; }
+      .compare-card.is-dark .ctag { color: var(--accent); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .cmeta .k { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .cmeta .v { color: #fff; }
+
+      /* ===========================================================
+         4 · DATAVIZ · antes para depois com fios de continuidade (canvas)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #rb-morph-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* sinais (grid de cards) */
+      .sinais-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .sinais-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .sinais-grid { grid-template-columns: repeat(3, 1fr); } }
+      .sinal-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .sinal-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .sinal-card .s-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .sinal-card .s-name { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; line-height: 1.2; }
+      .sinal-card .s-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* etapas (método) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 270px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* erros (lista dark) */
+      .erros-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 760px) { .erros-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .erros-grid { grid-template-columns: repeat(3, 1fr); } }
+      .erro-card { padding: clamp(1.6rem, 2vw, 2rem); border-radius: var(--radius-card); background: var(--rb-ink-2); border: 1px solid rgba(255,255,255,.12); transition: var(--t-smooth); }
+      .erro-card:hover { transform: translateY(-4px); border-color: rgba(254,209,54,.4); box-shadow: 0 22px 44px rgba(0,0,0,.3); }
+      .erro-card .e-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.06); color: var(--accent); font-size: 1.35rem; }
+      .erro-card .e-name { font-size: 1.12rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.1rem; color: #fff; line-height: 1.22; }
+      .erro-card .e-desc { font-size: .92rem; line-height: 1.55; color: rgba(255,255,255,.66); margin-top: .65rem; }
+
+      /* conexões (branding / reputação / PEP) */
+      .conex { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .conex { grid-template-columns: repeat(3, 1fr); } }
+      .conex-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; }
+      .conex-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .conex-card .c-k { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-deep); }
+      .conex-card .c-name { font-size: 1.35rem; font-weight: 600; letter-spacing: -.025em; margin-top: .6rem; }
+      .conex-card .c-desc { font-size: .98rem; line-height: 1.6; color: var(--text-muted); margin-top: .8rem; }
+      .conex-card .c-link { margin-top: auto; padding-top: 1.25rem; display: inline-flex; align-items: center; gap: .4rem; font-weight: 600; font-size: .92rem; color: var(--primary); text-decoration: none; transition: gap .3s var(--ease-out-expo); }
+      .conex-card .c-link:hover { gap: .7rem; color: var(--accent-deep); }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 62ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* metricas (lastro) */
+      .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 2.5rem; }
+      @media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+      .stat { border-left: 2px solid rgba(254,209,54,.5); padding-left: 1.1rem; }
+      .stat .n { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 4vw, 2.9rem); letter-spacing: -.03em; line-height: 1; color: #fff; }
+      .stat .l { font-size: .82rem; line-height: 1.4; color: rgba(255,255,255,.6); margin-top: .55rem; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .rb-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Rebranding: mudar sem perder o reconhecimento',
+        description:
+          'Rebranding muda a percepção da empresa: posicionamento, narrativa, nome e identidade. Veja como comunicar a mudança sem perder a reputação construída.',
+        inLanguage: 'pt-BR',
+        about: 'Rebranding',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="rb-hero">
+      <canvas id="rb-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="rb-hero-float f1 px" data-parallax-y="28" aria-hidden="true"><span class="dot"></span>Marca antiga</span>
+      <span class="rb-hero-float f2 px" data-parallax-y="-22" aria-hidden="true"><span class="dot"></span>Marca nova</span>
+      <div class="wrap hero-inner">
+        <span class="rb-hero-chip reveal"><span class="dot"></span>Rebranding · Reposicionamento de marca</span>
+        <h1 class="reveal d1">Mudar a marca sem jogar fora o <span class="accent-serif on-dark">reconhecimento</span>.</h1>
+        <p class="sub reveal d2">
+          Rebranding não é uma cara nova com um anúncio no fim. É uma transição da sua história pública.
+          O risco maior nunca está no design: está em como o mercado vai interpretar a mudança.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Diagnóstico de percepção<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#virada" class="btn btn-ghost-d">Ver como funciona<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="rb-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · O QUE É -->
+    <section id="virada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">significado</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que é, de fato</span>
+          <h2>Rebranding muda o <span class="accent-serif">significado</span>, não só a imagem.</h2>
+          <p class="lede">É o trabalho de reposicionar uma marca quando o que ela representa deixou de corresponder ao que a empresa é ou quer ser. Pode tocar o nome, o posicionamento, a narrativa, o tom de voz, o público e a identidade visual, isolados ou combinados.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">O engano comum</span>
+            <h3>Trocar o logotipo.</h3>
+            <p>É uma das entregas possíveis, e em muitos casos a menos importante. Dá para trocar todo o sistema visual sem reposicionar nada, o que costuma confundir o mercado em vez de esclarecer.</p>
+            <div class="cmeta"><div class="cm"><span class="k">Resultado</span><span class="v">Imagem nova, sentido igual</span></div></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">O que define</span>
+            <h3>Mudar o que a marca quer dizer.</h3>
+            <p>Uma empresa pode manter o mesmo símbolo e fazer um rebranding profundo de posicionamento. Ao final, o mercado precisa entender a empresa de um jeito diferente do que entendia antes.</p>
+            <div class="cmeta"><div class="cm"><span class="k">Resultado</span><span class="v">Nova percepção</span></div></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">A pergunta inicial nunca é qual vai ser a cara nova. É <span class="hl">o que o mercado entende sobre nós hoje</span>, e o que precisa passar a entender.</p>
+      </div>
+    </section>
+
+    <!-- 3 · REFRESHING VS REBRANDING -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A primeira decisão</span>
+          <h2>Refreshing e rebranding não são a <span class="accent-serif">mesma coisa</span>.</h2>
+          <p class="lede">A primeira decisão de qualquer projeto de marca é o tamanho do movimento. Confundir os dois é o erro mais caro: você anuncia uma revolução quando fez um ajuste, ou trata como ajuste uma mudança que exigia preparar o mercado.</p>
+        </div>
+        <div class="compare">
+          {movimentos.map((m, i) => (
+            <div class:list={['compare-card', 'reveal', i === 1 && 'd1', m.featured && 'is-dark']}>
+              <span class="ctag">{m.tag}</span>
+              <h3>{m.nome}</h3>
+              <p>{m.desc}</p>
+              <div class="cmeta">
+                <div class="cm"><span class="k">Comunicação</span><span class="v">{m.comunicacao}</span></div>
+                <div class="cm"><span class="k">O que está em jogo</span><span class="v">{m.risco}</span></div>
+                <div class="cm"><span class="k">Mercado reaprende</span><span class="v">{m.reaprender}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Um refreshing mal comunicado gera indiferença. Um rebranding mal comunicado gera <span class="hl">confusão e perda de reconhecimento</span>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · antes para depois com fios de continuidade -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="rb-morph-canvas" role="img" aria-label="Antes e depois com fios de continuidade: a forma antiga transiciona para a nova mantendo os pontos que sustentam o reconhecimento."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#6b7280"></span>Marca antiga</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Marca nova</span>
+              <span class="li"><span class="sw" style="background:#FFB020"></span>Fio de continuidade</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>Mudar sem perder os fios que sustentam o <span class="accent-serif on-dark">reconhecimento</span>.</h2>
+            <p class="lede">Um rebranding é, na prática, uma mudança de versão da sua história pública. Tudo o que o mercado sabia, a busca indexou, a imprensa escreveu e os clientes memorizaram passa a estar parcialmente desatualizado no dia do lançamento.</p>
+            <p class="lede" style="margin-top:1.25rem">Gerir percepção é decidir, antes de anunciar, qual a história que explica a mudança. Não mudamos a cor, e sim por que a empresa é diferente agora e o que isso significa para quem depende dela. Essa narrativa precisa ser a mesma para a imprensa, o cliente, o investidor e o time interno. Quando cada público recebe uma versão, o rebranding vira ruído.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · SINAIS -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">sinais</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quando faz sentido</span>
+          <h2>Sinais de que é hora de <span class="accent-serif">reposicionar</span>.</h2>
+          <p class="lede">Rebranding não se faz por cansaço da identidade atual nem porque um concorrente trocou de logo. Os sinais que justificam o movimento são de descompasso entre o que a marca diz e o que a empresa é.</p>
+        </div>
+        <div class="sinais-grid">
+          {sinais.map((s, i) => (
+            <div class:list={['sinal-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="s-icon"><iconify-icon icon={s.icon}></iconify-icon></div>
+              <h3 class="s-name">{s.nome}</h3>
+              <p class="s-desc">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Sem nenhum desses sinais, o que você precisa é de um refreshing. Rebranding é caro em dinheiro, em tempo e em <span class="hl">reputação acumulada</span>.</p>
+      </div>
+    </section>
+
+    <!-- 6 · A COMUNICAÇÃO QUE NINGUÉM PLANEJA -->
+    <section class="section dark has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:62ch">
+          <span class="eyebrow on-dark reveal">A parte que ninguém planeja</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            O design de um rebranding tem fim. A <span class="hl">comunicação</span> não.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            É aqui que a maioria dos projetos falha, porque trata o anúncio como o último item de um checklist de identidade visual, quando ele deveria ser planejado desde o início, junto com a estratégia de marca. Se ninguém gerencia a transição, três coisas acontecem ao mesmo tempo: a busca continua mostrando a marca antiga, a imprensa repercute sem o enquadramento certo, e o público interpreta o movimento por conta própria, em geral da forma menos favorável.
+          </p>
+          <p class="lede reveal d2" style="margin-top:1.5rem">
+            E há a reação negativa, o risco mais subestimado. Todo rebranding relevante incomoda alguém. Antecipar essas reações e preparar a resposta antes que apareçam é a diferença entre conduzir a narrativa e correr atrás dela. Disparar um release de nova marca para uma lista genérica e esperar pelo melhor não é estratégia, é ruído, e a PiaR não trabalha assim.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · MÉTODO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Passo a passo</span>
+          <h2>Quatro etapas, do diagnóstico à <span class="accent-serif">sustentação</span>.</h2>
+          <p class="lede">A comunicação de um rebranding segue o mesmo método de quatro etapas que estrutura todo o trabalho de PR na PiaR. A diferença é o que está em jogo: aqui, um erro de sequência custa reputação acumulada. Nada vai a público sem passar por revisão jurídica.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Anunciar para o público antes de preparar o time interno e os clientes é o erro clássico, e gera a primeira reação negativa em quem deveria ser o seu <span class="hl">primeiro defensor</span>.</p>
+      </div>
+    </section>
+
+    <!-- 8 · ERROS COMUNS -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">O que dá errado</span>
+          <h2>A maioria dos rebrandings falha na comunicação, não no <span class="accent-serif on-dark">design</span>.</h2>
+          <p class="lede">Falha na comunicação e na sequência. Os erros que mais vemos, e que aparecem semanas depois do lançamento, quando já é tarde para corrigir o enredo.</p>
+        </div>
+        <div class="erros-grid">
+          {erros.map((e, i) => (
+            <div class:list={['erro-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="e-icon"><iconify-icon icon={e.icon}></iconify-icon></div>
+              <h3 class="e-name">{e.nome}</h3>
+              <p class="e-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · CONEXÕES -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Onde se conecta</span>
+          <h2>Rebranding é um momento do trabalho de <span class="accent-serif">marca</span>.</h2>
+          <p class="lede">Não é uma frente isolada. É o ponto em que a empresa decide mudar o que representa, concentrando em uma transição de alto risco a mesma base que sustenta a marca no dia a dia.</p>
+        </div>
+        <div class="conex">
+          <div class="conex-card reveal">
+            <span class="c-k">A base</span>
+            <h3 class="c-name">Branding</h3>
+            <p class="c-desc">Posicionamento, narrativa, identidade verbal e voz executiva. É a mesma base que sustenta a marca no dia a dia. O rebranding apenas a concentra em uma transição de alta visibilidade.</p>
+            <a href="/branding" class="c-link">Ver branding<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          </div>
+          <div class="conex-card reveal d1">
+            <span class="c-k">O que está em jogo</span>
+            <h3 class="c-name">Reputação</h3>
+            <p class="c-desc">Como a busca, a mídia e as respostas de inteligência artificial passam a descrever a empresa depois da mudança. O monitoramento de busca e de presença em IA não é um extra, é parte do projeto.</p>
+            <a href="/reputacao" class="c-link">Ver reputação<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          </div>
+          <div class="conex-card reveal d2">
+            <span class="c-k">Quando precisa de impacto</span>
+            <h3 class="c-name">PEP</h3>
+            <p class="c-desc">Projetos Especiais de PR, metodologia própria da PiaR. Em rebranding, os vetores de Narrativa e Cadência costumam ser o eixo: a história nova contada de ponta a ponta, em ritmo sustentado, e não em um pico isolado.</p>
+            <a href="/pep" class="c-link">Ver PEP<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · PROVA -->
+    <section class="section dark has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-12" aria-hidden="true">lastro</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Quem conduz a transição importa mais que quem desenha o <span class="accent-serif on-dark">logo</span>.</h2>
+          <p class="lede">A PiaR Group é agência de comunicação para startups, scale-ups e empresas de tecnologia, em São Paulo, desde {site.foundingYear}. A leitura aqui é a de quem opera relações com a imprensa todos os dias.</p>
+        </div>
+        <div class="stats reveal d1">
+          <div class="stat"><div class="n">{site.yearsOperating}</div><div class="l">anos operando comunicação para tech</div></div>
+          <div class="stat"><div class="n">{site.brandsServed}</div><div class="l">marcas atendidas desde {site.foundingYear}</div></div>
+          <div class="stat"><div class="n">{site.exitsSupported}</div><div class="l">startups acompanhadas até o exit</div></div>
+          <div class="stat"><div class="n">2023</div><div class="l">ano da metodologia PEP, própria da casa</div></div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>Rebranding não termina no dia do anúncio. Termina quando o mercado passa a usar a versão nova da sua história sozinho. A PiaR conduz essa transição com a frente de imprensa e reputação que sustenta o lançamento. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">marca</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Comece pelo diagnóstico de <span class="accent-serif on-dark">percepção</span>.</h2>
+        <p class="lede reveal d2">Se a sua empresa está considerando mudar de marca, o risco maior não é o design. É como o mercado vai interpretar a mudança. O primeiro passo é um diagnóstico do que a busca, a imprensa e o público entendem sobre você hoje, para que o rebranding construa percepção em vez de destruir a que já existe.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/branding" class="btn btn-ghost-d">Ver branding<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · morph duotom (canvas 2D)
+         uma forma "antiga" transiciona para uma "nova" sem perder
+         continuidade. Os mesmos vértices se reconfiguram. Preto <-> amarelo.
+         ======================================================== */
+      (function heroMorph() {
+        var canvas = document.getElementById('rb-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 75% 35%, #4a3a08 0%, #161206 55%, #0A0A0C 100%)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, cx = 0, cy = 0, baseR = 0;
+        var N = 64;
+
+        function resize() {
+          W = canvas.clientWidth; H = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          cx = W * 0.68; cy = H * 0.46;
+          baseR = Math.min(W, H) * 0.26;
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        // forma "antiga": quadrado-ish anguloso. forma "nova": orgânica fluida.
+        // Cada vértice tem um raio para A e um raio para B; interpolamos.
+        function shapeOld(a) {
+          // perfil retangular suave (4 lóbulos fortes)
+          return 0.78 + 0.30 * Math.pow(Math.abs(Math.cos(a * 2)), 2.4);
+        }
+        function shapeNew(a, t) {
+          // perfil orgânico que respira no tempo
+          return 1.0 + 0.16 * Math.sin(a * 3 + t * 0.7) + 0.10 * Math.sin(a * 5 - t * 0.5);
+        }
+
+        var start = 0;
+        function frame(now) {
+          if (!start) start = now;
+          var time = (now - start) / 1000;
+          // ciclo de morph: 0 = antiga, 1 = nova, e volta (sem perder continuidade)
+          var cycle = (Math.sin(time * 0.42) + 1) / 2; // 0..1 suave
+          var ease = cycle * cycle * (3 - 2 * cycle);
+
+          ctx.clearRect(0, 0, W, H);
+
+          // gradiente duotom de fundo localizado atras da forma
+          var bg = ctx.createRadialGradient(cx, cy, baseR * 0.2, cx, cy, baseR * 3.2);
+          bg.addColorStop(0, 'rgba(28,24,10,0.55)');
+          bg.addColorStop(1, 'rgba(10,10,12,0)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, W, H);
+
+          // pontos interpolados (os mesmos vertices, reconfigurados)
+          var pts = [];
+          for (var i = 0; i < N; i++) {
+            var a = (i / N) * Math.PI * 2;
+            var rOld = shapeOld(a) * baseR;
+            var rNew = shapeNew(a, time) * baseR;
+            var r = rOld + (rNew - rOld) * ease;
+            // leve rotacao durante a transicao
+            var rot = ease * 0.6;
+            var x = cx + Math.cos(a + rot) * r;
+            var y = cy + Math.sin(a + rot) * r;
+            pts.push({ x: x, y: y });
+          }
+
+          // preenchimento duotom: amarelo cresce com a transicao
+          var fill = ctx.createLinearGradient(cx - baseR, cy - baseR, cx + baseR, cy + baseR);
+          var k = ease;
+          fill.addColorStop(0, 'rgba(' + Math.round(20 + 234 * k) + ',' + Math.round(20 + 189 * k) + ',' + Math.round(24 + 30 * k) + ',0.92)');
+          fill.addColorStop(1, 'rgba(' + Math.round(12 + 224 * (1 - k * 0.3)) + ',' + Math.round(12 + 160 * (1 - k * 0.3)) + ',16,0.92)');
+
+          ctx.beginPath();
+          for (var j = 0; j <= N; j++) {
+            var p0 = pts[(j) % N];
+            var p1 = pts[(j + 1) % N];
+            var mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
+            if (j === 0) ctx.moveTo(mx, my);
+            else ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
+          }
+          ctx.closePath();
+          ctx.fillStyle = fill;
+          ctx.fill();
+
+          // contorno amarelo (a assinatura)
+          ctx.strokeStyle = 'rgba(254,209,54,' + (0.35 + 0.45 * ease) + ')';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // fios de continuidade: vertices marcados que persistem na transicao
+          for (var v = 0; v < N; v += 8) {
+            var pv = pts[v];
+            ctx.beginPath();
+            ctx.arc(pv.x, pv.y, 2.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,176,32,' + (0.5 + 0.4 * Math.sin(time * 2 + v)) + ')';
+            ctx.fill();
+          }
+
+          // nucleo: ponto fixo que nunca se move (o reconhecimento que permanece)
+          ctx.beginPath();
+          ctx.arc(cx, cy, 3.5 + Math.sin(time * 1.6) * 1.2, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(254,209,54,0.9)';
+          ctx.fill();
+
+          if (!prefersReduced) requestAnimationFrame(frame);
+        }
+        if (prefersReduced) { frame(0); } else { requestAnimationFrame(frame); }
+      })();
+
+      /* ========================================================
+         DATAVIZ · antes para depois com fios de continuidade (canvas 2D)
+         coluna esquerda = marca antiga, direita = marca nova.
+         alguns nós mudam, outros sao "fios" que atravessam a transicao.
+         ======================================================== */
+      (function continuityViz() {
+        var canvas = document.getElementById('rb-morph-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        // cada item: { keep: mantem reconhecimento? , label }
+        var rows = [
+          { keep: true,  label: 'Nome' },
+          { keep: false, label: 'Posicionamento' },
+          { keep: true,  label: 'Voz' },
+          { keep: false, label: 'Narrativa' },
+          { keep: true,  label: 'Público' },
+          { keep: false, label: 'Identidade' }
+        ];
+        var oldNodes = [], newNodes = [], threads = [];
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var lx = W * 0.20, rx = W * 0.80, n = rows.length;
+          oldNodes = []; newNodes = [];
+          for (var i = 0; i < n; i++) {
+            var y = H * (0.15 + (0.70 * i) / (n - 1));
+            oldNodes.push({ x: lx, y: y, r: 5, keep: rows[i].keep });
+            newNodes.push({ x: rx, y: y, r: 5, keep: rows[i].keep });
+          }
+          // fios: keep liga ao mesmo indice; nao-keep tambem liga ao mesmo
+          // indice (a continuidade existe sempre), mas com cor diferente.
+          threads = rows.map(function (rrow, i) {
+            return { from: i, to: i, keep: rrow.keep, p: 0, sp: 0.004 + Math.random() * 0.005 };
+          });
+        }
+        layout();
+
+        function bez(x0, y0, cx1, cy1, cx2, cy2, x1, y1, t) {
+          var u = 1 - t;
+          var x = u * u * u * x0 + 3 * u * u * t * cx1 + 3 * u * t * t * cx2 + t * t * t * x1;
+          var y = u * u * u * y0 + 3 * u * u * t * cy1 + 3 * u * t * t * cy2 + t * t * t * y1;
+          return { x: x, y: y };
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // fios de continuidade (curvas atravessando o vão)
+          threads.forEach(function (th) {
+            var a = oldNodes[th.from], b = newNodes[th.to];
+            var mx = (a.x + b.x) / 2;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.bezierCurveTo(mx, a.y, mx, b.y, b.x, b.y);
+            if (th.keep) {
+              ctx.strokeStyle = 'rgba(255,176,32,.45)';
+              ctx.lineWidth = 1.6;
+            } else {
+              ctx.strokeStyle = 'rgba(255,255,255,.10)';
+              ctx.lineWidth = 1;
+            }
+            ctx.stroke();
+
+            // pulso viajando pelo fio (a transicao em curso)
+            if (!prefersReduced) {
+              th.p += th.sp;
+              if (th.p > 1) th.p = 0;
+              var pos = bez(a.x, a.y, mx, a.y, mx, b.y, b.x, b.y, th.p);
+              var col = th.keep ? '255,176,32' : '110,114,120';
+              ctx.beginPath(); ctx.arc(pos.x, pos.y, 2.4, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(' + col + ',.95)'; ctx.fill();
+            }
+          });
+
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+
+          // nós antigos (esquerda, cinza)
+          oldNodes.forEach(function (nd) {
+            ctx.beginPath(); ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI * 2);
+            ctx.fillStyle = '#6b7280'; ctx.fill();
+          });
+
+          // nós novos (direita): keep fica amarelo, troca fica claro
+          newNodes.forEach(function (nd, i) {
+            ctx.beginPath(); ctx.arc(nd.x, nd.y, nd.r + (nd.keep ? 1 : 0), 0, Math.PI * 2);
+            ctx.fillStyle = nd.keep ? '#FED136' : 'rgba(255,255,255,.5)'; ctx.fill();
+            ctx.textAlign = 'left';
+            ctx.fillStyle = 'rgba(255,255,255,.6)';
+            ctx.fillText(rows[i].label, nd.x + 12, nd.y);
+          });
+
+          // rótulos de coluna
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.55)';
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.fillText('ANTES', oldNodes[0].x, H * 0.07);
+          ctx.fillStyle = 'rgba(254,209,54,.9)';
+          ctx.fillText('DEPOIS', newNodes[0].x, H * 0.07);
+
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', layout, { passive: true });
+        if (prefersReduced) { layout(); draw(); } else { requestAnimationFrame(draw); }
+      })();
+    });
+  </script>
+</BaseLayout>

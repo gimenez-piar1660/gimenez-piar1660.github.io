@@ -1,0 +1,848 @@
+---
+// ============================================================================
+// Narrativa espetacular · Midia espontanea (earned media)
+// Conteudo voice-backed portado de:
+//   src/content/pages/midia-espontanea.md
+// Original preservado. Esta pagina e a versao "narrativa espetacular":
+// heroi 2D canvas (ondas earned: ripples que se propagam de um ponto) +
+// dataviz de propagacao/alcance (canvas 2D, espontanea vs comprada) +
+// scroll storytelling (GSAP/Lenis), sobre o DS canonico da PiaR (GEO).
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/midia-espontanea`;
+
+// O modelo de tres midias: espontanea, paga, proprietaria.
+const midias = [
+  {
+    id: 'EARNED',
+    nome: 'Mídia espontânea',
+    sub: 'Cobertura editorial conquistada',
+    otimiza: 'Reportagem, entrevista, citação como fonte, convite para podcast. Você não paga, você conquista.',
+    controla: 'O veículo',
+    credibilidade: 'Alta',
+    icon: 'solar:microphone-line-duotone',
+    featured: true,
+  },
+  {
+    id: 'PAID',
+    nome: 'Mídia paga',
+    sub: 'Espaço comprado',
+    otimiza: 'Anúncio, post patrocinado, publieditorial. Você compra o que quer, com alcance previsível.',
+    controla: 'A marca',
+    credibilidade: 'Menor',
+    icon: 'solar:tag-price-line-duotone',
+  },
+  {
+    id: 'OWNED',
+    nome: 'Mídia proprietária',
+    sub: 'Canais da própria marca',
+    otimiza: 'Site, blog, redes sociais, newsletter. Você publica quando quer, mas precisa produzir.',
+    controla: 'A marca',
+    credibilidade: 'Média',
+    icon: 'solar:home-smile-line-duotone',
+  },
+];
+
+// Os quatro planos de medicao.
+const planos = [
+  {
+    num: '01',
+    titulo: 'Alcance e volume',
+    desc: 'Quantas inserções a marca conquistou, em quais veículos e com qual público potencial. O indicador mais básico e o mais fácil de inflar, por isso abre a medição, não a encerra.',
+  },
+  {
+    num: '02',
+    titulo: 'Share of voice',
+    desc: 'A fatia de presença da marca na cobertura de um tema, comparada à dos concorrentes. Quando o mercado fala da categoria, com que frequência somos citados, e quem é citado no nosso lugar.',
+  },
+  {
+    num: '03',
+    titulo: 'Sentimento',
+    desc: 'O tom com que a marca é descrita: positivo, neutro ou negativo, e em que contexto. Uma menção negativa em veículo de peso pode importar mais do que dez menções neutras.',
+  },
+  {
+    num: '04',
+    titulo: 'Valoração (EAV), com ressalva',
+    desc: 'O EAV estima quanto custaria comprar como anúncio o espaço ganho de forma espontânea. A PiaR usa apenas como referência de magnitude, sempre com os outros três, nunca como métrica única.',
+  },
+];
+
+// O metodo em quatro etapas.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico e mapeamento',
+    prazo: 'O ponto de partida',
+    desc: 'Levantamos o que a imprensa já escreveu sobre a marca e a categoria, quais veículos cobrem o tema, quais jornalistas assinam essas pautas e onde está o vácuo. O entregável é a distância entre a presença que a marca tem e a que poderia ter.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging framework',
+    prazo: 'O que é publicável',
+    desc: 'Definimos os ângulos que a marca tem direito de ocupar, a prova que sustenta cada um, os porta-vozes e o que está fora dos limites. Mídia espontânea se conquista com um dado próprio, uma posição clara, uma leitura que o jornalista não tem de outra fonte.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Veículo a veículo',
+    desc: 'Trabalhamos veículo e jornalista um a um, com a pauta certa para cada um, no momento em que ela é relevante. Não é o mesmo release para todos. Todo ativo publicável passa por revisão jurídica antes de chegar ao jornalista.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Ciclo contínuo',
+    desc: 'Acompanhamos as inserções nos quatro planos de medição, ajustamos os ângulos que funcionam e cortamos os que não rendem. A cobertura conquistada vira insumo para o ciclo seguinte e alimenta a presença na busca e nas respostas de IA.',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Endemol Shine Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia', 'Sambatech', 'Liga Ventures', 'Printi', 'PagBrasil', 'Corning', 'FluencyPass'];
+
+const faq = [
+  {
+    q: 'O que é mídia espontânea?',
+    a: 'É toda menção à sua marca que um veículo publica por decisão editorial própria, sem que você pague pelo espaço: reportagem, entrevista, citação como fonte, convite para podcast. Também chamada de mídia conquistada ou earned media. O que dá valor é a falta de controle: como quem assina é o veículo e não a marca, a menção tem mais credibilidade do que um anúncio.',
+  },
+  {
+    q: 'Qual a diferença entre mídia espontânea e mídia paga?',
+    a: 'Na mídia paga você compra o espaço e controla o texto, e o público reconhece que é anúncio. Na mídia espontânea você não paga e não controla o conteúdo, porque quem decide publicar e como é o veículo. A paga garante alcance previsível; a espontânea carrega a credibilidade de uma fonte independente. As duas se somam, não se substituem.',
+  },
+  {
+    q: 'Mídia espontânea é a mesma coisa que assessoria de imprensa?',
+    a: 'São coisas próximas, mas não idênticas. A mídia espontânea é o resultado: a cobertura conquistada. A assessoria de imprensa é o trabalho que produz esse resultado, do mapeamento de veículos ao relacionamento com jornalistas. Mídia espontânea é o que você mede; assessoria de imprensa é como você chega lá.',
+  },
+  {
+    q: 'Como se mede mídia espontânea?',
+    a: 'Em quatro planos: alcance e volume de inserções, share of voice contra concorrentes, sentimento da cobertura e valoração estimada (EAV). O EAV ajuda a dimensionar, mas tem limite, porque equiparar reportagem a anúncio ignora a credibilidade que a espontânea tem de diferente. Por isso ele nunca é usado sozinho.',
+  },
+  {
+    q: 'O que é EAV em mídia espontânea?',
+    a: 'EAV é a sigla de Equivalent Advertising Value, valor equivalente em mídia. Estima quanto custaria comprar como anúncio o espaço que a marca conquistou de forma editorial. É útil para conversar com áreas fora da comunicação, mas superestima o valor real, porque uma matéria não vale o mesmo que um anúncio do mesmo tamanho. Serve como referência de magnitude, não como métrica final.',
+  },
+  {
+    q: 'Como conseguir mídia espontânea para a minha empresa?',
+    a: 'Não por disparo em massa. Por um processo: mapear os veículos e jornalistas que cobrem o seu tema, definir os ângulos publicáveis sustentados por dado e posição própria, abordar cada jornalista com a pauta certa no momento certo e medir o resultado para ajustar. Mídia espontânea se conquista com algo que o veículo realmente quer publicar.',
+  },
+  {
+    q: 'Mídia espontânea ajuda na reputação e na busca?',
+    a: 'Sim, e cada vez mais. Uma matéria conquistada fica indexada no Google e passa a aparecer quando pesquisam a sua marca. Os modelos de IA também citam veículos de imprensa como fonte ao responder sobre empresas e categorias. A cobertura de hoje vira a prova pública que a busca e a IA mostram amanhã. Por isso a mídia espontânea se conecta diretamente à gestão de reputação.',
+  },
+];
+---
+<BaseLayout
+  title="Mídia espontânea: o alcance que você conquista"
+  description="Mídia espontânea é toda menção que um veículo publica por decisão editorial própria, sem que você pague pelo espaço. Entenda, meça e conquiste com a PiaR."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --me-ink: #0A0A0C;
+        --me-ink-2: #141417;
+        --me-amber: #FFB020;
+        --me-glow: #FFD84A;
+        --me-deep: #C99A12;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botoes */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · ondas earned (canvas 2D, ripples amarelos sobre preto)
+         =========================================================== */
+      .me-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--me-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #me-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .me-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 22% 38%, rgba(10,10,12,.84) 0%, rgba(10,10,12,.38) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 75%, rgba(10,10,12,.92) 100%);
+      }
+      .me-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .me-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .me-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .me-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .me-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 48ch; }
+      .me-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .me-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .me-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .me-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .me-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .me-hero-float.f1 { right: 9%; top: 27%; }
+      .me-hero-float.f2 { right: 17%; bottom: 21%; }
+      @media (max-width: 900px) { .me-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Tres Mares · contorno (ondas de alcance) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.10);
+        background: repeating-radial-gradient(circle at 50% 60%, transparent 0 44px, var(--contour-line) 44px 45px);
+        -webkit-mask-image: radial-gradient(circle at 50% 60%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 50% 60%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         secoes base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--me-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* texto editorial (definicao) */
+      .prose { max-width: 64ch; }
+      .prose p { font-size: clamp(1.05rem, 1.4vw, 1.18rem); line-height: 1.65; color: var(--text-muted); margin: 1.4rem 0 0; }
+      .prose p:first-of-type { margin-top: 0; }
+      .prose a { color: var(--accent-deep); text-decoration: none; border-bottom: 1px solid rgba(224,180,32,.4); transition: border-color .3s; }
+      .prose a:hover { border-color: var(--accent-deep); }
+      .section.dark .prose p { color: rgba(255,255,255,.74); }
+
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* tres midias */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 980px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.4rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.12; }
+      .layer-card .l-sub { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); margin-top: .4rem; }
+      .layer-card .l-otimiza { font-size: 1rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .55rem; }
+      .layer-card .l-meta .row { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; text-align: right; letter-spacing: -.01em; }
+      .layer-card.featured { background: var(--me-ink); color: #fff; border-color: var(--me-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(254,209,54,.22) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(255,216,74,.12) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-sub, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-sub { color: rgba(255,255,255,.55); }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .badge { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 1; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .6rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         4 · DATAVIZ · propagacao e alcance (canvas 2D)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #me-reach-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* planos de medicao + etapas (metodo) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 250px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 62ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 70ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .me-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Mídia espontânea: o alcance que você conquista',
+        description:
+          'Mídia espontânea é toda menção que um veículo publica por decisão editorial própria, sem que você pague pelo espaço. Entenda, meça e conquiste com a PiaR.',
+        inLanguage: 'pt-BR',
+        about: 'Mídia espontânea',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="me-hero">
+      <canvas id="me-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="me-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>Earned media</span>
+      <span class="me-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Share of voice</span>
+      <div class="wrap hero-inner">
+        <span class="me-hero-chip reveal"><span class="dot"></span>Relações com Mídia · Earned media</span>
+        <h1 class="reveal d1">O alcance que você <span class="accent-serif on-dark">conquista</span>, não o que compra.</h1>
+        <p class="sub reveal d2">
+          Mídia espontânea é a cobertura que um veículo decide publicar por conta própria. Você não paga o espaço, você o ganha,
+          e é justamente essa falta de controle que dá credibilidade. Uma onda que se propaga muito além do dia da matéria.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Quero conquistar cobertura<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#definicao" class="btn btn-ghost-d">Entender o que é<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="me-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · O QUE E -->
+    <section id="definicao" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">earned</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que é mídia espontânea</span>
+          <h2>Você não compra o espaço. Você <span class="accent-serif">conquista</span>.</h2>
+        </div>
+        <div class="prose reveal d1">
+          <p>Mídia espontânea é toda menção à sua marca, ao seu produto ou aos seus porta-vozes que um veículo publica por decisão editorial própria, sem que você pague pelo espaço. Uma reportagem que cita a sua empresa como fonte, um jornalista que pede o seu dado para uma matéria de setor, um podcast que convida o seu fundador: tudo isso é mídia espontânea. O termo em inglês é earned media, mídia conquistada, e a palavra conquistada explica melhor o que está em jogo.</p>
+          <p>Isso separa a mídia espontânea de duas outras coisas que costumam ser confundidas com ela. Não é publicidade, porque você não escolhe o texto nem paga pela veiculação. E não é o seu próprio canal, porque quem assina e edita é o veículo, não a sua marca. É justamente essa falta de controle que dá valor: a recomendação de um terceiro independente pesa mais do que o anúncio que você mesmo escreveu.</p>
+          <p>Mídia espontânea de verdade não nasce de disparo de release em massa. Nasce de <a href="/relacoes-publicas">relação com a imprensa</a> e de ter um dado, um ângulo ou uma posição que valha a pena ser publicada. Disparar o mesmo comunicado para mil contatos não é estratégia, é ruído, e a PiaR não trabalha assim.</p>
+        </div>
+        <p class="punch reveal d1">A recomendação de um terceiro independente <span class="hl">pesa mais</span> do que o anúncio que você mesmo escreveu.</p>
+      </div>
+    </section>
+
+    <!-- 3 · TRES MIDIAS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Espontânea, paga e proprietária</span>
+          <h2>O modelo de três mídias, lado a <span class="accent-serif">lado</span>.</h2>
+          <p class="lede">Cada tipo tem dono, controle e custo diferentes. Os três não competem, se sustentam: a proprietária guarda a prova, a paga garante alcance e a espontânea carrega a credibilidade. A forma paga em conteúdo aparece como <a href="/news-patrocinada" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">news patrocinada</a> e <a href="/branded-content" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">branded content</a>; aqui o foco é a espontânea.</p>
+        </div>
+        <div class="layers">
+          {midias.map((m, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', m.featured && 'featured']}>
+              {m.featured && <span class="badge">O eixo de credibilidade</span>}
+              <div class="l-icon"><iconify-icon icon={m.icon}></iconify-icon></div>
+              <div class="l-id">{m.id}</div>
+              <div class="l-name">{m.nome}</div>
+              <div class="l-sub">{m.sub}</div>
+              <p class="l-otimiza">{m.otimiza}</p>
+              <div class="l-meta">
+                <div class="row"><span class="k">Quem controla</span><span class="v">{m.controla}</span></div>
+                <div class="row"><span class="k">Credibilidade</span><span class="v">{m.credibilidade}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">A espontânea é a que o mercado mais acredita, porque <span class="hl">não foi a marca</span> que disse.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · propagacao -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="me-reach-canvas" role="img" aria-label="Comparação de propagação: uma menção espontânea se espalha em onda contínua e duradoura, enquanto a comprada tem alcance curto que termina quando a verba acaba."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#FED136"></span>Menção espontânea</span>
+              <span class="li"><span class="sw" style="background:#6b7180"></span>Menção comprada</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">Por que pesa mais hoje</span>
+            <h2>A matéria trabalha muito <span class="accent-serif on-dark">depois</span> da publicação.</h2>
+            <p class="lede">Por anos, conquistar uma matéria valia pelo leitor que a lia naquele dia. Continua valendo, mas hoje ela é indexada pelo Google e passa a aparecer quando alguém pesquisa o nome da sua marca. E é lida pelos modelos de IA, que citam veículos de imprensa como fonte ao responder sobre a sua empresa ou a sua categoria.</p>
+            <p class="lede" style="margin-top:1.25rem">Quem decide contratar, investir ou fechar pesquisa antes. O que essas fontes respondem é, em boa parte, mídia espontânea acumulada ao longo do tempo. Por isso a cobertura editorial deixou de ser um fim em si e virou matéria-prima de reputação: a frente de mídia espontânea conversa direto com a gestão de reputação, porque a cobertura é a prova que a busca indexa e que a IA cita.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · COMO MEDIR -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">medir</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como medir</span>
+          <h2>Do volume ao <span class="accent-serif">significado</span>, em quatro planos.</h2>
+          <p class="lede">Mídia espontânea só vira estratégia quando é medida. O erro comum é parar na contagem de matérias, que diz pouco sobre o que mudou na percepção da marca. Por isso a medição começa no volume e termina no que ele significa.</p>
+        </div>
+        <div class="steps-grid">
+          {planos.map((p, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{p.num}</span>
+              <h3 class="s-titulo" style="margin-top:.9rem">{p.titulo}</h3>
+              <p class="s-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Métrica sem fonte não vira número em relatório. O que <span class="hl">não tem lastro</span> fica de fora.</p>
+      </div>
+    </section>
+
+    <!-- 6 · METODO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-12" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como conquistar</span>
+          <h2>Começa pelo dado, não pelo <span class="accent-serif">disparo</span>.</h2>
+          <p class="lede">Conquistar mídia espontânea não é torcer para o telefone tocar. É um processo, o mesmo que estrutura todo trabalho de PR na PiaR. A ordem importa: mídia-alvo primeiro, depois o jornalista, depois a abordagem, depois o conteúdo, e a ferramenta por último.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Quem inverte a sequência e começa pela ferramenta de disparo produz <span class="hl">ruído</span>, não cobertura.</p>
+      </div>
+    </section>
+
+    <!-- 7 · PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2><span class="accent-serif on-dark">13 anos</span> conquistando cobertura.</h2>
+          <p class="lede">A PiaR acompanha startups e empresas de tecnologia desde {site.foundingYear}, em São Paulo, e apoiou {site.exitsSupported} startups até o exit. Inclui trabalho em setores regulados, em que segurança e compliance entram como ângulo de pauta, com revisão jurídica de cada ativo.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A gestão de crise é uma capacidade do time, aplicada quando a pauta exige resposta rápida e coordenada. Cada inserção é rastreável até o veículo, a data e o link, e o que não tem lastro fica de fora do relatório. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · POR QUE E PR (Tres Mares / contorno) -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-20" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:62ch">
+          <span class="eyebrow reveal">A ordem que define o resultado</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:30ch">
+            Mídia espontânea se conquista com algo <span class="hl">publicável</span>. Não com a ferramenta de disparo.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Um dado próprio, uma posição clara sobre o setor, uma leitura que o jornalista não tem de outra fonte: é isso que abre a porta de um veículo. A cobertura conquistada vira insumo para o ciclo seguinte e alimenta a presença da marca na busca e nas respostas de IA. Todos os ativos publicáveis passam por revisão jurídica antes de chegar ao jornalista, o que pesa especialmente em setores regulados como fintech e saúde.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · FAQ -->
+    <section class="section warm">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">earned</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Transforme cobertura em <span class="accent-serif on-dark">reputação medida</span>.</h2>
+        <p class="lede reveal d2">Mapeamos os veículos e jornalistas que cobrem o seu tema, definimos os ângulos publicáveis e medimos o resultado nos quatro planos. O investimento é sob consulta, definido conforme o diagnóstico de cada marca.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no heroi (Tres Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · ondas earned (canvas 2D)
+         ripples amarelos que se propagam de um ponto sobre o preto
+         ======================================================== */
+      (function earnedRipples() {
+        var canvas = document.getElementById('me-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 70% 42%, #2a2206 0%, #120e04 55%, #0A0A0C 100%)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+        var W = 0, H = 0, cx = 0, cy = 0;
+        var rings = [];
+        var sparks = [];
+        var lastSpawn = 0;
+
+        function resize() {
+          W = canvas.clientWidth; H = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // origem da onda: a esquerda baixa, onde a mensagem nasce
+          cx = W * 0.28; cy = H * 0.62;
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        function spawnRing() {
+          rings.push({ r: 0, life: 1 });
+        }
+        function spawnSpark() {
+          var ang = Math.random() * Math.PI * 2;
+          var sp = 0.4 + Math.random() * 0.9;
+          sparks.push({ x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: 1 });
+        }
+
+        var maxR = function () { return Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * 1.05; };
+
+        function step(now) {
+          ctx.clearRect(0, 0, W, H);
+
+          if (now - lastSpawn > 1100) { spawnRing(); for (var s = 0; s < 5; s++) spawnSpark(); lastSpawn = now; }
+
+          var mr = maxR();
+          // aneis que se propagam
+          for (var i = rings.length - 1; i >= 0; i--) {
+            var rg = rings[i];
+            rg.r += mr * 0.0019;
+            rg.life = 1 - rg.r / mr;
+            if (rg.life <= 0) { rings.splice(i, 1); continue; }
+            var a = rg.life * rg.life * 0.5;
+            ctx.beginPath();
+            ctx.arc(cx, cy, rg.r, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(254,209,54,' + a + ')';
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+            // halo interno mais quente nos aneis jovens
+            if (rg.life > 0.65) {
+              ctx.beginPath();
+              ctx.arc(cx, cy, rg.r, 0, Math.PI * 2);
+              ctx.strokeStyle = 'rgba(255,216,74,' + (rg.life - 0.65) * 0.7 + ')';
+              ctx.lineWidth = 3.2;
+              ctx.stroke();
+            }
+          }
+
+          // sparks que viajam para fora (a mensagem se espalhando)
+          for (var k = sparks.length - 1; k >= 0; k--) {
+            var sk = sparks[k];
+            sk.x += sk.vx; sk.y += sk.vy; sk.life -= 0.006;
+            if (sk.life <= 0) { sparks.splice(k, 1); continue; }
+            ctx.beginPath();
+            ctx.arc(sk.x, sk.y, 1.6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,' + sk.life * 0.85 + ')';
+            ctx.fill();
+          }
+
+          // nucleo emissor (a fonte)
+          var pulse = 5 + (Math.sin(now / 420) + 1) * 2.4;
+          ctx.beginPath();
+          ctx.arc(cx, cy, pulse, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx, cy, pulse + 6, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(254,209,54,.18)';
+          ctx.fill();
+
+          if (!prefersReduced) requestAnimationFrame(step);
+        }
+
+        if (prefersReduced) {
+          // estado estatico: alguns aneis fixos
+          rings = [{ r: maxR() * 0.18, life: 0.82 }, { r: maxR() * 0.42, life: 0.55 }, { r: maxR() * 0.68, life: 0.3 }];
+          step(0);
+        } else {
+          requestAnimationFrame(step);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · propagacao e alcance (canvas 2D)
+         espontanea (onda continua, longa) vs comprada (curta, decai)
+         ======================================================== */
+      (function reachViz() {
+        var canvas = document.getElementById('me-reach-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var t0 = 0;
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        layout();
+
+        // curva de alcance ao longo do tempo
+        // espontanea: sobe e PERMANECE alto (indexada, citada pela IA)
+        // comprada: pico rapido e cai a zero quando a verba acaba
+        function earned(x) {
+          // x em [0,1] -> alcance acumulado, satura alto e fica
+          return 1 - Math.exp(-x * 3.4);
+        }
+        function paid(x) {
+          // pico em ~0.22 e decai
+          var peak = 0.22;
+          var rise = Math.min(1, x / peak);
+          var fall = Math.exp(-Math.max(0, x - peak) * 4.2);
+          return rise * fall;
+        }
+
+        function curve(fn, prog, color, glow, width) {
+          ctx.beginPath();
+          var padL = W * 0.1, padR = W * 0.06, padT = H * 0.14, padB = H * 0.16;
+          var gx0 = padL, gx1 = W - padR, gy0 = padT, gy1 = H - padB;
+          var n = 90;
+          for (var i = 0; i <= n; i++) {
+            var xr = i / n;
+            if (xr > prog) break;
+            var v = fn(xr);
+            var px = gx0 + (gx1 - gx0) * xr;
+            var py = gy1 - (gy1 - gy0) * v;
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.strokeStyle = color;
+          ctx.lineWidth = width;
+          ctx.lineJoin = 'round';
+          if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 12; } else { ctx.shadowBlur = 0; }
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        function head(fn, prog, rgb) {
+          if (prog <= 0 || prog > 1) return;
+          var padL = W * 0.1, padR = W * 0.06, padT = H * 0.14, padB = H * 0.16;
+          var gx0 = padL, gx1 = W - padR, gy0 = padT, gy1 = H - padB;
+          var v = fn(prog);
+          var px = gx0 + (gx1 - gx0) * prog;
+          var py = gy1 - (gy1 - gy0) * v;
+          ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + rgb + ',1)'; ctx.fill();
+          ctx.beginPath(); ctx.arc(px, py, 9, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + rgb + ',.18)';
+          ctx.fill();
+        }
+
+        function draw(now) {
+          if (!t0) t0 = now;
+          var loop = ((now - t0) / 4200) % 1;
+          var prog = prefersReduced ? 1 : Math.min(1, loop / 0.82);
+          ctx.clearRect(0, 0, W, H);
+
+          var padL = W * 0.1, padB = H * 0.16, padT = H * 0.14, padR = W * 0.06;
+          // eixos
+          ctx.strokeStyle = 'rgba(255,255,255,.12)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(padL, padT - 6); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB);
+          ctx.stroke();
+          // rotulos de eixo
+          ctx.font = '600 9.5px "JetBrains Mono", monospace';
+          ctx.fillStyle = 'rgba(255,255,255,.4)';
+          ctx.textAlign = 'left';
+          ctx.fillText('ALCANCE', padL, padT - 12);
+          ctx.textAlign = 'right';
+          ctx.fillText('TEMPO ->', W - padR, H - padB + 16);
+          // marca "verba acaba"
+          var gx0 = padL, gx1 = W - padR;
+          var vx = gx0 + (gx1 - gx0) * 0.34;
+          ctx.setLineDash([3, 4]);
+          ctx.strokeStyle = 'rgba(255,255,255,.14)';
+          ctx.beginPath(); ctx.moveTo(vx, padT); ctx.lineTo(vx, H - padB); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(255,255,255,.35)';
+          ctx.textAlign = 'center';
+          ctx.fillText('verba acaba', vx, padT - 2);
+
+          // comprada (cinza, curta)
+          curve(paid, prog, 'rgba(107,113,128,.9)', false, 2);
+          head(paid, prog, '107,113,128');
+          // espontanea (amarelo, longa) por cima
+          curve(earned, prog, 'rgba(254,209,54,1)', true, 2.6);
+          head(earned, prog, '254,209,54');
+
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', function () { layout(); t0 = 0; }, { passive: true });
+        requestAnimationFrame(draw);
+      })();
+    });
+  </script>
+</BaseLayout>

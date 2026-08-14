@@ -1,0 +1,1028 @@
+---
+// ============================================================================
+// Narrativa espetacular · Data PR
+// Conteúdo voice-backed portado de:
+//   src/content/pages/o-que-e-data-pr.md
+// Original preservado. Esta página é a versão "narrativa espetacular":
+// herói canvas 2D (pontos de dado convergindo numa manchete) + dataviz
+// "dataset vira manchete" (canvas 2D) + scroll storytelling (GSAP/Lenis),
+// sobre o DS da PiaR (eyebrow-dot, watermarks, inversão dark, contorno).
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/o-que-e-data-pr`;
+
+// As quatro fontes de dado que viram pauta.
+const fontes = [
+  {
+    id: 'F1',
+    nome: 'Dados próprios de operação',
+    desc: 'O que a sua empresa mede para funcionar: volume de transações, comportamento de uso, sazonalidade, ticket médio, taxa de adoção. São os mais valiosos porque ninguém mais tem.',
+    tag: 'Exclusivo por natureza',
+    icon: 'solar:database-line-duotone',
+    featured: true,
+  },
+  {
+    id: 'F2',
+    nome: 'Pesquisa primária encomendada',
+    desc: 'Levantamento desenhado para responder a uma pergunta de pauta, com amostra e metodologia declaradas. Custa mais e exige rigor, mas gera exclusividade.',
+    tag: 'Custa, mas é seu',
+    icon: 'solar:chart-2-line-duotone',
+  },
+  {
+    id: 'F3',
+    nome: 'Dados públicos recombinados',
+    desc: 'Bases de governo, reguladores e institutos (IBGE, Banco Central, ministérios) cruzadas com a sua leitura de setor. O valor está na análise, não no dado bruto.',
+    tag: 'Valor na leitura',
+    icon: 'solar:layers-minimalistic-line-duotone',
+  },
+  {
+    id: 'F4',
+    nome: 'Dados de tendência e mercado',
+    desc: 'O que a sua empresa observa no agregado dos clientes e que serve de termômetro para o setor inteiro.',
+    tag: 'Termômetro de setor',
+    icon: 'solar:graph-up-line-duotone',
+  },
+];
+
+// O ciclo PEP aplicado a Data PR (8 passos).
+const passos = [
+  {
+    num: '01',
+    titulo: 'Defina a pergunta de pauta, não o dado',
+    desc: 'Comece pela dúvida que interessa ao público ("o brasileiro mudou o jeito de pagar?", "o crédito para pequena empresa encolheu?"). O dado existe para responder a ela. Sem pergunta clara, o número não tem narrativa.',
+  },
+  {
+    num: '02',
+    titulo: 'Escolha e valide a fonte do dado',
+    desc: 'Identifique de onde vem o número, qual o recorte temporal, qual a amostra ou universo, e o que ele não prova. Dado sem metodologia declarada não chega na redação sério.',
+  },
+  {
+    num: '03',
+    titulo: 'Submeta à revisão jurídica e de privacidade',
+    desc: 'Dado próprio costuma envolver informação de cliente. Antes de publicar, confirme anonimização, agregação e conformidade com a LGPD. Na PiaR esse passo tem revisão jurídica no processo, e não é opcional.',
+  },
+  {
+    num: '04',
+    titulo: 'Construa a narrativa em volta do número',
+    desc: 'Traduza o dado em frase de jornalista: o que mudou, em quanto, por que importa, e o que vem depois. Um gráfico não narra sozinho. O texto faz o trabalho.',
+  },
+  {
+    num: '05',
+    titulo: 'Defina o ângulo por veículo e por editor',
+    desc: 'O mesmo dado vira três pautas diferentes para economia, tecnologia e PME. Aqui entra o relacionamento: você sabe quem cobre o que e o que cada editor procura agora.',
+  },
+  {
+    num: '06',
+    titulo: 'Ofereça com relacionamento, não com disparo em massa',
+    desc: 'Encaminhamento segmentado, com exclusividade real quando ela existir, supera o envio para mailing inteiro. Mailing grande tende a ter taxa de abertura menor e queima a relação.',
+  },
+  {
+    num: '07',
+    titulo: 'Prepare o material de apoio',
+    desc: 'Tabela limpa, gráfico em formato usável, nota metodológica e porta-voz disponível. Quanto menos atrito para o jornalista, maior a chance de publicação.',
+  },
+  {
+    num: '08',
+    titulo: 'Meça o resultado contra a meta',
+    desc: 'Alcance, share of voice e, quando o objetivo é negócio, indicadores de conversão. Medição fecha o ciclo e alimenta a próxima pauta.',
+  },
+];
+
+// As frentes de medição (Princípios de Barcelona, AMEC 4.0).
+const metricas = [
+  {
+    nome: 'Resultado, não atividade',
+    desc: 'Número de releases enviados não é resultado. Mudança de percepção, alcance qualificado e efeito no negócio são. É o primeiro princípio de Barcelona.',
+    icon: 'solar:target-line-duotone',
+  },
+  {
+    nome: 'Sem AVE',
+    desc: 'Os Princípios de Barcelona desaconselham a equivalência em mídia paga há mais de uma década. Ela compara espaço editorial com anúncio e distorce o valor do earned media.',
+    icon: 'solar:forbidden-circle-line-duotone',
+  },
+  {
+    nome: 'Alcance qualificado',
+    desc: 'Quantas pessoas foram expostas à pauta, por veículo e por relevância, não apenas o número bruto de impressões.',
+    icon: 'solar:users-group-rounded-line-duotone',
+  },
+  {
+    nome: 'Share of voice',
+    desc: 'Sua presença no noticiário do setor frente aos concorrentes, no mesmo período. Menções da sua marca dividido pelo total do mercado, vezes cem.',
+    icon: 'solar:chart-square-line-duotone',
+  },
+  {
+    nome: 'Sentimento e mensagem-chave',
+    desc: 'Se a cobertura passou o enquadramento certo, não só se citou a marca. A frase importa tanto quanto a aparição.',
+    icon: 'solar:heart-pulse-line-duotone',
+  },
+  {
+    nome: 'ROI e indicadores de negócio',
+    desc: 'Quando o objetivo é venda, acompanhe tráfego de referência, qualidade de lead e, quando possível, receita atribuída. Amarre a métrica ao objetivo declarado no início.',
+    icon: 'solar:dollar-minimalistic-line-duotone',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Doctoralia', 'Solides', 'PagBrasil', 'Corning', 'Mastercard Agro', 'AgroSmart', 'Vila 11'];
+
+const faq = [
+  {
+    q: 'Data PR é a mesma coisa que data storytelling?',
+    a: 'São parentes, não sinônimos. Data storytelling é a técnica de narrar com dados, usada em vários contextos. Data PR aplica essa técnica especificamente para conquistar cobertura de imprensa e construir reputação, somando dado, relacionamento com a redação e medição de resultado.',
+  },
+  {
+    q: 'Preciso de pesquisa cara para fazer Data PR?',
+    a: 'Não necessariamente. Muita pauta forte nasce de dado próprio que você já coleta para operar, ou de dado público recombinado com a sua leitura de setor. Pesquisa encomendada é uma opção quando você precisa de exclusividade sobre uma pergunta específica, não um pré-requisito.',
+  },
+  {
+    q: 'Como evito problema de LGPD com dado de cliente?',
+    a: 'Trabalhe com dado agregado e anonimizado, nunca individualizado, e submeta o material à revisão jurídica antes de divulgar. Dado próprio que vira pauta deve descrever comportamento de conjunto, não identificar pessoas.',
+  },
+  {
+    q: 'Qual a diferença entre Data PR e digital PR?',
+    a: 'Digital PR é o conjunto de práticas de relacionamento e construção de presença em canais digitais. Data PR é uma abordagem que pode rodar dentro de earned media tradicional ou digital: o que a define é partir do dado como origem da narrativa, em qualquer canal.',
+  },
+  {
+    q: 'Como provo o ROI de uma campanha de Data PR?',
+    a: 'Defina a métrica antes de começar, alinhada ao objetivo. Para autoridade, acompanhe alcance qualificado e share of voice. Para negócio, tráfego de referência, qualidade de lead e receita atribuída quando possível. Siga os Princípios de Barcelona da AMEC: meça resultado, não atividade, e não use AVE.',
+  },
+  {
+    q: 'Disparo em massa não garante mais publicação?',
+    a: 'Volume não compensa falta de relevância. Mailing grande tende a ter abertura menor e desgasta a relação com a redação. Encaminhamento segmentado, com ângulo por veículo e exclusividade quando ela existe, rende mais publicação e melhor relação.',
+  },
+];
+---
+<BaseLayout
+  title="Data PR: o dado que vira manchete"
+  description="Data PR transforma dados próprios e de mercado em pauta noticiável, oferecida à imprensa por relacionamento, e medida por métricas de negócio: alcance, share of voice, ROI."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F4F1EA;
+        --data-ink: #0A0A0C;
+        --data-ink-2: #141417;
+        --data-amber: #FFB020;
+        --data-grid: #FFC93A;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · pontos de dado que condensam numa manchete (canvas 2D)
+         =========================================================== */
+      .dpr-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--data-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #dpr-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .dpr-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 18% 38%, rgba(10,10,12,.84) 0%, rgba(10,10,12,.38) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 75%, rgba(10,10,12,.92) 100%);
+      }
+      .dpr-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .dpr-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .dpr-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .dpr-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 17ch; text-wrap: balance; }
+      .dpr-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 48ch; }
+      .dpr-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .dpr-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .dpr-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .dpr-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .dpr-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--data-amber); box-shadow: 0 0 8px 1px rgba(255,176,32,.7); }
+      .dpr-hero-float.f1 { right: 9%; top: 26%; }
+      .dpr-hero-float.f2 { right: 16%; bottom: 22%; }
+      @media (max-width: 900px) { .dpr-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · grade de dados (terreno de evidência) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.09);
+        background:
+          repeating-linear-gradient(90deg, transparent 0 38px, var(--contour-line) 38px 39px),
+          repeating-linear-gradient(0deg, transparent 0 38px, var(--contour-line) 38px 39px);
+        -webkit-mask-image: radial-gradient(circle at 78% 35%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 78% 35%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--data-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 58ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (o contraste) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--data-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* fontes de dado */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .layers { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .layers { grid-template-columns: repeat(4, 1fr); } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.32rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.12; }
+      .layer-card .l-otimiza { font-size: .98rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; letter-spacing: -.01em; display: block; margin-top: .3rem; }
+      .layer-card.featured { background: var(--data-ink); color: #fff; border-color: var(--data-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(255,176,32,.2) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.14) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+
+      /* ===========================================================
+         4 · DATAVIZ · dataset vira manchete (canvas 2D)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #dpr-pipeline-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* passos (PEP) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 230px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-titulo { font-size: 1.12rem; font-weight: 600; letter-spacing: -.02em; margin-top: .8rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .9rem; line-height: 1.55; color: var(--text-muted); margin-top: .75rem; }
+
+      /* métricas */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.22rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .94rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* listas (use / pense duas vezes) */
+      .usecase { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .usecase { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .usecase-card { padding: clamp(1.85rem, 2.6vw, 2.4rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; }
+      .usecase-card.warn { background: var(--data-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .usecase-card .uc-h { display: inline-flex; align-items: center; gap: .55rem; font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; }
+      .usecase-card .uc-h iconify-icon { font-size: 1.4rem; color: var(--accent-deep); }
+      .usecase-card.warn .uc-h iconify-icon { color: var(--accent); }
+      .usecase-card ul { list-style: none; margin: 1.4rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+      .usecase-card li { display: flex; gap: .7rem; font-size: 1rem; line-height: 1.55; color: var(--text-muted); }
+      .usecase-card.warn li { color: rgba(255,255,255,.74); }
+      .usecase-card li iconify-icon { font-size: 1.1rem; color: var(--accent-deep); flex-shrink: 0; margin-top: .2rem; }
+      .usecase-card.warn li iconify-icon { color: var(--accent); }
+
+      /* erros comuns */
+      .errors-grid { display: grid; grid-template-columns: 1fr; gap: .85rem; }
+      @media (min-width: 720px) { .errors-grid { grid-template-columns: 1fr 1fr; } }
+      .error-row { display: flex; gap: .9rem; padding: 1.3rem 1.4rem; border-radius: 16px; background: #fff; border: 1px solid var(--hairline); }
+      .error-row iconify-icon { font-size: 1.3rem; color: var(--accent-deep); flex-shrink: 0; margin-top: .1rem; }
+      .error-row .e-name { font-weight: 700; letter-spacing: -.01em; }
+      .error-row .e-desc { font-size: .92rem; line-height: 1.5; color: var(--text-muted); margin-top: .3rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 68ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 20ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .dpr-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Data PR: o dado que vira manchete',
+        description:
+          'Data PR transforma dados próprios e de mercado em pauta noticiável, oferecida à imprensa por relacionamento, e medida por métricas de negócio: alcance, share of voice, ROI.',
+        inLanguage: 'pt-BR',
+        about: 'Data PR',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="dpr-hero">
+      <canvas id="dpr-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="dpr-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>+18,4%</span>
+      <span class="dpr-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>share of voice</span>
+      <div class="wrap hero-inner">
+        <span class="dpr-hero-chip reveal"><span class="dot"></span>Data PR · Comunicação baseada em dados</span>
+        <h1 class="reveal d1">O dado certo já é a <span class="accent-serif on-dark">manchete</span>.</h1>
+        <p class="sub reveal d2">
+          Quem parte de um número defensável escreve a pauta que o jornalista quer publicar.
+          Data PR transforma o dado da sua operação em notícia, oferecida por relacionamento e medida por resultado.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Transformar dado em pauta<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#virada" class="btn btn-ghost-d">Ver como funciona<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="dpr-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- abstract answer-first · o que e Data PR -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:66ch">
+          <span class="eyebrow">O que é Data PR</span>
+          <p class="lede" style="margin-top:1.25rem">Data PR é a prática de transformar dados próprios e de mercado em pauta noticiável, oferecida à imprensa por relacionamento e medida por métricas de negócio: alcance, share of voice e ROI. Em vez de partir do release, parte de um número defensável que responde a uma pergunta de interesse público. Na PiaR, roda com revisão jurídica no processo, desde 2013.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · A VIRADA -->
+    <section id="virada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">evidência</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Por que o dado virou o centro</span>
+          <h2>A redação tem menos gente e mais <span class="accent-serif">demanda</span>.</h2>
+          <p class="lede">Nesse cenário, o assessor que entrega informação pronta, com ângulo e número verificável, economiza o tempo de quem decide o que publicar. A comunicação deixou de operar por suposição e passou a operar por evidência.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Release que cola gráfico no fim</span>
+            <h3>O dado vira anexo. A pauta some.</h3>
+            <p>Parte do produto, encaixa um número no rodapé e pede publicação. Vira release comum com aparência de relatório. O jornalista lê e não encontra a notícia.</p>
+            <div class="steps"><span>Produto</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Release</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Gráfico no fim</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">Data PR</span>
+            <h3>O dado abre. A narrativa segue.</h3>
+            <p>Parte de um número defensável que responde a uma pergunta de interesse público. O dado é a espinha, não o enfeite. O jornalista recebe pauta pronta para informar e diferenciar.</p>
+            <div class="steps"><span>Pergunta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Dado</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Pauta</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Ter dado não é ter pauta. O dado vira pauta quando responde a uma pergunta que interessa <span class="hl">fora da empresa</span>.</p>
+      </div>
+    </section>
+
+    <!-- 3 · FONTES DE DADO -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Onde estão os dados que viram pauta</span>
+          <h2>Você provavelmente já tem a <span class="accent-serif">matéria-prima</span>.</h2>
+          <p class="lede">As quatro fontes mais comuns de dado noticiável. A regra de triagem é simples: se a resposta depende de explicar o seu produto primeiro, ainda não é pauta, é material de marketing.</p>
+        </div>
+        <div class="layers">
+          {fontes.map((f, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3', f.featured && 'featured']}>
+              <div class="l-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <div class="l-id">{f.id}</div>
+              <div class="l-name">{f.nome}</div>
+              <p class="l-otimiza">{f.desc}</p>
+              <div class="l-meta">
+                <span class="k">Por que importa</span>
+                <span class="v">{f.tag}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">O dado próprio de operação é o mais valioso porque <span class="hl">ninguém mais tem</span>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="dpr-pipeline-canvas" role="img" aria-label="Dataset que vira manchete: uma nuvem de pontos de dado se filtra, condensa numa frase de jornalista e chega à publicação na imprensa."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#9aa0aa"></span>Dado bruto</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Número defensável</span>
+              <span class="li"><span class="sw" style="background:#FFB020"></span>Manchete</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>O que vale não é o gráfico. É a <span class="accent-serif on-dark">pergunta respondida</span>.</h2>
+            <p class="lede">Uma nuvem de números não narra sozinha. O trabalho do Data PR é filtrar o dado bruto até o recorte que responde a uma dúvida de interesse público, e traduzir esse recorte em frase de jornalista: o que mudou, em quanto, por que importa.</p>
+            <p class="lede" style="margin-top:1.25rem">O dado abre a conversa, o relacionamento garante que ela aconteça com o jornalista certo, e a medição prova que a conversa virou resultado. Na PiaR, Data PR não substitui o relacionamento com a redação nem o earned media. Ele potencializa os dois.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · POR QUE É PR -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-22" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:60ch">
+          <span class="eyebrow reveal">A ordem que define o resultado</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:32ch">
+            Pergunta primeiro. Dado depois. Relacionamento sempre. A <span class="hl">ferramenta vem por último</span>.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            Data PR é earned antes de paga: a aposta principal é conquistar a publicação pelo mérito do dado. Formato pago, conteúdo patrocinado ou mídia paga para amplificar, entra como complemento honesto, com transparência sobre o que é pago, e nunca como substituto da conquista editorial. Ferramenta de monitoramento e distribuição vem por último, depois de pergunta, dado e relacionamento definidos. É a ordem que separa pauta de número solto.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · FRAMEWORK PEP -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">PEP</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Framework PEP aplicado a Data PR</span>
+          <h2>Oito passos, da pergunta à <span class="accent-serif">medição</span>.</h2>
+          <p class="lede">A metodologia PEP organiza o ciclo de uma pauta baseada em dados, com um princípio que não muda: dado próprio passa por revisão jurídica antes de ir a público.</p>
+        </div>
+        <div class="steps-grid">
+          {passos.map((p, i) => (
+            <div class:list={['step-card', 'reveal', (i % 4 === 1) && 'd1', (i % 4 === 2) && 'd2', (i % 4 === 3) && 'd3']}>
+              <span class="s-num">{p.num}</span>
+              <h3 class="s-titulo">{p.titulo}</h3>
+              <p class="s-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · COMO MEDIR -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como medir o resultado</span>
+          <h2>Métrica definida <span class="accent-serif">antes</span> de começar.</h2>
+          <p class="lede">Medição em Data PR segue os Princípios de Barcelona da AMEC, atualizados para a versão 4.0 em 2025. Medir depois, com o indicador que ficou bom, não é medição, é justificativa.</p>
+        </div>
+        <div class="frentes-grid">
+          {metricas.map((m, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={m.icon}></iconify-icon></div>
+              <h3 class="f-name">{m.nome}</h3>
+              <p class="f-desc">{m.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · QUANDO USAR -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Critério</span>
+          <h2>Quando usar Data PR, e quando <span class="accent-serif">pensar duas vezes</span>.</h2>
+          <p class="lede">Número frágil publicado vira passivo de reputação. A honestidade sobre quando o dado ainda não é pauta protege a marca tanto quanto a boa pauta a promove.</p>
+        </div>
+        <div class="usecase">
+          <div class="usecase-card reveal">
+            <span class="uc-h"><iconify-icon icon="solar:check-circle-line-duotone"></iconify-icon>Use quando</span>
+            <ul>
+              <li><iconify-icon icon="solar:check-read-linear"></iconify-icon>Você tem dado próprio que responde a uma pergunta de interesse público.</li>
+              <li><iconify-icon icon="solar:check-read-linear"></iconify-icon>O setor carece de número confiável e a sua empresa pode preencher essa lacuna.</li>
+              <li><iconify-icon icon="solar:check-read-linear"></iconify-icon>O objetivo é construir autoridade de categoria, não só anunciar um lançamento.</li>
+              <li><iconify-icon icon="solar:check-read-linear"></iconify-icon>Existe um momento (regulação, sazonalidade, debate em alta) em que o dado entra na conversa.</li>
+            </ul>
+          </div>
+          <div class="usecase-card warn reveal d1">
+            <span class="uc-h"><iconify-icon icon="solar:danger-triangle-line-duotone"></iconify-icon>Pense duas vezes quando</span>
+            <ul>
+              <li><iconify-icon icon="solar:minus-circle-linear"></iconify-icon>O dado é fraco, com amostra mínima ou recorte conveniente. Número frágil vira passivo.</li>
+              <li><iconify-icon icon="solar:minus-circle-linear"></iconify-icon>A pauta só faz sentido para quem já conhece o produto. Isso é marketing, legítimo, mas não é earned media.</li>
+              <li><iconify-icon icon="solar:minus-circle-linear"></iconify-icon>Falta tempo para o rigor metodológico e a revisão jurídica. Pressa em dado próprio é risco, não agilidade.</li>
+              <li><iconify-icon icon="solar:minus-circle-linear"></iconify-icon>O dado expõe informação sensível de cliente sem anonimização adequada.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · ERROS COMUNS -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-14" aria-hidden="true">erros</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que sabota uma pauta de dado</span>
+          <h2>Erros comuns que a redação <span class="accent-serif">percebe</span>.</h2>
+        </div>
+        <div class="errors-grid reveal d1">
+          <div class="error-row">
+            <iconify-icon icon="solar:chart-line-duotone"></iconify-icon>
+            <div><div class="e-name">Colar o gráfico no fim do release</div><div class="e-desc">O dado precisa ser a abertura e a espinha, não o anexo. Pauta de dado começa pelo número.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:document-add-line-duotone"></iconify-icon>
+            <div><div class="e-name">Dado sem metodologia</div><div class="e-desc">Número sem amostra, período e fonte não passa por uma redação séria. Sempre declare o como.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:scissors-line-duotone"></iconify-icon>
+            <div><div class="e-name">Recorte conveniente</div><div class="e-desc">Escolher o intervalo que favorece a marca destrói a credibilidade quando o jornalista percebe. E ele percebe.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:lock-keyhole-unlocked-line-duotone"></iconify-icon>
+            <div><div class="e-name">Oferecer exclusividade falsa</div><div class="e-desc">Vender como exclusivo o que foi para o mailing inteiro queima a relação. Exclusividade só quando ela existe de fato.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:mailbox-line-duotone"></iconify-icon>
+            <div><div class="e-name">Disparo em massa</div><div class="e-desc">Mandar o mesmo release para mailing gigante reduz abertura e desgasta a redação. Segmentação e ângulo por veículo rendem mais.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:text-bold-line-duotone"></iconify-icon>
+            <div><div class="e-name">Adjetivo no lugar de dado</div><div class="e-desc">Trocar "líder", "maior", "referência" por um número verificável separa release de informação. Se não dá para provar, corte o adjetivo.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:clipboard-list-line-duotone"></iconify-icon>
+            <div><div class="e-name">Medir atividade, não resultado</div><div class="e-desc">Relatório de quantos releases saíram não diz nada sobre impacto. Use alcance, share of voice e negócio.</div></div>
+          </div>
+          <div class="error-row">
+            <iconify-icon icon="solar:shield-warning-line-duotone"></iconify-icon>
+            <div><div class="e-name">Pular a revisão jurídica</div><div class="e-desc">Dado próprio sem checagem de LGPD e anonimização é exposição desnecessária.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:50ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Método com <span class="accent-serif on-dark">13 anos</span> de estrada.</h2>
+          <p class="lede">A PiaR é uma agência de comunicação em São Paulo desde {site.foundingYear}. Trabalhamos com a metodologia PEP e com processo que inclui revisão jurídica, o que importa quando a pauta nasce de dado próprio.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A PiaR não publica número de resultado que não consegue comprovar. Atendemos também clientes como Endemol Shine Brasil (Big Brother Brasil). Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). Se você quer transformar os dados da sua operação em pauta que a imprensa publica, e medir esse resultado com critério, vale uma conversa.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">Data PR</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Transforme o dado da sua operação em <span class="accent-serif on-dark">pauta publicada</span>.</h2>
+        <p class="lede reveal d2">Partimos da pergunta que interessa fora da empresa, validamos a fonte, construímos a narrativa e medimos com critério. O investimento é sob consulta, definido conforme o objetivo de cada marca.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Falar com a PiaR<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · pontos de dado (grade mono) que convergem
+         e condensam numa manchete (canvas 2D)
+         ======================================================== */
+      (function dataHeadline() {
+        var canvas = document.getElementById('dpr-hero-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 72% 32%, #2b2207 0%, #14110a 55%, #0A0A0C 100%)'; return; }
+
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var pts = [];
+        var COUNT = 0;
+        var cx = 0, cy = 0;     // ponto de convergência (a manchete)
+        var t0 = performance.now();
+
+        function build() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.max(1, Math.floor(W * dpr));
+          canvas.height = Math.max(1, Math.floor(H * dpr));
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          cx = W * 0.68; cy = H * 0.42;
+          COUNT = Math.min(220, Math.floor((W * H) / 5200));
+          pts = [];
+          // grade de origem (mono): cada ponto nasce numa célula da grade
+          var cols = Math.ceil(Math.sqrt(COUNT * (W / H)));
+          var rows = Math.ceil(COUNT / cols);
+          var gx = W / cols, gy = H / rows;
+          for (var i = 0; i < COUNT; i++) {
+            var c = i % cols, rr = Math.floor(i / cols);
+            var ox = (c + 0.5) * gx + (Math.random() - 0.5) * gx * 0.7;
+            var oy = (rr + 0.5) * gy + (Math.random() - 0.5) * gy * 0.7;
+            pts.push({
+              ox: ox, oy: oy,                 // origem na grade
+              x: ox, y: oy,
+              phase: Math.random() * Math.PI * 2,
+              spd: 0.4 + Math.random() * 0.7,
+              size: Math.random() < 0.16 ? 2.1 : 1.2,
+              hot: Math.random() < 0.22       // pontos "quentes" (amarelo)
+            });
+          }
+        }
+        build();
+        window.addEventListener('resize', build, { passive: true });
+
+        function frame(now) {
+          var t = (now - t0) / 1000;
+          // ciclo de respiração: 0 = disperso na grade, 1 = condensado na manchete
+          var cyc = (Math.sin(t * 0.32) + 1) / 2;          // 0..1
+          var conv = cyc * cyc * (3 - 2 * cyc);             // smoothstep
+          ctx.clearRect(0, 0, W, H);
+
+          // linhas de convergência sutis (do ponto para a manchete) quando condensa
+          if (conv > 0.4) {
+            ctx.lineWidth = 1;
+            for (var l = 0; l < pts.length; l += 4) {
+              var pl = pts[l];
+              ctx.beginPath();
+              ctx.moveTo(pl.x, pl.y);
+              ctx.lineTo(cx, cy);
+              ctx.strokeStyle = 'rgba(254,209,54,' + (0.04 * (conv - 0.4)).toFixed(3) + ')';
+              ctx.stroke();
+            }
+          }
+
+          for (var i = 0; i < pts.length; i++) {
+            var p = pts[i];
+            // alvo condensado: anel apertado em torno da manchete
+            var ang = p.phase + t * 0.2 * p.spd;
+            var rad = 26 + (i % 7) * 9;
+            var tx = cx + Math.cos(ang) * rad * (0.6 + 0.4 * Math.sin(t + p.phase));
+            var ty = cy + Math.sin(ang) * rad * 0.62;
+            // interpola origem-na-grade -> alvo-condensado
+            p.x = p.ox + (tx - p.ox) * conv;
+            p.y = p.oy + (ty - p.oy) * conv;
+            // leve flutuação mono
+            p.x += Math.sin(t * 0.6 + p.phase) * (1 - conv) * 4;
+            p.y += Math.cos(t * 0.5 + p.phase) * (1 - conv) * 4;
+
+            var bright = p.hot ? (0.5 + 0.5 * conv) : (0.16 + 0.14 * conv);
+            if (p.hot) {
+              ctx.fillStyle = 'rgba(254,209,54,' + bright.toFixed(3) + ')';
+            } else {
+              ctx.fillStyle = 'rgba(190,196,206,' + bright.toFixed(3) + ')';
+            }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size + (p.hot ? conv * 1.1 : 0), 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // núcleo da manchete: glow que acende quando o dado condensa
+          var glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120);
+          glow.addColorStop(0, 'rgba(254,209,54,' + (0.22 * conv).toFixed(3) + ')');
+          glow.addColorStop(1, 'rgba(254,209,54,0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(cx, cy, 120, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (!prefersReduced) requestAnimationFrame(frame);
+        }
+
+        if (prefersReduced) {
+          // estado estático condensado
+          (function staticDraw() {
+            ctx.clearRect(0, 0, W, H);
+            for (var i = 0; i < pts.length; i++) {
+              var p = pts[i];
+              ctx.fillStyle = p.hot ? 'rgba(254,209,54,.55)' : 'rgba(190,196,206,.2)';
+              ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+            }
+          })();
+        } else {
+          requestAnimationFrame(frame);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · dataset que vira manchete (canvas 2D)
+         nuvem de dado bruto -> funil de filtro -> número defensável -> manchete
+         ======================================================== */
+      (function datasetToHeadline() {
+        var canvas = document.getElementById('dpr-pipeline-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var cloud = [], particles = [];
+        var stageX = [0.2, 0.5, 0.78];   // bruto, filtrado, manchete (fração de W)
+        var t0 = performance.now();
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          // nuvem de dado bruto na coluna esquerda
+          cloud = [];
+          var n = Math.min(90, Math.floor(W / 5));
+          for (var i = 0; i < n; i++) {
+            cloud.push({
+              x: W * (0.06 + Math.random() * 0.22),
+              y: H * (0.16 + Math.random() * 0.68),
+              s: Math.random() < 0.2 ? 2 : 1.2
+            });
+          }
+        }
+        layout();
+
+        function spawn() {
+          if (prefersReduced) return;
+          // emite uma partícula de um ponto aleatório da nuvem
+          var c = cloud[Math.floor(Math.random() * cloud.length)];
+          if (!c) return;
+          particles.push({ x: c.x, y: c.y, sx: c.x, sy: c.y, p: 0, sp: 0.0055 + Math.random() * 0.005, kept: Math.random() < 0.42 });
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        function smooth(t) { return t * t * (3 - 2 * t); }
+
+        function draw() {
+          var t = (performance.now() - t0) / 1000;
+          ctx.clearRect(0, 0, W, H);
+          var fy = H * 0.5;
+          var x0 = W * stageX[0], x1 = W * stageX[1], x2 = W * stageX[2];
+
+          // funil de filtro (afunila para o centro)
+          ctx.strokeStyle = 'rgba(255,255,255,.1)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x0, H * 0.16); ctx.lineTo(x1, fy - 18); ctx.lineTo(x2, fy - 6);
+          ctx.moveTo(x0, H * 0.84); ctx.lineTo(x1, fy + 18); ctx.lineTo(x2, fy + 6);
+          ctx.stroke();
+
+          // nuvem de dado bruto
+          for (var i = 0; i < cloud.length; i++) {
+            var c = cloud[i];
+            ctx.fillStyle = 'rgba(154,160,170,' + (0.28 + 0.12 * Math.sin(t * 1.2 + i)).toFixed(3) + ')';
+            ctx.beginPath(); ctx.arc(c.x, c.y, c.s, 0, Math.PI * 2); ctx.fill();
+          }
+
+          // marcadores de estágio
+          var labels = [
+            { x: x0, c: 'rgba(154,160,170,.9)', txt: 'BRUTO' },
+            { x: x1, c: 'rgba(254,209,54,.95)', txt: 'FILTRO' },
+            { x: x2, c: 'rgba(255,176,32,.95)', txt: 'MANCHETE' }
+          ];
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'alphabetic';
+          for (var s = 0; s < labels.length; s++) {
+            ctx.fillStyle = labels[s].c;
+            ctx.fillText(labels[s].txt, labels[s].x, H * 0.94);
+          }
+
+          // partículas viajando bruto -> filtro -> manchete
+          for (var k = particles.length - 1; k >= 0; k--) {
+            var pa = particles[k];
+            pa.p += pa.sp;
+            var pos;
+            if (pa.p < 0.5) {
+              // bruto -> centro do filtro
+              var tt = smooth(pa.p / 0.5);
+              pos = { x: lerp(pa.sx, x1, tt), y: lerp(pa.sy, fy, tt) };
+            } else {
+              if (!pa.kept) { particles.splice(k, 1); continue; }  // descartado no filtro
+              var tt2 = smooth((pa.p - 0.5) / 0.5);
+              pos = { x: lerp(x1, x2, tt2), y: lerp(fy, fy, tt2) };
+              if (pa.p >= 1) { particles.splice(k, 1); continue; }
+            }
+            var col = pa.p < 0.5 ? '154,160,170' : '254,209,54';
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 2.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.95)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 5.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.16)'; ctx.fill();
+          }
+
+          // núcleo da manchete (pulsa)
+          var pr = 9 + (Math.sin(t * 1.6) + 1) * 2;
+          ctx.beginPath(); ctx.arc(x2, fy, 8, 0, Math.PI * 2);
+          ctx.fillStyle = '#FFB020'; ctx.fill();
+          ctx.beginPath(); ctx.arc(x2, fy, pr + 6, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255,176,32,.35)'; ctx.lineWidth = 1; ctx.stroke();
+
+          // filtro (nó amarelo)
+          ctx.beginPath(); ctx.arc(x1, fy, 6, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.fill();
+
+          requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          layout();
+          draw();
+        } else {
+          setInterval(spawn, 280);
+          spawn();
+          requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

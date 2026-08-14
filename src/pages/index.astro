@@ -1,0 +1,944 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+// HOME · "A gravidade da marca" (espinha aprovada por Danilo em 2026-06-25).
+// O filme e da VOZ (PR / assessoria de imprensa); a gravidade reforca a voz, e a
+// IA fica so no fundo. Hero de video claro recortado, e um campo gravitacional fixo
+// (gravityField): a massa da marca viaja pela pagina e cresce ate virar a bola amarela.
+// Branco e preto as vezes, como na Sobre: a voz, a prova e o metodo sao faixas claras
+// OPACAS acima do campo; o filme escuro (corpos, forcas, PEP, lideranca, climax) revela
+// o campo atras. Diferencia da Sobre pelo motor de curvatura (massa que viaja, sem grid).
+// Fatos travados em site.ts: 13 anos, desde 2013, 470+ marcas, 8 exits nomeados,
+// premio ABStartups 2018, Bruno Pinheiro CEO. Sem travessao, acentos pt-BR completos
+// inclusive no JSON-LD. Voz de primeira pessoa do plural, sem "a gente".
+
+// Logos com asset PNG no repo (/brand/clients). Loop seamless do marquee.
+const clienteLogos = [
+  'sambatech', 'liga-ventures', 'printi', 'qranio',
+  'unifisa', 'livup', 'investidores-vc', 'inovativa',
+  'wylinka', 'doctoralia', 'unlimitail',
+  'sidia', 'corning', 'fluencypass',
+  'solides', 'layer-up', 'pagbrasil',
+];
+
+// Os corpos que a gravidade puxa (o mercado). Beneficio antes do nome.
+const corpos = [
+  { ic: 'solar:cart-check-line-duotone', t: 'O comprador', d: 'Chega convencido, e a venda fecha com menos objeção. A reputação trabalha antes da reunião.' },
+  { ic: 'solar:chart-2-line-duotone', t: 'O investidor', d: 'Valida a empresa porque o mercado já fala dela. Confiança pública abre a mesa.' },
+  { ic: 'solar:crown-line-duotone', t: 'A liderança', d: 'O fundador vira referência do setor, procurado pela imprensa pelo nome dele.' },
+  { ic: 'solar:users-group-rounded-line-duotone', t: 'O talento', d: 'As pessoas certas querem entrar onde a marca já é uma referência.' },
+];
+
+// As sete forcas que geram a massa (servicos canonicos), agrupadas por funcao.
+const forcas = [
+  { g: 'A pauta', ic: 'solar:document-add-line-duotone', t: 'Relações Públicas', d: 'A citação primária: pauta e cobertura nos veículos que decidem o seu mercado.', href: '/relacoes-publicas' },
+  { g: 'A pauta', ic: 'solar:routing-3-line-duotone', t: 'Comunicação Integrada', d: 'As frentes conduzidas como um sistema só, cada peça puxando a próxima até o mercado ouvir uma mensagem inteira.', href: '/comunicacao-integrada' },
+  { g: 'A presença', ic: 'solar:shield-network-line-duotone', t: 'Reputação Semântica', d: 'Como a marca aparece na busca, na mídia e na resposta da IA. Monitorar mostra o retrato; nós reescrevemos o que está dito sobre você.', href: '/reputacao' },
+  { g: 'A presença', ic: 'solar:chart-2-line-duotone', t: 'GEO Consulting', d: 'Faz a marca ser citada por ChatGPT, Gemini e Perplexity quando perguntam do seu mercado.', href: '/geo' },
+  { g: 'A voz', ic: 'solar:microphone-line-duotone', t: 'Media Training', d: 'Autoridade no porta-voz até a imprensa procurar ele pelo nome, com a frase certa pronta para virar manchete.', href: '/media-training' },
+  { g: 'A voz', ic: 'solar:pen-new-square-line-duotone', t: 'Ghostwriting', d: 'A experiência do executivo vira artigo, post e palco, sempre na voz dele.', href: '/ghostwriting' },
+];
+
+// PEP: seis vetores editoriais. Menção honrosa própria na home; página completa em /pep.
+const vetores = ['Palco', 'Conversa', 'Narrativa', 'Cadência', 'Alcance', 'Veículo'];
+
+// 8 exits nomeados (site.ts / cases.astro). Nunca 10.
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+
+// Prova. Numeros com lastro em site.ts. Contador anima, mas o numero ja vem no texto (paridade IA).
+const provas = [
+  { n: site.yearsOperating, suf: '', tail: ' anos', l: 'Comunicando inovação desde ' + site.foundingYear + ', em São Paulo.' },
+  { n: 470, suf: '+', tail: '', l: 'Marcas que confiaram sua reputação à PiaR ao longo dessa trajetória.' },
+  { n: site.exitsSupported, suf: '', tail: '', l: 'Startups acompanhadas da primeira pauta ao exit.' },
+];
+
+// Quem lidera. FOTOS REAIS (mesmas de /sobre). Bruno tem a webp espelhada: flip corrige.
+const lideranca = [
+  { nome: site.founder.name, papel: 'Fundador e CEO', foto: '/brand/Brunotrofeu.webp', flip: true, desc: 'Dirige a estratégia desde 2013. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
+  { nome: 'Renniê Paro', papel: 'COO', foto: '/brand/team/rennie.png', flip: false, desc: 'Responde pela operação e por manter a mesma qualidade de entrega em todas as frentes da casa.' },
+  { nome: 'Gabriela Calencautcy', papel: 'Projetos Especiais', foto: '/brand/team/gabriela.png', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
+];
+
+// PiaRBoard: o dashboard proprietario (a "caixa-preta aberta"). Dados reais da proposta (Adaflow, slides 6 e 7).
+const piarboard = [
+  { ic: 'solar:clock-circle-line-duotone', t: 'Acompanhamento em tempo real', d: 'Você vê os resultados no instante em que acontecem, sem esperar o relatório do mês.' },
+  { ic: 'solar:chart-2-line-duotone', t: 'Métricas detalhadas', d: 'Alcance, engajamento e impacto de cada publicação, abertos número a número.' },
+  { ic: 'solar:radar-2-line-duotone', t: 'Monitoramento de mídia', d: 'Onde a sua marca está sendo mencionada, no momento em que a menção sai.' },
+  { ic: 'solar:tuning-2-line-duotone', t: 'Otimização contínua', d: 'A estratégia se ajusta com base em dado real, não em achismo.' },
+  { ic: 'solar:graph-up-line-duotone', t: 'Gráficos interativos', d: 'Cada número é clicável, do panorama ao detalhe de uma publicação.' },
+  { ic: 'solar:filter-line-duotone', t: 'Filtros que importam', d: 'Os resultados, filtráveis por veículo, mídia e audiência.' },
+];
+
+// Servicos para o JSON-LD (ItemList de Service). provider por @id (nao redeclara a org).
+const servicosLd = [
+  { name: 'Relações Públicas Estratégica', type: 'Public Relations', url: `${site.domain}/relacoes-publicas`, desc: 'Assessoria de imprensa e relações públicas que começa pelo dado, para empresas inovadoras.' },
+  { name: 'Comunicação Integrada', type: 'Communications', url: `${site.domain}/comunicacao-integrada`, desc: 'PR, branding e reputação conduzidos como um sistema único.' },
+  { name: 'Reputação Semântica', type: 'Reputation Management', url: `${site.domain}/reputacao`, desc: 'Gestão de como a marca aparece na busca, na mídia e nas respostas de IA.' },
+  { name: 'GEO Consulting', type: 'Generative Engine Optimization', url: `${site.domain}/geo`, desc: 'Otimização para a marca ser citada nas respostas de IA como ChatGPT, Gemini e Perplexity.' },
+  { name: 'Media e Audience Training', type: 'Media Training', url: `${site.domain}/media-training`, desc: 'Preparação de porta-vozes para construir autoridade junto à imprensa.' },
+  { name: 'Ghostwriting', type: 'Ghostwriting', url: `${site.domain}/ghostwriting`, desc: 'Liderança de opinião para executivos em artigos, posts e palco.' },
+  { name: 'Projetos Especiais de PR (PEP)', type: 'Public Relations', url: `${site.domain}/pep`, desc: 'Metodologia modular de seis vetores editoriais para presença contínua.' },
+];
+
+---
+<BaseLayout
+  title="Comunicação para empresas inovadoras"
+  description="Agência de comunicação para empresas inovadoras desde 2013, em São Paulo. Construímos reputação na imprensa, no mercado e nas respostas de inteligência artificial: a marca que tem gravidade é a que a IA cita."
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --primary: #0F0F11;
+        --secondary: #F5F5F7;
+        --bg-white: #FFFFFF;
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+
+        --text-muted: rgba(15, 15, 17, .6);
+        --text-faint: rgba(15, 15, 17, .4);
+        --hairline: rgba(0, 0, 0, .08);
+
+        --radius-sm: 8px; --radius-md: 14px; --radius-lg: 24px; --radius-xl: 32px; --radius-full: 9999px;
+        --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+        --t-smooth: all .6s var(--ease-out-expo);
+
+        --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-serif: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: var(--font-sans);
+        background: #000000; color: var(--primary);
+        overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        font-feature-settings: "ss01", "cv11";
+      }
+      ::selection { background: var(--accent); color: var(--primary); }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border-radius: 10px; }
+
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+      .ds-caption { font-size: .72rem; font-weight: 600; line-height: 1.4; text-transform: uppercase; letter-spacing: .2em; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      /* reveals */
+      .reveal { opacity: 0; transform: translateY(2.5rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .1s; } .delay-200 { transition-delay: .2s; }
+      .delay-300 { transition-delay: .3s; } .delay-400 { transition-delay: .4s; }
+
+      /* Clientes marquee: faixa preta OPACA (bloqueia o brilho do campo atras, mata os quadradinhos) */
+      .clients-marquee { position: relative; z-index: 20; isolation: isolate; background: #000000; color: #fff; padding: 1.75rem 0; border-top: 1px solid rgba(255,255,255,.06); border-bottom: 1px solid rgba(255,255,255,.06); }
+      .clients-marquee-wrap { position: relative; overflow: hidden; width: 100%; }
+      .clients-marquee-wrap::before, .clients-marquee-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 10; pointer-events: none; }
+      .clients-marquee-wrap::before { left: 0; background: linear-gradient(to right, #000000, transparent); }
+      .clients-marquee-wrap::after { right: 0; background: linear-gradient(to left, #000000, transparent); }
+      .clients-marquee-track { display: flex; align-items: center; width: max-content; animation: clients-scroll 50s linear infinite; }
+      @keyframes clients-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+      .clients-marquee-track:hover { animation-play-state: paused; }
+      .client-logo { height: 74px; width: auto; max-width: 210px; margin-right: 3.5rem; flex-shrink: 0; object-fit: contain; opacity: .85; mix-blend-mode: lighten; transition: opacity .35s var(--ease-out-expo), transform .35s var(--ease-out-expo); }
+      .client-logo:hover { opacity: 1; transform: scale(1.08); }
+      @media (max-width: 768px) { .client-logo { height: 56px; margin-right: 2.25rem; } }
+
+      /* ===== HERO video-scrub (claro, 5 atos) ===== */
+      #narrative-hero { position: relative; width: 100vw; height: 500vh; background: #fafafa; z-index: 10; }
+      .hero-sticky { position: sticky; top: 0; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fafafa; }
+      .hero-aurora { position: absolute; top: 0; bottom: 0; width: clamp(180px, 22vw, 360px); z-index: 5; pointer-events: none; filter: blur(2px); opacity: .9; }
+      .hero-aurora--left { left: 0; background:
+         radial-gradient(120% 45% at 40% 18%, #FF7A1A 0%, rgba(255,122,26,0) 55%),
+         radial-gradient(100% 40% at 55% 40%, #FF9A3C 0%, rgba(255,154,60,0) 60%),
+         radial-gradient(140% 55% at 30% 75%, #FED136 0%, rgba(254,209,54,0) 65%),
+         linear-gradient(180deg, #FF6A00 0%, #FF8A1A 35%, #FFB020 60%, #FED136 85%, #FFE066 100%);
+         -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+                 mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%); }
+      .hero-aurora--right { right: 0; transform: scaleX(-1); background:
+         radial-gradient(120% 45% at 40% 18%, #FF7A1A 0%, rgba(255,122,26,0) 55%),
+         radial-gradient(100% 40% at 55% 40%, #FF9A3C 0%, rgba(255,154,60,0) 60%),
+         radial-gradient(140% 55% at 30% 75%, #FED136 0%, rgba(254,209,54,0) 65%),
+         linear-gradient(180deg, #FF6A00 0%, #FF8A1A 35%, #FFB020 60%, #FED136 85%, #FFE066 100%);
+         -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+                 mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%); }
+      @media (max-width: 768px) { .hero-aurora { width: 90px; opacity: .75; } }
+
+      .video-scrub { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 10; will-change: transform; transform: translateZ(0); }
+      .video-scrub video { width: 100%; height: 100%; object-fit: cover; transform: translateZ(0) scale(1.02); will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+      .hero-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 30; pointer-events: none; }
+      .glass-hero { background: rgba(255,255,255,.75); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); border: 1px solid rgba(255,255,255,.6); border-radius: var(--radius-xl); padding: 2.75rem 3.5rem; box-shadow: 0 40px 80px rgba(0,0,0,.06), inset 0 0 0 1px rgba(255,255,255,.8); display: inline-flex; flex-direction: column; align-items: center; text-align: center; max-width: 90vw; will-change: transform, opacity; }
+      .n-title { font-family: var(--font-serif); font-size: clamp(2.25rem, 5.4vw, 5.4rem); font-weight: 700; letter-spacing: -.04em; line-height: 1.05; text-transform: uppercase; color: var(--primary); }
+      .n-title em { font-style: normal; }
+      .n-sub { font-family: var(--font-serif); font-size: clamp(1.05rem, 1.75vw, 1.65rem); font-weight: 400; letter-spacing: -.01em; color: var(--text-muted); margin-top: .5rem; }
+      .hero-cta { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; flex-wrap: wrap; pointer-events: auto; }
+
+      /* buttons */
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .85rem 1.8rem; border-radius: var(--radius-full); font-size: .9375rem; font-weight: 500; transition: var(--t-smooth); cursor: pointer; position: relative; overflow: hidden; letter-spacing: -.01em; border: 1px solid transparent; text-decoration: none; }
+      .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.12); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.25); }
+      .btn-ghost iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn-ghost:hover iconify-icon { transform: translateX(4px); }
+      .btn-ghost.on-dark { color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost.on-dark:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .beam-btn { position: relative; padding: 2px; border-radius: var(--radius-full); display: inline-block; isolation: isolate; text-decoration: none; }
+      .beam-btn::before { content: ''; position: absolute; inset: -2px; border-radius: inherit; z-index: -1; background: conic-gradient(from 0deg, transparent 0 70%, var(--accent) 80%, transparent 95%); animation: beam 3s linear infinite; opacity: 0; transition: opacity .4s; }
+      .beam-btn:hover::before { opacity: 1; }
+      @keyframes beam { to { transform: rotate(360deg); } }
+      .beam-btn .beam-inner { display: inline-flex; align-items: center; gap: .5rem; background: var(--accent); color: var(--primary); padding: .9rem 1.9rem; border-radius: inherit; font-weight: 600; font-size: .94rem; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      /* ===== CAMPO GRAVITACIONAL FIXO + FILME DARK ===== */
+      #field-bg { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+      .film { position: relative; z-index: 1; }
+      .fsec { position: relative; z-index: 1; padding-block: clamp(5rem, 11vw, 9rem); color: #fff; overflow: hidden; }
+      .fsec.tight { padding-block: clamp(3.5rem, 7vw, 6rem); }
+      .fwrap { max-width: 1240px; margin-inline: auto; padding-inline: clamp(1.25rem, 4vw, 2.5rem); position: relative; z-index: 2; }
+      .fwrap.narrow { max-width: 880px; }
+      .f-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .f-eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .f-h2 { font-family: var(--font-serif); font-weight: 600; font-size: clamp(2.1rem, 5vw, 4rem); line-height: 1.02; letter-spacing: -.035em; margin: 1.1rem 0 0; max-width: 20ch;
+        /* lupa (lente de aumento): a bola cruza o texto e o que fica sob ela INVERTE para contrastar com a massa,
+           seguindo legivel (escuro sobre a bola amarela, claro sobre a bola preta). vars de posicao setadas no rAF.
+           a palavra-destaque (warm-t) fica fixa no acento, independente da lupa. */
+        --lens-base: #fff; --lens-hot: #15130C; --lens-x: -9999px; --lens-y: -9999px; --lens-r: 150px;
+        color: var(--lens-base);
+        background-image: radial-gradient(circle var(--lens-r) at var(--lens-x) var(--lens-y), var(--lens-hot) 0%, var(--lens-hot) 30%, var(--lens-base) 72%);
+        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+      .f-h2 .warm-t { -webkit-text-fill-color: var(--accent); }
+      .f-lede { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: rgba(255,255,255,.72); margin: 1.2rem 0 0; max-width: 54ch; }
+      .warm-t { color: var(--accent); }
+      .serif-i { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
+      .ghost-word { position: absolute; top: 8%; font-family: var(--font-serif); font-weight: 800; font-size: clamp(6rem, 19vw, 17rem); color: rgba(255,255,255,.035); pointer-events: none; z-index: 0; line-height: .8; letter-spacing: -.04em; }
+
+      /* secoes claras: o campo (canvas) pinta a banda creme atras e INVERTE as cores da massa
+         (massa preta + redor amarelo no creme). A secao fica transparente para o campo aparecer. */
+      .fsec.light { background: transparent; color: var(--primary); z-index: 2; }
+      .fsec.light .f-eyebrow { color: var(--text-muted); }
+      .fsec.light .f-eyebrow .dot { background: var(--accent-deep); box-shadow: 0 0 0 4px rgba(224,180,32,.16); }
+      .fsec.light .f-h2 { --lens-base: var(--primary); --lens-hot: #fafafa; }
+      /* clima: garante texto escuro legivel sobre a bola amarela grande (nao a mesma cor) */
+      .f-climax .f-h2 { --lens-base: #fff; --lens-hot: #15130C; }
+      /* sem lupa/bola-glow: o destaque do clima fica branco (era escuro so pra contrastar com a bola) */
+      .f-climax .f-h2 .warm-t { -webkit-text-fill-color: #fff; }
+      .fsec.light .f-h2 .warm-t { -webkit-text-fill-color: var(--yellow-ink); }
+      .fsec.light .f-lede { color: var(--text-muted); }
+      .fsec.light .warm-t { color: var(--yellow-ink); }
+      .fsec.light .ln { color: var(--yellow-ink); }
+      /* a voz na luz: microfone amarelo com halo quente em vez do glow sobre o preto */
+      .fsec.light .voz-mic { color: var(--accent-deep); filter: drop-shadow(0 0 22px rgba(254,209,54,.5)); }
+      /* a prova na luz: numeros e chips invertidos para o creme */
+      .fsec.light .f-stat { border-left-color: rgba(224,180,32,.55); }
+      .fsec.light .f-stat .sn { color: var(--primary); }
+      .fsec.light .f-stat .sl { color: var(--text-muted); }
+      .fsec.light .exit-chip { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: var(--text-muted); }
+
+      /* a voz (o coracao do filme): microfone com glow, centralizado */
+      .voz-sec { text-align: center; }
+      .voz-sec .fwrap { text-align: center; }
+      .voz-sec .f-eyebrow, .voz-sec .f-h2, .voz-sec .f-lede { margin-inline: auto; justify-content: center; }
+      .voz-sec .f-h2 { max-width: 18ch; }
+      .voz-mic { font-size: clamp(3.5rem, 8vw, 6rem); color: var(--accent); line-height: 1; margin-bottom: 1rem; filter: drop-shadow(0 0 30px rgba(254,209,54,.45)); }
+
+      /* PiaRboard (a caixa-preta aberta): grade de dados do dashboard, na faixa clara */
+      .board { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2.4rem; }
+      @media (min-width: 680px) { .board { grid-template-columns: repeat(2,1fr); } }
+      @media (min-width: 1040px) { .board { grid-template-columns: repeat(3,1fr); } }
+      .board-card { padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid rgba(0,0,0,.1); background: rgba(255,255,255,.6); transition: var(--t-smooth); }
+      .board-card:hover { border-color: rgba(224,180,32,.45); transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,.06); }
+      .board-card .b-ic { display: inline-flex; width: 44px; height: 44px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(224,180,32,.14); color: var(--accent-deep); font-size: 1.35rem; }
+      .board-card h3 { font-size: 1.1rem; font-weight: 600; letter-spacing: -.02em; color: var(--primary); margin: .8rem 0 0; }
+      .board-card p { font-size: .9rem; line-height: 1.5; color: var(--text-muted); margin: .45rem 0 0; }
+      .board-link { display: inline-flex; align-items: center; gap: .5rem; margin-top: 2rem; font-size: .92rem; font-weight: 600; color: var(--accent-deep); text-decoration: none; }
+      .board-link iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .board-link:hover iconify-icon { transform: translateX(4px); }
+
+      /* corpos / forcas cards */
+      .corpos { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2.2rem; }
+      @media (min-width: 560px) { .corpos { grid-template-columns: repeat(2,1fr); } }
+      @media (min-width: 980px) { .corpos { grid-template-columns: repeat(4,1fr); } }
+      .corpo-card { padding: clamp(1.4rem,2vw,1.8rem); border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,.1); background: rgba(13,15,22,.55); transition: border-color .5s var(--ease-out-expo), transform .35s var(--ease-out-expo), background .4s var(--ease-out-expo); }
+      .corpo-card:hover { border-color: rgba(254,209,54,.28); transform: translateY(-4px); }
+      .corpo-card .c-ic { display: inline-flex; width: 46px; height: 46px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(254,209,54,.1); color: var(--accent); font-size: 1.4rem; }
+      .corpo-card h3 { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; margin: .8rem 0 0; color: #fff; }
+      .corpo-card p { font-size: .92rem; line-height: 1.5; color: rgba(255,255,255,.6); margin: .5rem 0 0; }
+      .corpo-slot > .corpo-card { height: 100%; }
+
+      .forcas { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2.4rem; }
+      @media (min-width: 680px) { .forcas { grid-template-columns: repeat(2,1fr); } }
+      @media (min-width: 1040px) { .forcas { grid-template-columns: repeat(3,1fr); } }
+      .forca { display: flex; flex-direction: column; padding: 1.6rem; border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,.1); background: rgba(13,15,22,.5); text-decoration: none; transition: border-color .5s var(--ease-out-expo), transform .35s var(--ease-out-expo), background .4s var(--ease-out-expo); }
+      .forca:hover { border-color: rgba(254,209,54,.3); transform: translateY(-4px); background: rgba(20,22,30,.6); }
+      .forca .fg { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+      .forca .f-ic { color: var(--accent); font-size: 1.5rem; margin-top: .9rem; }
+      .forca h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; color: #fff; margin: .6rem 0 0; }
+      .forca p { font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.6); margin: .5rem 0 0; flex: 1; }
+      .forca .f-go { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1rem; font-size: .8rem; font-weight: 600; color: rgba(255,255,255,.75); }
+      .forca:hover .f-go { color: var(--accent); }
+
+      /* PEP: mencao honrosa (painel destacado, amarelo) */
+      .pep-panel { position: relative; overflow: hidden; border: 1px solid rgba(254,209,54,.28); border-radius: var(--radius-xl); background: linear-gradient(155deg, rgba(254,209,54,.08) 0%, rgba(13,15,22,.5) 55%); padding: clamp(2rem, 4vw, 3.4rem); }
+      .pep-panel .f-eyebrow, .pep-panel .f-h2, .pep-panel .f-lede { position: relative; z-index: 2; }
+      .pep-panel .f-h2 { max-width: 17ch; }
+      .pep-glow { position: absolute; top: -30%; right: -10%; width: 60%; height: 160%; background: radial-gradient(circle, rgba(254,209,54,.16) 0%, transparent 60%); pointer-events: none; z-index: 1; }
+      .pep-vetores { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.8rem; }
+      .pep-vetor { display: inline-flex; padding: .5rem 1rem; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.13); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.8); }
+      .pep-cta { position: relative; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; margin-top: 2rem; padding: .85rem 1.7rem; border-radius: 999px; background: var(--accent); color: var(--primary); font-weight: 600; font-size: .92rem; text-decoration: none; transition: var(--t-smooth); }
+      .pep-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(254,209,54,.32); }
+      .pep-cta iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .pep-cta:hover iconify-icon { transform: translateX(4px); }
+
+      /* prova */
+      .f-stats { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2.4rem; }
+      @media (min-width: 720px) { .f-stats { grid-template-columns: repeat(3,1fr); } }
+      .f-stat { border-left: 2px solid rgba(254,209,54,.4); padding-left: 1.2rem; }
+      .f-stat .sn { display: block; font-family: var(--font-serif); font-weight: 700; font-size: clamp(2.8rem,6vw,4.6rem); line-height: .9; letter-spacing: -.04em; color: #fff; }
+      .f-stat .sl { display: block; font-size: .9rem; color: rgba(255,255,255,.6); margin-top: .6rem; max-width: 28ch; }
+      .exits-line { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+      .exit-chip { display: inline-flex; padding: .45rem .85rem; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .04em; color: rgba(255,255,255,.7); }
+
+      /* lideranca */
+      .leaders { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 2.4rem; }
+      @media (min-width: 760px) { .leaders { grid-template-columns: repeat(3,1fr); } }
+      .leader { border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,.1); background: rgba(13,15,22,.55); overflow: hidden; transition: var(--t-smooth); padding-bottom: 1.4rem; }
+      .leader:hover { border-color: rgba(255,255,255,.2); transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.3); }
+      .leader-photo { aspect-ratio: 1/1; overflow: hidden; background: #0d0f16; }
+      .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; filter: grayscale(.15) contrast(1.02); }
+      .leader-photo img.flip { transform: scaleX(-1); }
+      .leader h3 { font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; margin: 1rem 1.4rem 0; color: #fff; }
+      .leader .lp { display: block; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 1rem 1.4rem 0; }
+      .leader p { font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.6); margin: .5rem 1.4rem 0; }
+
+      /* climax + CTA */
+      .f-climax { text-align: center; padding-block: clamp(6rem, 13vw, 10rem); }
+      .f-climax .f-h2 { margin-inline: auto; max-width: 24ch; }
+      .f-climax .f-lede { margin-inline: auto; }
+      /* Scrim suave atras do texto do climax: escurece a bola amarela quando ela passa
+         por tras, devolvendo o contraste, com bordas esfumadas (sem virar caixa). Fica
+         entre o canvas (z0) e o texto (fwrap z2). Some sobre o preto quando a bola nao esta la. */
+      .f-climax .fwrap::before {
+        content: '';
+        position: absolute;
+        inset: -14% -6%;
+        z-index: -1;
+        background: radial-gradient(ellipse 78% 72% at 50% 50%, rgba(15,15,17,.85) 0%, rgba(15,15,17,.68) 42%, rgba(15,15,17,0) 76%);
+        pointer-events: none;
+      }
+      .f-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+      .f-slogan { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.1rem,1.6vw,1.35rem); color: rgba(255,255,255,.62); margin-top: 2.6rem; max-width: 42ch; margin-inline: auto; line-height: 1.4; }
+      .ln { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+      @media (max-width: 768px) {
+        .glass-hero { padding: 1.5rem 1.75rem; }
+        #narrative-hero { height: 400vh; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        '@id': `${site.domain}/#webpage`,
+        name: 'PiaR Group · Comunicação para empresas inovadoras',
+        url: `${site.domain}/`,
+        inLanguage: 'pt-BR',
+        description:
+          'Agência de comunicação para empresas inovadoras desde 2013, em São Paulo. Construímos reputação na imprensa, no mercado e nas respostas de inteligência artificial.',
+        isPartOf: { '@id': `${site.domain}/#website` },
+        about: { '@id': `${site.domain}/#organization` },
+        primaryImageOfPage: `${site.domain}/brand/piar-horizontal-positivo.png`,
+        dateModified: '2026-06-25',
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': `${site.domain}/#website`,
+        url: `${site.domain}/`,
+        name: 'PiaR Group',
+        alternateName: ['PiaR', 'PiaR Comunicação'],
+        inLanguage: 'pt-BR',
+        publisher: { '@id': `${site.domain}/#organization` },
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Serviços da PiaR Group',
+        itemListElement: servicosLd.map((s, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'Service',
+            name: s.name,
+            serviceType: s.type,
+            url: s.url,
+            description: s.desc,
+            provider: { '@id': `${site.domain}/#organization` },
+            areaServed: { '@type': 'Country', name: 'Brazil' },
+          },
+        })),
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: `${site.domain}/` },
+        ],
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="home" />
+
+  <canvas id="field-bg" aria-hidden="true"></canvas>
+
+  <main id="main">
+    <!-- 1 · HERO video-scrub (claro, recortado para a tese da gravidade) -->
+    <section id="narrative-hero" aria-label="Abertura">
+      <div class="hero-sticky">
+        <div class="hero-aurora hero-aurora--left" aria-hidden="true"></div>
+        <div class="hero-aurora hero-aurora--right" aria-hidden="true"></div>
+
+        <div class="video-scrub">
+          <video id="hero-video" src="/videos/hero.mp4" muted playsinline preload="metadata" poster=""></video>
+        </div>
+
+        <div class="hero-center"><div class="animate-target text-1"><div class="glass-hero"><h1 class="n-title">Identificamos o <em>ativo raro</em> de cada marca e o transformamos em reputação.</h1></div></div></div>
+        <div class="hero-center"><div class="animate-target text-2"><div class="glass-hero"><h2 class="n-title">Transformamos a sua marca em algo <em>inevitável.</em></h2></div></div></div>
+        <div class="hero-center"><div class="animate-target text-3"><div class="glass-hero"><h2 class="n-title">O que a imprensa procura, <em>colocamos entre aspas.</em></h2></div></div></div>
+        <div class="hero-center"><div class="animate-target text-4">
+          <div class="glass-hero">
+            <h2 class="n-title">Vamos transformar a sua <em>marca.</em></h2>
+            <p class="n-sub">Conte a sua história e mostramos as oportunidades.</p>
+            <div class="hero-cta">
+              <a href="/contato" class="beam-btn"><span class="beam-inner">Agende seu diagnóstico<iconify-icon icon="solar:calendar-mark-linear"></iconify-icon></span></a>
+              <a href="#virada" class="btn btn-ghost">Conheça a PiaR<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 2 · CLIENTES MARQUEE (faixa fina, so logos) -->
+    <section class="clients-marquee" style="z-index:20" aria-label="Marcas que confiam na PiaR">
+      <div class="clients-marquee-wrap">
+        <div class="clients-marquee-track">
+          {[...Array(2)].flatMap((_, copy) => (
+            clienteLogos.map((slug) => (
+              <img src={`/brand/clients/${slug}.png`} alt={copy === 0 ? `Cliente PiaR: ${slug.replace(/-/g, ' ')}` : ''} class="client-logo" loading="lazy" aria-hidden={copy === 1 ? 'true' : undefined} />
+            ))
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FILME DARK · A GRAVIDADE DA MARCA (sobre o campo fixo) ===== -->
+    <div class="film">
+      <!-- 3 · A VOZ (abre o filme: toda gravidade comeca numa voz; e o marcador que acende o campo) -->
+      <section class="fsec voz-sec light" id="virada">
+        <div class="fwrap narrow">
+          <div class="voz-mic reveal" aria-hidden="true"><iconify-icon icon="solar:microphone-line-duotone"></iconify-icon></div>
+          <span class="f-eyebrow reveal"><span class="dot"></span>Onde tudo começa</span>
+          <h2 class="f-h2 reveal delay-100">Toda atração começa com uma <span class="warm-t">voz.</span></h2>
+          <p class="f-lede reveal delay-200">Há {site.yearsOperating} anos que ouvimos o mesmo silêncio: empresas extraordinárias que passam despercebidas porque seus fundadores nunca aprenderam a transformar valor em uma mensagem clara.</p>
+          <p class="f-lede reveal delay-300">A imprensa presta atenção em quem tem algo único a dizer. Nosso trabalho é encontrar essa frase e colocá-la na voz certa, na hora certa, antes de todo mundo.</p>
+        </div>
+      </section>
+
+      <!-- 4 · OS CORPOS QUE A GRAVIDADE PUXA -->
+      <section class="fsec tight" id="corpos">
+        <span class="ghost-word" data-parallax-y="-14" aria-hidden="true" style="right:-3%">massa</span>
+        <div class="fwrap">
+          <div class="reveal">
+            <span class="f-eyebrow"><span class="dot"></span>A gravidade da marca</span>
+            <h2 class="f-h2">Toda marca quer ser desejada. Poucas entendem que desejo é gravidade: quanto mais massa uma marca acumula, menos ela precisa correr, porque o mercado passa a entrar na órbita dela.</h2>
+            <p class="f-lede">Há {site.yearsOperating} anos construímos esse tipo de gravidade, marca por marca. Já são mais de 470 empresas ajudadas a alcançar o ponto em que comprador, investidor, talento e imprensa chegam naturalmente, sem precisar ser chamados.</p>
+          </div>
+          <div class="corpos">
+            {corpos.map((c) => (
+              <div class="corpo-slot">
+                <div class="corpo-card">
+                  <span class="c-ic"><iconify-icon icon={c.ic}></iconify-icon></span>
+                  <h3>{c.t}</h3>
+                  <p>{c.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 · AS FORÇAS QUE GERAM A MASSA · 7 SERVIÇOS -->
+      <section class="fsec" id="forcas">
+        <div class="fwrap">
+          <div class="reveal">
+            <span class="f-eyebrow"><span class="dot"></span>O que fazemos</span>
+            <h2 class="f-h2">Seis forças geram essa gravidade.</h2>
+            <p class="f-lede">Nenhuma entra no atacado: cada força responde a um diagnóstico. Juntas, somam a massa que a imprensa cita pelo nome e que o mercado passa a procurar sozinho.</p>
+          </div>
+          <div class="forcas">
+            {forcas.map((f) => (
+              <a href={f.href} class="forca">
+                <span class="fg">{f.g}</span>
+                <iconify-icon class="f-ic" icon={f.ic}></iconify-icon>
+                <h3>{f.t}</h3>
+                <p>{f.d}</p>
+                <span class="f-go">Ver a frente<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- 6b · PEP · MENÇÃO HONROSA (painel destacado, leva para /pep) -->
+      <section class="fsec tight" id="pep">
+        <div class="fwrap">
+          <div class="pep-panel reveal">
+            <div class="pep-glow" aria-hidden="true"></div>
+            <span class="f-eyebrow"><span class="dot"></span>Projetos Especiais de PR · PEP</span>
+            <h2 class="f-h2">Tem um trabalho que começa onde a cobertura termina.</h2>
+            <p class="f-lede">PEP é a metodologia proprietária da PiaR para transformar cobertura em continuidade de marca. São seis frentes editoriais que se combinam conforme o objetivo, para ampliar alcance, reforçar narrativa e fazer cada aparição gerar impacto muito além da publicação.</p>
+            <div class="pep-vetores">
+              {vetores.map((v) => <span class="pep-vetor">{v}</span>)}
+            </div>
+            <a href="/pep" class="pep-cta">Conheça o PEP<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 · A PROVA -->
+      <section class="fsec light" id="prova">
+        <div class="fwrap">
+          <div class="reveal">
+            <span class="f-eyebrow"><span class="dot"></span>A prova</span>
+            <h2 class="f-h2">Treze anos de comunicação em números que você pode conferir.</h2>
+          </div>
+          <div class="f-stats">
+            {provas.map((p, i) => (
+              <div class:list={['f-stat', 'reveal', i === 1 && 'delay-100', i === 2 && 'delay-200']}>
+                <span class="sn"><span data-count={String(p.n)} data-suffix={p.suf}>{p.n}{p.suf}</span>{p.tail}</span>
+                <span class="sl">{p.l}</span>
+              </div>
+            ))}
+          </div>
+          <div class="exits-line reveal delay-200">
+            {exits.map((e) => <span class="exit-chip">{e}</span>)}
+          </div>
+          <p class="f-lede reveal delay-300">Reputação não se compra à vista, ela se acumula. Desde {site.foundingYear}, já são mais de 470 marcas atendidas, {site.exitsSupported} startups acompanhadas até o exit e um reconhecimento que reforça essa trajetória: {site.founder.name}, eleito Profissional de Imprensa no Startup Awards da ABStartups em 2018. Números importam. Consistência importa ainda mais.</p>
+        </div>
+      </section>
+
+      <!-- 8 · QUEM LIDERA (fotos reais) -->
+      <section class="fsec tight" id="lideranca">
+        <div class="fwrap">
+          <div class="reveal">
+            <span class="f-eyebrow"><span class="dot"></span>Quem lidera</span>
+            <h2 class="f-h2">Quem dirige a estratégia está na sala.</h2>
+            <p class="f-lede">Quem assina o seu trabalho é quem senta na reunião semanal, no funil e na edição de cada entrega. Aqui, a liderança não aparece apenas na proposta comercial, ela permanece presente na estratégia, e sua marca percebe isso desde a primeira semana.</p>
+          </div>
+          <div class="leaders">
+            {lideranca.map((p, i) => (
+              <div class:list={['leader', 'reveal', i === 1 && 'delay-100', i === 2 && 'delay-200']}>
+                <div class="leader-photo"><img src={p.foto} class:list={[p.flip && 'flip']} loading="lazy" alt={`${p.nome}, ${p.papel} da PiaR Group`} /></div>
+                <span class="lp">{p.papel}</span>
+                <h3>{p.nome}</h3>
+                <p>{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 · TRANSPARÊNCIA · O PIARBOARD (a caixa-preta aberta) -->
+      <section class="fsec light" id="metodo">
+        <div class="fwrap">
+          <div class="reveal" style="max-width:62ch">
+            <span class="f-eyebrow"><span class="dot"></span>O PiaRBoard</span>
+            <h2 class="f-h2">Transparência é inegociável.</h2>
+            <p class="f-lede">A maioria das agências entrega o resultado e esconde o caminho. Abrimos a caixa-preta: o PiaRBoard é o nosso dashboard proprietário, que mostra em tempo real cada passo até a publicação.</p>
+          </div>
+          <div class="board">
+            {piarboard.map((b, i) => (
+              <div class:list={['board-card', 'reveal', i % 3 === 1 && 'delay-100', i % 3 === 2 && 'delay-200']}>
+                <span class="b-ic"><iconify-icon icon={b.ic}></iconify-icon></span>
+                <h3>{b.t}</h3>
+                <p>{b.d}</p>
+              </div>
+            ))}
+          </div>
+          <a href="/processos" class="board-link reveal delay-200">Ver como medimos<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+      </section>
+
+      <!-- 10 · CLÍMAX + CTA -->
+      <section class="fsec f-climax" id="climax">
+        <div class="fwrap narrow">
+          <span class="f-eyebrow reveal" style="justify-content:center"><span class="dot"></span>Vamos conversar</span>
+          <h2 class="f-h2 reveal delay-100">A sua marca já tem um <span class="warm-t">ativo raro.</span></h2>
+          <p class="f-lede reveal delay-200">O que está em jogo é se o mercado já descobriu isso. Conte o seu contexto e, em até um dia útil, devolvemos onde está a oportunidade: na busca, na imprensa e nas conversas que decidem o seu mercado. Sem proposta automática, sem script. Só o diagnóstico que 470 marcas nos ensinaram a enxergar.</p>
+          <div class="f-cta reveal delay-300">
+            <a href="/contato" class="beam-btn"><span class="beam-inner">Agende seu diagnóstico<iconify-icon icon="solar:calendar-mark-linear"></iconify-icon></span></a>
+            <a href={`mailto:${site.email}`} class="btn btn-ghost on-dark">{site.email}<iconify-icon icon="solar:letter-linear"></iconify-icon></a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.2, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf0 = function (t) { lenis.raf(t); requestAnimationFrame(raf0); }; requestAnimationFrame(raf0); }
+        }
+      } catch (e) {}
+
+      var progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+
+      // HERO video-scrub (5 atos)
+      var video = document.getElementById('hero-video');
+      var beats = ['.text-1', '.text-2', '.text-3', '.text-4'];
+      function initHero() {
+        var gsap = window.gsap, ScrollTrigger = window.ScrollTrigger;
+        gsap.set('.animate-target', { y: 80, opacity: 0 });
+        var tl = gsap.timeline({ scrollTrigger: { trigger: '#narrative-hero', start: 'top top', end: 'bottom bottom', scrub: 0.5, pin: '.hero-sticky' } });
+        tl.to({}, { duration: 10 }, 0);
+        // Slides SEQUENCIAIS, sem sobreposicao: cada card some por completo (opacity 0)
+        // exatamente quando o proximo comeca a surgir. As ENTRADAS (in) ficam nos mesmos
+        // pontos de antes (0.3, 2.3, 4.3, 6.3), entao o envelope total e o fim junto com o
+        // video nao mudam; muda so a SAIDA de cada card, antecipada para terminar antes da
+        // entrada do seguinte. Textos, sequencia, narrativa e layout permanecem intactos.
+        var beatTimings = [[0.3, 1.8], [2.3, 3.8], [4.3, 5.8], [6.3, null]];
+        beats.forEach(function (sel, i) {
+          var t = beatTimings[i];
+          // O DESLIZE (y) segue suave, na mesma janela de 0.5 de antes.
+          tl.to(sel, { y: 0, duration: 0.5, ease: 'power2.out' }, t[0]);
+          // A OPACIDADE liga quase instantaneamente (0.08) e SEGURA. O esmaecimento fica
+          // quase imperceptivel (o card so "aparece"), e, como o backdrop-filter (blur)
+          // acompanha a opacidade, o card fica em 1 praticamente o tempo todo: blur uniforme
+          // e cheio em todos os slides.
+          tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.08, ease: 'power2.out' }, t[0]);
+          if (t[1] !== null) {
+            tl.to(sel, { y: -80, duration: 0.5, ease: 'power2.in' }, t[1]);
+            // Saida da opacidade so no fim da janela, terminando em t[1]+0.5 (= entrada do
+            // proximo card), preservando a nao sobreposicao.
+            tl.to(sel, { opacity: 0, duration: 0.08, ease: 'power2.in' }, t[1] + 0.42);
+          }
+        });
+        if (video) {
+          video.pause();
+          var primeFirstFrame = function () { var doSeek = function () { try { video.currentTime = 0.04; } catch (e) {} }; if (video.readyState >= 1) requestAnimationFrame(doSeek); else video.addEventListener('loadedmetadata', function () { requestAnimationFrame(doSeek); }, { once: true }); };
+          primeFirstFrame();
+          var applyScrub = function () {
+            var dur = (!Number.isNaN(video.duration) && video.duration > 0) ? video.duration : 10;
+            var state = { target: 0, current: 0 };
+            ScrollTrigger.create({ trigger: '#narrative-hero', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: function (self) { state.target = dur * Math.min(self.progress / 0.88, 1); } });
+            var rafId = null; var ease = 0.09;
+            var tick = function () { if (video.readyState >= 2) { state.current += (state.target - state.current) * ease; if (Math.abs(state.target - state.current) < 0.002) state.current = state.target; try { video.currentTime = state.current; } catch (e) {} } rafId = requestAnimationFrame(tick); };
+            tick();
+            ScrollTrigger.create({ trigger: '#narrative-hero', start: 'top bottom', end: 'bottom top', onLeave: function () { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }, onLeaveBack: function () { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }, onEnter: function () { if (!rafId) tick(); }, onEnterBack: function () { if (!rafId) tick(); } });
+          };
+          if (video.readyState >= 1) applyScrub(); else { video.addEventListener('loadedmetadata', applyScrub, { once: true }); video.load(); }
+          var once = false;
+          var unlock = function () { if (!once) { once = true; var pr = video.play(); if (pr && typeof pr.then === 'function') pr.then(function () { video.pause(); }).catch(function () {}); } };
+          window.addEventListener('touchstart', unlock, { once: true });
+          window.addEventListener('click', unlock, { once: true });
+        }
+      }
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) initHero();
+      else { document.querySelectorAll('.animate-target').forEach(function (el, i) { el.style.opacity = '1'; el.style.transform = 'none'; if (i < 3) el.style.display = 'none'; }); }
+
+      // reveals
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); } }); }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      // contadores (o numero ja vem no HTML; aqui so anima de 0 ate ele)
+      document.querySelectorAll('[data-count]').forEach(function (el) {
+        var target = parseFloat(el.getAttribute('data-count')); var suffix = el.getAttribute('data-suffix') || ''; var done = false;
+        var ob = new IntersectionObserver(function (ents) {
+          ents.forEach(function (en) {
+            if (en.isIntersecting && !done) {
+              done = true; var t0 = null;
+              function step(ts) { if (!t0) t0 = ts; var pr = Math.min((ts - t0) / 1500, 1); var eased = 1 - Math.pow(1 - pr, 3); el.textContent = Math.round(target * eased) + suffix; if (pr < 1) requestAnimationFrame(step); }
+              if (!prefersReduced) requestAnimationFrame(step);
+              ob.unobserve(en.target);
+            }
+          });
+        }, { threshold: 0.5 });
+        ob.observe(el);
+      });
+
+      // parallax scrub (Mastercard) nos ghost-words
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var v = parseFloat(el.getAttribute('data-parallax-y')) || -12;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: v, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      // ===== CAMPO GRAVITACIONAL (gravityField): massa que viaja e atrai (gargantua, sem grid) =====
+      (function gravityField() {
+        var canvas = document.getElementById('field-bg');
+        if (!canvas) return;
+        var mctx = canvas.getContext('2d');
+        if (!mctx) return;
+        // camada separada so para o campo: o fundo (preto + faixas creme) fica no canvas
+        // principal e a massa vai nesta, para poder ser recortada nas zonas de leitura.
+        var deco = document.createElement('canvas');
+        var dctx = deco.getContext('2d');
+        var ctx = mctx;   // alvo de desenho corrente
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        function resize() {
+          W = window.innerWidth; H = window.innerHeight;
+          canvas.width = W * dpr; canvas.height = H * dpr; mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          deco.width = W * dpr; deco.height = H * dpr; dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          readDirty = true;
+        }
+        function smooth(t) { return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
+
+        /* ---- ZONA DE LEITURA ----------------------------------------------
+           A massa continua viajando pela pagina inteira, mas e apagada onde ha
+           texto: passa pelas areas pretas e nunca por cima da leitura.
+           As caixas sao remedidas so quando o scroll ou o resize sujam o cache. */
+        var READ_SEL = ['h1', 'h2', 'h3', '.f-eyebrow', '.f-lede', '.n-title', '.n-sub', '.sn', '.sl', '.exit-chip', '.lp'];
+        var CARD_SEL = '.corpo-card, .forca, .board-card, .leader, .pep-vetor, .btn, .beam-btn, .glass-hero';
+        var PAD = 14, FEATHER = 30;
+        var FADE = [0.10, 0.14, 0.2, 0.28, 0.4, 0.55, 0.75, 0.9];   // rampa da borda macia
+        var readEls = [], readRects = [], readDirty = true;
+
+        function collectRead() {
+          readEls = [];
+          var all = document.querySelectorAll(READ_SEL.map(function (s) { return 'main ' + s; }).join(', '));
+          for (var i0 = 0; i0 < all.length; i0++) { if (!all[i0].closest(CARD_SEL)) readEls.push(all[i0]); }
+          readDirty = true;
+        }
+        function updateRects() {
+          readRects.length = 0;
+          for (var i0 = 0; i0 < readEls.length; i0++) {
+            var r = readEls[i0].getBoundingClientRect();
+            if (r.width < 2 || r.height < 2 || r.bottom < -FEATHER || r.top > H + FEATHER) continue;
+            readRects.push([r.left - PAD, r.top - PAD, r.width + PAD * 2, r.height + PAD * 2]);
+          }
+          readDirty = false;
+        }
+        function softRect(c, x, y, w, h, r) {
+          if (c.roundRect) { c.beginPath(); c.roundRect(x, y, w, h, r); return; }
+          c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+        }
+        function maskRead(c) {
+          if (!readRects.length) return;
+          c.save();
+          c.globalCompositeOperation = 'destination-out';
+          c.fillStyle = '#000';
+          for (var i0 = 0; i0 < readRects.length; i0++) {
+            var R = readRects[i0];
+            for (var s = 0; s < FADE.length; s++) {
+              var ins = FEATHER * (1 - s / FADE.length);
+              var w2 = R[2] - ins * 2, h2 = R[3] - ins * 2;
+              if (w2 <= 0 || h2 <= 0) continue;
+              c.globalAlpha = FADE[s];
+              softRect(c, R[0] + ins, R[1] + ins, w2, h2, 18);
+              c.fill();
+            }
+          }
+          c.restore();
+        }
+        collectRead();
+        window.addEventListener('load', collectRead);
+        window.addEventListener('scroll', function () { readDirty = true; }, { passive: true });
+        window.addEventListener('resize', resize);
+        resize();
+
+        var viradaEl = document.getElementById('virada');
+        var climaxEl = document.getElementById('climax');
+        // faixas claras (a voz, a prova, o metodo): a animacao continua atras, invertendo a cor por banda
+        var lightEls = [viradaEl, document.getElementById('prova'), document.getElementById('metodo')].filter(Boolean);
+        var bands = [];
+        function isLight(yy) { for (var bi = 0; bi < bands.length; bi++) { if (yy >= bands[bi][0] && yy <= bands[bi][1]) return true; } return false; }
+        // lupa: os headlines do filme que a massa atravessa e acende
+        var lensEls = document.querySelectorAll('.f-h2');
+
+        var N = 150, parts = [];
+        for (var i = 0; i < N; i++) parts.push({ x: ((i * 131) % 100) / 100, y: ((i * 71) % 100) / 100, vx: 0, vy: 0, m: 0.4 + ((i * 97) % 100) / 130, heat: 0, init: false });
+
+        // os corpos que orbitam a massa (o mercado): comprador, investidor, lideranca, talento
+        var bodies = [
+          { ang: 0.3, rr: 0.26, sp: 0.40, col: [254, 209, 54] },
+          { ang: 1.9, rr: 0.36, sp: -0.30, col: [235, 196, 86] },
+          { ang: 3.3, rr: 0.30, sp: 0.24, col: [228, 205, 150] },
+          { ang: 4.8, rr: 0.40, sp: -0.18, col: [255, 232, 150] }
+        ];
+        // a massa NAO fica parada: viaja pela homepage (esquerda, direita, muda o angulo),
+        // deixando espaco do outro lado para um parallax de card depois. [scrollP, x, y].
+        var PATH = [[0.00, 0.64, 0.46], [0.38, 0.66, 0.44], [0.55, 0.30, 0.52], [0.70, 0.68, 0.46], [0.85, 0.36, 0.50], [1.00, 0.50, 0.47]];
+        function corePath(pp) { var a = PATH[0], b = PATH[PATH.length - 1]; for (var ci = 0; ci < PATH.length - 1; ci++) { if (pp >= PATH[ci][0] && pp <= PATH[ci + 1][0]) { a = PATH[ci]; b = PATH[ci + 1]; break; } } var span = (b[0] - a[0]) || 1, lt = smooth((pp - a[0]) / span); return [a[1] + (b[1] - a[1]) * lt, a[2] + (b[2] - a[2]) * lt]; }
+        var cs = corePath(0), coreX = cs[0], coreY = cs[1];
+        var T = 0, scrollP = 0, running = false;
+
+        function frame() {
+          T += prefersReduced ? 0 : 0.006;
+          var sc = document.documentElement;
+          scrollP = sc.scrollTop / ((sc.scrollHeight - sc.clientHeight) || 1);
+          var tr = 0; if (viradaEl) { var rv = viradaEl.getBoundingClientRect(); tr = 1 - (rv.top / (H || 1)); } tr = smooth(tr < 0 ? 0 : tr > 1 ? 1 : tr);
+          var fin = 0; if (climaxEl) { var rc = climaxEl.getBoundingClientRect(); fin = 1 - (rc.top / ((H * 0.75) || 1)); } fin = smooth(fin < 0 ? 0 : fin > 1 ? 1 : fin);
+
+          var base = Math.min(W, H);
+          // a massa cresce GRADATIVAMENTE com o scroll (nao em degrau), e estoura no clima
+          var mass = 0.5 + tr * 0.6 + scrollP * 1.7 + fin * 0.7;
+          // a massa viaja pelo scroll; a inercia do lerp da peso ao corpo
+          var cp = corePath(scrollP);
+          coreX += (cp[0] - coreX) * (prefersReduced ? 1 : 0.06); coreY += (cp[1] - coreY) * (prefersReduced ? 1 : 0.06);
+          var bx = coreX * W, by = coreY * H + Math.sin(T * 0.2) * H * 0.012;
+
+          // recalcula as faixas claras neste frame (em coordenadas da viewport, como o canvas fixo)
+          bands.length = 0;
+          for (var li0 = 0; li0 < lightEls.length; li0++) { var rb = lightEls[li0].getBoundingClientRect(); if (rb.bottom > 0 && rb.top < H) bands.push([rb.top, rb.bottom]); }
+          var coreLight = isLight(by);
+
+          // fundo (preto + faixas creme) no canvas principal: a mascara de leitura nao o toca
+          ctx = mctx;
+          mctx.clearRect(0, 0, W, H);
+          mctx.fillStyle = '#000000'; mctx.fillRect(0, 0, W, H);
+          // pinta a banda creme exatamente onde a faixa clara esta (a massa segue atras, invertida)
+          for (var bi2 = 0; bi2 < bands.length; bi2++) { mctx.fillStyle = '#fafafa'; mctx.fillRect(0, bands[bi2][0], W, bands[bi2][1] - bands[bi2][0]); }
+          // daqui pra baixo tudo desenha na camada de decoracao
+          if (readDirty) updateRects();
+          ctx = dctx;
+          dctx.clearRect(0, 0, W, H);
+
+          if (tr > 0.01) {
+            // halo da massa removido (matte, sem brilho): so as particulas/corpos/bola, sempre atras.
+
+            // particulas (o mercado difuso) atraidas e esquentando
+            var pull = 1100 * mass * (1 + fin * 0.7);
+            for (var i2 = 0; i2 < parts.length; i2++) {
+              var p = parts[i2];
+              if (!p.init) { p.x = p.x * W; p.y = p.y * H; p.init = true; }
+              var pdx = bx - p.x, pdy = by - p.y, pd2 = pdx * pdx + pdy * pdy + 6000, pd = Math.sqrt(pd2);
+              if (!prefersReduced) {
+                var f2 = pull / pd2;
+                p.vx += (pdx / pd) * f2 + (-pdy / pd) * f2 * 0.5;
+                p.vy += (pdy / pd) * f2 + (pdx / pd) * f2 * 0.5;
+                p.vx *= 0.992; p.vy *= 0.992; p.x += p.vx; p.y += p.vy;
+                if (pd < 22) { p.x = ((i2 * 53) % 100) / 100 * W; p.y = ((i2 * 29) % 100) / 100 * H; p.vx = 0; p.vy = 0; p.heat = 0; }
+              }
+              var heat = Math.max(0, Math.min(1, (1 - (pd - 30) / (base * 0.5)) * (0.4 + tr * 0.9)));
+              p.heat += (heat - p.heat) * (prefersReduced ? 1 : 0.05);
+              ctx.beginPath(); ctx.arc(p.x, p.y, 1 + p.m * 1.3, 0, Math.PI * 2);
+              if (isLight(p.y)) {
+                // sobre o creme: pontos escuros (o mercado difuso, legivel no branco)
+                ctx.fillStyle = 'rgba(20,20,24,' + ((0.18 + 0.32 * p.heat) * tr).toFixed(3) + ')';
+              } else {
+                var cr = Math.round(91 + 163 * p.heat), cg = Math.round(123 + 86 * p.heat), cb = Math.round(154 - 100 * p.heat);
+                ctx.fillStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + ((0.3 + 0.5 * p.heat) * tr).toFixed(3) + ')';
+              }
+              ctx.fill();
+            }
+          }
+
+          // os corpos do mercado ao redor da massa (sem arcos de orbita; o plano inclina e gira com o scroll)
+          if (tr > 0.02) {
+            var orbTilt = 0.22 + 0.5 * Math.sin(scrollP * Math.PI);
+            var orbRot = scrollP * 1.2, cR = Math.cos(orbRot), sR = Math.sin(orbRot);
+            for (var b2 = 0; b2 < bodies.length; b2++) {
+              var bd = bodies[b2], a = bd.ang + T * bd.sp;
+              var orbR = bd.rr * base * (1 - fin * 0.8);
+              var ox = Math.cos(a) * orbR, oy = Math.sin(a) * orbR * orbTilt;
+              var mkx = bx + ox * cR - oy * sR, mky = by + ox * sR + oy * cR;
+              var rad = (2.5 + fin * 4) * tr + 0.8;
+              ctx.beginPath(); ctx.arc(mkx, mky, rad, 0, Math.PI * 2);
+              if (isLight(mky)) {
+                // sobre o creme: corpos em ambar profundo (legivel no branco)
+                ctx.fillStyle = 'rgba(224,180,32,' + (tr * 0.95).toFixed(3) + ')';
+              } else {
+                ctx.fillStyle = 'rgba(' + bd.col[0] + ',' + bd.col[1] + ',' + bd.col[2] + ',' + (tr * 0.92).toFixed(3) + ')';
+              }
+              ctx.fill();   // matte: sem glow nos corpos
+            }
+          }
+
+          // o nucleo (a marca): cresce gradativamente com o scroll e vira a bola amarela no fim
+          // (placeholder pronto para o "PiaR dentro da bola" que o Danilo refina no Higgsfield)
+          if (tr > 0.01) {
+            var coreR = 5 + mass * 4 + fin * fin * 42;
+            ctx.beginPath(); ctx.arc(bx, by, coreR, 0, Math.PI * 2);
+            // a massa matte (sem halo/glow): amarela sobre o preto; sobre o creme recua semi-transparente
+            // pra ficar atras do texto sem competir (titulos agora sem lupa).
+            ctx.fillStyle = coreLight ? 'rgba(15,15,17,' + (tr * 0.42).toFixed(3) + ')' : 'rgba(254,219,80,' + Math.min(1, tr * 1.2).toFixed(3) + ')';
+            ctx.fill();
+          }
+
+          // LUPA removida (sem brilho nos titulos): os headlines ficam na cor base, animacao sempre atras.
+
+          // recorta a camada nas zonas de leitura e joga sobre o fundo
+          maskRead(dctx);
+          mctx.drawImage(deco, 0, 0, W, H);
+          ctx = mctx;
+
+          if (running) requestAnimationFrame(frame);
+        }
+        if (prefersReduced) {
+          // sem loop perpétuo: redesenha só quando o usuário rola ou redimensiona
+          // (o campo é fundo das faixas claras, então precisa seguir o scroll para
+          //  a banda creme continuar atrás do texto escuro; só não anima sozinho)
+          frame();
+          var queued = false;
+          var onScrollRM = function () { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; frame(); }); } };
+          window.addEventListener('scroll', onScrollRM, { passive: true });
+          window.addEventListener('resize', onScrollRM, { passive: true });
+        } else {
+          // só anima enquanto o filme (o conteúdo que o campo serve de fundo) está na viewport
+          var filmEl = document.querySelector('.film');
+          var play = function () { if (!running) { running = true; requestAnimationFrame(frame); } };
+          if (filmEl && 'IntersectionObserver' in window) {
+            var fio = new IntersectionObserver(function (ents) {
+              if (ents[0].isIntersecting) play(); else running = false;
+            }, { rootMargin: '300px' });
+            fio.observe(filmEl);
+          } else {
+            play();
+          }
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

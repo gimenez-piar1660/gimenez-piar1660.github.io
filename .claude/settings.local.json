@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:brainstorming:*)",
+      "Bash(git -C \"C:/Users/PiaR/OneDrive/Área de Trabalho/artools\" status --short)",
+      "Bash(Measure-Object -Line)",
+      "Bash(git -C \"C:/Users/PiaR/OneDrive/Área de Trabalho/artools\" branch -a)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(npm run *)",
+      "WebFetch(domain:tecflow.com.br)",
+      "WebFetch(domain:www.cartacapital.com.br)",
+      "WebSearch",
+      "WebFetch(domain:www.awwwards.com)",
+      "PowerShell(npm run *)",
+      "Bash(git tag *)",
+      "Bash(git checkout *)",
+      "Bash(xargs git log --oneline -1)"
+    ]
+  }
+}

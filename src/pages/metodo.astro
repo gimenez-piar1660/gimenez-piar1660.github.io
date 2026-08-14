@@ -1,0 +1,945 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+// Conteúdo portado de project/artifacts/contents/metodo/draft.md (voice-backed).
+// Decisões aplicadas (mesma régua da pep.astro):
+// - exits travado em 8 e nomeados (D-IDENT-3); prêmio padronizado ABStartups 2018 (D-IDENT-5).
+// - e-mail canônico hello@piar.group via site.email (D-IDENT-1); telefone/WhatsApp só em /contato (D-IDENT-2).
+// - Aarin removido das citações públicas (autorização não confirmada); sem Bunsen, Primis, Liquid.
+// - Seção "Notas de prova e pendências (uso interno)" e itens [a confirmar] descartados.
+
+// Os cinco pilares editoriais — sobre o que a empresa fala.
+const pilares = [
+  { id: '01', nome: 'Reputação', tese: 'Confiança, conformidade e resposta a momentos sensíveis.', desc: 'O que a empresa diz quando o assunto é confiança, conformidade, segurança e a forma como ela responde a momentos sensíveis. É o pilar que protege a percepção de longo prazo.', icon: 'solar:shield-check-line-duotone', tom: 'paper' },
+  { id: '02', nome: 'Influência', tese: 'Posição nas pautas de mercado e de categoria.', desc: 'Posicionamento em pautas de mercado e de categoria, em que a empresa entra na conversa que veículos e analistas já conduzem.', icon: 'solar:graph-up-line-duotone', tom: 'yellow' },
+  { id: '03', nome: 'Líderes', tese: 'Autoridade pública de fundadores e executivos.', desc: 'Construção de autoridade das pessoas à frente da empresa, com fundadores e executivos assumindo posição pública sobre temas que dominam.', icon: 'solar:crown-line-duotone', tom: 'paper' },
+  { id: '04', nome: 'Propósito', tese: 'O porquê da empresa, em narrativa verificável.', desc: 'O porquê da empresa existir e os compromissos que ela sustenta, traduzidos em narrativa verificável e não em discurso genérico.', icon: 'solar:compass-line-duotone', tom: 'dark' },
+  { id: '05', nome: 'Bastidores', tese: 'O como por trás do produto e da operação.', desc: 'O como por trás do produto e da operação, com decisões, processos e aprendizados que dão textura à história e geram pauta de profundidade.', icon: 'solar:layers-minimalistic-line-duotone', tom: 'paper' },
+];
+
+// As seis fórmulas editoriais (F01 a F06) — como a pauta é construída.
+const formulas = [
+  { id: 'F01', nome: 'Inversão', desc: 'Parte de uma crença aceita no mercado e mostra, com dado, por que ela não se sustenta.' },
+  { id: 'F02', nome: 'Custo Oculto', desc: 'Expõe o preço escondido de uma prática comum, traduzindo em número o que costuma passar despercebido.' },
+  { id: 'F03', nome: 'Diagnóstico', desc: 'Lê um cenário a partir dos dados do cliente e nomeia o problema antes de propor leitura.' },
+  { id: 'F04', nome: 'Reescrita', desc: 'Pega uma narrativa já circulando e a recontextualiza com informação nova e verificável.' },
+  { id: 'F05', nome: 'Linha do Tempo', desc: 'Organiza fatos em sequência para mostrar evolução, tendência ou ponto de virada.' },
+  { id: 'F06', nome: 'Manifesto', desc: 'Assume uma posição pública sobre um tema, sustentada por princípio e por prova.' },
+];
+
+// O método de quatro movimentos — o ritmo de execução.
+const movimentos = [
+  { num: '01', nome: 'Hipótese', titulo: 'Antes da pauta, a aposta editorial.', desc: 'Formulamos a aposta editorial. Qual dado, qual ângulo, qual veículo e por que agora. Nada avança sem hipótese explícita.' },
+  { num: '02', nome: 'Cadência', titulo: 'Presença constante, sem volume vazio.', desc: 'Definimos o ritmo de produção e de oferta de pauta, para que a presença seja constante sem virar volume vazio.' },
+  { num: '03', nome: 'Distribuição', titulo: 'Oferta sob medida, nunca lista única.', desc: 'Levamos a pauta a quem cobre o tema, com relacionamento direto e oferta sob medida por veículo, nunca por lista única.' },
+  { num: '04', nome: 'Loop', titulo: 'O que foi medido alimenta o próximo ciclo.', desc: 'Lemos o que foi publicado, o que rendeu e o que não rendeu, e devolvemos o aprendizado para a próxima hipótese.' },
+];
+
+// Do método ao processo: quatro etapas com prazo.
+const etapas = [
+  { id: '01', nome: 'Diagnóstico e Mapeamento', prazo: 'Semanas 1 e 2', desc: 'Levantamos o dado interno, a mídia-alvo e os pilares aplicáveis. Definimos as hipóteses iniciais.' },
+  { id: '02', nome: 'Messaging Framework', prazo: 'Semanas 3 e 4', desc: 'Consolidamos posicionamento, mensagens-chave e as fórmulas que dão forma às pautas. São 14 dias do briefing ao primeiro framework.' },
+  { id: '03', nome: 'Ativação Editorial', prazo: 'Semanas 5 a 12', desc: 'Entram cadência, produção e distribuição. As pautas começam a circular junto à imprensa.', accent: true },
+  { id: '04', nome: 'Monitoramento e Escala', prazo: 'Quinzenal', desc: 'Roda o loop em ciclo quinzenal, com leitura de resultado e ajuste de hipótese.' },
+];
+
+// Onde o método encontra os Projetos Especiais de PR (PEP) — seis vetores.
+const vetores = [
+  { nome: 'Palco', desc: 'Presença em eventos e momentos de exposição pública.' },
+  { nome: 'Conversa', desc: 'Relacionamento direto e diálogo com públicos e imprensa.' },
+  { nome: 'Narrativa', desc: 'Construção da história central do projeto.' },
+  { nome: 'Cadência', desc: 'Ritmo de presença ao longo do projeto.' },
+  { nome: 'Alcance', desc: 'Ampliação do público que a iniciativa atinge.' },
+  { nome: 'Veículo', desc: 'Definição dos canais e meios que carregam a mensagem.' },
+];
+
+// Clientes liberados (sem Aarin, sem cases não confirmados). Exits nomeados separados.
+const exitsNomeados = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Endemol Shine Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
+
+const faq = [
+  {
+    q: 'O método serve para qualquer empresa?',
+    a: 'Ele foi desenhado para startups, scale-ups e empresas de tecnologia. O ponto de partida é sempre o dado interno e a mídia-alvo, então funciona melhor onde existe informação própria que sustente pauta.',
+  },
+  {
+    q: 'Em quanto tempo vejo o primeiro entregável?',
+    a: 'São 14 dias do briefing ao primeiro Messaging Framework. A produção editorial entra a partir da semana 5, na etapa de Ativação Editorial.',
+  },
+  {
+    q: 'A PiaR faz disparo de release para muitos veículos de uma vez?',
+    a: 'Não. Disparo de release em massa não é estratégia, é ruído. A distribuição é direta, com oferta de pauta montada por veículo e por editoria.',
+  },
+  {
+    q: 'Os cinco pilares são fixos para todo cliente?',
+    a: 'Não. A combinação de pilares é definida no diagnóstico, conforme o objetivo e o setor. Nem todo cliente usa os cinco ao mesmo tempo.',
+  },
+  {
+    q: 'Qual a diferença entre o trabalho contínuo e o PEP?',
+    a: 'O trabalho contínuo roda o método em ciclo permanente. O PEP é um projeto com escopo fechado, montado por vetores, para iniciativas específicas que pedem mobilização concentrada.',
+  },
+  {
+    q: 'Os conteúdos passam por aprovação jurídica?',
+    a: 'Sim. 100% dos ativos passam por revisão jurídica antes de irem a público.',
+  },
+  {
+    q: 'Como começo?',
+    a: `Pelo formulário de diagnóstico. A PiaR responde em até 1 dia útil. Para contato direto, escreva para ${site.email}.`,
+  },
+];
+---
+<BaseLayout
+  title="Método PiaR: do dado e da mídia-alvo à pauta publicável"
+  description="O método da PiaR Group: cinco pilares, seis fórmulas e quatro movimentos. A pauta nasce do dado interno e da mídia-alvo, não do release pronto. Disparo em massa não é estratégia."
+  canonical={`${site.domain}/metodo`}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      ::selection { background: var(--primary); color: var(--accent); }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 10px; }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-body-lg { font-size: 1.25rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-body { font-size: 1.0625rem; font-weight: 400; line-height: 1.55; letter-spacing: -.01em; }
+      .ds-body-sm { font-size: .875rem; font-weight: 400; line-height: 1.55; }
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      .reveal { opacity: 0; transform: translateY(2rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .1s; } .delay-200 { transition-delay: .2s; }
+      .delay-300 { transition-delay: .3s; } .delay-400 { transition-delay: .4s; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .eyebrow-dot { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow-dot.on-dark { color: rgba(255,255,255,.72); }
+
+      .ink-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.6rem; border-radius: var(--radius-btn); background: var(--primary); color: var(--paper); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
+      .ink-pill:hover { background: #000; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(0,0,0,.18); }
+      .ink-pill iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .ink-pill:hover iconify-icon { transform: translateX(4px); }
+      .ink-pill.yellow { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .ink-pill.yellow:hover { background: #FFD84A; box-shadow: 0 14px 28px rgba(254,209,54,.32); }
+      .outline-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.55rem; border-radius: var(--radius-btn); background: #fff; color: var(--primary); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
+      .outline-pill:hover { background: var(--primary); color: var(--paper); }
+
+      /* ============================================================
+         HERO PARALLAX — 4 camadas com profundidades distintas
+         ============================================================ */
+      .hero-parallax {
+        position: relative; min-height: 100vh; min-height: 100svh; padding: 11rem 1.5rem 6rem;
+        overflow: hidden; isolation: isolate;
+      }
+      .hero-parallax .hero-grid {
+        position: absolute; inset: -10% 0; z-index: 0;
+        background-image:
+          linear-gradient(rgba(15,15,17,.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(15,15,17,.05) 1px, transparent 1px);
+        background-size: 60px 60px;
+        will-change: transform;
+      }
+      .hero-parallax .hero-aurora {
+        position: absolute; inset: -15% -10% -10%; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(45% 35% at 78% 22%, rgba(254,209,54,.32) 0%, rgba(254,209,54,0) 65%),
+          radial-gradient(35% 30% at 12% 85%, rgba(255,122,26,.18) 0%, transparent 65%);
+        will-change: transform; filter: blur(2px);
+      }
+      .hero-parallax .hero-watermark {
+        position: absolute; left: -2%; bottom: 8%; z-index: 1;
+        font-family: var(--font-serif); font-style: italic; font-weight: 400;
+        font-size: clamp(10rem, 28vw, 28rem); line-height: .8; letter-spacing: -.04em;
+        color: rgba(15,15,17,.04); pointer-events: none; user-select: none; white-space: nowrap;
+        will-change: transform;
+      }
+      .hero-parallax .hero-content { position: relative; z-index: 3; max-width: 1400px; margin: 0 auto; }
+      .hero-parallax .hero-floater {
+        position: absolute; right: 8%; top: 38%; z-index: 4;
+        display: inline-flex; align-items: center; gap: .55rem;
+        padding: .65rem 1.2rem; border-radius: var(--radius-pill); background: #fff;
+        border: 1px solid var(--hairline-strong); box-shadow: 0 14px 32px rgba(0,0,0,.06);
+        font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 600;
+        will-change: transform;
+      }
+      .hero-parallax .hero-floater::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+      @media (max-width: 900px) { .hero-parallax .hero-floater { display: none; } }
+
+      .hero-h1 { display: block; }
+      .hero-h1 .line { display: block; }
+      .hero-h1 em { color: var(--accent-deep); font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      /* ============================================================
+         FRENTES · 4 retratos circulares + arcos orbitais amarelos
+         ============================================================ */
+      .frentes-constellation { position: relative; padding: 6rem 0; }
+      .frentes-constellation .arcs { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+      .frentes-constellation .arcs path { stroke: var(--accent); stroke-width: 1.5; fill: none; opacity: .55; stroke-linecap: round; }
+      .frente-orb { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; max-width: 320px; text-align: center; margin-inline: auto; }
+      .frente-orb .orb-wrap { position: relative; width: 220px; height: 220px; }
+      .frente-orb .orb { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 24px 48px rgba(0,0,0,.06); transition: var(--t-smooth); position: relative; }
+      .frente-orb .orb iconify-icon { font-size: 4.2rem; position: relative; z-index: 1; }
+      .frente-orb:hover .orb { transform: scale(1.04); box-shadow: 0 32px 64px rgba(0,0,0,.1); }
+      .frente-orb.paper .orb { background: #fff; border: 1px solid var(--hairline); color: var(--primary); }
+      .frente-orb.paper .orb::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(60% 40% at 70% 30%, rgba(254,209,54,.1) 0%, transparent 65%); }
+      .frente-orb.yellow .orb { background: var(--accent); color: var(--primary); }
+      .frente-orb.dark .orb { background: linear-gradient(135deg, #1A1A1D 0%, #0F0F11 100%); color: var(--accent); }
+      .frente-orb.dark .orb::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(60% 40% at 70% 30%, rgba(254,209,54,.18) 0%, transparent 65%); }
+      .frente-orb .satellite { position: absolute; right: -6px; bottom: 18px; width: 52px; height: 52px; border-radius: 50%; background: #fff; border: 1px solid var(--hairline); display: flex; align-items: center; justify-content: center; color: var(--primary); text-decoration: none; box-shadow: 0 8px 20px rgba(0,0,0,.08); transition: var(--t-smooth); z-index: 2; }
+      .frente-orb .satellite:hover { background: var(--accent); transform: scale(1.1); box-shadow: 0 12px 28px rgba(254,209,54,.32); }
+      .frente-orb .satellite iconify-icon { font-size: 1.15rem; }
+      .frente-orb .orb-meta .frente-id { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .22em; color: var(--text-faint); text-transform: uppercase; display: block; margin-bottom: .5rem; }
+      .frente-orb .orb-meta .frente-nome { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
+      .frente-orb .orb-meta .frente-tese { font-family: var(--font-serif); font-style: italic; font-size: .95rem; line-height: 1.4; color: var(--text-muted); max-width: 24ch; margin-inline: auto; margin-top: .65rem; }
+      @media (max-width: 900px) {
+        .frentes-constellation .arcs { display: none; }
+        .frente-orb .orb-wrap { width: 180px; height: 180px; }
+      }
+
+      /* ============================================================
+         PINNED NARRATIVE — sticky steps · 4 movimentos
+         ============================================================ */
+      .pinned-stage { position: relative; }
+      .pinned-stage .stage-grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+      @media (min-width: 1024px) { .pinned-stage .stage-grid { grid-template-columns: 5fr 6fr; } }
+      .pinned-stage .stage-sticky {
+        position: sticky; top: 6rem; align-self: start;
+        padding: 4rem 2rem; min-height: 60vh; display: flex; flex-direction: column; justify-content: center;
+      }
+      @media (max-width: 1023px) { .pinned-stage .stage-sticky { position: static; padding: 3rem 1.5rem 1rem; min-height: 0; } }
+      .pinned-stage .stage-sticky .stage-eyebrow { display: block; margin-bottom: 1.5rem; }
+      .pinned-stage .stage-sticky .stage-headline { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; letter-spacing: -.04em; line-height: 1; }
+      .pinned-stage .stage-sticky .stage-headline em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); }
+      .pinned-stage .stage-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 4rem 2rem; }
+      .pinned-stage .step-card {
+        position: relative; padding: 2.5rem 2rem 2.25rem; border-radius: 24px;
+        background: #fff; border: 1px solid var(--hairline);
+        transition: var(--t-smooth);
+      }
+      .pinned-stage .step-card.is-active { background: var(--primary); border-color: var(--primary); color: var(--paper); transform: translateX(-8px); box-shadow: 0 30px 60px rgba(0,0,0,.16); }
+      .pinned-stage .step-card.is-active .step-num { color: var(--accent); }
+      .pinned-stage .step-card.is-active .step-name em { color: var(--accent); }
+      .pinned-stage .step-card.is-active .step-desc { color: rgba(255,255,255,.7); }
+      .pinned-stage .step-card.is-active .step-metric { background: rgba(254,209,54,.12); border-color: rgba(254,209,54,.32); color: var(--accent); }
+      .pinned-stage .step-card .step-head { display: flex; align-items: baseline; gap: 1rem; }
+      .pinned-stage .step-card .step-num { font-family: var(--font-mono); font-size: 1rem; letter-spacing: .12em; color: var(--text-faint); font-weight: 700; transition: color .4s; }
+      .pinned-stage .step-card .step-name { font-size: 1.85rem; font-weight: 600; letter-spacing: -.025em; line-height: 1.1; }
+      .pinned-stage .step-card .step-name em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--text-muted); transition: color .4s; }
+      .pinned-stage .step-card .step-titulo { font-size: 1.1rem; font-weight: 500; margin-top: 1.25rem; max-width: 48ch; line-height: 1.3; }
+      .pinned-stage .step-card .step-desc { font-size: .95rem; color: var(--text-muted); line-height: 1.55; margin-top: 1rem; max-width: 56ch; transition: color .4s; }
+      .pinned-stage .step-card .step-metric { display: inline-flex; align-items: baseline; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: var(--paper-lifted); border: 1px solid var(--hairline); margin-top: 1.5rem; transition: all .4s; }
+      .pinned-stage .step-card .step-metric .ml { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; }
+      .pinned-stage .step-card .step-metric .mv { font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+
+      /* ============================================================
+         NÚCLEO · CINTURÃO · ORBITAL · adaptado pro método
+         ============================================================ */
+      .protocol-section {
+        position: relative; padding: 6rem 1.5rem; overflow: hidden;
+        background: var(--primary); color: #fff;
+      }
+      .protocol-section::before {
+        content: ''; position: absolute; inset: 0; opacity: .5;
+        background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size: 80px 80px;
+      }
+      .protocol-grid { position: relative; max-width: 1400px; margin: 0 auto; display: grid; gap: 3rem; grid-template-columns: 1fr; align-items: center; }
+      @media (min-width: 1024px) { .protocol-grid { grid-template-columns: 1fr 1.1fr; } }
+      .protocol-orbit { position: relative; aspect-ratio: 1 / 1; max-width: 520px; margin: 0 auto; will-change: transform; }
+      .protocol-orbit svg { width: 100%; height: 100%; }
+      .protocol-orbit .ring { fill: none; stroke: rgba(254,209,54,.35); stroke-width: 1; stroke-dasharray: 3 6; }
+      .protocol-orbit .ring-mid { stroke: rgba(254,209,54,.55); stroke-dasharray: 0; stroke-width: 1.4; }
+      .protocol-orbit .node { fill: var(--accent); }
+      .protocol-orbit .node-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; fill: rgba(255,255,255,.6); }
+      .protocol-orbit .center-text { font-family: var(--font-sans); fill: #fff; font-weight: 600; font-size: 17px; }
+      .protocol-orbit .center-sub { font-family: var(--font-mono); fill: var(--accent); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; }
+
+      .protocol-row { display: flex; gap: 1rem; padding: 1.5rem 1.75rem; border-radius: 18px; transition: var(--t-smooth); }
+      .protocol-row.paper-card { background: var(--paper); color: var(--primary); box-shadow: 0 24px 48px rgba(0,0,0,.32); }
+      .protocol-row.paper-card .p-id { color: var(--accent-deep); opacity: 1; }
+      .protocol-row.paper-card .p-titulo em { color: var(--accent-deep); }
+      .protocol-row.yellow { background: var(--accent); color: var(--primary); }
+      .protocol-row.dark { background: rgba(255,255,255,.04); border: 1px solid rgba(254,209,54,.28); }
+      .protocol-row .p-id { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; opacity: .78; display: block; margin-bottom: .5rem; }
+      .protocol-row.yellow .p-id { color: rgba(15,15,17,.7); opacity: 1; }
+      .protocol-row.dark .p-id { color: var(--accent); opacity: 1; }
+      .protocol-row .p-titulo { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
+      .protocol-row .p-titulo em { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
+      .protocol-row .p-desc { font-size: .92rem; line-height: 1.5; margin-top: .5rem; opacity: .85; }
+      .protocol-row.yellow .p-desc { color: rgba(15,15,17,.75); opacity: 1; }
+
+      /* ============================================================
+         PRINCÍPIO SPOTLIGHT · big stadium · parallax discreto
+         ============================================================ */
+      .spotlight {
+        position: relative; padding: clamp(4rem, 8vw, 7rem) clamp(2rem, 5vw, 5rem);
+        border-radius: var(--radius-stadium); overflow: hidden;
+        background:
+          radial-gradient(50% 50% at 80% 22%, rgba(254,209,54,.22) 0%, rgba(254,209,54,0) 65%),
+          linear-gradient(160deg, #1A1A1D 0%, #0F0F11 60%, #050507 100%);
+        color: #fff;
+      }
+      .spotlight .ghost-mark {
+        position: absolute; top: -2rem; right: -1rem; z-index: 0;
+        font-family: var(--font-serif); font-style: italic; font-weight: 400;
+        font-size: clamp(8rem, 24vw, 22rem); line-height: .8; letter-spacing: -.04em;
+        color: rgba(254,209,54,.05); pointer-events: none; user-select: none;
+        white-space: nowrap; will-change: transform;
+      }
+      .spotlight .ghost-mark.left { left: -2rem; right: auto; top: auto; bottom: -3rem; color: rgba(255,255,255,.04); }
+      .spotlight .spotlight-content { position: relative; z-index: 1; max-width: 60rem; }
+
+      /* ============================================================
+         COMPANION SERVICES · pill carousel
+         ============================================================ */
+      .companion-row { display: flex; gap: .75rem; flex-wrap: wrap; }
+      .companion-row .pill {
+        padding: .85rem 1.4rem; border-radius: var(--radius-pill);
+        background: #fff; border: 1px solid var(--hairline);
+        font-size: .9rem; font-weight: 500; letter-spacing: -.01em;
+        display: inline-flex; align-items: center; gap: .5rem;
+        transition: var(--t-smooth);
+      }
+      .companion-row .pill iconify-icon { color: var(--accent-deep); font-size: 1.1rem; }
+      .companion-row .pill:hover { background: var(--primary); color: var(--paper); border-color: var(--primary); transform: translateY(-2px); }
+      .companion-row .pill:hover iconify-icon { color: var(--accent); }
+
+      /* ============================================================
+         FÓRMULAS · grid de cards de argumento (F01–F06)
+         ============================================================ */
+      .formula-card { padding: 1.85rem 1.6rem; border-radius: 20px; background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .formula-card:hover { border-color: rgba(254,209,54,.5); transform: translateY(-3px); box-shadow: 0 18px 36px rgba(0,0,0,.06); }
+      .formula-card .f-id { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); font-weight: 700; }
+      .formula-card .f-name { font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; margin-top: .55rem; }
+      .formula-card .f-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .65rem; }
+
+      /* ============================================================
+         ETAPAS · linha do processo com prazo
+         ============================================================ */
+      .etapa-card { padding: 1.85rem 1.6rem; border-radius: 18px; background: #fff; border: 1px solid var(--hairline); }
+      .etapa-card.is-accent { background: var(--primary); border-color: var(--primary); color: var(--paper); }
+      .etapa-card .e-id { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); font-weight: 700; }
+      .etapa-card.is-accent .e-id { color: var(--accent); }
+      .etapa-card .e-titulo { font-size: 1.2rem; font-weight: 600; letter-spacing: -.02em; margin-top: .55rem; }
+      .etapa-card .e-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .35rem; display: block; }
+      .etapa-card.is-accent .e-prazo { color: var(--accent); }
+      .etapa-card .e-desc { font-size: .9rem; line-height: 1.55; color: var(--text-muted); margin-top: .7rem; }
+      .etapa-card.is-accent .e-desc { color: rgba(255,255,255,.7); }
+
+      /* ============================================================
+         CHIP · clientes e exits
+         ============================================================ */
+      .chip-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1.1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; background: #fff; color: var(--primary); border: 1px solid var(--hairline); }
+      .chip-pill.on-dark { background: rgba(255,255,255,.06); color: #fff; border-color: rgba(255,255,255,.18); }
+
+      /* ============================================================
+         FAQ · acordeão (mesmo idioma visual da pep.astro)
+         ============================================================ */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item:last-child { border-bottom: 0; }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.1rem; font-weight: 500; letter-spacing: -.01em; color: var(--primary); transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-faint); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.5rem; color: var(--text-muted); max-width: 70ch; line-height: 1.6; }
+
+      @media (max-width: 768px) {
+        .hero-parallax { padding: 9rem 1.25rem 4rem; min-height: 80vh; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Método PiaR',
+        url: `${site.domain}/metodo`,
+        description:
+          'O método da PiaR Group: cinco pilares editoriais, seis fórmulas de pauta e quatro movimentos. A pauta nasce do dado interno e da mídia-alvo, não do release pronto.',
+        isPartOf: { '@id': `${site.domain}/#organization` },
+        about: { '@id': `${site.domain}/#organization` },
+        inLanguage: 'pt-BR',
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Cinco pilares editoriais do método PiaR',
+        itemListElement: pilares.map((p, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: p.nome,
+          description: p.desc,
+        })),
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: site.domain },
+          { '@type': 'ListItem', position: 2, name: 'Método', item: `${site.domain}/metodo` },
+        ],
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="metodo" />
+
+  <main id="main">
+
+    <!-- 1 · HERO -->
+    <section class="hero-parallax">
+      <div class="hero-grid" data-parallax-y="-12"></div>
+      <div class="hero-aurora" data-parallax-y="-6"></div>
+      <span class="hero-watermark" data-parallax-y="-30" aria-hidden="true">método</span>
+
+      <div class="hero-floater" data-parallax-y="22">
+        <span>5 pilares · 6 fórmulas · 4 movimentos</span>
+      </div>
+
+      <div class="hero-content">
+        <span class="eyebrow-dot reveal" data-parallax-y="-10">Método PiaR · do dado à pauta</span>
+        <h1 class="ds-h1 hero-h1 mt-8 reveal delay-100" data-parallax-y="-15">
+          <span class="line">O método que</span>
+          <span class="line">transforma <em>dado</em> e</span>
+          <span class="line">imprensa em <em>pauta</em>.</span>
+        </h1>
+        <p class="ds-body-lg text-stone-500 mt-10 max-w-2xl reveal delay-200" data-parallax-y="-8">
+          A PiaR organiza a comunicação em torno de cinco pilares editoriais, seis fórmulas de pauta e um método de quatro movimentos. Tudo começa no dado e na mídia-alvo, não no release pronto. Disparo de release em massa não é estratégia, é ruído, e a PiaR não trabalha assim.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-10 reveal delay-300" data-parallax-y="-5">
+          <a href="/contato" class="ink-pill yellow">Solicitar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/cases" class="outline-pill">Ver cases<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-body text-stone-500 mt-10 max-w-3xl reveal delay-400" data-parallax-y="-3">
+          O método existe para responder a uma pergunta prática: por que um veículo publicaria isto, e por que agora. A partir daí, cada decisão editorial parte de um dado verificável e de um relacionamento real com quem escreve a pauta. A PiaR Group atua com comunicação para startups, scale-ups e empresas de tecnologia desde {site.foundingYear}, e a estrutura abaixo é o que sustenta esse trabalho no dia a dia.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2 · POR ONDE O MÉTODO COMEÇA -->
+    <section class="bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-5 reveal">
+            <span class="eyebrow-dot">Por onde o método começa</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-6" style="max-width:16ch">
+              Começa no <span class="italic-serif">dado</span> e na mídia-alvo.
+            </h2>
+          </div>
+          <div class="lg:col-span-7 reveal delay-100 space-y-6">
+            <p class="ds-body-lg text-stone-600">
+              Antes de qualquer pauta, mapeamos dois territórios. O primeiro é o dado interno do cliente: o que a empresa sabe, mede e pode provar que ninguém mais consegue dizer. O segundo é a mídia-alvo: quais veículos, editorias e jornalistas cobrem o tema, com que ângulo e em que cadência.
+            </p>
+            <p class="ds-body text-stone-500">
+              A pauta nasce do cruzamento desses dois territórios. Quando o dado interno responde a uma pergunta que a mídia-alvo já está fazendo, existe pauta. Quando não responde, voltamos ao dado antes de procurar o veículo. Essa ordem é o que separa relacionamento com a imprensa de disparo em massa.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · OS CINCO PILARES EDITORIAIS -->
+    <section id="pilares" class="bg-[var(--paper)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 reveal">
+          <div>
+            <span class="eyebrow-dot">Os cinco pilares editoriais</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:18ch">
+              Sobre o que a empresa <span class="italic-serif">fala</span>.
+            </h2>
+          </div>
+          <p class="ds-body text-stone-500 max-w-md">
+            Os pilares organizam sobre o que a empresa fala. Cada cliente recebe uma combinação própria, definida no diagnóstico.
+          </p>
+        </div>
+
+        <div class="frentes-constellation reveal delay-100">
+          <svg class="arcs" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 220 200 Q 420 80 600 200" />
+            <path d="M 600 200 Q 780 80 980 200" />
+            <path d="M 220 200 Q 360 420 600 480" />
+            <path d="M 980 200 Q 840 420 600 480" />
+            <path d="M 220 520 Q 420 600 600 480" />
+            <path d="M 600 480 Q 780 600 980 520" />
+          </svg>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-y-12 md:gap-y-10 items-center relative">
+            {pilares.map((p, i) => {
+              const positions = [
+                'md:col-span-4 md:col-start-1',
+                'md:col-span-4 md:col-start-5',
+                'md:col-span-4 md:col-start-9',
+                'md:col-span-4 md:col-start-3',
+                'md:col-span-4 md:col-start-7',
+              ];
+              return (
+                <div class={positions[i]} data-parallax-y={i % 2 === 0 ? '-6' : '6'}>
+                  <div class={`frente-orb ${p.tom}`}>
+                    <div class="orb-wrap">
+                      <div class="orb"><iconify-icon icon={p.icon}></iconify-icon></div>
+                    </div>
+                    <div class="orb-meta">
+                      <span class="frente-id">Pilar {p.id}</span>
+                      <h3 class="frente-nome">{p.nome}</h3>
+                      <p class="frente-tese">{p.tese}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4 reveal delay-200">
+          {pilares.map((p) => (
+            <div class="formula-card">
+              <span class="f-id">{p.nome}</span>
+              <p class="f-desc">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · AS SEIS FÓRMULAS EDITORIAIS -->
+    <section class="bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 reveal">
+          <div>
+            <span class="eyebrow-dot">As seis fórmulas editoriais · F01 a F06</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:18ch">
+              Como a pauta é <span class="italic-serif">construída</span>.
+            </h2>
+          </div>
+          <p class="ds-body text-stone-500 max-w-md">
+            Se os pilares definem sobre o que falar, as fórmulas definem como a pauta é construída. Cada fórmula é um formato de argumento, escolhido conforme o dado disponível e o ângulo do veículo.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 reveal delay-100">
+          {formulas.map((f) => (
+            <div class="formula-card">
+              <span class="f-id">{f.id} · {f.nome}</span>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="ds-body mt-10 max-w-3xl text-stone-500 reveal delay-200">
+          A escolha da fórmula não é estética. Ela depende do que o dado permite afirmar e do que a mídia-alvo aceita receber naquele momento.
+        </p>
+      </div>
+    </section>
+
+    <!-- 5 · O MÉTODO DE QUATRO MOVIMENTOS · PINNED SCROLL -->
+    <section class="bg-[var(--paper)] py-20 md:py-28 pinned-stage">
+      <div class="max-w-[1400px] mx-auto px-4 md:px-8">
+        <div class="mb-14 reveal">
+          <span class="eyebrow-dot">O método de quatro movimentos</span>
+        </div>
+
+        <div class="stage-grid">
+          <div class="stage-sticky">
+            <span class="stage-eyebrow eyebrow-dot">O ritmo da pauta</span>
+            <h2 class="stage-headline">
+              Da hipótese<br/>
+              ao <em>loop</em>,<br/>
+              um único ritmo.
+            </h2>
+            <p class="ds-body text-stone-500 mt-8 max-w-md">
+              Pilar e fórmula respondem ao quê e ao como. Os quatro movimentos respondem ao ritmo: como a pauta sai do papel, chega ao veículo e volta como aprendizado.
+            </p>
+            <div class="mt-10 flex items-center gap-2">
+              <span id="stage-progress-label" class="ds-mono text-stone-400">01 / 04</span>
+              <div class="flex-1 h-px bg-stone-200 ml-3">
+                <div id="stage-progress-bar" style="height:100%;width:25%;background:var(--accent);transition:width .4s var(--ease-out-expo)"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-list">
+            {movimentos.map((m, i) => (
+              <article class="step-card" data-step-index={i}>
+                <div class="step-head">
+                  <span class="step-num">{m.num}</span>
+                  <h3 class="step-name"><span>{m.nome}</span></h3>
+                </div>
+                <p class="step-titulo">{m.titulo}</p>
+                <p class="step-desc">{m.desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <p class="ds-body mt-12 max-w-3xl text-stone-500 px-4 md:px-8 reveal">
+          O loop é o que mantém o método vivo. Cada ciclo informa o seguinte, e a hipótese do mês que vem é melhor porque a do mês passado foi medida.
+        </p>
+      </div>
+    </section>
+
+    <!-- 6 · COMO PILARES, FÓRMULAS E MOVIMENTOS SE CONECTAM -->
+    <section class="protocol-section">
+      <div class="protocol-grid">
+        <div class="protocol-orbit reveal" data-parallax-y="-10">
+          <svg viewBox="0 0 520 520" aria-hidden="true">
+            <circle class="ring" cx="260" cy="260" r="220"/>
+            <circle class="ring ring-mid" cx="260" cy="260" r="150"/>
+            <circle cx="260" cy="260" r="80" fill="#FAFAFA" stroke="#FED136" stroke-width="2"/>
+            <text x="260" y="252" text-anchor="middle" class="center-text" style="fill:#0F0F11">DADO</text>
+            <text x="260" y="274" text-anchor="middle" class="center-sub" style="fill:#E0B420">+ mídia-alvo</text>
+
+            <circle cx="260" cy="40" r="6" class="node"/>
+            <text x="260" y="22" text-anchor="middle" class="node-label">Pilar</text>
+
+            <circle cx="465" cy="155" r="6" class="node"/>
+            <text x="488" y="160" class="node-label">Fórmula</text>
+
+            <circle cx="465" cy="365" r="6" class="node"/>
+            <text x="488" y="370" class="node-label">Movimento</text>
+
+            <circle cx="260" cy="480" r="6" class="node"/>
+            <text x="260" y="504" text-anchor="middle" class="node-label">Distribuição</text>
+
+            <circle cx="55" cy="365" r="6" class="node"/>
+            <text x="32" y="370" text-anchor="end" class="node-label">Loop</text>
+
+            <circle cx="55" cy="155" r="6" class="node"/>
+            <text x="32" y="160" text-anchor="end" class="node-label">Cadência</text>
+          </svg>
+        </div>
+
+        <div class="reveal delay-100">
+          <span class="eyebrow-dot on-dark">Como os três planos se conectam</span>
+          <h2 class="ds-h2 font-semibold tracking-tight mt-6" style="color:#fff;max-width:18ch">
+            Três planos que trabalham <span class="italic-serif" style="color:var(--accent)">juntos</span>.
+          </h2>
+
+          <div class="mt-10 space-y-3">
+            <div class="protocol-row paper-card">
+              <div class="flex-1">
+                <span class="p-id">O pilar</span>
+                <p class="p-titulo">Escolhe o <em>território</em>.</p>
+                <p class="p-desc">Sobre qual assunto a empresa fala. Uma pauta de Reputação ou de Líderes começa por aqui.</p>
+              </div>
+            </div>
+            <div class="protocol-row yellow">
+              <div class="flex-1">
+                <span class="p-id">A fórmula</span>
+                <p class="p-titulo">Escolhe o <em>argumento</em>.</p>
+                <p class="p-desc">O formato de argumento. Uma Reputação pode virar F03 Diagnóstico; uma pauta de Líderes pode virar F06 Manifesto.</p>
+              </div>
+            </div>
+            <div class="protocol-row dark">
+              <div class="flex-1">
+                <span class="p-id">O movimento</span>
+                <p class="p-titulo" style="color:#fff">Escolhe o <em style="color:var(--accent)">ritmo</em>.</p>
+                <p class="p-desc" style="color:rgba(255,255,255,.7)">O ritmo de execução. A pauta entra por Cadência quinzenal ou por Distribuição direta a uma editoria específica.</p>
+              </div>
+            </div>
+          </div>
+
+          <p class="ds-body mt-8" style="color:rgba(255,255,255,.6);max-width:54ch">
+            Nenhuma dessas combinações começa pelo release. Começa pelo dado interno e pela mídia-alvo, na ordem descrita no topo desta página.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · DO MÉTODO AO PROCESSO · QUATRO ETAPAS COM PRAZO -->
+    <section class="bg-white border-b border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="mb-14 reveal">
+          <span class="eyebrow-dot">Do método ao processo</span>
+          <h2 class="ds-h2 font-semibold tracking-tight mt-6" style="max-width:20ch">
+            Quatro etapas com <span class="italic-serif">prazo definido</span>.
+          </h2>
+          <p class="ds-body-lg mt-5 max-w-2xl text-stone-500">
+            O método se concretiza num processo com prazos definidos. É assim que um cliente novo entra.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 reveal delay-100">
+          {etapas.map((e) => (
+            <div class:list={['etapa-card', e.accent && 'is-accent']}>
+              <span class="e-id">Etapa {e.id}</span>
+              <p class="e-titulo">{e.nome}</p>
+              <span class="e-prazo">{e.prazo}</span>
+              <p class="e-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="ds-body mt-10 max-w-3xl text-stone-500 reveal delay-200">
+          Todos os ativos passam por revisão jurídica antes de irem a público. São 100% dos ativos, sem exceção, o que é especialmente relevante para clientes de setores regulados como fintech e healthtech.
+        </p>
+      </div>
+    </section>
+
+    <!-- 8 · ONDE O MÉTODO ENCONTRA O PEP -->
+    <section class="bg-[var(--paper)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-5 reveal">
+            <span class="eyebrow-dot">Projetos Especiais de PR · PEP</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-6" style="max-width:16ch">
+              Quando o trabalho contínuo não <span class="italic-serif">basta</span>.
+            </h2>
+            <p class="ds-body mt-6 max-w-md text-stone-500">
+              Para iniciativas que extrapolam o trabalho contínuo, a PiaR aplica os Projetos Especiais de PR, uma metodologia estruturada a partir de 2023. O PEP organiza um projeto em seis vetores, e o escopo é montado escolhendo quantos e quais vetores entram.
+            </p>
+            <div class="mt-8">
+              <a href="/pep" class="ink-pill">Conhecer o PEP<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+            </div>
+          </div>
+          <div class="lg:col-span-7 reveal delay-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {vetores.map((v) => (
+                <div class="formula-card">
+                  <span class="f-id">{v.nome}</span>
+                  <p class="f-desc">{v.desc}</p>
+                </div>
+              ))}
+            </div>
+            <p class="ds-body-sm mt-6 text-stone-400">
+              O investimento é apresentado sob consulta, conforme o escopo de vetores definido com o cliente.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · QUEM CONDUZ O MÉTODO -->
+    <section class="bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-6 reveal">
+            <span class="eyebrow-dot">Quem conduz o método</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-6" style="max-width:16ch">
+              Treze anos no ecossistema de <span class="italic-serif">tecnologia</span>.
+            </h2>
+            <p class="ds-body-lg mt-6 text-stone-600">
+              O método é executado por um time com experiência direta no ecossistema de tecnologia. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação conta com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).
+            </p>
+            <p class="ds-body mt-4 text-stone-500">
+              O repertório vem de {site.yearsOperating} anos de trabalho desde {site.foundingYear}, incluindo a comunicação de {site.exitsSupported} startups que chegaram ao exit. A gestão de crise é uma capacidade do time, aplicada a momentos sensíveis com resposta sob medida.
+            </p>
+          </div>
+          <div class="lg:col-span-6 reveal delay-100">
+            <span class="ds-mono text-stone-400">Startups acompanhadas até o exit</span>
+            <div class="flex flex-wrap gap-2 mt-5">
+              {exitsNomeados.map((c) => <span class="chip-pill">{c}</span>)}
+            </div>
+            <span class="ds-mono text-stone-400 mt-10 block">Entre os clientes atendidos</span>
+            <div class="flex flex-wrap gap-2 mt-5">
+              {clientes.map((c) => <span class="chip-pill">{c}</span>)}
+            </div>
+            <p class="ds-body-sm mt-6 text-stone-400">
+              Setores regulados como fintech e healthtech têm 100% dos ativos revisados juridicamente antes de publicar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · SPOTLIGHT · PRINCÍPIO -->
+    <section class="relative py-20 md:py-28 px-4 md:px-8 bg-[var(--paper)]">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="spotlight reveal">
+          <span class="ghost-mark" data-parallax-y="-15" aria-hidden="true">dado</span>
+          <span class="ghost-mark left" data-parallax-y="15" aria-hidden="true">pauta</span>
+
+          <div class="spotlight-content">
+            <span class="eyebrow-dot on-dark">Por que o método existe</span>
+            <h2 class="ds-h1 font-semibold tracking-tight mt-8" style="color:#fff;max-width:22ch;font-size:clamp(2.25rem,6vw,5rem)">
+              Por que um veículo<br/>
+              <span class="italic-serif" style="color:var(--accent)">publicaria</span> isto,<br/>
+              e por que agora.
+            </h2>
+            <p class="ds-body-lg mt-8 max-w-2xl" style="color:rgba(255,255,255,.7)">
+              Cada decisão editorial parte de um dado verificável e de um relacionamento real com quem escreve a pauta. Disparo de release em massa não é estratégia, é ruído. A pauta nasce do cruzamento entre o dado interno e a mídia-alvo, nunca do release pronto.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · PERGUNTAS FREQUENTES -->
+    <section class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1000px] mx-auto">
+        <div class="mb-10 reveal">
+          <span class="eyebrow-dot">Perguntas frequentes</span>
+          <h2 class="ds-h2 font-semibold tracking-tight mt-6" style="max-width:18ch">
+            O que dá pra <span class="italic-serif">responder por aqui</span>.
+          </h2>
+        </div>
+        <div class="reveal delay-100">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · CTA FINAL -->
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)]">
+      <div class="max-w-[1100px] mx-auto px-6 md:px-8 py-24 md:py-32 text-center">
+        <span class="eyebrow-dot reveal" style="display:inline-flex;justify-content:center">Como começo</span>
+        <h2 class="ds-h1 font-semibold tracking-tight mt-6 mb-6 reveal delay-100" style="max-width:22ch;margin-inline:auto">
+          Tudo começa pelo <span class="italic-serif">diagnóstico</span>.
+        </h2>
+        <p class="ds-body-lg text-stone-500 max-w-2xl mx-auto mb-10 reveal delay-200">
+          Pelo formulário de diagnóstico, a PiaR responde em até 1 dia útil. Para contato direto, escreva para {site.email}.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap reveal delay-300">
+          <a href="/contato" class="ink-pill yellow">Solicitar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/cases" class="outline-pill">Ver cases<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono mt-12 reveal delay-400 text-stone-400">
+          /// {site.email} · {site.brandDomain}
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Lenis smooth scroll · drive ScrollTrigger from lenis frames
+      if (!prefersReduced) {
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smooth: true,
+          lerp: 0.1,
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      // Reveal observer · igual às outras páginas
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+      // Scroll progress bar
+      const progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+
+      // ============================================================
+      // PARALLAX · qualquer elemento com data-parallax-y="N" se move
+      // N% do tamanho do viewport conforme entra/sai de cena.
+      // Negativo = sobe (mais lento que o scroll natural · profundidade)
+      // Positivo = desce (mais rápido · vem em direção à câmera)
+      // ============================================================
+      if (!prefersReduced) {
+        gsap.utils.toArray('[data-parallax-y]').forEach((el) => {
+          const yPercent = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          gsap.fromTo(el,
+            { yPercent: 0 },
+            {
+              yPercent: yPercent,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              },
+            }
+          );
+        });
+
+        // ============================================================
+        // PINNED NARRATIVE · destaca o step ativo conforme ele encosta
+        // no centro da viewport. Move .step-card.is-active e atualiza
+        // o label "NN / 04" + a barra de progresso.
+        // ============================================================
+        const stepCards = gsap.utils.toArray('.step-card');
+        const progressLabel = document.getElementById('stage-progress-label');
+        const progressBar2 = document.getElementById('stage-progress-bar');
+        const totalSteps = stepCards.length;
+        stepCards.forEach((card, idx) => {
+          ScrollTrigger.create({
+            trigger: card,
+            start: 'top 60%',
+            end: 'bottom 40%',
+            onEnter: () => activate(card, idx),
+            onEnterBack: () => activate(card, idx),
+          });
+        });
+        function activate(card, idx) {
+          stepCards.forEach((c) => c.classList.remove('is-active'));
+          card.classList.add('is-active');
+          if (progressLabel) progressLabel.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(totalSteps).padStart(2, '0');
+          if (progressBar2) progressBar2.style.width = ((idx + 1) / totalSteps * 100) + '%';
+        }
+        // Ativa o primeiro por padrão
+        if (stepCards[0]) stepCards[0].classList.add('is-active');
+      }
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,156 @@
+/* =====================================================================
+   PiaR Design System v2 — Design Tokens
+   ---------------------------------------------------------------------
+   Fonte da verdade: design-system/source/piar-ds-v2.html
+   Brand book renderizado: /design-system/
+
+   NUNCA hardcode cores, raios, espaços ou easings em componentes.
+   Sempre via var(--token) ou classes utilitárias do Tailwind sincronizadas
+   em tailwind.config.mjs (que lê estas variáveis).
+   ===================================================================== */
+
+:root {
+  /* ---------- Cores núcleo ---------- */
+  --ink:      #0F0F11;   /* preto PiaR — texto primário, fundos dramáticos */
+  --paper:    #F5F5F7;   /* off-white — fundo padrão da página */
+  --white:    #FFFFFF;   /* superfícies elevadas (cards sobre paper) */
+  --yellow:   #FED136;   /* amarelo PiaR — único acento de marca */
+
+  /* ---------- Escala de amarelo (só UI, nunca decoração) ---------- */
+  --yellow-50:  #FFF9E0;
+  --yellow-100: #FFF3B0;
+  --yellow-200: #FFE782;
+  --yellow-300: #FFDC50;
+  --yellow-400: #FED136;   /* base — alias de --yellow */
+  --yellow-500: #E9BC1F;
+  --yellow-600: #C69E12;
+  --yellow-700: #8F710A;   /* único amarelo legível como texto sobre claro */
+  --yellow-800: #5A4705;
+
+  /* Aliases legados / semânticos */
+  --yellow-soft: var(--yellow-100);
+  --yellow-deep: var(--yellow-500);
+  --yellow-ink:  var(--yellow-700);
+
+  /* ---------- Texto (claro) ---------- */
+  --text-primary: #0F0F11;
+  --text-muted:   rgba(15, 15, 17, .62);
+  --text-faint:   rgba(15, 15, 17, .48);
+  --text-subtle:  rgba(15, 15, 17, .32);
+
+  /* ---------- Texto (escuro / dark sections) ---------- */
+  --text-primary-d: #FFFFFF;
+  --text-muted-d:   rgba(255, 255, 255, .70);
+  --text-faint-d:   rgba(255, 255, 255, .45);
+  --text-subtle-d:  rgba(255, 255, 255, .25);
+
+  /* ---------- Hairlines (bordas sutis) ---------- */
+  --hairline:          rgba(0, 0, 0, .08);
+  --hairline-strong:   rgba(0, 0, 0, .14);
+  --hairline-d:        rgba(255, 255, 255, .10);
+  --hairline-d-strong: rgba(255, 255, 255, .18);
+
+  /* ---------- Neutros (escala de cinza p/ UI) ---------- */
+  --gray-50:  #FAFAFA;
+  --gray-100: #F2F2F2;
+  --gray-200: #E6E6E6;
+  --gray-300: #D1D1D1;
+  --gray-400: #A6A6A6;
+  --gray-500: #737373;
+  --gray-600: #4D4D4D;
+  --gray-700: #333333;
+  --gray-800: #1A1A1A;
+  --gray-900: #0D0D0D;
+
+  /* ---------- Raios ---------- */
+  --r-xs:   6px;
+  --r-sm:  10px;
+  --r-md:  14px;
+  --r-lg:  20px;
+  --r-xl:  28px;
+  --r-pill: 999px;
+
+  /* ---------- Espaçamento (escala base 4px) ---------- */
+  --s-1:   4px;
+  --s-2:   8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  24px;
+  --s-6:  32px;
+  --s-7:  48px;
+  --s-8:  64px;
+  --s-9:  96px;
+  --s-10: 128px;
+
+  /* ---------- Sombras ---------- */
+  --shadow-xs: 0 1px 2px  rgba(0, 0, 0, .04);
+  --shadow-sm: 0 2px 8px  rgba(0, 0, 0, .05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, .07);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, .10);
+  --shadow-xl: 0 32px 80px rgba(0, 0, 0, .14);
+
+  /* ---------- Tipografia (oficial PiaR: Montserrat display + Open Sans corpo) ---------- */
+  --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:  'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ---------- Motion ---------- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasis: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring:   cubic-bezier(0.16, 1, 0.3, 1);
+
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+
+  /* ---------- Colunas / larguras canônicas ---------- */
+  --col-narrow: 720px;
+  --col-base:  1080px;
+  --col-wide:  1280px;
+  --col-max:   1440px;
+
+  /* ---------- Z-index (escala discreta) ---------- */
+  --z-base:     0;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+
+  /* ---------- Aliases semânticos usados pelas páginas ----------
+     As páginas .astro redefinem :root em <style is:global> com estes nomes.
+     Mantemos aqui os defaults para que [slug].astro (markdown) e qualquer
+     componente sem override próprio também tenham os tokens disponíveis. */
+  --primary:        var(--ink);
+  --accent:         var(--yellow);
+  --accent-deep:    #E0B420;
+  --accent-soft:    var(--yellow-100);
+  --ink-soft:       #1A1A1D;
+  --paper-lifted:   #FCFBFA;
+  --secondary:      var(--paper);
+  --bg-white:       var(--white);
+
+  --radius-pill:    var(--r-pill);
+  --radius-btn:     var(--r-lg);
+  --radius-input:   var(--r-md);
+  --radius-sm:      var(--r-sm);
+  --radius-stadium: 40px;
+
+  --hairline-on-dark: var(--hairline-d);
+
+  --ease-out-expo: var(--ease-spring);
+  --t-smooth:      all .6s var(--ease-out-expo);
+}
+
+/* Respeita preferência do usuário por menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

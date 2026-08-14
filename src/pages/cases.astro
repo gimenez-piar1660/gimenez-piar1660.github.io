@@ -1,0 +1,724 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+// Conteúdo portado de project/artifacts/contents/cases/draft.md (voice-backed).
+// Regras aplicadas (porte fiel ao draft aprovado):
+// - Aarin excluído de qualquer citação pública (autorização não confirmada).
+// - Cases não confirmados (Bunsen, Primis, Liquid) não aparecem.
+// - Exits travado em 8 (site.exitsSupported), com os 8 nomes verificáveis.
+// - Prêmio canônico vindo de site.founder.award (ABStartups, 2018).
+// - Sem telefone/WhatsApp: contato só por e-mail (site.email); telefone vive em /contato.
+// - Seção "Notas de prova e pendências" (uso interno) descartada.
+// - Claims não verificados ("retorno em até 1 dia útil") omitidos.
+
+// Capacidades descritas (sem case nominal): gestão de crise e reputação institucional.
+const capacidades = [
+  {
+    setor: 'Gestão de crise',
+    titulo: 'Controle de narrativa com protocolo definido antes da crise.',
+    intro:
+      'Crise é o momento em que comunicação se mede em horas, e em que improviso custa caro.',
+    desc:
+      'Na PiaR, gestão de crise não é um serviço improvisado quando o problema estoura. O protocolo de resposta, quem fala, o que diz e quem aprova, é construído antes, na rotina de monitoramento, para que a marca responda no prazo e mantenha controle da narrativa quando o tempo conta.',
+    angulo: 'Controle de narrativa com protocolo definido antes da crise.',
+    frente: 'Resposta de crise e mapa de stakeholders.',
+    icon: 'solar:shield-warning-line-duotone',
+  },
+  {
+    setor: 'Reputação institucional',
+    titulo: 'Consistência de percepção na busca, na mídia e em respostas de IA.',
+    intro:
+      'Aqui o trabalho não gira em torno de um lançamento ou de uma crise, e sim de como a marca é descrita de forma consistente nos lugares onde decisões sobre ela são tomadas: a busca, a cobertura da imprensa e, cada vez mais, as respostas de inteligência artificial.',
+    desc:
+      'O trabalho coordena a prova pública que sustenta a versão correta da história da marca ao longo do tempo, em vez de picos isolados de exposição.',
+    angulo: 'Consistência de percepção na busca, na mídia e em respostas de IA.',
+    frente: 'Gestão de reputação e estratégia editorial.',
+    icon: 'solar:graph-new-up-line-duotone',
+  },
+];
+
+// Outros trabalhos com cliente real, descrições qualitativas, sem métrica.
+const trabalhos = [
+  {
+    cliente: 'Solides',
+    setor: 'Tecnologia · gestão de pessoas',
+    desc: 'Comunicação para uma empresa de tecnologia de gestão de pessoas, com produção editorial e relação com a imprensa.',
+    icon: 'solar:users-group-rounded-line-duotone',
+  },
+  {
+    cliente: 'Endemol Shine Brasil / Big Brother Brasil',
+    setor: 'Entretenimento',
+    desc: 'Trabalho de comunicação ligado a uma das maiores operações de entretenimento do país, em um contexto de alta exposição e tempo curto de resposta.',
+    icon: 'solar:videocamera-line-duotone',
+  },
+  {
+    cliente: 'Mastercard Agro',
+    setor: 'Meios de pagamento · agro',
+    desc: 'Comunicação na interseção entre meios de pagamento e agronegócio, conectando uma marca global a uma pauta setorial específica.',
+    icon: 'solar:card-line-duotone',
+  },
+  {
+    cliente: 'AgroSmart',
+    setor: 'AgTech',
+    desc: 'Comunicação para uma empresa de tecnologia voltada ao agro, posicionando inovação dentro de um setor tradicional.',
+    icon: 'solar:leaf-line-duotone',
+  },
+  {
+    cliente: 'Vila 11',
+    setor: 'Institucional',
+    desc: 'Comunicação institucional e de marca.',
+    icon: 'solar:buildings-3-line-duotone',
+  },
+  {
+    cliente: 'Doctoralia',
+    setor: 'Healthtech',
+    desc: 'Orquestração editorial para uma healthtech de marca conhecida, com produção de conteúdo executivo e relação com veículos.',
+    icon: 'solar:stethoscope-line-duotone',
+  },
+];
+
+// Roster de clientes liberado (sem Aarin), em três linhas.
+const roster = [
+  ['Sambatech', 'Liga Ventures', 'Printi', 'Qranio', 'Unifisa', 'Livup'],
+  ['Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'Investidores.vc'],
+  ['FluencyPass', 'Layer Up', 'Wylinka', 'Inovativa', 'Unlimitail'],
+];
+
+// 8 startups acompanhadas até o exit (site.exitsSupported), nomes verificáveis.
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+
+// Método de quatro etapas, do diagnóstico à escala.
+const etapas = [
+  {
+    id: '01',
+    titulo: 'Diagnóstico e mapeamento',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Levantamos o que a busca mostra, o que a imprensa escreveu, o que o mercado diz de forma espontânea e o que a IA responde sobre a marca e a categoria. O entregável é o gap entre o posicionamento desejado e a percepção que existe.',
+  },
+  {
+    id: '02',
+    titulo: 'Messaging framework',
+    prazo: 'Semanas 3 e 4',
+    desc: 'Definimos as afirmações centrais da marca, os públicos e os limites. São 14 dias do briefing ao primeiro framework.',
+  },
+  {
+    id: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Semanas 5 a 12',
+    desc: 'Produzimos pauta, relacionamento com a imprensa e prova pública. 100% dos ativos passam por revisão jurídica antes de chegar ao jornalista, o que pesa em clientes de setores regulados como fintech e saúde.',
+    accent: true,
+  },
+  {
+    id: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Quinzenal',
+    desc: 'Acompanhamos a evolução, ajustamos o rumo e mantemos o protocolo de resposta a crises pronto, definido antes e não improvisado sob pressão.',
+  },
+];
+
+// FAQ portada do draft. Aarin removido das respostas; exits = 8; sem "[a confirmar]".
+const faq = [
+  {
+    q: 'Por que alguns cases não mostram números?',
+    a: 'Porque número de comunicação só vira público quando tem clipping ou fonte que sustente. Onde o resultado ainda não foi consolidado em relatório auditável, ele não aparece em vez de virar uma estatística sem lastro. Preferimos um case honesto a um número bonito sem prova.',
+  },
+  {
+    q: 'Os cases representam setores específicos?',
+    a: 'Sim. Os destaques cobrem fintech regulada, gestão de crise e reputação institucional. Os trabalhos adicionais ampliam para entretenimento, agro, meios de pagamento, gestão de pessoas e healthtech. O ponto comum não é o setor, é o método.',
+  },
+  {
+    q: 'O que significa acompanhar uma startup até o exit?',
+    a: 'Significa conduzir a comunicação de uma empresa por anos, mantendo narrativa consistente conforme ela cresce, em vez de cobrir um único lançamento. A PiaR acompanhou 8 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef.',
+  },
+  {
+    q: 'Como vocês tratam clientes de setores regulados?',
+    a: 'Com revisão jurídica de todos os ativos antes de qualquer publicação. É a regra para fintech, saúde e qualquer setor onde o que se afirma em público carrega responsabilidade regulatória.',
+  },
+  {
+    q: 'Gestão de crise é um serviço separado?',
+    a: 'Não. Faz parte da reputação. O protocolo de resposta, quem fala, o que diz e quem aprova, é construído antes, na etapa de monitoramento, para que a marca responda no prazo quando uma crise começa. É a frente de gestão de crise descrita acima.',
+  },
+  {
+    q: 'Como começo um projeto com a PiaR?',
+    a: 'Pelo diagnóstico. Você conta o contexto da empresa e a PiaR mostra onde está a oportunidade de comunicação.',
+  },
+];
+---
+<BaseLayout
+  title="Cases · comunicação para inovação por resultado"
+  description="Cases da PiaR Group em fintech, healthtech, agro, crise e institucional: 470+ marcas em 13 anos. Cada projeto traz contexto, ângulo e trabalho, com número de lastro."
+>
+  <Fragment slot="head">
+    <style is:global>
+      /* Tokens herdados de tokens.css (fonte única da verdade): paper, acento,
+         texto, raios, fontes e easings vêm todos do Design System. Sem override local. */
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      ::selection { background: var(--primary); color: var(--accent); }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 10px; }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-body-lg { font-size: 1.25rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-body { font-size: 1.0625rem; font-weight: 400; line-height: 1.55; letter-spacing: -.01em; }
+      .ds-body-sm { font-size: .875rem; font-weight: 400; line-height: 1.55; }
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      .reveal { opacity: 0; transform: translateY(2rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .1s; } .delay-200 { transition-delay: .2s; }
+      .delay-300 { transition-delay: .3s; } .delay-400 { transition-delay: .4s; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      /* eyebrow + bullet · mastercard signal */
+      .eyebrow-dot { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow-dot.on-dark { color: rgba(255,255,255,.72); }
+
+      /* botões · só 3 raios, igual ao DS Mastercard (20 / 999 / 50%) */
+      .ink-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.6rem; border-radius: var(--radius-btn); background: var(--primary); color: var(--paper); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; letter-spacing: -.01em; transition: var(--t-smooth); text-decoration: none; }
+      .ink-pill:hover { background: #000; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(0,0,0,.18); }
+      .ink-pill iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .ink-pill:hover iconify-icon { transform: translateX(4px); }
+      .ink-pill.yellow { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .ink-pill.yellow:hover { background: #FFD84A; box-shadow: 0 14px 28px rgba(254,209,54,.32); }
+      .outline-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.55rem; border-radius: var(--radius-btn); background: #fff; color: var(--primary); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
+      .outline-pill:hover { background: var(--primary); color: var(--paper); }
+
+      /* stadium hero · ar mastercard */
+      .stadium-hero {
+        position: relative; min-height: 660px; border-radius: var(--radius-stadium); overflow: hidden;
+        background:
+          radial-gradient(120% 80% at 78% 22%, rgba(254,209,54,.28) 0%, rgba(254,209,54,0) 55%),
+          radial-gradient(80% 100% at 18% 92%, rgba(255,122,26,.12) 0%, transparent 60%),
+          linear-gradient(160deg, #1A1A1D 0%, #0F0F11 60%, #050507 100%);
+        display: flex; flex-direction: column; justify-content: flex-end;
+        padding: clamp(2rem, 5vw, 4.5rem); color: #fff;
+      }
+      .stadium-hero::before {
+        content: ''; position: absolute; inset: 0; pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+        background-size: 80px 80px; opacity: .55;
+      }
+      .stadium-hero .stadium-meta { position: relative; z-index: 2; max-width: 60rem; }
+
+      /* chip pill */
+      .chip-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1.1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
+      .chip-pill.yellow { background: var(--accent); color: var(--primary); }
+      .chip-pill.outline-light { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.28); }
+      .chip-pill.outline-dark { background: transparent; color: var(--primary); border: 1px solid var(--hairline-strong); }
+      .chip-pill.solid-dark { background: var(--primary); color: var(--paper); }
+
+      /* stats band · 4 cells · 60-30-10 color rule respeitado */
+      .stats-band { display: grid; grid-template-columns: 1fr; }
+      @media (min-width: 768px) { .stats-band { grid-template-columns: repeat(4, 1fr); } }
+      .stat-cell { padding: 2.5rem 2rem; border-right: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+      @media (min-width: 768px) { .stat-cell:nth-child(4) { border-right: 0; } .stat-cell { border-bottom: 0; } }
+      .stat-cell .stat-num { font-size: clamp(2.5rem, 4.5vw, 4rem); font-weight: 700; letter-spacing: -.045em; line-height: 1; }
+      .stat-cell .stat-num em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); font-size: 0.65em; }
+      .stat-cell .stat-num .accent { color: var(--accent); }
+      .stat-cell .stat-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent-deep); font-weight: 600; margin-top: 1.25rem; }
+      .stat-cell .stat-desc { font-size: .92rem; color: var(--text-muted); line-height: 1.5; margin-top: .65rem; max-width: 28ch; }
+
+      /* case card · variantes paper / yellow / dark-featured */
+      .case-card { position: relative; border-radius: 24px; overflow: hidden; transition: var(--t-smooth); text-decoration: none; display: flex; flex-direction: column; isolation: isolate; }
+      .case-card:hover { transform: translateY(-6px); }
+      .case-card .case-cover { aspect-ratio: 16 / 10; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .case-card .case-cover iconify-icon { font-size: 5rem; opacity: .35; position: relative; z-index: 1; }
+      .case-card .case-cover::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(15,15,17,.06) 1px, transparent 1px); background-size: 28px 28px; opacity: .5; pointer-events: none; }
+      .case-card .case-body { padding: 2rem 2rem 2.25rem; flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+      .case-card .case-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; }
+      .case-card .case-meta .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-faint); }
+      .case-card .case-titulo { font-size: 1.4rem; font-weight: 600; letter-spacing: -.022em; line-height: 1.18; color: var(--primary); }
+      .case-card .case-titulo em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--text-muted); }
+      .case-card .case-lead { font-size: .94rem; color: var(--text-muted); line-height: 1.55; max-width: 56ch; flex: 1; }
+      .case-card .case-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--hairline); }
+      .case-card .case-metric { display: flex; flex-direction: column; }
+      .case-card .case-metric .m-label { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .case-card .case-metric .m-val { font-size: 1.6rem; font-weight: 700; letter-spacing: -.025em; line-height: 1; margin-top: .25rem; }
+      .case-card .case-metric .m-note { font-size: .78rem; color: var(--text-muted); margin-top: .3rem; max-width: 26ch; }
+      .case-card .case-cue { display: inline-flex; align-items: center; gap: .35rem; font-family: var(--font-mono); font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; padding: .5rem 1rem; border-radius: var(--radius-pill); transition: var(--t-smooth); flex-shrink: 0; }
+      .case-card:hover .case-cue iconify-icon { transform: translateX(3px); }
+      .case-card .case-cue iconify-icon { transition: transform .4s var(--ease-out-expo); }
+
+      /* variant: paper */
+      .case-card.paper { background: #fff; border: 1px solid var(--hairline); }
+      .case-card.paper:hover { box-shadow: 0 30px 60px rgba(0,0,0,.07); border-color: var(--hairline-strong); }
+      .case-card.paper .case-cover { background: var(--paper-lifted); }
+      .case-card.paper .case-cover iconify-icon { color: var(--primary); }
+      .case-card.paper .case-cue { background: var(--primary); color: var(--paper); }
+
+      /* variant: yellow · case com destaque · só 1 por viewport (regra de single accent) */
+      .case-card.yellow { background: var(--accent); }
+      .case-card.yellow:hover { box-shadow: 0 30px 60px rgba(254,209,54,.32); }
+      .case-card.yellow .case-cover { background: rgba(15,15,17,.06); }
+      .case-card.yellow .case-cover iconify-icon { color: rgba(15,15,17,.45); }
+      .case-card.yellow .case-titulo { color: var(--primary); }
+      .case-card.yellow .case-titulo em { color: rgba(15,15,17,.55); }
+      .case-card.yellow .case-lead { color: rgba(15,15,17,.78); }
+      .case-card.yellow .case-meta { color: rgba(15,15,17,.55); }
+      .case-card.yellow .case-meta .dot { background: rgba(15,15,17,.4); }
+      .case-card.yellow .case-foot { border-color: rgba(15,15,17,.14); }
+      .case-card.yellow .case-cue { background: var(--primary); color: var(--accent); }
+      .case-card.yellow .case-metric .m-label { color: rgba(15,15,17,.5); }
+      .case-card.yellow .case-metric .m-note { color: rgba(15,15,17,.65); }
+
+      /* featured · case dark, formato wide stadium · 1 por página (focal único) */
+      .case-featured {
+        position: relative; border-radius: var(--radius-stadium); overflow: hidden;
+        background:
+          radial-gradient(120% 80% at 75% 25%, rgba(254,209,54,.18) 0%, rgba(254,209,54,0) 55%),
+          linear-gradient(160deg, #1A1A1D 0%, #0F0F11 60%, #050507 100%);
+        color: #fff; padding: clamp(2rem, 5vw, 4rem); display: grid; gap: 2.5rem;
+      }
+      .case-featured::before {
+        content: ''; position: absolute; inset: 0; pointer-events: none;
+        background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size: 60px 60px; opacity: .6;
+      }
+      @media (min-width: 1024px) { .case-featured { grid-template-columns: 1.4fr 1fr; align-items: center; } }
+      .case-featured > * { position: relative; z-index: 1; }
+      .case-featured .feat-meta { display: flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.65); }
+      .case-featured .feat-titulo { font-size: clamp(1.75rem, 3.5vw, 3rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.08; margin-top: 1.5rem; }
+      .case-featured .feat-titulo em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent); }
+      .case-featured .feat-lead { font-size: 1.125rem; color: rgba(255,255,255,.72); line-height: 1.55; margin-top: 1.5rem; max-width: 58ch; }
+      .case-featured .feat-aside { display: flex; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+      .case-featured .feat-stat { padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); width: 100%; }
+      .case-featured .feat-stat .fs-label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+      .case-featured .feat-stat .fs-val { font-size: 3rem; font-weight: 700; letter-spacing: -.045em; line-height: 1; margin-top: .85rem; }
+      .case-featured .feat-stat .fs-note { font-size: .92rem; color: rgba(255,255,255,.65); margin-top: .65rem; line-height: 1.5; }
+
+      /* quote block · single focal · placeholder honesto */
+      .quote-block { padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem); border-radius: var(--radius-stadium); background: var(--paper-lifted); border: 1px solid var(--hairline); position: relative; overflow: hidden; }
+      .quote-block .ghost { position: absolute; top: -1rem; left: -1.5rem; font-family: var(--font-serif); font-size: clamp(8rem, 18vw, 16rem); line-height: .7; color: rgba(15,15,17,.05); pointer-events: none; user-select: none; font-style: italic; }
+      .quote-block .quote { position: relative; z-index: 1; font-family: var(--font-serif); font-style: italic; font-size: clamp(1.5rem, 3vw, 2.75rem); line-height: 1.2; letter-spacing: -.02em; color: var(--primary); max-width: 32ch; }
+      .quote-block .quote-author { display: flex; flex-direction: column; gap: .25rem; margin-top: 2rem; position: relative; z-index: 1; }
+      .quote-block .quote-author .name { font-weight: 600; }
+      .quote-block .quote-author .role { font-size: .85rem; color: var(--text-muted); }
+
+      /* outras parcerias · chip strip */
+      .partners-strip { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .partners-strip .partner { padding: .85rem 1.4rem; border-radius: var(--radius-pill); background: #fff; border: 1px solid var(--hairline); font-size: .92rem; font-weight: 500; letter-spacing: -.01em; transition: var(--t-smooth); }
+      .partners-strip .partner:hover { border-color: var(--primary); background: var(--primary); color: var(--paper); transform: translateY(-2px); }
+
+      /* capability card · capacidades descritas (crise, reputação) */
+      .cap-card { background: #fff; border: 1px solid var(--hairline); border-radius: 24px; padding: 2.25rem 2rem 2rem; display: flex; flex-direction: column; gap: 1.1rem; transition: var(--t-smooth); }
+      .cap-card:hover { box-shadow: 0 30px 60px rgba(0,0,0,.07); border-color: var(--hairline-strong); transform: translateY(-4px); }
+      .cap-card .cap-head { display: flex; align-items: center; gap: .9rem; }
+      .cap-card .cap-head iconify-icon { font-size: 2.1rem; color: var(--primary); flex-shrink: 0; }
+      .cap-card .cap-setor { font-family: var(--font-mono); font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; }
+      .cap-card .cap-titulo { font-size: 1.3rem; font-weight: 600; letter-spacing: -.022em; line-height: 1.2; color: var(--primary); }
+      .cap-card .cap-intro { font-family: var(--font-serif); font-style: italic; font-size: 1.05rem; color: var(--text-muted); line-height: 1.4; }
+      .cap-card .cap-desc { font-size: .95rem; color: var(--text-muted); line-height: 1.55; }
+      .cap-card .cap-foot { margin-top: auto; padding-top: 1.1rem; border-top: 1px solid var(--hairline); display: grid; gap: .55rem; }
+      .cap-card .cap-foot .cap-line { display: flex; gap: .6rem; font-size: .85rem; }
+      .cap-card .cap-foot .cap-key { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; min-width: 7.5ch; padding-top: .15rem; }
+      .cap-card .cap-foot .cap-val { color: var(--text-muted); line-height: 1.45; }
+
+      /* etapa card · método em 4 etapas (light) */
+      .etapa-card { padding: 1.75rem; border-radius: 16px; background: #fff; border: 1px solid var(--hairline); }
+      .etapa-card.is-accent { background: rgba(254,209,54,.1); border-color: rgba(254,209,54,.4); }
+      .etapa-card .e-id { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent-deep); font-weight: 600; }
+      .etapa-card .e-titulo { font-size: 1.15rem; font-weight: 600; letter-spacing: -.02em; margin-top: .6rem; color: var(--primary); }
+      .etapa-card .e-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .35rem; display: block; }
+      .etapa-card .e-desc { font-size: .875rem; line-height: 1.55; color: var(--text-muted); margin-top: .6rem; }
+
+      /* faq · acordeão light */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item:last-child { border-bottom: 0; }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.1rem; font-weight: 500; letter-spacing: -.01em; color: var(--primary); transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-faint); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.5rem; color: var(--text-muted); max-width: 72ch; line-height: 1.6; }
+
+      @media (max-width: 768px) {
+        .stadium-hero { min-height: 540px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Cases · PiaR Group',
+        url: `${site.domain}/cases`,
+        description:
+          'Cases da PiaR Group em fintech, healthtech, agro, crise e institucional. Cada projeto descreve contexto, ângulo e trabalho. Onde houver número, ele vem com lastro.',
+        isPartOf: { '@id': `${site.domain}/#organization` },
+        about: { '@id': `${site.domain}/#organization` },
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: trabalhos.map((t, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: t.cliente,
+            description: t.desc,
+          })),
+        },
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: site.domain },
+          { '@type': 'ListItem', position: 2, name: 'Cases', item: `${site.domain}/cases` },
+        ],
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="cases" />
+
+  <main id="main">
+
+    <!-- 1 · HERO STADIUM · F-pattern, 1 foco, top-left -->
+    <section class="relative pt-32 md:pt-40 pb-16 md:pb-20 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <article class="stadium-hero reveal">
+          <div class="stadium-meta">
+            <span class="eyebrow-dot on-dark">Cases · comunicação para inovação</span>
+            <h1 class="ds-h1 font-semibold tracking-tight mt-8" style="max-width:20ch">
+              O trabalho da PiaR se lê nos cases, não nas <span class="italic-serif" style="color:var(--accent)">promessas</span>.
+            </h1>
+            <p class="ds-body-lg mt-8 max-w-3xl" style="color:rgba(255,255,255,.72)">
+              A PiaR Group é uma agência de comunicação para startups, scale-ups e empresas de
+              tecnologia. Esta página reúne os projetos que mostram como conduzimos comunicação a
+              partir de dados e de relacionamento com a imprensa, de fintech regulada a gestão de
+              crise. Cada case descreve o contexto, o ângulo e o trabalho. Onde houver número, ele vem
+              com lastro ou não vem.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-10">
+              <span class="chip-pill yellow">13 anos de comunicação para inovação</span>
+              <span class="chip-pill outline-light">{site.exitsSupported} startups até o exit</span>
+              <span class="chip-pill outline-light">Fintech · healthtech · agro · crise · institucional</span>
+            </div>
+            <div class="flex flex-wrap gap-3 mt-10">
+              <a href="/contato" class="ink-pill yellow">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+              <a href="#metodo" class="ink-pill" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.22)">Conhecer o método<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+            </div>
+            <img src="/brand/Bruno2podcast.webp" alt="Bruno Pinheiro, CEO da PiaR Group, em entrevista de podcast institucional" width="1120" height="840" style="display:block;width:100%;max-width:560px;height:auto;border-radius:24px;margin:3rem auto 0;box-shadow:0 24px 48px rgba(0,0,0,.32);" loading="eager" decoding="async" />
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2 · COMO LER ESTES CASES -->
+    <section class="relative bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-4 reveal">
+            <span class="eyebrow-dot">Como ler estes cases</span>
+            <h2 class="ds-h3 font-semibold tracking-tight mt-6" style="max-width:16ch">
+              Portfólio se lê de <span class="italic-serif">outro jeito</span>.
+            </h2>
+          </div>
+          <div class="lg:col-span-8 reveal delay-100 space-y-6">
+            <p class="ds-body-lg" style="color:var(--text-muted)">
+              A maioria das páginas de portfólio empilha logo e número solto. Para cada projeto, a
+              pergunta é quem precisava ouvir aquela história e por quê, qual era o ângulo que
+              sustentava a marca e que prova pública o trabalho construiu. Disparo de release em massa
+              não é estratégia, é ruído, e a PiaR não trabalha assim.
+            </p>
+            <p class="ds-body" style="color:var(--text-muted)">
+              Por isso os cases abaixo descrevem o que foi feito antes de qualquer métrica, e métrica
+              sem clipping não vira manchete. Os trabalhos abaixo têm cliente real. A relação completa
+              de marcas atendidas vem logo depois.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · CAPACIDADES · gestão de crise e reputação institucional -->
+    <section class="relative bg-[var(--paper)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-14 reveal">
+          <div>
+            <span class="eyebrow-dot">Frentes em destaque</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:16ch">
+              Onde o método <span class="italic-serif">aparece</span>.
+            </h2>
+          </div>
+          <p class="ds-body text-stone-500 max-w-md">
+            Duas frentes em que o trabalho não gira em torno de um único lançamento: gestão de crise,
+            medida em horas, e reputação institucional, medida em anos.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {capacidades.map((c, i) => (
+            <article class={`cap-card reveal ${i === 1 ? 'delay-100' : ''}`}>
+              <div class="cap-head">
+                <iconify-icon icon={c.icon}></iconify-icon>
+                <span class="cap-setor">{c.setor}</span>
+              </div>
+              <h3 class="cap-titulo">{c.titulo}</h3>
+              <p class="cap-intro">{c.intro}</p>
+              <p class="cap-desc">{c.desc}</p>
+              <div class="cap-foot">
+                <div class="cap-line"><span class="cap-key">Ângulo</span><span class="cap-val">{c.angulo}</span></div>
+                <div class="cap-line"><span class="cap-key">Frente</span><span class="cap-val">{c.frente}</span></div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · OUTROS TRABALHOS · grid de clientes reais, descrição qualitativa -->
+    <section id="trabalhos" class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-14 reveal">
+          <div>
+            <span class="eyebrow-dot">Outros trabalhos</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:18ch">Cliente real, <span class="italic-serif">ângulo definido</span>.</h2>
+          </div>
+          <p class="ds-body text-stone-500 max-w-md">
+            Os projetos abaixo seguem a mesma lógica dos destaques: ângulo definido a partir do
+            contexto do cliente e prova pública construída com método. As descrições são qualitativas
+            e não trazem número.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {trabalhos.map((t, i) => (
+            <article class="case-card paper reveal" style={`transition-delay:${(i % 3) * 100}ms`}>
+              <div class="case-cover">
+                <iconify-icon icon={t.icon}></iconify-icon>
+              </div>
+              <div class="case-body">
+                <div class="case-meta">
+                  <span>{t.cliente}</span>
+                  <span class="dot"></span>
+                  <span>{t.setor}</span>
+                </div>
+                <p class="case-lead">{t.desc}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · MARCAS QUE CONFIAM · roster -->
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div class="lg:col-span-5 reveal">
+            <span class="eyebrow-dot">Marcas que confiam na PiaR</span>
+            <h2 class="ds-h3 font-semibold tracking-tight mt-4" style="max-width:18ch">
+              De fintechs a <span class="italic-serif">healthtechs</span>.
+            </h2>
+            <p class="ds-body text-stone-500 mt-6 max-w-md">
+              Empresas que precisam de cobertura qualificada e de marca forte escolhem a PiaR para
+              conduzir a comunicação. A relação completa de marcas atendidas está disponível sob
+              consulta.
+            </p>
+          </div>
+
+          <div class="lg:col-span-7 lg:pt-6 reveal delay-100">
+            <div class="partners-strip">
+              {roster.flat().map((m) => (
+                <span class="partner">{m}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · EXITS · stats band + nomes -->
+    <section class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-6 reveal">
+            <span class="eyebrow-dot">Os exits que a PiaR acompanhou</span>
+            <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:14ch">
+              Narrativa por <span class="italic-serif">anos</span>, não picos.
+            </h2>
+            <p class="ds-body-lg text-stone-500 mt-6 max-w-xl">
+              Ao longo de 13 anos, a PiaR conduziu a comunicação de empresas que cresceram e
+              chegaram ao exit. Foram {site.exitsSupported} startups acompanhadas até esse ponto.
+            </p>
+            <p class="ds-body text-stone-500 mt-4 max-w-xl">
+              Acompanhar uma empresa até o exit é diferente de cuidar de um lançamento. Exige
+              consistência de narrativa por anos, não picos isolados de exposição, e é esse o tipo de
+              trabalho de longo prazo que sustenta os cases desta página.
+            </p>
+          </div>
+          <div class="lg:col-span-6 reveal delay-100 lg:pt-16">
+            <span class="ds-mono text-stone-400">Entre elas</span>
+            <div class="flex flex-wrap gap-2 mt-5">
+              {exits.map((e) => <span class="chip-pill outline-dark">{e}</span>)}
+            </div>
+            <div class="stat-cell" style="border:0;padding:2rem 0 0">
+              <div class="stat-num">{site.exitsSupported}</div>
+              <div class="stat-label">Startups até o exit</div>
+              <p class="stat-desc">Trabalho de longo prazo, consistência de narrativa ao longo de anos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · COMO CADA CASE NASCE · método em 4 etapas -->
+    <section id="metodo" class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="mb-12 reveal">
+          <span class="eyebrow-dot">Como cada case nasce</span>
+          <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:20ch">
+            Resultado de <span class="italic-serif">processo</span>, não de sorte.
+          </h2>
+          <p class="ds-body-lg mt-5 max-w-2xl text-stone-500">
+            Todo projeto da PiaR segue o mesmo método de quatro etapas, do diagnóstico à escala. É o
+            que faz um case ser resultado de processo, e não de sorte.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 reveal delay-100">
+          {etapas.map((e) => (
+            <div class:list={['etapa-card', e.accent && 'is-accent']}>
+              <span class="e-id">Etapa {e.id}</span>
+              <p class="e-titulo">{e.titulo}</p>
+              <span class="e-prazo">{e.prazo}</span>
+              <p class="e-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <p class="ds-body mt-10 max-w-3xl reveal delay-200 text-stone-500">
+          Quem quiser entender o método por trás dos cases pode ver os seis vetores editoriais dos
+          <a href="/pep" style="color:var(--accent-deep);text-decoration:underline;text-underline-offset:3px">Projetos Especiais de PR (PEP)</a>,
+          a metodologia própria da PiaR para quando a comunicação precisa ir além da cobertura de
+          imprensa. O investimento é sob consulta.
+        </p>
+      </div>
+    </section>
+
+    <!-- 8 · LIDERANÇA · quote + nomes -->
+    <section class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1100px] mx-auto">
+        <div class="quote-block reveal">
+          <span class="ghost">"</span>
+          <span class="eyebrow-dot" style="position:relative;z-index:1">Liderança</span>
+          <p class="quote" style="margin-top:1.5rem">
+            Um time que vive comunicação para inovação.
+          </p>
+          <p class="ds-body mt-6 max-w-2xl" style="color:var(--text-muted);position:relative;z-index:1">
+            A PiaR é conduzida por um time que vive comunicação para inovação. Bruno Pinheiro, fundador
+            e CEO, foi {site.founder.award.charAt(0).toLowerCase() + site.founder.award.slice(1).replace(/\.$/, '')}.
+            Renniê Paro responde pela operação como COO, e Gabriela Calencautcy lidera os projetos
+            especiais.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · PERGUNTAS FREQUENTES -->
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+      <div class="max-w-[1000px] mx-auto">
+        <div class="mb-10 reveal">
+          <span class="eyebrow-dot">Perguntas frequentes</span>
+          <h2 class="ds-h2 font-semibold tracking-tight mt-4" style="max-width:18ch">
+            O que já dá para <span class="italic-serif">responder por aqui</span>.
+          </h2>
+        </div>
+        <div class="reveal delay-100">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA FINAL · Vamos conversar -->
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)]">
+      <div class="max-w-[1100px] mx-auto px-6 md:px-8 py-24 md:py-32 text-center">
+        <span class="eyebrow-dot reveal" style="display:inline-flex;justify-content:center">Vamos conversar</span>
+        <h2 class="ds-h1 font-semibold tracking-tight mt-6 mb-6 reveal delay-100" style="max-width:22ch;margin-inline:auto">
+          O primeiro passo é um <span class="italic-serif">diagnóstico</span>.
+        </h2>
+        <p class="ds-body-lg text-stone-500 max-w-2xl mx-auto mb-10 reveal delay-200">
+          Se a sua empresa precisa de cobertura qualificada e de uma narrativa que se sustente, conte o
+          seu contexto e a PiaR mostra onde está a oportunidade.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap reveal delay-300">
+          <a href="/contato" class="ink-pill yellow">Agendar diagnóstico<iconify-icon icon="solar:calendar-mark-bold"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="outline-pill">Relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono mt-12 reveal delay-400" style="color:var(--text-faint)">
+          /// {site.email} · {site.brandDomain}
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          const lenis = new window.Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add((time) => lenis.raf(time * 1000)); window.gsap.ticker.lagSmoothing(0); }
+        }
+      } catch (e) { /* noop */ }
+      const progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    });
+  </script>
+</BaseLayout>

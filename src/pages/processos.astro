@@ -1,0 +1,683 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+// Conteúdo portado de project/artifacts/contents/processo/draft.md (voice-backed).
+// Design system da própria página preservado (tema claro: step-row, timeline,
+// gov-card, faq-item, chip). Decisões de integridade aplicadas:
+// - exits travado em 8 (site.exitsSupported), não 10.
+// - prêmio padronizado via site.founder.award (ABStartups, 2018); claim
+//   "duas premiações e dez indicações" omitido por não verificado.
+// - Aarin excluída (autorização não confirmada); Bunsen/Primis/Liquid excluídos.
+// - sem telefone/WhatsApp (vivem só em /contato); e-mail via site.email.
+// - seção "Notas de prova e pendências (uso interno)" descartada.
+
+const etapas = [
+  {
+    num: '01',
+    icon: 'solar:magnifer-linear',
+    prazo: 'Semanas 1–2',
+    fim: 'definido',
+    titulo: 'Diagnóstico e Mapeamento',
+    desc: 'Escuta e levantamento. Mapeamos o que a busca mostra sobre a marca e a liderança, o que a mídia escreveu nos últimos meses, o que as redes dizem de forma espontânea e quais veículos e jornalistas importam para o seu mercado. Antes de escrever a primeira linha, identificamos a mídia-alvo e o ângulo. O entregável é o retrato da situação e o gap: a distância entre o posicionamento que você quer e a percepção que existe hoje.',
+    chips: [
+      { icon: 'solar:document-text-linear', label: 'Auditoria de presença' },
+      { icon: 'solar:users-group-rounded-linear', label: 'Mídia-alvo e jornalistas' },
+      { icon: 'solar:target-linear', label: 'Ângulo definido' },
+      { icon: 'solar:ruler-cross-pen-linear', label: 'Retrato e gap' },
+    ],
+  },
+  {
+    num: '02',
+    icon: 'solar:pen-new-square-linear',
+    prazo: 'Semanas 3–4',
+    fim: 'definido',
+    titulo: 'Messaging Framework',
+    desc: 'Definimos as afirmações centrais que a marca precisa sustentar, os públicos de cada uma, os porta-vozes e o que fica fora dos limites. É o documento que mantém a narrativa consistente na imprensa, na busca e nas respostas de IA. Do briefing ao primeiro framework são 14 dias: ao fim da quarta semana você tem a base da comunicação escrita e aprovada, não uma promessa.',
+    chips: [
+      { icon: 'solar:notebook-bookmark-linear', label: 'Afirmações centrais' },
+      { icon: 'solar:users-group-two-rounded-linear', label: 'Públicos e porta-vozes' },
+      { icon: 'solar:shield-check-linear', label: 'Limites definidos' },
+      { icon: 'solar:check-circle-linear', label: 'Escrito e aprovado' },
+    ],
+  },
+  {
+    num: '03',
+    icon: 'solar:routing-2-linear',
+    prazo: 'Semanas 5–12',
+    fim: 'definido',
+    titulo: 'Ativação Editorial',
+    desc: 'Produzimos e colocamos a prova pública em movimento: pautas para a imprensa, artigos assinados, posicionamentos institucionais, dados próprios e conteúdo, no formato que cada canal usa. O relacionamento com jornalistas acontece aqui, com pauta e ângulo escolhidos no diagnóstico. Todos os ativos passam por revisão jurídica antes de ir ao ar, sem exceção.',
+    chips: [
+      { icon: 'solar:document-add-linear', label: 'Pautas e releases' },
+      { icon: 'solar:pen-2-linear', label: 'Artigos assinados' },
+      { icon: 'solar:chart-square-linear', label: 'Dados próprios' },
+      { icon: 'solar:share-linear', label: 'Conteúdo por canal' },
+    ],
+  },
+  {
+    num: '04',
+    icon: 'solar:graph-up-linear',
+    prazo: 'Quinzenal · contínuo',
+    fim: 'contínuo',
+    titulo: 'Monitoramento e Escala',
+    desc: 'Acompanhamos a evolução, ajustamos o que não rendeu e ampliamos o que funcionou, em ciclos de quinze dias. Aqui também vive o protocolo de resposta a menções negativas e a crises, com quem fala, o que diz e quem aprova já definidos antes de qualquer pressão. É o loop: cada ciclo realimenta o framework e a ativação com o que o período mostrou.',
+    chips: [
+      { icon: 'solar:refresh-linear', label: 'Ciclos de 15 dias' },
+      { icon: 'solar:shield-warning-linear', label: 'Protocolo de crise' },
+      { icon: 'solar:cpu-bolt-linear', label: 'Loop de aprendizado' },
+      { icon: 'solar:graph-new-up-linear', label: 'Escala do que funcionou' },
+    ],
+  },
+];
+
+const timeline = [
+  { sem: 'Sem. 01–02', titulo: 'Diagnóstico e mapeamento', desc: 'Escuta, leitura do que a busca e a mídia mostram, identificação da mídia-alvo e do ângulo.', active: true },
+  { sem: 'Sem. 03–04', titulo: 'Messaging Framework', desc: 'Afirmações centrais, públicos, porta-vozes e limites. Base escrita e aprovada em 14 dias.' },
+  { sem: 'Sem. 05–08', titulo: 'Ativação começa', desc: 'Pautas, artigos e posicionamentos em movimento, com revisão jurídica antes de ir ao ar.' },
+  { sem: 'Sem. 09–12', titulo: 'Cadência plena', desc: 'Relacionamento com a imprensa e distribuição por canal em ritmo, conforme o framework.' },
+  { sem: 'Quinzenal', titulo: 'Loop de monitoramento', desc: 'Ajuste do que não rendeu, ampliação do que funcionou e protocolo de crise pronto.' },
+  { sem: 'Contínuo', titulo: 'Realimentação', desc: 'Cada ciclo devolve aprendizado ao framework e à ativação, enquanto o projeto durar.' },
+];
+
+const compromissos = [
+  {
+    num: '/// 01',
+    icon: 'solar:clock-circle-line-duotone',
+    titulo: '14 dias do briefing ao primeiro framework',
+    desc: 'Da reunião de briefing à entrega do Messaging Framework são duas semanas. É o tempo do diagnóstico e da definição da narrativa, com aprovação no caminho. Você sai do mês com a base da comunicação pronta.',
+  },
+  {
+    num: '/// 02',
+    icon: 'solar:shield-check-line-duotone',
+    titulo: '100% dos ativos passam por revisão jurídica',
+    desc: 'Tudo que vai para fora, da pauta ao artigo assinado, passa por revisão jurídica antes de chegar ao jornalista. Pesa especialmente para clientes de setores regulados, como fintech e saúde, onde uma afirmação imprecisa custa caro.',
+  },
+  {
+    num: '/// 03',
+    icon: 'solar:checklist-minimalistic-line-duotone',
+    titulo: 'Ponto de aprovação entre etapas',
+    desc: 'A passagem de uma etapa para a outra tem ponto de aprovação. Nada avança sem o seu aval, e nada chega à imprensa sem revisão jurídica.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Quanto tempo até eu ver algo concreto?',
+    a: 'Catorze dias do briefing ao primeiro framework. Em duas semanas você tem o diagnóstico fechado e a narrativa escrita e aprovada. A ativação editorial, com pauta e relacionamento com a imprensa, começa a partir da quinta semana.',
+  },
+  {
+    q: 'As etapas são fixas ou dá para adaptar?',
+    a: 'A sequência é fixa, porque cada etapa depende da anterior: não dá para ativar a imprensa sem framework, nem definir framework sem diagnóstico. O conteúdo de cada etapa se adapta ao momento e ao objetivo da empresa.',
+  },
+  {
+    q: 'O que significa revisão jurídica em 100% dos ativos?',
+    a: 'Tudo que vai para fora, da pauta ao artigo assinado, passa por revisão jurídica antes de chegar ao jornalista. É um controle de processo, não uma etapa opcional, e pesa especialmente em setores regulados como fintech e saúde.',
+  },
+  {
+    q: 'Quando o trabalho deixa de ter prazo fechado?',
+    a: 'Nas três primeiras etapas, que vão até a semana 12. A quarta, monitoramento e escala, é contínua, em ciclos quinzenais, enquanto o projeto durar. É o loop que realimenta o framework e a ativação com o que cada período mostrou.',
+  },
+  {
+    q: 'Gestão de crise é uma etapa à parte?',
+    a: 'Não. O protocolo de resposta a crises, quem fala, o que diz e quem aprova, é construído dentro da etapa de monitoramento, antes de qualquer crise, para que a marca responda no prazo e não improvise sob pressão.',
+  },
+  {
+    q: 'Vocês começam disparando release para a imprensa?',
+    a: 'Não. O processo começa pelo diagnóstico e pelo mapeamento da mídia-alvo. A imprensa entra na ativação editorial, com pauta e ângulo definidos no framework. Disparo em massa não constrói reputação, gera ruído.',
+  },
+  {
+    q: 'Qual é o primeiro passo para começar?',
+    a: 'Um diagnóstico. Você conta o contexto da empresa e a PiaR mostra onde está a oportunidade. A partir do briefing, o relógio dos 14 dias começa a correr.',
+  },
+];
+
+// Listas liberadas no corpo do draft. Aarin, Bunsen, Primis e Liquid excluídos.
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'Unifisa', 'Livup', 'Qranio', 'FluencyPass', 'Investidores.vc'];
+const casesReais = ['Endemol Shine Brasil (Big Brother Brasil)', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
+---
+<BaseLayout
+  title="Processo de comunicação em 4 etapas"
+  description="O processo da PiaR Group em quatro etapas: diagnóstico, messaging framework, ativação editorial e monitoramento, com revisão jurídica em 100% dos ativos."
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --radius-md: 14px; --radius-lg: 24px; --radius-xl: 32px; --radius-full: 9999px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font-sans); background: var(--bg-white); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      ::selection { background: var(--primary); color: var(--accent); }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.1); border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.3); }
+      html.lenis { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto; }
+
+      .ds-h6 { font-size: 1rem; font-weight: 600; line-height: 1.4; text-transform: uppercase; letter-spacing: .05em; }
+      .ds-body-lg { font-size: 1.25rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-body { font-size: 1.0625rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+      .ds-body-sm { font-size: .875rem; font-weight: 400; line-height: 1.55; }
+      .ds-caption { font-size: .72rem; font-weight: 600; line-height: 1.4; text-transform: uppercase; letter-spacing: .2em; }
+      .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+      .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+      .reveal { opacity: 0; transform: translateY(2.5rem); transition: var(--t-smooth); }
+      .reveal.active { opacity: 1; transform: none; }
+      .delay-100 { transition-delay: .1s; } .delay-200 { transition-delay: .2s; }
+      .delay-300 { transition-delay: .3s; } .delay-400 { transition-delay: .4s; }
+
+      .grid-bg { position: absolute; inset: 0; background-image: radial-gradient(rgba(15,15,17,.06) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .85rem 1.8rem; border-radius: var(--radius-full); font-size: .9375rem; font-weight: 500; transition: var(--t-smooth); cursor: pointer; position: relative; overflow: hidden; letter-spacing: -.01em; border: 1px solid transparent; }
+      .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0, 0, 0, .12); }
+      .btn-ghost:hover { background: rgba(0, 0, 0, .04); border-color: rgba(0, 0, 0, .25); }
+      .btn-ghost iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn-ghost:hover iconify-icon { transform: translateX(4px); }
+
+      .beam-btn { position: relative; padding: 2px; border-radius: var(--radius-full); display: inline-block; isolation: isolate; }
+      .beam-btn::before { content: ''; position: absolute; inset: -2px; border-radius: inherit; z-index: -1; background: conic-gradient(from 0deg, transparent 0 70%, var(--accent) 80%, transparent 95%); animation: beam 3s linear infinite; opacity: 0; transition: opacity .4s; }
+      .beam-btn:hover::before { opacity: 1; }
+      @keyframes beam { to { transform: rotate(360deg); } }
+      .beam-btn .beam-inner { display: inline-flex; align-items: center; gap: .5rem; background: var(--primary); color: #fff; padding: .9rem 1.9rem; border-radius: inherit; font-weight: 600; font-size: .94rem; }
+
+      .pill-tag { position: relative; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1.1rem; border-radius: 8px; background: #fff; border: 1px solid rgba(254,209,54,.35); font-size: .7rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--primary); transition: var(--t-smooth); cursor: pointer; }
+      .pill-tag:hover { border-color: var(--accent); box-shadow: 0 8px 22px rgba(254,209,54,.18); }
+
+      /* page hero — aurora warm */
+      .page-hero { position: relative; padding: 11rem 1.5rem 7rem; overflow: hidden; background: #fafafa; border-bottom: 1px solid var(--hairline); }
+      .page-hero .inner { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+      .page-hero .aurora { position: absolute; inset: 0; z-index: 1; pointer-events: none; filter: blur(2px); opacity: .85; }
+      .page-hero .aurora::before, .page-hero .aurora::after { content: ''; position: absolute; top: 0; bottom: 0; width: clamp(180px, 22vw, 360px); }
+      .page-hero .aurora::before {
+        left: 0;
+        background:
+          radial-gradient(120% 45% at 40% 18%, #FF7A1A 0%, rgba(255,122,26,0) 55%),
+          radial-gradient(100% 40% at 55% 40%, #FF9A3C 0%, rgba(255,154,60,0) 60%),
+          radial-gradient(140% 55% at 30% 75%, #FED136 0%, rgba(254,209,54,0) 65%),
+          linear-gradient(180deg, #FF6A00 0%, #FF8A1A 35%, #FFB020 60%, #FED136 85%, #FFE066 100%);
+        -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+                mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+      }
+      .page-hero .aurora::after {
+        right: 0; transform: scaleX(-1);
+        background:
+          radial-gradient(120% 45% at 40% 18%, #FF7A1A 0%, rgba(255,122,26,0) 55%),
+          radial-gradient(100% 40% at 55% 40%, #FF9A3C 0%, rgba(255,154,60,0) 60%),
+          radial-gradient(140% 55% at 30% 75%, #FED136 0%, rgba(254,209,54,0) 65%),
+          linear-gradient(180deg, #FF6A00 0%, #FF8A1A 35%, #FFB020 60%, #FED136 85%, #FFE066 100%);
+        -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+                mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+      }
+      .page-hero .grid-bg { opacity: .6; }
+      .crumbs { display: inline-flex; align-items: center; gap: .5rem; color: var(--text-muted); font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 1.5rem; }
+      .crumbs a { color: var(--text-muted); transition: color .3s; }
+      .crumbs a:hover { color: var(--primary); }
+      .crumbs iconify-icon { color: var(--text-faint); }
+
+      /* process steps */
+      .step-row { display: grid; grid-template-columns: 120px 1fr; border-bottom: 1px solid var(--hairline); transition: background .4s; }
+      .step-row:hover { background: rgba(15,15,17,.02); }
+      .step-row:last-child { border-bottom: 0; }
+      .step-row .step-num { padding: 2rem 1.5rem; border-right: 1px solid var(--hairline); display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; }
+      .step-row .step-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: color .3s; }
+      .step-row:hover .step-icon { color: var(--accent-deep); }
+
+      /* chips */
+      .chip { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .7rem; border-radius: 999px; background: rgba(15,15,17,.04); border: 1px solid var(--hairline); font-size: .72rem; font-weight: 500; color: var(--text-muted); letter-spacing: -.01em; transition: .3s; }
+      .chip:hover { background: rgba(254,209,54,.1); border-color: rgba(254,209,54,.35); color: var(--primary); }
+      .chip iconify-icon { color: var(--accent-deep); font-size: .9rem; }
+
+      /* timeline */
+      .timeline { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; border: 1px solid var(--hairline); border-radius: var(--radius-lg); overflow: hidden; background: #fff; }
+      .tl-cell { padding: 1.75rem 1.5rem; border-right: 1px solid var(--hairline); position: relative; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
+      .tl-cell:last-child { border-right: 0; }
+      .tl-cell .tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px rgba(15,15,17,.06); }
+      .tl-cell.is-active .tl-dot { background: var(--accent); box-shadow: 0 0 0 4px rgba(254,209,54,.25); }
+      @media (max-width: 900px) {
+        .timeline { grid-template-columns: repeat(2, 1fr); }
+        .tl-cell { border-bottom: 1px solid var(--hairline); }
+        .tl-cell:nth-child(2n) { border-right: 0; }
+      }
+
+      /* governance grid */
+      .gov-card { padding: 2rem; border: 1px solid var(--hairline); border-radius: var(--radius-lg); background: #fff; transition: var(--t-smooth); display: flex; flex-direction: column; gap: 1rem; height: 100%; }
+      .gov-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.15); }
+      .gov-card .num { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.75rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 500; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--primary); }
+      .faq-item .faq-body { padding: 0 0 1.75rem; color: var(--text-muted); max-width: 65ch; line-height: 1.6; }
+
+      @media (max-width: 768px) {
+        .page-hero { padding: 9rem 1.25rem 5rem; }
+        .step-row { grid-template-columns: 80px 1fr; }
+        .step-row .step-num { padding: 1.25rem; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Como a PiaR trabalha: processo de comunicação em quatro etapas',
+        url: `${site.domain}/processos`,
+        description:
+          'O processo de comunicação da PiaR Group em quatro etapas, do diagnóstico ao loop de ajuste: diagnóstico e mapeamento, messaging framework, ativação editorial e monitoramento. 14 dias do briefing ao primeiro framework e revisão jurídica em 100% dos ativos.',
+        isPartOf: { '@id': `${site.domain}/#organization` },
+        about: { '@id': `${site.domain}/#organization` },
+        inLanguage: 'pt-BR',
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'PiaR', item: site.domain },
+          { '@type': 'ListItem', position: 2, name: 'Processo', item: `${site.domain}/processos` },
+        ],
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'As quatro etapas do processo PiaR',
+        itemListElement: etapas.map((e, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: e.titulo,
+          description: e.desc,
+        })),
+      })}
+    />
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="processos" />
+
+  <main id="main">
+    <!-- PAGE HERO -->
+    <section class="page-hero">
+      <div class="grid-bg"></div>
+      <div class="aurora" aria-hidden="true"></div>
+      <div class="inner">
+        <div class="crumbs reveal">
+          <a href="/">PiaR</a>
+          <iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon>
+          <span>Processo</span>
+        </div>
+        <h1 class="ds-h1 font-semibold tracking-tight reveal delay-100">
+          Comunicação <span class="italic-serif">tem processo</span>.<br/>Quatro etapas, prazos definidos.
+        </h1>
+        <p class="ds-body-lg text-stone-500 mt-8 max-w-2xl reveal delay-200">
+          A PiaR Group conduz comunicação para startups, scale-ups e empresas de tecnologia com um
+          processo de quatro etapas, do diagnóstico ao loop de ajuste. Nada de improviso e nada de
+          disparo em massa: cada etapa tem prazo, entregável e responsável claros. Desde 2013, em São
+          Paulo, a partir de dados e de relacionamento real com a imprensa.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-10 reveal delay-300">
+          <a href="#process-steps" class="btn btn-ghost">Ver as quatro etapas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/contato" class="beam-btn"><span class="beam-inner">Agendar diagnóstico<iconify-icon icon="solar:calendar-mark-linear"></iconify-icon></span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- POR QUE O PROCESSO EXISTE -->
+    <section class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-20 md:py-28">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-4 reveal">
+            <span class="ds-mono text-stone-400 block mb-3">/// Por que existe</span>
+            <h2 class="ds-h3 font-semibold tracking-tight" style="max-width:14ch">
+              A comunicação não depende de sorte.
+            </h2>
+          </div>
+          <div class="lg:col-span-8 reveal delay-100 space-y-6">
+            <p class="ds-body-lg text-stone-600">
+              A maioria das assessorias começa pelo disparo e mede esforço por volume de release
+              enviado. A PiaR começa pela pergunta de quem precisa ouvir a sua história e por quê, e
+              mede o trabalho pelo que muda na percepção da marca. Para isso funcionar de forma
+              previsível, existe um processo: quatro etapas em sequência, cada uma com prazo,
+              entregável e ponto de aprovação.
+            </p>
+            <p class="ds-body text-stone-500">
+              O processo é o mesmo para toda frente de comunicação, da
+              <a href="/relacoes-publicas" style="color:var(--accent-deep);text-decoration:underline;text-underline-offset:3px">relação com a imprensa</a>
+              à <a href="/reputacao" style="color:var(--accent-deep);text-decoration:underline;text-underline-offset:3px">reputação</a>.
+              O que muda é o conteúdo de cada etapa conforme o momento da empresa e o objetivo do
+              projeto. Dois números organizam a operação e valem como compromisso: 14 dias do briefing
+              ao primeiro framework, e 100% dos ativos passam por revisão jurídica antes de chegar ao
+              jornalista.
+            </p>
+            <p class="ds-body text-stone-500">
+              Disparo de release em massa não é estratégia, é ruído, e a PiaR não trabalha assim.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS DA OPERAÇÃO -->
+    <section class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="grid grid-cols-1 md:grid-cols-4 md:divide-x divide-[var(--hairline)]">
+        <div class="md:col-span-1 p-8 reveal">
+          <span class="ds-mono text-stone-400 block mb-3">/// Compromissos</span>
+          <h3 class="ds-h4 font-medium">Processo só serve se tiver prazo.</h3>
+        </div>
+        <div class="p-10 reveal delay-100">
+          <div class="ds-h2 font-semibold mb-3">14<span style="color:var(--accent)">d</span></div>
+          <p class="ds-body-sm text-stone-500 max-w-[220px]">Do briefing ao primeiro Messaging Framework, escrito e aprovado.</p>
+        </div>
+        <div class="p-10 reveal delay-200">
+          <div class="ds-h2 font-semibold mb-3">100%</div>
+          <p class="ds-body-sm text-stone-500 max-w-[220px]">Dos ativos passam por revisão jurídica antes de chegar ao jornalista.</p>
+        </div>
+        <div class="p-10 reveal delay-300">
+          <div class="ds-h2 font-semibold mb-3">4</div>
+          <p class="ds-body-sm text-stone-500 max-w-[220px]">Etapas em sequência: três com início e fim, a quarta contínua.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS — 4 etapas detalhadas -->
+    <section id="process-steps" class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="grid grid-cols-1 md:grid-cols-4 md:divide-x divide-[var(--hairline)]">
+        <div class="md:col-span-1 p-8 flex flex-col justify-between min-h-[360px] md:sticky md:top-20 h-fit reveal">
+          <div>
+            <span class="ds-mono text-stone-400 block mb-3">/// As quatro etapas</span>
+            <h2 class="ds-h3 font-semibold tracking-tight mb-4">Quatro etapas, um sistema.</h2>
+            <p class="ds-body-sm text-stone-500 mb-8 max-w-[260px]">
+              As três primeiras têm início e fim definidos; a quarta é contínua, em ciclos quinzenais,
+              enquanto o projeto durar.
+            </p>
+          </div>
+          <a href="/contato" class="pill-tag w-max">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+        </div>
+
+        <div class="md:col-span-3 flex flex-col">
+          {etapas.map((e, i) => (
+            <div class:list={['step-row', 'reveal', i === 1 && 'delay-100', i === 2 && 'delay-200', i === 3 && 'delay-300']}>
+              <div class="step-num">
+                <div class="step-icon"><iconify-icon height="22" icon={e.icon}></iconify-icon></div>
+                <span class="ds-mono text-stone-300">{e.num}</span>
+              </div>
+              <div class="p-8 md:p-10 flex flex-col gap-5">
+                <div>
+                  <span class="ds-caption text-stone-400">{e.prazo}</span>
+                  <h3 class="ds-h4 font-semibold mt-2 mb-3">{e.titulo}</h3>
+                  <p class="ds-body text-stone-500 max-w-[65ch]">{e.desc}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  {e.chips.map((c) => (
+                    <span class="chip"><iconify-icon icon={c.icon}></iconify-icon>{c.label}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- APROVAÇÃO ENTRE ETAPAS -->
+    <section class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-14">
+        <p class="ds-body-lg text-stone-600 max-w-3xl reveal">
+          A passagem de uma etapa para a outra tem ponto de aprovação. Nada avança sem o seu aval, e
+          nada chega à imprensa sem revisão jurídica.
+        </p>
+      </div>
+    </section>
+
+    <!-- TIMELINE — ritmo do processo -->
+    <section class="relative z-20 bg-[var(--secondary)] border-t border-[var(--hairline)]">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-20 md:py-28">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-12 reveal">
+          <div>
+            <span class="ds-mono text-stone-400 block mb-3">/// O ritmo</span>
+            <h2 class="ds-h2 font-semibold tracking-tight">A sequência, semana a semana.</h2>
+          </div>
+          <p class="ds-body text-stone-500 max-w-md">
+            Do briefing ao loop contínuo. As três primeiras etapas têm início e fim; a quarta segue
+            enquanto o projeto durar.
+          </p>
+        </div>
+        <div class="timeline reveal delay-100">
+          {timeline.map((t) => (
+            <div class:list={['tl-cell', t.active && 'is-active']}>
+              <div>
+                <span class="tl-dot block mb-4"></span>
+                <span class="ds-mono text-stone-400 block mb-2">{t.sem}</span>
+                <h4 class="ds-h6 font-semibold leading-tight">{t.titulo}</h4>
+              </div>
+              <p class="ds-body-sm text-stone-500 mt-3">{t.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- OS DOIS COMPROMISSOS DE PRAZO -->
+    <section class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-20 md:py-28">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-12 reveal">
+          <div>
+            <span class="ds-mono text-stone-400 block mb-3">/// Governança de prazo</span>
+            <h2 class="ds-h2 font-semibold tracking-tight">Dois números organizam a relação.</h2>
+          </div>
+          <a href="/contato" class="pill-tag hidden md:inline-flex">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {compromissos.map((c, i) => (
+            <div class:list={['gov-card', 'reveal', i === 1 && 'delay-100', i === 2 && 'delay-200']}>
+              <span class="num">{c.num}</span>
+              <iconify-icon class="text-3xl" style="color:var(--accent-deep)" icon={c.icon}></iconify-icon>
+              <h3 class="ds-h4 font-semibold">{c.titulo}</h3>
+              <p class="ds-body-sm text-stone-500">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ONDE O MÉTODO ENTRA -->
+    <section class="relative z-20 bg-[var(--primary)] text-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-24 md:py-32">
+        <span class="ds-mono text-stone-500 block mb-6 reveal">/// Processo e método</span>
+        <h2 class="ds-h3 font-semibold tracking-tight mb-8 reveal delay-100" style="max-width:24ch">
+          O processo é o ritmo.<br/>
+          <span class="italic-serif text-white/70">O método é o conteúdo de cada etapa.</span>
+        </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-7 reveal delay-200 space-y-6">
+            <p class="ds-body-lg text-white/80">
+              A PiaR organiza a produção editorial em cinco pilares (Reputação, Influência, Líderes,
+              Propósito e Bastidores), seis fórmulas editoriais para construir cada pauta (Inversão,
+              Custo Oculto, Diagnóstico, Reescrita, Linha do Tempo e Manifesto) e quatro movimentos que
+              dão cadência ao trabalho (Hipótese, Cadência, Distribuição e Loop).
+            </p>
+            <p class="ds-body text-white/60">
+              Na prática, isso se encaixa nas quatro etapas: os pilares e as fórmulas alimentam a
+              ativação editorial, e os quatro movimentos são o que faz o monitoramento virar escala em
+              vez de relatório parado. Quando a comunicação precisa ir além da cobertura de imprensa,
+              entra o <a href="/pep" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px">Projetos Especiais de PR (PEP)</a>,
+              a metodologia própria da PiaR de 2023, que combina seis vetores editoriais sob o mesmo
+              processo de quatro etapas. O investimento é sob consulta.
+            </p>
+          </div>
+          <div class="lg:col-span-5 reveal delay-300">
+            <div class="grid grid-cols-1 gap-3">
+              <div style="padding:1.25rem 1.5rem;border:1px solid var(--hairline-on-dark, rgba(255,255,255,.12));border-radius:16px;background:rgba(255,255,255,.03)">
+                <span class="ds-mono" style="color:var(--accent)">5 pilares</span>
+                <p class="ds-body-sm text-white/70 mt-2">Reputação, Influência, Líderes, Propósito, Bastidores.</p>
+              </div>
+              <div style="padding:1.25rem 1.5rem;border:1px solid var(--hairline-on-dark, rgba(255,255,255,.12));border-radius:16px;background:rgba(255,255,255,.03)">
+                <span class="ds-mono" style="color:var(--accent)">6 fórmulas</span>
+                <p class="ds-body-sm text-white/70 mt-2">Inversão, Custo Oculto, Diagnóstico, Reescrita, Linha do Tempo, Manifesto.</p>
+              </div>
+              <div style="padding:1.25rem 1.5rem;border:1px solid var(--hairline-on-dark, rgba(255,255,255,.12));border-radius:16px;background:rgba(255,255,255,.03)">
+                <span class="ds-mono" style="color:var(--accent)">4 movimentos</span>
+                <p class="ds-body-sm text-white/70 mt-2">Hipótese, Cadência, Distribuição, Loop.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- A PROVA -->
+    <section class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-20 md:py-28">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-6 reveal">
+            <span class="ds-mono text-stone-400 block mb-3">/// A prova</span>
+            <h2 class="ds-h2 font-semibold tracking-tight" style="max-width:16ch">
+              Treze anos de <span class="italic-serif">dado e relacionamento real</span>.
+            </h2>
+            <p class="ds-body-lg text-stone-600 mt-6">
+              A PiaR acompanha startups e empresas de tecnologia desde 2013 e apoiou {site.exitsSupported}
+              {' '}startups até o exit, entre elas {exits.join(', ')}.
+            </p>
+            <p class="ds-body text-stone-500 mt-4">
+              Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup
+              Awards da ABStartups, em 2018. A operação é conduzida com Renniê Paro (COO) e Gabriela
+              Calencautcy (projetos especiais).
+            </p>
+            <p class="ds-body text-stone-500 mt-4">
+              O processo aparece com clareza em projetos de setor regulado, onde o diagnóstico mapeia
+              pautas reguladas, o framework define o posicionamento e cada ativo passa por revisão
+              jurídica antes de publicar. A gestão de crise é uma capacidade do processo, com protocolo
+              de resposta definido dentro do monitoramento.
+            </p>
+          </div>
+          <div class="lg:col-span-6 reveal delay-100 lg:pt-16">
+            <span class="ds-mono text-stone-400 block mb-4">Entre os clientes de comunicação</span>
+            <div class="flex flex-wrap gap-2">
+              {clientes.map((c) => <span class="chip">{c}</span>)}
+            </div>
+            <span class="ds-mono text-stone-400 block mt-8 mb-4">A mesma lógica de etapas em cases reais</span>
+            <div class="flex flex-wrap gap-2">
+              {casesReais.map((c) => <span class="chip">{c}</span>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="relative z-20 bg-white border-t border-[var(--hairline)]">
+      <div class="max-w-[1100px] mx-auto px-6 md:px-8 py-20 md:py-28">
+        <div class="mb-12 reveal">
+          <span class="ds-mono text-stone-400 block mb-3">/// FAQ</span>
+          <h2 class="ds-h2 font-semibold tracking-tight">Perguntas frequentes.</h2>
+        </div>
+        <div class="reveal delay-100">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="relative z-20 bg-[var(--secondary)] border-t border-[var(--hairline)]">
+      <div class="max-w-[1100px] mx-auto px-6 md:px-8 py-24 md:py-32 text-center">
+        <span class="ds-mono text-stone-400 block mb-5 reveal">/// Vamos conversar</span>
+        <h2 class="ds-h1 font-semibold tracking-tight mb-6 reveal delay-100" style="max-width:20ch;margin-inline:auto">
+          Comece pelo <span class="italic-serif">diagnóstico</span>.
+        </h2>
+        <p class="ds-body-lg text-stone-500 max-w-2xl mx-auto mb-10 reveal delay-200">
+          Se a sua empresa precisa de comunicação com processo, prazo e revisão em tudo que sai, o
+          primeiro passo é o diagnóstico. Conte o seu contexto e a PiaR mostra onde está a
+          oportunidade. A resposta sai em até 1 dia útil.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap reveal delay-300">
+          <a href="/contato" class="beam-btn"><span class="beam-inner" style="background:var(--accent);color:var(--primary)">Agendar diagnóstico<iconify-icon icon="solar:calendar-mark-bold"></iconify-icon></span></a>
+          <a href="/pep" class="btn btn-ghost">Conhecer o PEP<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono mt-12 reveal delay-400" style="color:var(--text-faint)">
+          /// {site.email} · piar.group
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      gsap.registerPlugin(ScrollTrigger);
+      if (!prefersReduced) {
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smooth: true,
+          lerp: 0.1,
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+      }
+      const progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        if (progressBar) progressBar.style.width = p + '%';
+      }, { passive: true });
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    });
+  </script>
+</BaseLayout>

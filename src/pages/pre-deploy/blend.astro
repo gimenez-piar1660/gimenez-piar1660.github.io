@@ -1,0 +1,439 @@
+---
+// ============================================================================
+// PRÉ-DEPLOY · TESTE DE BLEND
+// Montserrat (fonte oficial PiaR) + linguagem de design Mastercard + Três Mares.
+//   Mastercard  -> canvas creme, nav pílula flutuante, formas estádio/círculo,
+//                  satélite-CTAs, arcos orbitais, ghost watermarks, sombra atmosférica.
+//   Três Mares  -> topografia de contorno animada, tinta preto-suave, lerp parallax.
+//   PiaR        -> o amarelo segue como acento (não o laranja da Mastercard).
+// Página de avaliação de direção visual. noindex. Não compete com o site vivo.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/pre-deploy/blend`;
+
+const orbits = [
+  {
+    id: 'Relações Públicas',
+    tag: 'Imprensa',
+    desc: 'A história certa, no veículo certo, lida por quem decide.',
+    icon: 'solar:microphone-3-line-duotone',
+    grad: 'linear-gradient(150deg, #FED136 0%, #F0A800 60%, #B97c00 100%)',
+  },
+  {
+    id: 'Reputação Semântica',
+    tag: 'Reputação',
+    desc: 'O que o mercado encontra sobre você quando você não está perto.',
+    icon: 'solar:shield-check-line-duotone',
+    grad: 'linear-gradient(150deg, #2B2B2B 0%, #3a3a3a 55%, #161410 100%)',
+  },
+  {
+    id: 'GEO · visibilidade em IA',
+    tag: 'GEO',
+    desc: 'Ser citável dentro da resposta que a IA dá sobre o seu mercado.',
+    icon: 'solar:cpu-bolt-line-duotone',
+    grad: 'linear-gradient(150deg, #FFE08A 0%, #FED136 50%, #2B2B2B 100%)',
+  },
+];
+---
+
+<BaseLayout
+  title="Blend · Montserrat + Mastercard + Três Mares"
+  description="Teste de direção visual: tipografia Montserrat com a linguagem de design da Mastercard e da Três Mares Capital."
+  noindex={true}
+>
+  <div id="scroll-progress" aria-hidden="true"></div>
+
+  <!-- ============ NAV PÍLULA FLUTUANTE (Mastercard) ============ -->
+  <header class="nav-shell">
+    <nav class="nav-pill" aria-label="Navegação do teste">
+      <a class="nav-brand" href="/">
+        <span class="nav-logo" aria-hidden="true"></span>
+        <span class="nav-word">PiaR</span>
+      </a>
+      <div class="nav-links">
+        <a href="#frentes">O que fazemos</a>
+        <a href="#prova">Reputação</a>
+        <a href="#falar">Contato</a>
+      </div>
+      <button class="nav-search" aria-label="Buscar"><iconify-icon icon="solar:magnifer-linear"></iconify-icon></button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <span class="ghost-mark" data-parallax-y="-10" aria-hidden="true">reputação</span>
+
+      <div class="hero-grid wrap">
+        <div class="hero-copy">
+          <span class="eyebrow reveal"><span class="dot"></span>PiaR · Relações Públicas e Reputação</span>
+          <h1 class="reveal d1">A sua marca é decidida onde você <span class="accent">não está na sala</span>.</h1>
+          <p class="hero-sub reveal d2">
+            Construímos a reputação que a imprensa publica, o mercado lembra e a inteligência artificial cita. Há {site.yearsOperating} anos ao lado de mais de {site.brandsServed} marcas que cresceram de verdade.
+          </p>
+          <div class="cta-row reveal d3">
+            <a href="#falar" class="btn btn-accent">Falar com a PiaR<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+            <a href="#frentes" class="btn btn-ink">Ver como trabalhamos</a>
+          </div>
+        </div>
+
+        <div class="hero-stage reveal d2">
+          <div class="par-layer" data-depth="14">
+            <div class="hero-media">
+              <canvas id="contour-hero" aria-hidden="true"></canvas>
+              <div class="media-grain" aria-hidden="true"></div>
+            </div>
+            <svg class="hero-orbit" viewBox="0 0 520 520" fill="none" aria-hidden="true">
+              <circle class="orbit-ring" cx="260" cy="260" r="252" pathLength="1" />
+            </svg>
+            <a href="#frentes" class="satellite" aria-label="Explorar">
+              <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
+            </a>
+          </div>
+          <span class="float-chip c1 par-layer" data-depth="34"><span class="d"></span>Imprensa</span>
+          <span class="float-chip c2 par-layer" data-depth="-26"><span class="d"></span>GEO</span>
+        </div>
+      </div>
+
+      <span class="scroll-cue" aria-hidden="true"><span class="l"></span>role</span>
+    </section>
+
+    <!-- ============ CONSTELAÇÃO DE FRENTES (Mastercard) ============ -->
+    <section id="frentes" class="section">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow"><span class="dot"></span>O que fazemos</span>
+          <h2>Três frentes, uma reputação <span class="accent">coerente</span>.</h2>
+          <p class="lede">A mesma marca precisa ser encontrada, lembrada e citada da mesma forma em todo lugar onde a decisão acontece. Cada frente cuida de um desses lugares.</p>
+        </div>
+
+        <div class="constel">
+          <svg class="constel-arc" viewBox="0 0 1200 460" fill="none" preserveAspectRatio="none" aria-hidden="true">
+            <path class="orbit-link" d="M 200 250 C 430 90, 770 90, 1000 250" pathLength="1" />
+          </svg>
+          {orbits.map((o, i) => (
+            <article class:list={['orbit-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
+              <div class="portrait-wrap">
+                <div class="portrait" style={`background:${o.grad}`}>
+                  <iconify-icon icon={o.icon}></iconify-icon>
+                </div>
+                <a href="#falar" class="satellite sm" aria-label={`Sobre ${o.id}`}>
+                  <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                </a>
+              </div>
+              <span class="o-tag"><span class="dot"></span>{o.tag}</span>
+              <h3>{o.id}</h3>
+              <p>{o.desc}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EDITORIAL + TOPOGRAFIA (Três Mares) ============ -->
+    <section id="prova" class="section warm has-contour">
+      <div class="contour-field" data-parallax-y="-18" aria-hidden="true"></div>
+      <span class="ghost-mark bl" data-parallax-y="12" aria-hidden="true">prova</span>
+      <div class="wrap prova-grid">
+        <div>
+          <span class="eyebrow"><span class="dot"></span>Por que reputação</span>
+          <p class="punch reveal">Reputação não é o que você diz. É o que <span class="accent">encontram sobre você</span> quando você não está perto.</p>
+          <p class="lede reveal d1">Imprensa, busca e modelos de IA formam a primeira impressão antes de qualquer reunião. A PiaR garante que essa impressão seja construída, e não deixada ao acaso.</p>
+        </div>
+        <div class="stat-rail reveal d2">
+          <div class="stat"><span class="num">{site.brandsServed}</span><span class="lab">marcas atendidas</span></div>
+          <div class="stat"><span class="num">{site.yearsOperating}</span><span class="lab">anos de estrada</span></div>
+          <div class="stat"><span class="num">{site.exitsSupported}</span><span class="lab">exits acompanhados</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA INK (Mastercard) ============ -->
+    <section id="falar" class="cta-ink">
+      <span class="ghost-mark bl on-dark" data-parallax-y="12" aria-hidden="true">PiaR</span>
+      <div class="wrap cta-inner">
+        <span class="eyebrow on-dark reveal"><span class="dot"></span>Vamos conversar</span>
+        <h2 class="reveal d1">A próxima marca lembrada do seu mercado pode ser a <span class="accent">sua</span>.</h2>
+        <div class="cta-row reveal d2">
+          <a href="/contato" class="btn btn-accent">Agendar conversa<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/sobre" class="btn btn-ghost-d">Conhecer a PiaR</a>
+        </div>
+        <p class="cta-foot reveal d3">{site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <style is:global>
+    :root {
+      /* ---- Paleta blend: creme Mastercard + tinta suave Três Mares + amarelo PiaR ---- */
+      --paper: #F2EFE9;
+      --paper-lift: #FBFAF7;
+      --warm: #ECE7DF;
+      --ink: #16140F;
+      --ink-soft: #2B2B2B;
+      --primary: #1A1813;
+      --text-muted: #6B655B;
+      --text-faint: #9A9286;
+      --accent: #FED136;
+      --accent-deep: #B07E00;
+      --hairline: rgba(22, 20, 15, .10);
+      --hairline-strong: rgba(22, 20, 15, .16);
+      --r-btn: 20px;
+      --r-card: 28px;
+      --r-stadium: 40px;
+      --r-pill: 999px;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --t-smooth: all .7s var(--ease);
+      --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -.025em; margin: 0; }
+    .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 2; }
+    @media (min-width: 768px) { .wrap { padding-inline: 2.5rem; } }
+
+    #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+    .accent { color: var(--accent-deep); }
+    .cta-ink .accent { color: var(--accent); }
+
+    .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.2); }
+    .eyebrow.on-dark { color: rgba(255,255,255,.66); }
+
+    /* ---- botões ---- */
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.6rem; border-radius: var(--r-btn); font-family: var(--font-display); font-size: .92rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+    .btn iconify-icon { transition: transform .4s var(--ease); }
+    .btn:hover iconify-icon { transform: translateX(4px); }
+    .btn-accent { background: var(--accent); color: var(--ink); border-color: var(--accent); }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(254,209,54,.4); }
+    .btn-ink { background: transparent; color: var(--ink); border-color: var(--hairline-strong); }
+    .btn-ink:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.28); }
+    .btn-ghost-d:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.55); }
+
+    /* ---- nav pílula (Mastercard) ---- */
+    .nav-shell { position: absolute; top: 1.5rem; left: 0; right: 0; z-index: 60; display: flex; justify-content: center; padding-inline: 1.25rem; }
+    .nav-pill { display: flex; align-items: center; gap: 1.5rem; width: min(1100px, 100%); padding: .7rem .8rem .7rem 1.4rem; background: rgba(251,250,247,.82); backdrop-filter: blur(14px); border: 1px solid rgba(22,20,15,.06); border-radius: var(--r-pill); box-shadow: 0 4px 24px rgba(0,0,0,.05); }
+    .nav-brand { display: inline-flex; align-items: center; gap: .55rem; text-decoration: none; color: var(--ink); margin-right: auto; }
+    .nav-logo { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); box-shadow: inset 0 0 0 4px var(--ink); }
+    .nav-word { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; letter-spacing: -.03em; }
+    .nav-links { display: none; gap: 2.2rem; }
+    @media (min-width: 880px) { .nav-links { display: flex; } }
+    .nav-links a { font-family: var(--font-display); font-weight: 500; font-size: .92rem; color: var(--ink); text-decoration: none; opacity: .82; transition: opacity .3s; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-search { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--hairline-strong); background: #fff; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 1.05rem; cursor: pointer; transition: var(--t-smooth); }
+    .nav-search:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* ---- ghost watermark (Mastercard) ---- */
+    .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(6rem, 22vw, 21rem); line-height: .8; letter-spacing: -.05em; color: rgba(22,20,15,.038); pointer-events: none; user-select: none; white-space: nowrap; top: 6%; right: -2%; }
+    .ghost-mark.bl { top: auto; right: auto; bottom: -3rem; left: -1.5rem; }
+    .ghost-mark.on-dark { color: rgba(255,255,255,.045); }
+
+    /* ===================== HERO ===================== */
+    .hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: center; overflow: hidden; padding-block: 8rem 4rem; background:
+        radial-gradient(120% 80% at 85% 18%, rgba(254,209,54,.16) 0%, rgba(254,209,54,0) 55%),
+        var(--paper); }
+    .hero-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; width: 100%; }
+    @media (min-width: 980px) { .hero-grid { grid-template-columns: 1.05fr .95fr; gap: 2rem; } }
+    .hero-copy h1 { font-size: clamp(2.6rem, 6vw, 5.4rem); font-weight: 600; line-height: .98; letter-spacing: -.035em; margin: 1.5rem 0 0; max-width: 15ch; text-wrap: balance; }
+    .hero-sub { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.6rem; max-width: 46ch; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2.2rem; }
+
+    .hero-stage { position: relative; display: flex; align-items: center; justify-content: center; min-height: 440px; }
+    .par-layer { will-change: transform; }
+    .hero-media { position: relative; width: min(440px, 80vw); aspect-ratio: 1; border-radius: 50%; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,.16); background: var(--ink); }
+    #contour-hero { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .media-grain { position: absolute; inset: 0; background: radial-gradient(80% 80% at 50% 30%, rgba(0,0,0,0) 40%, rgba(0,0,0,.32) 100%); pointer-events: none; }
+    .hero-orbit { position: absolute; inset: -6%; width: 112%; height: 112%; pointer-events: none; }
+    .orbit-ring { stroke: var(--accent); stroke-width: 1.4; opacity: .8; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2s var(--ease); }
+    .hero-stage.drawn .orbit-ring { stroke-dashoffset: 0; }
+    .satellite { position: absolute; right: 8%; bottom: 8%; width: 58px; height: 58px; border-radius: 50%; background: #fff; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 1.3rem; text-decoration: none; box-shadow: 0 12px 28px rgba(0,0,0,.18); transition: var(--t-smooth); z-index: 3; }
+    .satellite:hover { transform: scale(1.08); background: var(--accent); }
+    .satellite.sm { width: 46px; height: 46px; font-size: 1.05rem; right: 4%; bottom: 14%; }
+
+    .float-chip { position: absolute; z-index: 4; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1.05rem; border-radius: var(--r-pill); background: rgba(251,250,247,.9); backdrop-filter: blur(8px); border: 1px solid var(--hairline); font-family: var(--font-mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); box-shadow: 0 10px 26px rgba(0,0,0,.08); }
+    .float-chip .d { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+    .float-chip.c1 { top: 6%; left: 2%; }
+    .float-chip.c2 { bottom: 10%; right: -2%; }
+    @media (max-width: 980px) { .float-chip { display: none; } }
+
+    .scroll-cue { position: absolute; left: 50%; bottom: 1.6rem; transform: translateX(-50%); z-index: 5; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+    .scroll-cue .l { width: 1px; height: 36px; background: linear-gradient(180deg, var(--text-faint), transparent); animation: cue 2.2s var(--ease) infinite; }
+    @keyframes cue { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+    /* ===================== SEÇÕES ===================== */
+    .section { position: relative; padding-block: clamp(5rem, 10vw, 9rem); }
+    .section.warm { background: var(--warm); }
+    .sec-head { max-width: 60ch; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+    .section h2 { font-size: clamp(2rem, 4.4vw, 3.7rem); font-weight: 600; line-height: 1.04; letter-spacing: -.03em; margin-top: 1rem; max-width: 18ch; text-wrap: balance; }
+    .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--text-muted); margin-top: 1.4rem; max-width: 56ch; }
+
+    /* ---- constelação de frentes (Mastercard) ---- */
+    .constel { position: relative; display: grid; grid-template-columns: 1fr; gap: 3rem 1.5rem; }
+    @media (min-width: 860px) { .constel { grid-template-columns: repeat(3, 1fr); } }
+    .constel-arc { position: absolute; inset: -2% 0 auto 0; width: 100%; height: 200px; z-index: 0; display: none; }
+    @media (min-width: 860px) { .constel-arc { display: block; } }
+    .orbit-link { stroke: var(--accent); stroke-width: 1.4; opacity: .55; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.8s var(--ease); }
+    .constel.drawn .orbit-link { stroke-dashoffset: 0; }
+    .orbit-card { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; }
+    .orbit-card:nth-child(3) { transform: translateY(2.5rem); }
+    .orbit-card:nth-child(4) { transform: translateY(-1rem); }
+    @media (max-width: 860px) { .orbit-card:nth-child(3), .orbit-card:nth-child(4) { transform: none; } }
+    .portrait-wrap { position: relative; margin-bottom: 1.5rem; }
+    .portrait { width: 168px; height: 168px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.6rem; box-shadow: 0 22px 44px rgba(0,0,0,.14); }
+    .portrait iconify-icon { filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); }
+    .orbit-card .satellite.sm { position: absolute; right: -6px; bottom: 6px; }
+    .o-tag { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); display: inline-flex; align-items: center; gap: .5rem; }
+    .o-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    .orbit-card h3 { font-size: 1.4rem; font-weight: 600; letter-spacing: -.02em; margin: .8rem 0 0; }
+    .orbit-card p { font-size: 1.02rem; line-height: 1.55; color: var(--text-muted); margin: .7rem 0 0; max-width: 30ch; }
+
+    /* ---- editorial + topografia (Três Mares) ---- */
+    .has-contour { overflow: hidden; }
+    .contour-field { position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+      background: repeating-radial-gradient(circle at 22% 60%, transparent 0 46px, rgba(43,43,43,.07) 46px 47px);
+      -webkit-mask-image: radial-gradient(circle at 22% 60%, #000 0%, rgba(0,0,0,.5) 44%, transparent 76%);
+              mask-image: radial-gradient(circle at 22% 60%, #000 0%, rgba(0,0,0,.5) 44%, transparent 76%); }
+    .prova-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; }
+    @media (min-width: 920px) { .prova-grid { grid-template-columns: 1.4fr .6fr; gap: 4rem; } }
+    .punch { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.7rem, 3.4vw, 3rem); line-height: 1.14; letter-spacing: -.03em; margin: 1.25rem 0 0; max-width: 22ch; }
+    .stat-rail { display: flex; flex-direction: column; gap: 1.5rem; border-left: 1.5px solid var(--hairline-strong); padding-left: 1.75rem; }
+    .stat .num { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.4rem, 4vw, 3.4rem); letter-spacing: -.04em; line-height: 1; display: block; color: var(--ink); }
+    .stat .lab { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); margin-top: .5rem; display: block; }
+
+    /* ---- CTA ink (Mastercard) ---- */
+    .cta-ink { position: relative; background: var(--ink); color: #fff; padding-block: clamp(5rem, 11vw, 9rem); overflow: hidden; }
+    .cta-inner { text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .cta-ink h2 { font-size: clamp(2.1rem, 5vw, 4.2rem); font-weight: 600; line-height: 1.05; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 18ch; color: #fff; }
+    .cta-ink .cta-row { justify-content: center; }
+    .cta-foot { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; color: rgba(255,255,255,.45); margin-top: 2.75rem; }
+
+    /* ---- reveal ---- */
+    .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+    .reveal.active { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: .1s; } .reveal.d2 { transition-delay: .2s; } .reveal.d3 { transition-delay: .3s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .scroll-cue .l { animation: none; }
+    }
+  </style>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf0 = function (t) { lenis.raf(t); requestAnimationFrame(raf0); }; requestAnimationFrame(raf0); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal + draw-in dos arcos ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('active', 'drawn'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal, .hero-stage, .constel').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        if (bar) bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+      }, { passive: true });
+
+      /* ---- parallax de scroll (Mastercard) ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax (Três Mares) ---- */
+      (function lerpParallax() {
+        if (prefersReduced) return;
+        var layers = Array.prototype.slice.call(document.querySelectorAll('.par-layer'));
+        if (!layers.length) return;
+        var tx = 0, ty = 0, cx = 0, cy = 0, active = false;
+        var stage = document.querySelector('.hero-stage');
+        window.addEventListener('mousemove', function (e) {
+          active = true;
+          tx = (e.clientX / window.innerWidth - 0.5);
+          ty = (e.clientY / window.innerHeight - 0.5);
+        }, { passive: true });
+        function tick() {
+          cx += (tx - cx) * 0.06; cy += (ty - cy) * 0.06;
+          for (var i = 0; i < layers.length; i++) {
+            var d = parseFloat(layers[i].getAttribute('data-depth')) || 10;
+            layers[i].style.transform = 'translate(' + (cx * d).toFixed(2) + 'px,' + (cy * d).toFixed(2) + 'px)';
+          }
+          requestAnimationFrame(tick);
+        }
+        if (stage) requestAnimationFrame(tick);
+      })();
+
+      /* ========================================================
+         HERO · canvas de topografia de contorno (Três Mares)
+         Cristas de terreno que ondulam devagar, tinta + amarelo.
+         ======================================================== */
+      (function contourHero() {
+        var canvas = document.getElementById('contour-hero');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var w = 0, h = 0;
+        function resize() {
+          var rect = canvas.getBoundingClientRect();
+          w = rect.width; h = rect.height;
+          canvas.width = w * dpr; canvas.height = h * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        var t = 0;
+        var LINES = 26;
+        function frame() {
+          t += prefersReduced ? 0 : 0.004;
+          ctx.clearRect(0, 0, w, h);
+          // fundo tinta quente
+          var g = ctx.createLinearGradient(0, 0, 0, h);
+          g.addColorStop(0, '#211d16'); g.addColorStop(1, '#100e0a');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+          for (var i = 0; i < LINES; i++) {
+            var p = i / (LINES - 1);
+            var baseY = h * (0.12 + p * 0.82);
+            var amp = (10 + p * 46) * (h / 440);
+            var isAccent = (i % 7 === 3);
+            ctx.beginPath();
+            for (var x = 0; x <= w; x += 6) {
+              var k = x / w;
+              var y = baseY
+                + Math.sin(k * 6.2 + t + p * 3.0) * amp
+                + Math.sin(k * 13.0 - t * 0.7 + p * 1.5) * amp * 0.32;
+              if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = isAccent ? 'rgba(254,209,54,' + (0.5 + p * 0.4) + ')' : 'rgba(225,214,193,' + (0.06 + p * 0.20) + ')';
+            ctx.lineWidth = isAccent ? 1.5 : 1;
+            ctx.stroke();
+          }
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      })();
+    });
+  </script>
+</BaseLayout>

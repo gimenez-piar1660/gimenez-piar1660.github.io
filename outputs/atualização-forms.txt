@@ -1,0 +1,203 @@
+ATUALIZAÇÃO DO FORMULÁRIO DE CONTATO
+Implementação da spec v2 "Validar forms + qualificação leads"
+11 de agosto de 2026
+
+
+O QUE FOI FEITO
+===============
+
+O formulário de /contato foi reescrito seguindo a especificação v2 da área de
+Marketing. Dois arquivos mudaram:
+
+  src/pages/contato.astro      formulário, validação, classificação e envio
+  src/layouts/BaseLayout.astro cookie de atribuição de origem (todas as páginas)
+
+Nenhuma outra página do site foi tocada. O formulário de /contato é o único
+formulário de lead do site; os campos de boletim em /blog e /insights continuam
+sem integração, como já estavam.
+
+
+ESTRUTURA NOVA
+--------------
+
+Passo 1 · Identificação (5 campos, 4 obrigatórios)
+  Nome completo, e-mail corporativo, empresa, cargo, telefone (opcional).
+  Cargo virou lista suspensa com as 6 opções da spec, incluindo "Consultor,
+  parceiro ou agência". Ao clicar em Continuar o lead já é gravado como
+  Parcial, mesmo que a pessoa desista do passo 2.
+
+Passo 2 · Briefing (6 campos, todos obrigatórios)
+  Frente de interesse (GEO PR na primeira posição), histórico de assessoria,
+  gatilho, faturamento anual, como conheceu a PiaR, contexto.
+  "Como conheceu" abre o campo condicional "quem indicou?" quando a resposta
+  é indicação.
+
+Campos removidos
+  Setor (resolve-se no enriquecimento, dois cliques no LinkedIn).
+  Tamanho da operação (perguntava estágio, vocabulário de startup).
+  Janela editorial (o gatilho responde melhor a mesma pergunta).
+  Cargo em texto livre deu lugar à lista.
+
+
+REGRA DE MQL
+------------
+
+Calculada no momento do envio, sem julgamento humano:
+
+  MQL  = e-mail de domínio corporativo E cargo entre CEO/fundador/sócio,
+         CMO ou diretor de marketing, diretor de comunicação, head ou
+         gerente de marketing/comunicação.
+  Lead = e-mail gratuito OU cargo de coordenador, analista, consultor,
+         parceiro ou agência.
+
+A lista de domínios gratuitos cobre 30 provedores, incluindo os brasileiros
+(uol, bol, terra, ig, globo, r7). Os três campos de briefing não pontuam,
+como a spec determina: eles preparam a abordagem.
+
+A classificação gera dois textos de confirmação diferentes. MQL vê o prazo
+real de retorno e a menção ao e-mail de expectativa. Lead vê agradecimento
+com boletim e conteúdos, sem promessa de ligação e sem mensagem de recusa.
+
+
+RASTREIO DE ORIGEM
+------------------
+
+Os 7 campos ocultos da spec estão no ar: cf_utm_source, cf_utm_medium,
+cf_utm_campaign, cf_utm_content, cf_pagina_conversao, cf_landing_page e
+cf_referrer.
+
+Detalhe importante: o cookie de primeira parte (90 dias) é gravado pelo
+BaseLayout, ou seja, em toda página do site, não só na /contato. Sem isso
+cf_landing_page seria sempre "/contato" e a informação perderia o sentido.
+Quem chega por uma campanha na página de GEO PR e converte três dias depois
+carrega a origem correta. UTM nova sobrescreve a anterior; na ausência de
+UTM, o primeiro toque é preservado.
+
+Este era o item com prazo: os campos precisavam estar no ar antes do deploy
+de 18/08 porque origem não se reconstitui depois.
+
+
+INTERFACE
+---------
+
+  Barra de progresso de dois passos, com o passo concluído marcado.
+  Nenhum select pré-selecionado; placeholder neutro "Selecione".
+  Erros inline, no campo, em português. Nunca em bloco no topo.
+  O erro some assim que a pessoa corrige.
+  E-mail de domínio gratuito dispara aviso, não bloqueia.
+  Selects nativos, sem componente customizado, para funcionar no mobile.
+  Tela de confirmação com prazo real de retorno.
+
+
+COMO FOI VERIFICADO
+===================
+
+37 asserções rodando em Chrome headless, todas passando. O que foi checado:
+
+  cookie gravado em /geo com as quatro UTM e preservado até /contato
+  cf_landing_page = /geo e cf_pagina_conversao = /contato na mesma sessão
+  passo 1 vazio gera 4 erros inline e não avança
+  nenhum envio disparado com o formulário inválido
+  passo 1 válido grava o parcial nos dois destinos com o identificador certo
+  parcial já leva e-mail, cargo e UTM
+  campo condicional aparece e some conforme a origem
+  passo 2 vazio gera 6 erros, incluindo mensagem própria do aceite
+  campo condicional oculto não bloqueia o envio
+  e-mail corporativo + cargo de decisão classifica MQL
+  e-mail gratuito + cargo de execução classifica Lead
+  aviso de e-mail gratuito aparece e não impede o avanço
+  consent e honeypot não vazam no payload
+  cada caminho de confirmação aparece para a classificação certa
+  nenhuma exceção de JavaScript na página
+
+Screenshots conferidos em 1440px e em 390px, nos quatro estados: passo 1
+limpo, passo 1 com erros, passo 2 preenchido e tela de confirmação.
+
+Dois problemas visuais foram encontrados nessa conferência e corrigidos:
+o texto do aceite tinha herdado caixa alta monoespaçada dos outros rótulos,
+e no mobile o rótulo "01 · IDENTIFICAÇÃO" quebrava em duas linhas e
+desalinhava as barras de progresso.
+
+O build de produção passa sem erro (astro check + astro build, 32 páginas).
+Acentuação conferida no HTML gerado, incluindo as opções dos selects.
+Nenhum travessão de prosa foi introduzido: os rótulos que vinham com
+travessão na spec foram convertidos para dois-pontos ou vírgula.
+
+
+DECISÕES QUE TOMEI E QUE VOCÊS PODEM REVERTER
+=============================================
+
+1. Contexto como sexto campo do passo 2.
+   A tabela da spec conta 6 campos no passo 2, mas a seção 3 lista 5.
+   cf_contexto aparece no mapeamento do RD e no card de notificação do
+   Danilo, então tratei o campo de contexto como o que faltava. Se a
+   intenção era outra, é um campo a remover.
+
+2. "Quem indicou" ficou opcional.
+   A spec abre o campo condicional mas não o inclui na lista de
+   obrigatórios. Deixei opcional. Argumento para mudar: indicação é a
+   aquisição real da casa hoje, e quem já declarou que veio por indicação
+   dificilmente se incomoda de dizer quem foi.
+
+3. Botão final continua "Enviar pedido de diagnóstico".
+   A spec escreve só "Enviar". Mantive o rótulo atual, que diz o que
+   acontece depois do clique. Troca de uma linha se preferirem o literal.
+
+4. As duas decisões em aberto foram seguidas ao pé da letra.
+   "Digital & Social Ops" saiu da lista de frentes. O diagnóstico entrou
+   como "Diagnóstico de visibilidade em IA: o ponto de partida". Se a
+   resposta for outra, são duas linhas de opção.
+
+5. Transporte duplo: RD Station e Web3Forms.
+   O RD é o destino oficial. O Web3Forms manda uma cópia por e-mail e serve
+   como rede de segurança enquanto o RD não está configurado. Os dois são
+   independentes: se um falhar, o outro ainda registra o lead. Consequência
+   a saber: com o Web3Forms ativo, um lead completo gera dois e-mails, um do
+   passo 1 e outro do passo 2. É o preço de gravar parcial, e com 6 leads
+   por mês é um preço barato.
+
+
+RESSALVA HONESTA: O FORMULÁRIO AINDA NÃO ESTÁ ENVIANDO
+======================================================
+
+Nenhuma chave está configurada, então o formulário está em modo demo: ele
+avisa na tela que o envio não foi conectado em vez de fingir que enviou.
+Esse caminho também foi testado.
+
+O que falta não é código, é configuração de painel:
+
+  [ ] Chave pública de API do RD colada em src/pages/contato.astro
+  [ ] Os 16 campos personalizados cf_* criados no RD
+  [ ] Estágios de funil criados
+  [ ] As 5 automações da seção 6.3 da spec
+  [ ] Padrão de UTM documentado para as quatro contas de rede
+  [ ] Teste ponta a ponta: envio, lead no RD, classificação, estágio, notificação
+  [ ] Linha de base do site atual capturada antes do deploy
+  [ ] Textos dos dois caminhos de confirmação aprovados (os do site já estão
+      escritos, falta o texto dos e-mails)
+  [ ] Rotina de enriquecimento definida
+  [ ] Formulário de pós-reunião com a matriz de 15 pontos criado no CRM
+
+As instruções de configuração estão no topo do arquivo contato.astro, em
+comentário, incluindo os dois identificadores de conversão que as automações
+precisam escutar:
+
+  piar-site-contato-passo-1    passo 1 concluído, aplicar tag form-parcial
+  piar-site-contato-briefing   passo 2 concluído, gravar classificação
+
+
+UMA OBSERVAÇÃO SOBRE A SPEC
+===========================
+
+O critério de inclusão de campo do documento é bom e foi respeitado: todo
+campo que ficou muda alguma coisa no que o comercial faz. Vale registrar
+que o campo de faturamento é o de maior risco de atrito do formulário. Ele
+está no passo 2 e depois da gravação parcial, o que protege o lead, mas se
+a taxa de conclusão do passo 2 cair muito abaixo do razoável nos primeiros
+meses, ele é o primeiro suspeito. A instrumentação para descobrir isso já
+existe: o RD vai separar quem parou no parcial de quem completou.
+
+
+Checkpoint dos dois arquivos originais guardado antes das mudanças. O projeto
+continua fora de controle de versão; vale considerar um git init antes do
+deploy de 18/08.

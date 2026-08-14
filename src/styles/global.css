@@ -1,0 +1,86 @@
+/* Fontes self-hosted via @fontsource (pacote npm). Substitui o Google Fonts CDN.
+   Oficiais PiaR: Montserrat (display) + Open Sans (corpo) + JetBrains Mono. */
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+/* Fontes oficiais PiaR: Montserrat (display/headlines) + Open Sans (corpo). */
+@import '@fontsource/montserrat/300.css';
+@import '@fontsource/montserrat/400.css';
+@import '@fontsource/montserrat/500.css';
+@import '@fontsource/montserrat/600.css';
+@import '@fontsource/montserrat/700.css';
+@import '@fontsource/montserrat/800.css';
+@import '@fontsource/montserrat/400-italic.css';
+@import '@fontsource/montserrat/600-italic.css';
+@import '@fontsource/open-sans/400.css';
+@import '@fontsource/open-sans/500.css';
+@import '@fontsource/open-sans/600.css';
+@import '@fontsource/open-sans/700.css';
+@import '@fontsource/open-sans/400-italic.css';
+
+@import './tokens.css';
+
+/* Três Mares Capital — PP Neue Montreal + PP Fragment Serif (self-hosted, teste pré-deploy) */
+@font-face { font-family: 'PP Neue Montreal'; src: url('/fonts/tresmares/PPNeueMontreal-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'PP Neue Montreal'; src: url('/fonts/tresmares/PPNeueMontreal-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'PP Neue Montreal'; src: url('/fonts/tresmares/PPNeueMontreal-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'PP Fragment Serif'; src: url('/fonts/tresmares/PPFragmentSerif-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset complementar */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+::selection { background: var(--primary); color: var(--accent); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+
+/* Acessibilidade: foco visível padrão */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* =====================================================================
+   Design System v2 — classes utilitárias canônicas.
+   Páginas que já abrem <style is:global> com versões próprias mantêm o
+   override por cascata. Estas definições servem de fallback para páginas
+   simples (ex.: /[slug] markdown) e novos componentes.
+   ===================================================================== */
+.ds-display  { font-size: clamp(4rem, 12vw, 11rem); font-weight: 700; line-height: .88; letter-spacing: -.055em; }
+.ds-h1       { font-size: clamp(3rem, 8vw, 7.5rem); font-weight: 700; line-height: .94; letter-spacing: -.045em; }
+.ds-h2       { font-size: clamp(2.25rem, 5vw, 4.5rem); font-weight: 600; line-height: 1.02; letter-spacing: -.035em; }
+.ds-h3       { font-size: clamp(1.75rem, 3vw, 2.75rem); font-weight: 600; line-height: 1.1; letter-spacing: -.03em; }
+.ds-h4       { font-size: clamp(1.25rem, 2vw, 1.6rem); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; }
+.ds-body-lg  { font-size: 1.25rem; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; }
+.ds-body     { font-size: 1.0625rem; font-weight: 400; line-height: 1.55; letter-spacing: -.01em; }
+.ds-body-sm  { font-size: .875rem; font-weight: 400; line-height: 1.55; }
+.ds-mono     { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
+.ds-caption  { font-size: .72rem; font-weight: 600; line-height: 1.4; text-transform: uppercase; letter-spacing: .2em; }
+.italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+
+/* Headlines na fonte de display oficial (Montserrat); o corpo herda --font-sans (Open Sans). */
+h1, h2, h3, h4, h5, h6,
+.ds-display, .ds-h1, .ds-h2, .ds-h3, .ds-h4 { font-family: var(--font-display); }
+
+/* Entrada padrão por scroll — pares com IntersectionObserver nas páginas. */
+.reveal       { opacity: 0; transform: translateY(2rem); transition: var(--t-smooth); }
+.reveal.active { opacity: 1; transform: none; }
+.delay-100    { transition-delay: .1s; }
+.delay-200    { transition-delay: .2s; }
+.delay-300    { transition-delay: .3s; }
+.delay-400    { transition-delay: .4s; }

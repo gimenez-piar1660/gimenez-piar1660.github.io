@@ -1,0 +1,96 @@
+---
+// Capa vetorial da coluna "Sala de Sinais", GERADA DOS DADOS da edição:
+// o nº de nós = o nº real de coberturas da quinzena (placements), e o número da
+// edição aparece na capa. Cada edição fica distinta e verdadeira; quinzenas novas
+// geram a capa sozinhas, sem editar este arquivo.
+// Decorativa (aria-hidden) — o significado textual vem do título da página.
+// Determinística (sem random): mesma edição = mesma capa em todo build.
+interface Props {
+  class?: string;
+  animated?: boolean;
+  count?: number;   // nº de coberturas da quinzena (= nº de nós). Sem ele, 11.
+  edition?: number; // número da edição, mostrado como selo na capa.
+}
+const { class: className = '', animated = true, count, edition } = Astro.props;
+
+// nº de nós = nº real de coberturas, com limites de layout (3..18 lê bem na capa).
+const N = Math.max(3, Math.min(Math.round(count ?? 11) || 11, 18));
+const X0 = 70, X1 = 1156, Y_LOW = 402, Y_HIGH = 150;
+// nós ascendentes (de baixo-esquerda a alto-direita), com zigue-zague determinístico.
+// os picos (b:true), a cada três nós, são os sinais brilhantes que se destacam.
+const nodes = Array.from({ length: N }, (_, i) => {
+  const t = N === 1 ? 0 : i / (N - 1);
+  const x = Math.round(X0 + t * (X1 - X0));
+  const y = Math.round(Y_LOW - t * (Y_LOW - Y_HIGH) + Math.sin(i * 1.65) * 26);
+  const b = i % 3 === 2;
+  const r = b ? 6 : (i % 2 ? 4 : 5);
+  return { x, y, r, b };
+});
+const path = nodes.map((n, i) => `${i === 0 ? 'M' : 'L'}${n.x},${n.y}`).join(' ');
+const editionLabel = edition != null ? String(edition).padStart(2, '0') : null;
+---
+<div class:list={['sinais-cover', className, animated && 'is-animated']} aria-hidden="true">
+  <svg viewBox="0 0 1226 520" preserveAspectRatio="xMidYMid slice" role="presentation">
+    <defs>
+      <linearGradient id="sc-bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#16161A" />
+        <stop offset="1" stop-color="#0B0B0D" />
+      </linearGradient>
+      <radialGradient id="sc-glow" cx="0.78" cy="0.18" r="0.6">
+        <stop offset="0" stop-color="#FED136" stop-opacity="0.20" />
+        <stop offset="1" stop-color="#FED136" stop-opacity="0" />
+      </radialGradient>
+      <filter id="sc-soft" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6" />
+      </filter>
+    </defs>
+
+    <rect width="1226" height="520" fill="url(#sc-bg)" />
+    <rect width="1226" height="520" fill="url(#sc-glow)" />
+
+    <!-- baseline sutil -->
+    <line x1="0" y1="452" x2="1226" y2="452" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1" />
+
+    <!-- selo da edição (zona central segura contra o crop do slice) -->
+    {editionLabel && <text class="sc-edition" x="210" y="104">Nº {editionLabel}</text>}
+
+    <!-- o traço que costura os sinais (pathLength normaliza o desenho p/ qualquer nº de nós) -->
+    <path class="sc-line-soft" pathLength="1" d={path} fill="none" stroke="#FED136" stroke-opacity="0.14" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="url(#sc-soft)" />
+    <path class="sc-line" pathLength="1" d={path} fill="none" stroke="#FED136" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- nós -->
+    {nodes.map((n, i) => (
+      <g style={`--i:${i}`} class:list={['sc-node', n.b && 'is-peak']}>
+        {n.b && <circle cx={n.x} cy={n.y} r={n.r + 11} fill="none" stroke="#FED136" stroke-opacity="0.28" stroke-width="1.5" class="sc-ring" />}
+        {n.b && <circle cx={n.x} cy={n.y} r={n.r + 6} fill="#FED136" fill-opacity="0.16" filter="url(#sc-soft)" />}
+        <circle cx={n.x} cy={n.y} r={n.r} fill={n.b ? '#FED136' : '#FFFFFF'} fill-opacity={n.b ? 1 : 0.55} class="sc-dot" />
+      </g>
+    ))}
+  </svg>
+</div>
+
+<style>
+  .sinais-cover { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0B0B0D; }
+  .sinais-cover svg { display: block; width: 100%; height: 100%; }
+
+  .sc-edition { fill: #FED136; fill-opacity: .5; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 30px; font-weight: 600; letter-spacing: .06em; }
+
+  /* desenho do traço + pulso dos nós só quando animado e sem reduced-motion */
+  .is-animated .sc-line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: sc-draw 2.4s var(--ease-spring, cubic-bezier(.16,1,.3,1)) forwards;
+  }
+  .is-animated .sc-dot { animation: sc-pulse 3.4s ease-in-out infinite; animation-delay: calc(var(--i) * 0.22s + 1.6s); }
+  .is-animated .sc-ring { transform-box: fill-box; transform-origin: center; animation: sc-ping 3.4s ease-out infinite; animation-delay: calc(var(--i) * 0.22s + 1.6s); }
+
+  @keyframes sc-draw { to { stroke-dashoffset: 0; } }
+  @keyframes sc-pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+  @keyframes sc-ping { 0% { transform: scale(0.6); opacity: 0.5; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .is-animated .sc-line { animation: none; stroke-dashoffset: 0; }
+    .is-animated .sc-dot,
+    .is-animated .sc-ring { animation: none; }
+  }
+</style>

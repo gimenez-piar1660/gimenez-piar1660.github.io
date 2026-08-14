@@ -1,0 +1,1163 @@
+---
+// ============================================================================
+// Exemplar narrativo · Nano e micro influenciadores
+// Conteudo voice-backed portado de:
+//   src/content/pages/nano-e-micro-influenciadores.md
+// Original preservado. Esta pagina e a versao "narrativa espetacular":
+// heroi canvas 2D (enxame de nos: muitos micro densos vs poucos hubs grandes) +
+// dataviz "enxame vs hub" (canvas) + scroll storytelling (GSAP/Lenis), sobre o
+// DS da PiaR (eyebrow-dot, watermarks, inversao dark, contorno Tres Mares,
+// lerp mouse-parallax). A cor-assinatura desta pagina e o amarelo PiaR.
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/nano-e-micro-influenciadores`;
+
+// Os quatro tiers da piramide de influencia.
+const tiers = [
+  {
+    id: 'NANO',
+    nome: '1k a 10k seguidores',
+    funcao: 'Base da pirâmide. Audiência pequena, alta afinidade, tom pessoal: alguém parecido comigo.',
+    metrica: '3% a 8% de engajamento',
+    proximidade: 'Máxima',
+    icon: 'solar:user-rounded-line-duotone',
+    featured: true,
+    badge: 'Onde a confiança mora',
+  },
+  {
+    id: 'MICRO',
+    nome: '10k a 100k seguidores',
+    funcao: 'Ainda nichado, mas com alcance maior e percepção de especialista no tema.',
+    metrica: 'Comunidade e escala',
+    proximidade: 'Alta',
+    icon: 'solar:users-group-rounded-line-duotone',
+  },
+  {
+    id: 'MACRO',
+    nome: '100k a 1 milhão',
+    funcao: 'Perfis de grande público, mais distantes da audiência individual.',
+    metrica: '1% a 2% de engajamento',
+    proximidade: 'Baixa',
+    icon: 'solar:users-group-two-rounded-line-duotone',
+  },
+  {
+    id: 'MEGA',
+    nome: 'Acima de 1 milhão',
+    funcao: 'Máximo alcance, mínimo de proximidade, custo elevado.',
+    metrica: 'Volume puro',
+    proximidade: 'Mínima',
+    icon: 'solar:crown-star-line-duotone',
+  },
+];
+
+// Os quatro deslocamentos do angulo PiaR (influencia e relacao, nao midia avulsa).
+const angulo = [
+  {
+    nome: 'Reputação antes de alcance',
+    desc: 'Nano e micro entram como vozes de credibilidade dentro de uma estratégia de comunicação, integrados à assessoria de imprensa e ao Digital PR, e não como linha de mídia paga isolada.',
+    icon: 'solar:shield-star-line-duotone',
+  },
+  {
+    nome: 'Fit cultural e de valores',
+    desc: 'A escolha começa pelo alinhamento entre o que o criador defende e o que a marca representa. É gestão de risco de imagem, território de relações públicas, não uma planilha de CPM.',
+    icon: 'solar:heart-angle-line-duotone',
+  },
+  {
+    nome: 'Mídia conquistada primeiro',
+    desc: 'Earned media e relacionamento vêm antes de qualquer formato pago. A amplificação paga entra como complemento honesto e transparente, com sinalização clara, nunca como substituto.',
+    icon: 'solar:medal-ribbons-star-line-duotone',
+  },
+  {
+    nome: 'O criador como parceiro',
+    desc: 'A relação continuada (always-on) protege o ativo do nano e do micro, que é a autenticidade. Tratar criador como fornecedor descartável queima a base e mina a confiança.',
+    icon: 'solar:hand-shake-line-duotone',
+  },
+];
+
+// As cinco frentes de planejamento (frameworks combinados).
+const frentes = [
+  {
+    nome: 'Pirâmide de tiers',
+    desc: 'Antes de escolher nomes, defina a função de cada faixa. Decidir a faixa é decidir o tipo de confiança que você quer mobilizar.',
+    icon: 'solar:chart-square-line-duotone',
+  },
+  {
+    nome: 'Estratégia em camadas',
+    desc: 'Combinar muitos nano com um número menor de micro capta o melhor dos dois mundos: nano traz volume de conteúdo e UGC, micro traz alcance e credibilidade de especialista.',
+    icon: 'solar:layers-minimalistic-line-duotone',
+  },
+  {
+    nome: 'Programa always-on',
+    desc: 'Manter um grupo recorrente de nano e micro como advogados de marca tende a ser mais barato e mais afim do que ativações isoladas. Compromisso operacional, não item de campanha.',
+    icon: 'solar:refresh-circle-line-duotone',
+  },
+  {
+    nome: 'Motor de UGC',
+    desc: 'Uma campanha de seeding em escala produz conteúdo autêntico e alinhado, reaproveitável em mídia paga, e-mail e social. O ganho está no volume genuíno; o risco está em engessar o criador.',
+    icon: 'solar:videocamera-record-line-duotone',
+  },
+  {
+    nome: 'Vetting e detecção de fraude',
+    desc: 'Triagem de autenticidade antes de contratar virou etapa central: seguidores reais, padrão de engajamento e indícios de bots ou inflação por IA. Proteção de reputação, não detalhe.',
+    icon: 'solar:user-check-rounded-line-duotone',
+  },
+];
+
+// Passo a passo para integrar nano e micro a comunicacao.
+const passos = [
+  {
+    num: '01',
+    titulo: 'Objetivo de reputação',
+    fase: 'Antes de buscar nomes',
+    desc: 'Decida o que a parceria precisa provar: autoridade em um tema, presença em um nicho, prova social para um lançamento. Métrica de venda entra, mas não sozinha.',
+  },
+  {
+    num: '02',
+    titulo: 'Padronize os tiers',
+    fase: 'Alinhamento interno',
+    desc: 'Fixe os cortes de nano e micro que a sua operação vai usar, por exemplo nano até 10 mil e micro até 100 mil, para evitar ruído de planejamento.',
+  },
+  {
+    num: '03',
+    titulo: 'Nicho e fit de valores',
+    fase: 'Curadoria',
+    desc: 'Liste temas e comunidades relevantes e selecione criadores cujo conteúdo e postura combinem com a marca. Fit vem antes de número de seguidores.',
+  },
+  {
+    num: '04',
+    titulo: 'Vetting de autenticidade',
+    fase: 'Triagem',
+    desc: 'Audite audiência real, padrão de engajamento e sinais de fraude. Descarte quem não passa. Documente o critério.',
+  },
+  {
+    num: '05',
+    titulo: 'Contrato e conformidade',
+    fase: 'Curadoria de risco',
+    desc: 'Formalize escopo, exclusividade, prazos e, principalmente, a sinalização de publicidade clara e ostensiva, conforme o Guia do CONAR.',
+  },
+  {
+    num: '06',
+    titulo: 'Briefing aberto',
+    fase: 'Direção sem engessar',
+    desc: 'Dê direção de marca e mensagens-chave, mas preserve o tom do criador. Roteiro engessado destrói a autenticidade que faz o nano e o micro funcionarem.',
+  },
+  {
+    num: '07',
+    titulo: 'Integre com PR',
+    fase: 'Mídia conquistada',
+    desc: 'Amarre, quando fizer sentido, a parceria a eventos, conteúdo proprietário e relacionamento com imprensa, transformando influência em cobertura.',
+  },
+  {
+    num: '08',
+    titulo: 'Meça além de likes',
+    fase: 'Leitura de reputação',
+    desc: 'Acompanhe engajamento qualificado, sentimento, share of voice e valor de mídia espontânea, além das metas de conversão.',
+  },
+];
+
+// Metricas de reputacao (medir alem da conversao).
+const metricas = [
+  { nome: 'Engajamento qualificado', desc: 'Interações relevantes (comentários, salvamentos, compartilhamentos), não só curtidas.', icon: 'solar:chat-round-like-line-duotone' },
+  { nome: 'Sentimento', desc: 'Como a audiência reage ao conteúdo e à marca: positivo, neutro ou negativo.', icon: 'solar:smile-circle-line-duotone' },
+  { nome: 'Share of voice', desc: 'Quanto a marca aparece na conversa do nicho frente aos concorrentes.', icon: 'solar:volume-loud-line-duotone' },
+  { nome: 'Valor de mídia espontânea', desc: 'Estimativa do valor da exposição conquistada via criadores e desdobramentos editoriais.', icon: 'solar:tag-price-line-duotone' },
+  { nome: 'Conversão e ROI', desc: 'Metas de negócio (cadastros, instalações, vendas), lidas junto com as métricas acima, não isoladas.', icon: 'solar:graph-up-line-duotone' },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Doctoralia', 'Solides', 'PagBrasil', 'Corning'];
+
+const faq = [
+  {
+    q: 'Qual a diferença entre nano e micro influenciador?',
+    a: 'Nano costuma descrever perfis com cerca de 1.000 a 10.000 seguidores, e micro perfis entre 10.000 e 100.000 (algumas tabelas encerram a faixa micro em 50.000). A diferença principal não é só o número: nano tende a ter tom mais pessoal e máxima proximidade, enquanto micro já é percebido como especialista do nicho, com alcance maior. Padronize os cortes internamente antes de planejar.',
+  },
+  {
+    q: 'Vale mais a pena que macro influenciadores e celebridades?',
+    a: 'Depende do objetivo. Para autoridade em nicho, prova social e engajamento qualificado, nano e micro costumam render mais por real investido. Segundo a Collabstr, nano influenciadores entregam de 3% a 8% de engajamento globalmente, contra 1% a 2% dos macro. Para um único momento de alcance massivo, macro e celebridades ainda têm papel. Não é hierarquia, é função.',
+  },
+  {
+    q: 'Quantos seguidores tem um nano influenciador?',
+    a: 'No corte mais usado pelo mercado, de cerca de 1.000 a 10.000 seguidores. É a base da chamada pirâmide de influência.',
+  },
+  {
+    q: 'Como saber se a audiência de um criador é real?',
+    a: 'Por vetting: análise de seguidores reais, padrão de engajamento e indícios de bots ou inflação por IA, antes de fechar a parceria. Segundo a InfluenceFlow, a fraude se concentra no tier macro e é menos vantajosa para nano e micro, cujas audiências menores são mais fáceis de auditar. Ainda assim, a checagem é etapa obrigatória para proteger a reputação da marca.',
+  },
+  {
+    q: 'Preciso sinalizar que o conteúdo é pago?',
+    a: 'Sim. O Guia do CONAR exige que publicidade seja sinalizada de forma clara e ostensiva (por exemplo, #publi visível, não escondida no texto). A edição vigente a partir de 1º de junho de 2026 reforça isso e trata de temas como uso de IA e proteção de crianças e adolescentes. Não sinalizar gera risco legal e perda de confiança.',
+  },
+  {
+    q: 'Nano e micro funcionam para B2B e mercados técnicos?',
+    a: 'Sim. Em setores como fintech, BaaS, saúde e tecnologia, especialistas com audiência pequena e nichada costumam carregar mais autoridade que perfis de grande alcance genérico, porque a confiança no tema vale mais que o tamanho do público. É um uso ainda pouco explorado frente ao foco em moda e beleza.',
+  },
+  {
+    q: 'Quantos criadores devo ativar por trimestre?',
+    a: 'Não há número único. Materiais do setor, como digitalapplied.com e RISER, sugerem ativar de dezenas a poucas centenas de criadores por trimestre em um programa contínuo. O ponto não é o número, e sim ter operação, contrato e mensuração para sustentar a escala sem que o custo de coordenação anule o ganho.',
+  },
+];
+---
+<BaseLayout
+  title="Nano e micro influenciadores: muitos pequenos batem poucos grandes"
+  description="Nano e micro influenciadores como vozes de credibilidade, não mídia avulsa: tiers, engajamento, vetting, CONAR e integração com PR e reputação. O guia da PiaR."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper-warm: #F5F2E9;
+        --nm-ink: #0A0A0C;
+        --nm-ink-2: #141417;
+        --nm-amber: #FFB020;
+        --nm-glow: #FFD84A;
+        --radius-card: 24px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--accent-deep); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botoes */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · enxame de nos (canvas 2D, amarelo + preto)
+         =========================================================== */
+      .nm-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--nm-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #nm-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .nm-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 16% 38%, rgba(10,10,12,.86) 0%, rgba(10,10,12,.36) 46%, rgba(10,10,12,0) 72%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 74%, rgba(10,10,12,.92) 100%);
+      }
+      .nm-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .nm-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .nm-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .nm-hero h1 { font-size: clamp(2.8rem, 8vw, 7.6rem); font-weight: 700; line-height: .94; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 16ch; text-wrap: balance; }
+      .nm-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 48ch; }
+      .nm-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .nm-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .nm-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .nm-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .nm-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .nm-hero-float.f1 { right: 9%; top: 27%; }
+      .nm-hero-float.f2 { right: 17%; bottom: 21%; }
+      @media (max-width: 900px) { .nm-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Tres Mares · contorno (enxame denso) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(254,209,54,.09);
+        background: repeating-radial-gradient(circle at 76% 44%, transparent 0 30px, var(--contour-line) 30px 31px);
+        -webkit-mask-image: radial-gradient(circle at 76% 44%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 76% 44%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         secoes base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--nm-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (a virada de regua) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--nm-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--accent-deep); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* tiers NANO/MICRO/MACRO/MEGA */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .layers { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1080px) { .layers { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.6rem, 2.2vw, 2.1rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.12; }
+      .layer-card .l-otimiza { font-size: .96rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .55rem; }
+      .layer-card .l-meta .row { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; text-align: right; letter-spacing: -.01em; }
+      .layer-card.featured { background: var(--nm-ink); color: #fff; border-color: var(--nm-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(254,209,54,.22) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(255,176,32,.12) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .badge { position: absolute; top: 1.1rem; right: 1.1rem; z-index: 1; font-family: var(--font-mono); font-size: .54rem; letter-spacing: .12em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .55rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         DATAVIZ · enxame vs hub (canvas 2D)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #nm-swarm-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* angulo PiaR · 4 deslocamentos */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid.cols-3 { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* passos (roteiro operacional) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 640px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 240px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* listas quando/quando-nao/erros */
+      .use-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+      @media (min-width: 900px) { .use-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .use-col { padding: clamp(1.75rem, 2.4vw, 2.5rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; }
+      .use-col.is-dark { background: var(--nm-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .use-col h3 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; display: flex; align-items: center; gap: .6rem; }
+      .use-col.is-dark h3 { color: #fff; }
+      .use-col h3 iconify-icon { font-size: 1.5rem; color: var(--accent-deep); }
+      .use-col.is-dark h3 iconify-icon { color: var(--accent); }
+      .use-list { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-direction: column; gap: 1.1rem; }
+      .use-list li { position: relative; padding-left: 1.6rem; font-size: .98rem; line-height: 1.55; color: var(--text-muted); }
+      .use-list li strong { color: var(--primary); font-weight: 600; }
+      .use-col.is-dark .use-list li { color: rgba(255,255,255,.72); }
+      .use-col.is-dark .use-list li strong { color: #fff; }
+      .use-list li::before { content: ''; position: absolute; left: 0; top: .55rem; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+      /* metricas de reputacao */
+      .metric-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 640px) { .metric-grid { grid-template-columns: 1fr 1fr; gap: 1.1rem; } }
+      @media (min-width: 1080px) { .metric-grid { grid-template-columns: repeat(5, 1fr); } }
+      .metric-card { padding: 1.6rem 1.4rem; border-radius: var(--radius-card); background: var(--nm-ink-2); border: 1px solid rgba(255,255,255,.1); }
+      .metric-card .m-icon { font-size: 1.6rem; color: var(--accent); }
+      .metric-card .m-name { font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; margin-top: 1rem; color: #fff; }
+      .metric-card .m-desc { font-size: .86rem; line-height: 1.5; color: rgba(255,255,255,.66); margin-top: .55rem; }
+
+      /* numeros (faixa de dados) */
+      .nums { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--hairline); border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--hairline); }
+      @media (min-width: 900px) { .nums { grid-template-columns: repeat(4, 1fr); } }
+      .num-cell { background: var(--paper-lifted); padding: clamp(1.6rem, 2.5vw, 2.2rem); }
+      .num-cell .n-v { font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 3.1rem); font-weight: 700; letter-spacing: -.04em; line-height: 1; color: var(--primary); }
+      .num-cell .n-v .accent-serif { font-size: .55em; }
+      .num-cell .n-k { font-size: .86rem; line-height: 1.45; color: var(--text-muted); margin-top: .7rem; max-width: 26ch; }
+
+      /* conformidade (banner CONAR) */
+      .compliance { display: flex; gap: 1.25rem; align-items: flex-start; padding: clamp(1.75rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid rgba(254,209,54,.4); background: linear-gradient(180deg, rgba(254,209,54,.08), rgba(254,209,54,.02)); }
+      .compliance .c-icon { font-size: 2rem; color: var(--accent-deep); flex-shrink: 0; margin-top: .15rem; }
+      .compliance h3 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 600; letter-spacing: -.02em; margin: 0; }
+      .compliance p { font-size: 1.02rem; line-height: 1.6; color: var(--text-muted); margin: 1rem 0 0; max-width: 64ch; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 64ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 72ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 20ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .nm-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Nano e micro influenciadores: muitos pequenos batem poucos grandes',
+        description:
+          'Nano e micro influenciadores como vozes de credibilidade, não mídia avulsa: tiers, engajamento, vetting, CONAR e integração com PR e reputação.',
+        inLanguage: 'pt-BR',
+        about: 'Marketing de influência',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="nm-hero">
+      <canvas id="nm-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="nm-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>1k a 10k</span>
+      <span class="nm-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Engajamento 8%</span>
+      <div class="wrap hero-inner">
+        <span class="nm-hero-chip reveal"><span class="dot"></span>Influência · Nano e micro</span>
+        <h1 class="reveal d1">Muitos pequenos com <span class="accent-serif on-dark">confiança real</span> batem poucos grandes.</h1>
+        <p class="sub reveal d2">
+          Não é quantas pessoas veem, e quantas se importam. Audiência pequena e nichada gera mais engajamento e mais confiança que celebridade. A PiaR trata isso como reputação, não como compra de mídia.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Desenhar curadoria de criadores<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#regua" class="btn btn-ghost-d">Ver o argumento<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="nm-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- 2 · A VIRADA DE REGUA -->
+    <section id="regua" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">enxame</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A régua invertida</span>
+          <h2>O nano inverte a régua <span class="accent-serif">tradicional</span> de mídia.</h2>
+          <p class="lede">Em vez de pagar por quantas pessoas viram, você paga por quantas pessoas se importam. Comunidades pequenas e temáticas tendem a gerar mais engajamento e confiança do que perfis de grande porte e celebridades.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Mídia tradicional</span>
+            <h3>Poucos grandes. Você paga alcance.</h3>
+            <p>Mega e celebridade entregam máximo de alcance e mínimo de proximidade, a custo elevado. A regra é impressão: quantas pessoas o anúncio atinge.</p>
+            <div class="steps"><span>Verba</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Alcance</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Exposição</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">Nano e micro</span>
+            <h3>Muitos pequenos. Você ganha confiança.</h3>
+            <p>Audiência pequena, alta afinidade e tom pessoal. A regra muda de impressão para atenção qualificada: quantas pessoas de fato se importam.</p>
+            <div class="steps"><span>Curadoria</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Engajamento</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Confiança</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Alcance bruto compra exposição. Nicho e engajamento compram <span class="hl">atenção e confiança</span>.</p>
+      </div>
+    </section>
+
+    <!-- 3 · OS QUATRO TIERS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A pirâmide de influência</span>
+          <h2>Quatro tiers, e cada faixa mobiliza uma <span class="accent-serif">confiança</span> diferente.</h2>
+          <p class="lede">A classificação por tamanho de audiência organiza o marketing de influência em camadas. Os cortes variam por fonte: algumas tabelas encerram a faixa micro em 50 mil, outras em 100 mil. O importante é padronizar a definição internamente antes de planejar.</p>
+        </div>
+        <div class="layers">
+          {tiers.map((c, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3', c.featured && 'featured']}>
+              {c.featured && <span class="badge">{c.badge}</span>}
+              <div class="l-icon"><iconify-icon icon={c.icon}></iconify-icon></div>
+              <div class="l-id">{c.id}</div>
+              <div class="l-name">{c.nome}</div>
+              <p class="l-otimiza">{c.funcao}</p>
+              <div class="l-meta">
+                <div class="row"><span class="k">Sinal</span><span class="v">{c.metrica}</span></div>
+                <div class="row"><span class="k">Proximidade</span><span class="v">{c.proximidade}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">No Brasil, criadores com menos de 10 mil seguidores são <span class="hl">82,3% dos perfis</span> no Instagram. A base é quase todo o ecossistema.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ · enxame vs hub -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="nm-swarm-canvas" role="img" aria-label="Enxame versus hub: o engajamento somado de muitos criadores pequenos supera o de poucos grandes."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#FED136"></span>Enxame nano e micro</span>
+              <span class="li"><span class="sw" style="background:#6b7280"></span>Hub de grande porte</span>
+              <span class="li"><span class="sw" style="background:#FFD84A"></span>Engajamento somado</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>Para a comunidade, o que vale não é o tamanho. É a <span class="accent-serif on-dark">voz que soa pessoal</span>.</h2>
+            <p class="lede">Nano entrega de 3% a 8% de engajamento, contra 1% a 2% dos macro, segundo a Collabstr. Campanhas com micro podem elevar a taxa em até 60% frente a influenciadores maiores. Somado, o enxame supera o hub.</p>
+            <p class="lede" style="margin-top:1.25rem">Esse engajamento move decisão: 61% dos brasileiros já compraram por recomendação de um influenciador e 78% confiam nas recomendações de quem seguem. É a prova social funcionando onde a voz ainda soa pessoal. Para tecnologia, fintech e B2B, onde a decisão passa por reputação, essa moeda vale mais.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · O ANGULO DA PiaR -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-22" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:60ch">
+          <span class="eyebrow">O ângulo da PiaR</span>
+          <h2>Influência é relação, não <span class="accent-serif">mídia avulsa</span>.</h2>
+          <p class="lede">A maioria do conteúdo sobre nano e micro trata o tema como compra de mídia: contrata-se alcance barato, mede-se conversão, encerra-se a campanha. Esse enquadramento ignora o que torna esses perfis valiosos, que é a confiança da comunidade no criador. A PiaR começa em outro ponto, e isso muda quatro coisas no trabalho.</p>
+        </div>
+        <div class="frentes-grid">
+          {angulo.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 2 === 1) && 'd1']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · FRAMEWORKS / FRENTES -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">frameworks</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como planejar</span>
+          <h2>Cinco frameworks que funcionam melhor <span class="accent-serif">combinados</span>.</h2>
+          <p class="lede">Cada um responde a uma decisão diferente do processo, da definição de tiers até a triagem de autenticidade. Isolados, ajudam; combinados, sustentam um programa.</p>
+        </div>
+        <div class="frentes-grid cols-3">
+          {frentes.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · PASSO A PASSO -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Roteiro operacional</span>
+          <h2>Oito passos, do objetivo de reputação ao <span class="accent-serif">cultivo</span> da relação.</h2>
+          <p class="lede">A integração de nano e micro à comunicação segue uma sequência que parte do objetivo de reputação e termina no cultivo da relação continuada. Nada vai a público sem passar por revisão jurídica.</p>
+        </div>
+        <div class="steps-grid">
+          {passos.map((e, i) => (
+            <div class:list={['step-card', 'reveal', (i % 4 === 1) && 'd1', (i % 4 === 2) && 'd2', (i % 4 === 3) && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.fase}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · QUANDO USAR / QUANDO NAO -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Quando faz sentido</span>
+          <h2>Nem todo objetivo pede nano e micro. <span class="accent-serif">Função, não hierarquia</span>.</h2>
+        </div>
+        <div class="use-grid">
+          <div class="use-col reveal">
+            <h3><iconify-icon icon="solar:check-circle-line-duotone"></iconify-icon>Quando usar</h3>
+            <ul class="use-list">
+              <li><strong>Autoridade em nicho técnico.</strong> Em fintech, BaaS, saúde e tecnologia, especialistas com audiência pequena valem mais que alcance genérico.</li>
+              <li><strong>Prova social para lançamento.</strong> O tom pessoal funciona melhor que o anúncio de celebridade para mostrar adoção real.</li>
+              <li><strong>Produção de UGC em escala.</strong> Seeding com muitos criadores entrega volume e variedade de material autêntico.</li>
+              <li><strong>Comunidade de longo prazo.</strong> Programa always-on de embaixadores constrói presença sustentada, não pico isolado.</li>
+              <li><strong>Eficiência por engajamento.</strong> Quando cada real precisa comprar atenção qualificada, e não só impressão.</li>
+            </ul>
+          </div>
+          <div class="use-col is-dark reveal d1">
+            <h3><iconify-icon icon="solar:close-circle-line-duotone"></iconify-icon>Quando repensar</h3>
+            <ul class="use-list">
+              <li><strong>Reconhecimento de massa imediato.</strong> Para um único momento de altíssimo alcance, mega ou mídia paga fazem mais sentido. Nano e micro brilham na soma.</li>
+              <li><strong>Sem operação para coordenar.</strong> Gerir muitos nano exige ferramenta, contrato e processo. Sem isso, o custo de coordenação anula a eficiência.</li>
+              <li><strong>Controle de cada palavra.</strong> Se o conteúdo precisa ser totalmente roteirizado, o resultado soa artificial e rende menos.</li>
+              <li><strong>Sem método de mensuração.</strong> Sem combinar antes o que será medido, a campanha vira gasto sem leitura.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · NUMEROS -->
+    <section class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-12" aria-hidden="true">prova</span>
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow">O que os dados dizem</span>
+          <h2>Números de mercado, lidos como ordem de <span class="accent-serif">grandeza</span>.</h2>
+          <p class="lede">Trate cada cifra como referência de setor, não como promessa. Resultado depende de fit, oferta e execução.</p>
+        </div>
+        <div class="nums reveal d1">
+          <div class="num-cell">
+            <div class="n-v">82,3<span class="accent-serif">%</span></div>
+            <p class="n-k">dos perfis no Instagram têm menos de 10 mil seguidores no Brasil (E-Commerce Brasil).</p>
+          </div>
+          <div class="num-cell">
+            <div class="n-v">+60<span class="accent-serif">%</span></div>
+            <p class="n-k">de aumento possível na taxa de engajamento com micro, frente a influenciadores maiores.</p>
+          </div>
+          <div class="num-cell">
+            <div class="n-v">78<span class="accent-serif">%</span></div>
+            <p class="n-k">dos brasileiros confiam nas recomendações dos influenciadores que seguem (Empreender).</p>
+          </div>
+          <div class="num-cell">
+            <div class="n-v">5,2<span class="accent-serif">x</span></div>
+            <p class="n-k">de ROI médio do marketing de influência, cerca de R$ 5,20 para cada R$ 1 investido.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · ERROS COMUNS -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow on-dark">O que mais derruba campanha</span>
+          <h2>Os erros nascem de tratar influência como <span class="accent-serif on-dark">mídia avulsa</span>.</h2>
+        </div>
+        <div class="use-grid">
+          <div class="use-col is-dark reveal">
+            <h3><iconify-icon icon="solar:danger-triangle-line-duotone"></iconify-icon>Os deslizes clássicos</h3>
+            <ul class="use-list">
+              <li><strong>Confundir alcance com resultado.</strong> Contratar muitos perfis sem estratégia gera volume sem conversão.</li>
+              <li><strong>Ignorar fraude e seguidores falsos.</strong> A InfluenceFlow estima que ao menos 15% do investimento se perde com fraude, concentrada no tier macro. Sem vetting, a marca paga por audiência fantasma.</li>
+              <li><strong>Não sinalizar publicidade.</strong> Descumprir o Guia do CONAR gera risco legal e perda de confiança.</li>
+              <li><strong>Tratar o criador como descartável.</strong> Relações transacionais minam a autenticidade e queimam a base.</li>
+            </ul>
+          </div>
+          <div class="use-col is-dark reveal d1">
+            <h3><iconify-icon icon="solar:eye-closed-line-duotone"></iconify-icon>O que passa batido</h3>
+            <ul class="use-list">
+              <li><strong>Engessar briefing e roteiro.</strong> Excesso de controle criativo mata o tom genuíno e piora a performance.</li>
+              <li><strong>Escolher por seguidores, não por fit.</strong> O erro clássico que provoca descompasso de audiência e crises de imagem.</li>
+              <li><strong>Medir só seguidores e likes.</strong> Sem engajamento qualificado, sentimento e EMV, a leitura fica rasa.</li>
+              <li><strong>Subestimar a operação em escala.</strong> Gerir centenas de microparcerias sem ferramenta transforma eficiência em custo oculto.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 · CONFORMIDADE CONAR -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="compliance reveal">
+          <iconify-icon class="c-icon" icon="solar:scale-line-duotone"></iconify-icon>
+          <div>
+            <span class="eyebrow" style="margin-bottom:.8rem">Conformidade · CONAR 2026</span>
+            <h3>Parte do trabalho deixou de ser criativo e virou curadoria de risco.</h3>
+            <p>O CONAR publicou nova edição do Guia de Publicidade por Influenciadores em maio de 2026, com efeitos a partir de 1º de junho de 2026. As regras de sinalização ficaram mais explícitas (#publi clara e ostensiva, não escondida no texto) e o guia trata de temas novos como uso de inteligência artificial, perfis virtuais e avatares, e proteção de crianças e adolescentes no ambiente digital.</p>
+            <p style="margin-top:1rem">Contrato, sinalização correta, alinhamento de valores e checagem de conformidade deixam de ser detalhe e passam a ser parte da entrega. É um terreno em que a comunicação com revisão jurídica protege a reputação antes que o problema apareça.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 · METRICAS DE REPUTACAO -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:50ch">
+          <span class="eyebrow on-dark">Medir além do like</span>
+          <h2>Para quem trata influência como comunicação, a leitura não para na <span class="accent-serif on-dark">conversão</span>.</h2>
+          <p class="lede">A combinação destas leituras traduz influência em reputação, que é o que sustenta marca no tempo, e não apenas em pico de venda.</p>
+        </div>
+        <div class="metric-grid reveal d1">
+          {metricas.map((m) => (
+            <div class="metric-card">
+              <iconify-icon class="m-icon" icon={m.icon}></iconify-icon>
+              <div class="m-name">{m.nome}</div>
+              <p class="m-desc">{m.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 · PROVA E LASTRO -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:48ch">
+          <span class="eyebrow">Prova e lastro</span>
+          <h2>Comunicação para tech, em São Paulo, desde {site.foundingYear}.</h2>
+          <p class="lede">A PiaR é agência de comunicação integrada (PR, branding e reputação) para startups, scale-ups e tecnologia. Nosso trabalho começa pelo dado e pela mídia-alvo, recusa o disparo de release em massa e usa metodologia PEP com revisão jurídica.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:var(--text-faint); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips" style="--c:1">{exits.map((c) => <span class="chip" style="background:rgba(15,15,17,.04); color:var(--primary); border-color:var(--hairline-strong)">{c}</span>)}</div>
+          <span class="ds-mono" style="color:var(--text-faint); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip" style="background:rgba(15,15,17,.04); color:var(--primary); border-color:var(--hairline-strong)">{c}</span>)}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">nano</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Nano e micro como estratégia de <span class="accent-serif on-dark">reputação</span>, não compra avulsa.</h2>
+        <p class="lede reveal d2">Podemos ajudar a desenhar a curadoria de criadores, a conformidade e a integração com assessoria de imprensa. O investimento é sob consulta, conforme o escopo de cada marca.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Falar com a PiaR<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no heroi (Tres Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · enxame de nos (canvas 2D)
+         muitos pontos pequenos com alta densidade (micro) vs
+         poucos grandes (hubs). amarelo + preto.
+         ======================================================== */
+      (function heroSwarm() {
+        var canvas = document.getElementById('nm-hero-canvas');
+        if (!canvas) { return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { canvas.style.background = 'radial-gradient(70% 90% at 72% 32%, #2a2407 0%, #120f06 55%, #0A0A0C 100%)'; return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, t = 0;
+        var nano = [];   // muitos pontos pequenos, densos
+        var hubs = [];   // poucos grandes
+        var pointer = { x: -1, y: -1, on: false };
+
+        function build() {
+          var r = canvas.getBoundingClientRect();
+          W = r.width; H = r.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+          // enxame de nano: densidade alta, concentrada no quadrante direito.
+          var count = Math.round(Math.min(280, Math.max(120, (W * H) / 5200)));
+          nano = [];
+          for (var i = 0; i < count; i++) {
+            // bias para a direita/centro do heroi (onde a foto/visual vive)
+            var bx = Math.pow(Math.random(), 0.6);
+            var x = W * (0.30 + 0.74 * bx);
+            var y = H * (0.10 + 0.84 * Math.random());
+            nano.push({
+              x: x, y: y, hx: x, hy: y,
+              r: 0.9 + Math.random() * 1.9,
+              a: 0.18 + Math.random() * 0.5,
+              ph: Math.random() * Math.PI * 2,
+              sp: 0.4 + Math.random() * 1.1,
+              amp: 5 + Math.random() * 14
+            });
+          }
+          // poucos hubs grandes, esparsos.
+          hubs = [
+            { x: W * 0.82, y: H * 0.30, r: 26 + W * 0.01, ph: 0.4 },
+            { x: W * 0.62, y: H * 0.70, r: 20 + W * 0.008, ph: 2.1 },
+            { x: W * 0.92, y: H * 0.66, r: 16 + W * 0.006, ph: 4.0 }
+          ];
+        }
+        build();
+        window.addEventListener('resize', build, { passive: true });
+
+        canvas.addEventListener('pointermove', function (e) {
+          var r = canvas.getBoundingClientRect();
+          pointer.x = e.clientX - r.left; pointer.y = e.clientY - r.top; pointer.on = true;
+        }, { passive: true });
+        canvas.addEventListener('pointerleave', function () { pointer.on = false; });
+
+        function frame() {
+          t += 0.016;
+          ctx.clearRect(0, 0, W, H);
+
+          // hubs grandes: halo amarelo fraco, poucos. soam distantes.
+          for (var h = 0; h < hubs.length; h++) {
+            var hu = hubs[h];
+            var pr = hu.r * (1 + 0.06 * Math.sin(t * 0.8 + hu.ph));
+            var g = ctx.createRadialGradient(hu.x, hu.y, 0, hu.x, hu.y, pr * 2.6);
+            g.addColorStop(0, 'rgba(120,124,132,.16)');
+            g.addColorStop(0.5, 'rgba(120,124,132,.05)');
+            g.addColorStop(1, 'rgba(120,124,132,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(hu.x, hu.y, pr * 2.6, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(hu.x, hu.y, pr, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(150,154,162,.22)'; ctx.fill();
+            ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(180,184,192,.28)'; ctx.stroke();
+          }
+
+          // linhas de proximidade entre nano vizinhos (a malha de confianca)
+          ctx.lineWidth = 0.6;
+          for (var i = 0; i < nano.length; i++) {
+            var a = nano[i];
+            for (var j = i + 1; j < nano.length; j++) {
+              var b = nano[j];
+              var dx = a.x - b.x, dy = a.y - b.y;
+              var d2 = dx * dx + dy * dy;
+              if (d2 < 1600) {
+                var op = (1 - d2 / 1600) * 0.16;
+                ctx.strokeStyle = 'rgba(254,209,54,' + op.toFixed(3) + ')';
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+              }
+            }
+          }
+
+          // enxame nano: muitos pontos amarelos pequenos, vivos.
+          for (var k = 0; k < nano.length; k++) {
+            var n = nano[k];
+            // deriva organica
+            n.x = n.hx + Math.cos(t * n.sp + n.ph) * n.amp;
+            n.y = n.hy + Math.sin(t * n.sp * 0.8 + n.ph) * n.amp * 0.7;
+            // repulsao suave do ponteiro: o enxame reage ao toque
+            if (pointer.on) {
+              var px = n.x - pointer.x, py = n.y - pointer.y;
+              var pd = px * px + py * py;
+              if (pd < 9000 && pd > 1) {
+                var f = (1 - pd / 9000) * 14;
+                var inv = 1 / Math.sqrt(pd);
+                n.x += px * inv * f; n.y += py * inv * f;
+              }
+            }
+            var tw = 0.6 + 0.4 * Math.sin(t * 2 + n.ph);
+            ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,' + (n.a * tw).toFixed(3) + ')';
+            ctx.fill();
+          }
+
+          if (!prefersReduced) { raf = requestAnimationFrame(frame); }
+        }
+        var raf = requestAnimationFrame(frame);
+        if (prefersReduced) { frame(); }
+      })();
+
+      /* ========================================================
+         DATAVIZ · enxame vs hub (canvas 2D)
+         engajamento somado de muitos pequenos supera poucos grandes.
+         barra de total que enche conforme o enxame pulsa.
+         ======================================================== */
+      (function swarmVsHub() {
+        var canvas = document.getElementById('nm-swarm-canvas');
+        if (!canvas) { return; }
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { return; }
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, t = 0;
+        var swarm = [], hub = null, pulses = [], swarmFill = 0, hubFill = 0;
+
+        function layout() {
+          var r = canvas.getBoundingClientRect();
+          W = r.width; H = r.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+          // enxame: muitos pontos pequenos no lado esquerdo, em cluster.
+          swarm = [];
+          var cx = W * 0.27, cy = H * 0.42, count = 46;
+          for (var i = 0; i < count; i++) {
+            var ang = Math.random() * Math.PI * 2;
+            var rad = Math.pow(Math.random(), 0.5) * Math.min(W, H) * 0.20;
+            swarm.push({
+              x: cx + Math.cos(ang) * rad,
+              y: cy + Math.sin(ang) * rad,
+              r: 1.6 + Math.random() * 2.2,
+              ph: Math.random() * Math.PI * 2,
+              w: 1 + Math.random() * 1.4   // peso de engajamento individual (pequeno)
+            });
+          }
+          // hub: um no grande no lado direito.
+          hub = { x: W * 0.76, y: H * 0.42, r: Math.min(W, H) * 0.13 };
+        }
+        layout();
+
+        function spawn() {
+          if (prefersReduced || swarm.length === 0) { return; }
+          var s = swarm[Math.floor(Math.random() * swarm.length)];
+          pulses.push({ x: s.x, y: s.y, tx: W * 0.5, ty: H * 0.80, p: 0, sp: 0.012 + Math.random() * 0.01, src: 'swarm' });
+          // hub dispara mais raramente
+          if (Math.random() < 0.34 && hub) {
+            pulses.push({ x: hub.x, y: hub.y, tx: W * 0.5, ty: H * 0.80, p: 0, sp: 0.013, src: 'hub' });
+          }
+        }
+
+        function draw() {
+          t += 0.016;
+          ctx.clearRect(0, 0, W, H);
+
+          // rotulos
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'alphabetic';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.5)';
+          ctx.fillText('MUITOS NANO E MICRO', W * 0.27, H * 0.10);
+          ctx.fillText('UM HUB GRANDE', W * 0.76, H * 0.10);
+
+          // hub grande (cinza, distante)
+          var hp = hub.r * (1 + 0.04 * Math.sin(t));
+          var hg = ctx.createRadialGradient(hub.x, hub.y, 0, hub.x, hub.y, hp * 1.8);
+          hg.addColorStop(0, 'rgba(107,114,128,.35)');
+          hg.addColorStop(1, 'rgba(107,114,128,0)');
+          ctx.fillStyle = hg;
+          ctx.beginPath(); ctx.arc(hub.x, hub.y, hp * 1.8, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(hub.x, hub.y, hp, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(107,114,128,.55)'; ctx.fill();
+          ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(150,154,162,.5)'; ctx.stroke();
+
+          // malha do enxame
+          ctx.lineWidth = 0.6;
+          for (var i = 0; i < swarm.length; i++) {
+            var a = swarm[i];
+            for (var j = i + 1; j < swarm.length; j++) {
+              var b = swarm[j];
+              var dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+              if (d2 < 1100) {
+                ctx.strokeStyle = 'rgba(254,209,54,' + ((1 - d2 / 1100) * 0.22).toFixed(3) + ')';
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+              }
+            }
+          }
+          // nos do enxame
+          for (var k = 0; k < swarm.length; k++) {
+            var s = swarm[k];
+            var tw = 0.55 + 0.45 * Math.sin(t * 2.4 + s.ph);
+            var ox = Math.cos(t * 0.8 + s.ph) * 2.4;
+            var oy = Math.sin(t * 0.7 + s.ph) * 2.0;
+            ctx.beginPath(); ctx.arc(s.x + ox, s.y + oy, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(254,209,54,' + (0.55 + 0.4 * tw).toFixed(3) + ')'; ctx.fill();
+          }
+
+          // pulsos viajando ate a barra de total
+          for (var p = pulses.length - 1; p >= 0; p--) {
+            var pu = pulses[p];
+            pu.p += pu.sp;
+            var u = pu.p < 1 ? pu.p : 1;
+            var ex = pu.x + (pu.tx - pu.x) * u;
+            var ey = pu.y + (pu.ty - pu.y) * u;
+            var col = pu.src === 'swarm' ? '254,209,54' : '150,154,162';
+            ctx.beginPath(); ctx.arc(ex, ey, 2.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.9)'; ctx.fill();
+            if (pu.p >= 1) {
+              if (pu.src === 'swarm') { swarmFill = Math.min(1, swarmFill + 0.020); }
+              else { hubFill = Math.min(1, hubFill + 0.010); }
+              pulses.splice(p, 1);
+            }
+          }
+          // decaimento lento para a barra respirar
+          swarmFill = Math.max(0, swarmFill - 0.0016);
+          hubFill = Math.max(0, hubFill - 0.0016);
+
+          // barra de engajamento somado (parte de baixo)
+          var bx = W * 0.14, bw = W * 0.72, by = H * 0.86, bh = 12;
+          ctx.fillStyle = 'rgba(255,255,255,.08)';
+          roundRect(bx, by, bw, bh, 6); ctx.fill();
+          // segmento do enxame (amarelo) ocupa mais
+          var swW = bw * (0.30 + 0.55 * swarmFill);
+          var hubW = bw * (0.12 + 0.20 * hubFill);
+          ctx.fillStyle = 'rgba(150,154,162,.6)';
+          roundRect(bx, by, hubW, bh, 6); ctx.fill();
+          ctx.fillStyle = '#FED136';
+          roundRect(bx, by, swW, bh, 6); ctx.fill();
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'left';
+          ctx.fillStyle = 'rgba(255,255,255,.62)';
+          ctx.fillText('ENGAJAMENTO SOMADO', bx, by - 9);
+
+          requestAnimationFrame(draw);
+        }
+
+        function roundRect(x, y, w, h, r) {
+          if (w < 2 * r) { r = w / 2; }
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + w, y, x + w, y + h, r);
+          ctx.arcTo(x + w, y + h, x, y + h, r);
+          ctx.arcTo(x, y + h, x, y, r);
+          ctx.arcTo(x, y, x + w, y, r);
+          ctx.closePath();
+        }
+
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          swarmFill = 0.7; hubFill = 0.25;
+          layout(); draw();
+        } else {
+          setInterval(spawn, 420);
+          spawn();
+          requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>

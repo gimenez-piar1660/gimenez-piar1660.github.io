@@ -1,0 +1,931 @@
+---
+// ============================================================================
+// Exemplar narrativo · GEO PR
+// Conteúdo voice-backed portado de:
+//   src/content/pages/geo.md (fonte; renomeado de geo-generative-engine-optimization.md)
+//   src/content/pages/o-que-e-geo-pr.md
+// Originais preservados. Esta página é a versão "narrativa espetacular":
+// herói WebGL (campo generativo) + dataviz de rede de citação (canvas) +
+// scroll storytelling (GSAP/Lenis), sobre o DS da PiaR enriquecido com a
+// estrutura Mastercard (eyebrow-dot, raios stadium/pill, inversão dark,
+// gradiente-assinatura por categoria).
+// ============================================================================
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+
+const url = `${site.domain}/geo`;
+
+// As três camadas: SEO / GEO / GEO PR.
+const camadas = [
+  {
+    id: 'SEO',
+    nome: 'Search Engine Optimization',
+    otimiza: 'A sua própria página, para ranquear no buscador.',
+    metrica: 'Posição e clique',
+    sinal: 'O seu domínio',
+    icon: 'solar:magnifer-line-duotone',
+  },
+  {
+    id: 'GEO',
+    nome: 'Generative Engine Optimization',
+    otimiza: 'O seu conteúdo, para ser citável dentro da resposta de IA.',
+    metrica: 'A citação',
+    sinal: 'O seu domínio',
+    icon: 'solar:chat-square-code-line-duotone',
+  },
+  {
+    id: 'GEO PR',
+    nome: 'GEO operado por relações públicas',
+    otimiza: 'O que terceiros de autoridade dizem sobre você.',
+    metrica: 'A citação',
+    sinal: 'Imprensa e especialistas',
+    icon: 'solar:cpu-bolt-line-duotone',
+    featured: true,
+  },
+];
+
+// As quatro etapas do método aplicadas a GEO.
+const etapas = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico de visibilidade em IA',
+    prazo: 'Semanas 1 e 2',
+    desc: 'Mapeamos as perguntas que decidem a compra no seu mercado, perguntamos a elas nos mecanismos generativos e medimos onde a sua marca aparece, onde não aparece e quem a IA cita no seu lugar.',
+  },
+  {
+    num: '02',
+    titulo: 'Messaging Framework',
+    prazo: 'Semanas 3 e 4',
+    desc: 'Definimos como a marca quer ser descrita e quais fatos, dados e porta-vozes sustentam essa descrição, para que a citação venha certa quando vier.',
+  },
+  {
+    num: '03',
+    titulo: 'Ativação editorial',
+    prazo: 'Semanas 5 a 12',
+    desc: 'Conquistamos a cobertura, a menção e o conteúdo próprio que alimentam as fontes que os modelos consomem. Com pauta e relacionamento, não disparo em massa.',
+  },
+  {
+    num: '04',
+    titulo: 'Monitoramento e escala',
+    prazo: 'Ciclos quinzenais',
+    desc: 'Acompanhamos a evolução das citações em IA junto com a cobertura de imprensa, e ajustamos a rota. Medição contínua, não foto única.',
+  },
+];
+
+// As cinco frentes de GEO na PiaR.
+const frentes = [
+  {
+    nome: 'Cobertura citável',
+    desc: 'Pauta e relacionamento com a imprensa para que a marca apareça nos veículos e nas reportagens que os modelos consultam ao responder sobre o seu setor.',
+    icon: 'solar:document-text-line-duotone',
+  },
+  {
+    nome: 'Presença nos caminhos de citação',
+    desc: 'Trabalho editorial para colocar a marca nos rankings, listas e portais setoriais que aparecem como fonte nas respostas de IA. Do jeito que se conquista menção, não comprando link.',
+    icon: 'solar:routing-2-line-duotone',
+  },
+  {
+    nome: 'Conteúdo próprio que vira fonte',
+    desc: 'Material de autoridade no seu domínio, escrito para responder com precisão as perguntas que decidem a compra, com dados e porta-vozes nomeados.',
+    icon: 'solar:pen-new-square-line-duotone',
+  },
+  {
+    nome: 'Representação correta da marca',
+    desc: 'Monitoramento de como ChatGPT, Gemini e os AI Overviews descrevem a sua empresa e os seus porta-vozes, e plano de resposta quando a representação está errada ou desatualizada.',
+    icon: 'solar:shield-check-line-duotone',
+  },
+  {
+    nome: 'Sinais técnicos para agentes',
+    desc: 'Dados estruturados, metadados editoriais e regras claras para os bots de IA, para que o modelo entenda e cite a sua página sem ambiguidade. A engenharia vem por último, depois da autoridade.',
+    icon: 'solar:code-square-line-duotone',
+  },
+];
+
+const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'FluencyPass', 'Unlimitail'];
+
+const faq = [
+  {
+    q: 'GEO substitui o SEO?',
+    a: 'Não. São disciplinas que convivem. O SEO continua decidindo a sua posição na busca clássica, onde grande parte do tráfego ainda acontece. O GEO decide se a sua marca aparece quando a resposta vem pronta de um modelo. A PiaR trata os dois como camadas da mesma reputação.',
+  },
+  {
+    q: 'Quanto tempo até a minha marca ser citada por uma IA?',
+    a: 'Depende de onde a marca parte e de quanto a concorrência já ocupa as fontes que o modelo consulta. Citação em IA é consequência de autoridade construída, não de um ajuste pontual no site. Por isso o diagnóstico vem primeiro, sem promessa de prazo que não se sustenta.',
+  },
+  {
+    q: 'Vocês garantem que o ChatGPT vai citar a minha marca?',
+    a: 'Não, e desconfie de quem garante. Nem a PiaR nem ninguém controla a saída de um modelo de linguagem. O que está sob controle é o trabalho que aumenta a probabilidade de citação: cobertura qualificada, presença nas fontes certas e sinais técnicos corretos. É isso que entregamos e medimos.',
+  },
+  {
+    q: 'Qual a diferença entre a PiaR e uma agência de SEO que oferece GEO?',
+    a: 'Uma agência de SEO trata GEO como otimização técnica de página. A PiaR trata como reputação: a IA cita quem a imprensa de autoridade já cita, e conquistar essa cobertura é trabalho de relações com a mídia. Fazemos a parte técnica também, mas ela vem por último, depois da autoridade.',
+  },
+  {
+    q: 'Como vocês medem o resultado de GEO?',
+    a: 'Medimos a presença da marca nas respostas dos mecanismos generativos para as perguntas que importam no seu mercado, acompanhada da cobertura de imprensa que alimenta essa presença. O monitoramento é contínuo, em ciclos quinzenais, e separa o que é resultado observado do que é estimativa.',
+  },
+  {
+    q: 'Qual a diferença entre GEO e GEO PR?',
+    a: 'GEO é a disciplina ampla de tornar a marca citável pela IA, com foco também no conteúdo do próprio domínio. GEO PR é o recorte operado por relações públicas, que constrói o sinal externo: a menção em mídia de autoridade. As duas se somam.',
+  },
+];
+---
+<BaseLayout
+  title="O que é GEO: como a IA cita a sua marca"
+  description="GEO (Generative Engine Optimization) é o trabalho de fazer a sua marca ser citada nas respostas de ChatGPT, Gemini, Perplexity e AI Overviews, não só listada na busca. Guia do que é, como difere de SEO e como se mede. Desde 2013."
+  canonical={url}
+>
+  <Fragment slot="head">
+    <style is:global>
+      :root {
+        --primary: #0F0F11;
+        --accent: #FED136;
+        --accent-deep: #E0B420;
+        --paper: #FAFAFA;
+        --paper-warm: #F4F1EA;       /* nó Mastercard: putty quente */
+        --paper-lifted: #FCFBFA;
+        --geo-ink: #0A0A0C;
+        --geo-ink-2: #141417;
+        --geo-amber: #FFB020;
+        --geo-orange: #FF7A1A;
+        --geo-rust: #C7410B;
+        --text-muted: rgba(15, 15, 17, .62);
+        --text-faint: rgba(15, 15, 17, .42);
+        --hairline: rgba(0, 0, 0, .08);
+        --hairline-strong: rgba(0, 0, 0, .14);
+        --hairline-d: rgba(255, 255, 255, .12);
+        --radius-btn: 20px;
+        --radius-card: 24px;
+        --radius-stadium: 40px;
+        --radius-pill: 999px;
+        --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+        --t-smooth: all .6s var(--ease-out-expo);
+        --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-serif: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+
+      #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+
+      .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 1; }
+      @media (min-width: 768px) { .wrap { padding-inline: 2rem; } }
+
+      .eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+      .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+      .eyebrow.on-dark { color: rgba(255,255,255,.72); }
+
+      .accent-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--yellow-ink); letter-spacing: -.02em; }
+      .accent-serif.on-dark { color: var(--accent); }
+
+      /* botões */
+      .btn { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.7rem; border-radius: var(--radius-btn); font-size: .95rem; font-weight: 600; letter-spacing: -.01em; text-decoration: none; transition: var(--t-smooth); cursor: pointer; border: 1.5px solid transparent; }
+      .btn iconify-icon { transition: transform .4s var(--ease-out-expo); }
+      .btn:hover iconify-icon { transform: translateX(4px); }
+      .btn-accent { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+      .btn-accent:hover { background: #FFD84A; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(254,209,54,.32); }
+      .btn-ghost-d { background: transparent; color: #fff; border-color: rgba(255,255,255,.25); }
+      .btn-ghost-d:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
+      .btn-ghost { background: transparent; color: var(--primary); border-color: rgba(0,0,0,.16); }
+      .btn-ghost:hover { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.32); }
+
+      /* ===========================================================
+         1 · HERO · WebGL generative field
+         =========================================================== */
+      .geo-hero { position: relative; min-height: 100vh; min-height: 100svh; background: var(--geo-ink); color: #fff; overflow: hidden; display: flex; align-items: center; isolation: isolate; }
+      #geo-hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+      .geo-hero .scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(120% 90% at 18% 35%, rgba(10,10,12,.82) 0%, rgba(10,10,12,.35) 45%, rgba(10,10,12,0) 70%),
+          linear-gradient(180deg, rgba(10,10,12,.5) 0%, rgba(10,10,12,0) 30%, rgba(10,10,12,.2) 75%, rgba(10,10,12,.9) 100%);
+      }
+      .geo-hero .hero-inner { position: relative; z-index: 2; width: 100%; padding-block: 9rem 4rem; }
+      .geo-hero-chip { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.78); }
+      .geo-hero-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px 1px rgba(254,209,54,.7); }
+      .geo-hero h1 { font-size: clamp(2.9rem, 8.5vw, 8rem); font-weight: 700; line-height: .92; letter-spacing: -.045em; margin: 1.6rem 0 0; max-width: 17ch; text-wrap: balance; }
+      .geo-hero .sub { font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.5; color: rgba(255,255,255,.74); margin-top: 1.75rem; max-width: 46ch; }
+      .geo-hero .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.5rem; }
+      .geo-scroll-cue { position: absolute; left: 50%; bottom: 1.75rem; transform: translateX(-50%); z-index: 2; display: inline-flex; flex-direction: column; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+      .geo-scroll-cue .line { width: 1px; height: 38px; background: linear-gradient(180deg, rgba(255,255,255,.5), transparent); animation: cuePulse 2.2s var(--ease-out-expo) infinite; }
+      @keyframes cuePulse { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
+
+      /* parallax de profundidade (nó Mastercard: depth / órbita / trajetória) */
+      .px { will-change: transform; }
+      .has-ghost { overflow: hidden; }
+      .ghost-mark { position: absolute; z-index: 0; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: clamp(7rem, 24vw, 24rem); line-height: .78; letter-spacing: -.04em; color: rgba(15,15,17,.045); pointer-events: none; user-select: none; white-space: nowrap; }
+      .section.dark .ghost-mark { color: rgba(255,255,255,.04); }
+      .ghost-mark.tr { top: -2rem; right: -1.5rem; }
+      .ghost-mark.bl { bottom: -3rem; left: -2rem; }
+      .geo-hero-float { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: var(--radius-pill); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.72); }
+      .geo-hero-float .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--geo-orange); box-shadow: 0 0 8px 1px rgba(255,122,26,.7); }
+      .geo-hero-float.f1 { right: 9%; top: 27%; }
+      .geo-hero-float.f2 { right: 17%; bottom: 21%; }
+      @media (max-width: 900px) { .geo-hero-float { display: none; } .ghost-mark { font-size: clamp(6rem, 30vw, 12rem); } }
+
+      /* Três Mares · contorno topográfico (terreno de autoridade) como camada de profundidade */
+      .has-contour { overflow: hidden; }
+      .contour-field {
+        position: absolute; inset: -14% -10%; z-index: 0; pointer-events: none;
+        --contour-line: rgba(255,122,26,.11);
+        background: repeating-radial-gradient(circle at 76% 40%, transparent 0 47px, var(--contour-line) 47px 48px);
+        -webkit-mask-image: radial-gradient(circle at 76% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+                mask-image: radial-gradient(circle at 76% 40%, #000 0%, rgba(0,0,0,.55) 42%, transparent 78%);
+        will-change: transform;
+      }
+      @media (max-width: 760px) { .contour-field { opacity: .6; } }
+
+      /* ===========================================================
+         seções base
+         =========================================================== */
+      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
+      .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
+      .section.dark { background: var(--geo-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }
+      .section h2 { font-size: clamp(2.1rem, 4.6vw, 4rem); font-weight: 600; line-height: 1.03; letter-spacing: -.035em; margin: 1rem 0 0; max-width: 20ch; text-wrap: balance; }
+      .section.dark h2 { color: #fff; }
+      .lede { font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.55; color: var(--text-muted); margin-top: 1.5rem; max-width: 56ch; }
+      .section.dark .lede { color: rgba(255,255,255,.72); }
+      .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+      /* compare 2 colunas (a virada) */
+      .compare { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+      @media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+      .compare-card { padding: clamp(2rem, 3vw, 2.75rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; min-height: 280px; display: flex; flex-direction: column; }
+      .compare-card .ctag { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -.025em; margin: .9rem 0 0; line-height: 1.1; }
+      .compare-card p { font-size: 1.0625rem; line-height: 1.6; color: var(--text-muted); margin-top: 1rem; }
+      .compare-card .steps { margin-top: auto; padding-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+      .compare-card .steps iconify-icon { color: var(--accent-deep); }
+      .compare-card.is-dark { background: var(--geo-ink-2); border-color: rgba(255,255,255,.12); color: #fff; }
+      .compare-card.is-dark .ctag { color: rgba(255,255,255,.45); }
+      .compare-card.is-dark p { color: rgba(255,255,255,.72); }
+      .compare-card.is-dark .steps { color: rgba(255,255,255,.5); }
+      .compare-card.is-dark .steps iconify-icon { color: var(--accent); }
+      .punch { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.6rem, 3.4vw, 2.9rem); line-height: 1.18; letter-spacing: -.02em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 24ch; }
+      .punch .hl { color: var(--yellow-ink); font-style: italic; }
+      .section.dark .punch .hl { color: var(--accent); }
+
+      /* camadas SEO/GEO/GEO PR */
+      .layers { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 980px) { .layers { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+      .layer-card { position: relative; padding: clamp(1.75rem, 2.4vw, 2.25rem); border-radius: var(--radius-card); border: 1px solid var(--hairline); background: #fff; overflow: hidden; transition: var(--t-smooth); }
+      .layer-card:hover { transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.07); border-color: rgba(0,0,0,.14); }
+      .layer-card .l-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(15,15,17,.05); color: var(--primary); font-size: 1.4rem; }
+      .layer-card .l-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: 1.25rem; }
+      .layer-card .l-name { font-size: 1.4rem; font-weight: 600; letter-spacing: -.025em; margin-top: .3rem; line-height: 1.12; }
+      .layer-card .l-otimiza { font-size: 1rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+      .layer-card .l-meta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline); display: flex; flex-direction: column; gap: .55rem; }
+      .layer-card .l-meta .row { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+      .layer-card .l-meta .k { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+      .layer-card .l-meta .v { font-weight: 600; text-align: right; letter-spacing: -.01em; }
+      .layer-card.featured { background: var(--geo-ink); color: #fff; border-color: var(--geo-ink); }
+      .layer-card.featured::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(90% 60% at 80% 0%, rgba(255,122,26,.22) 0%, transparent 60%), radial-gradient(70% 50% at 10% 100%, rgba(254,209,54,.14) 0%, transparent 60%); }
+      .layer-card.featured .l-icon { background: rgba(255,255,255,.08); color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-id { color: var(--accent); position: relative; z-index: 1; }
+      .layer-card.featured .l-name, .layer-card.featured .l-otimiza { position: relative; z-index: 1; }
+      .layer-card.featured .l-otimiza { color: rgba(255,255,255,.75); }
+      .layer-card.featured .l-meta { border-color: rgba(255,255,255,.16); position: relative; z-index: 1; }
+      .layer-card.featured .l-meta .k { color: rgba(255,255,255,.5); }
+      .layer-card.featured .badge { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 1; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: .3rem .6rem; border-radius: var(--radius-pill); font-weight: 700; }
+
+      /* ===========================================================
+         4 · DATAVIZ · rede de citação (canvas)
+         =========================================================== */
+      .viz-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1024px) { .viz-grid { grid-template-columns: 1.05fr 1fr; gap: 3.5rem; } }
+      .viz-stage { position: relative; aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius-card); overflow: hidden; background: linear-gradient(160deg, #141417 0%, #0A0A0C 70%); border: 1px solid rgba(255,255,255,.1); }
+      #geo-network-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      .viz-legend { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; margin-top: 1.5rem; }
+      .viz-legend .li { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+      .viz-legend .sw { width: 12px; height: 12px; border-radius: 50%; }
+
+      /* etapas (método) */
+      .steps-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+      .step-card { padding: 1.85rem 1.6rem; border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); display: flex; flex-direction: column; min-height: 250px; }
+      .step-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(254,209,54,.45); }
+      .step-card .s-num { font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .1em; color: var(--accent-deep); }
+      .step-card .s-prazo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); margin-top: .9rem; }
+      .step-card .s-titulo { font-size: 1.18rem; font-weight: 600; letter-spacing: -.02em; margin-top: .3rem; line-height: 1.2; }
+      .step-card .s-desc { font-size: .92rem; line-height: 1.55; color: var(--text-muted); margin-top: .85rem; }
+
+      /* frentes */
+      .frentes-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+      @media (min-width: 720px) { .frentes-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; } }
+      @media (min-width: 1100px) { .frentes-grid { grid-template-columns: repeat(3, 1fr); } }
+      .frente-card { padding: clamp(1.75rem, 2.2vw, 2.25rem); border-radius: var(--radius-card); background: #fff; border: 1px solid var(--hairline); transition: var(--t-smooth); }
+      .frente-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,.06); border-color: rgba(0,0,0,.14); }
+      .frente-card .f-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(254,209,54,.14); color: var(--accent-deep); font-size: 1.5rem; }
+      .frente-card .f-name { font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; margin-top: 1.25rem; }
+      .frente-card .f-desc { font-size: .95rem; line-height: 1.6; color: var(--text-muted); margin-top: .7rem; }
+
+      /* prova */
+      .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+      .chip { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+      .honesty { margin-top: 2.5rem; padding: 1.75rem 2rem; border-radius: var(--radius-card); border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); display: flex; gap: 1rem; align-items: flex-start; max-width: 60ch; }
+      .honesty iconify-icon { color: var(--accent); font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
+      .honesty p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,.82); margin: 0; }
+
+      /* faq */
+      .faq-item { border-bottom: 1px solid var(--hairline); }
+      .faq-item summary { list-style: none; cursor: pointer; padding: 1.6rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; }
+      .faq-item summary::-webkit-details-marker { display: none; }
+      .faq-item summary:hover { color: var(--accent-deep); }
+      .faq-item summary iconify-icon { transition: transform .4s var(--ease-out-expo); font-size: 1.5rem; color: var(--text-muted); flex-shrink: 0; }
+      .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--accent-deep); }
+      .faq-item .faq-body { padding: 0 0 1.6rem; color: var(--text-muted); max-width: 68ch; line-height: 1.65; }
+
+      /* cta final */
+      .cta-final { text-align: center; }
+      .cta-final h2 { margin-inline: auto; max-width: 18ch; }
+      .cta-final .lede { margin-inline: auto; }
+      .cta-final .cta-row { justify-content: center; }
+
+      /* reveal local (garante transição mesmo sem --t-smooth no tokens) */
+      .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo); }
+      .reveal.active { opacity: 1; transform: none; }
+      .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; } .d4 { transition-delay: .32s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .geo-scroll-cue .line { animation: none; }
+      }
+    </style>
+
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'O que é GEO: como a IA cita a sua marca',
+        description:
+          'GEO (Generative Engine Optimization) é o trabalho de fazer a sua marca ser citada nas respostas de ChatGPT, Gemini, Perplexity e AI Overviews, não só listada na busca. Guia do que é, como difere de SEO e como se mede. Desde 2013.',
+        inLanguage: 'pt-BR',
+        about: 'GEO',
+        author: { '@id': `${site.domain}/#organization` },
+        publisher: { '@id': `${site.domain}/#organization` },
+        mainEntityOfPage: url,
+        url,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      })}
+    />
+  </Fragment>
+
+  <div id="scroll-progress"></div>
+
+  <Nav current="insights" />
+
+  <main id="main">
+    <!-- 1 · HERO -->
+    <section class="geo-hero">
+      <canvas id="geo-hero-canvas" aria-hidden="true"></canvas>
+      <div class="scrim" aria-hidden="true"></div>
+      <span class="geo-hero-float f1 px" data-parallax-y="30" aria-hidden="true"><span class="dot"></span>ChatGPT</span>
+      <span class="geo-hero-float f2 px" data-parallax-y="-24" aria-hidden="true"><span class="dot"></span>Perplexity</span>
+      <div class="wrap hero-inner">
+        <span class="geo-hero-chip reveal"><span class="dot"></span>GEO · Generative Engine Optimization</span>
+        <h1 class="reveal d1">A IA cita quem a <span class="accent-serif on-dark">imprensa</span> já cita.</h1>
+        <p class="sub reveal d2">
+          Na resposta pronta da IA, ou a sua marca é citada, ou ela desaparece da conversa.
+          GEO é a sua reputação medida nesse lugar novo, e ela se conquista como sempre se conquistou: na imprensa.
+        </p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Diagnóstico de visibilidade em IA<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#virada" class="btn btn-ghost-d">Ver como funciona<iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon></a>
+        </div>
+      </div>
+      <span class="geo-scroll-cue" aria-hidden="true"><span>Role</span><span class="line"></span></span>
+    </section>
+
+    <!-- abstract answer-first · O que e GEO (pilar) -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:66ch">
+          <span class="eyebrow">O que é GEO</span>
+          <p class="lede" style="margin-top:1.25rem">GEO (Generative Engine Optimization) é o conjunto de práticas para fazer uma marca ser citada nas respostas de mecanismos generativos, ChatGPT, Gemini, Perplexity e AI Overviews, quando alguém pergunta quem lidera um setor ou qual fornecedor contratar. Diferente do SEO, que disputa a posição de um link, o GEO disputa a citação dentro da resposta pronta. Na PiaR, GEO é tratado como reputação: a IA cita quem a imprensa de autoridade já cita.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · A VIRADA -->
+    <section id="virada" class="section paper has-ghost">
+      <span class="ghost-mark tr px" data-parallax-y="-16" aria-hidden="true">zero clique</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">A virada</span>
+          <h2>O clique está <span class="accent-serif">sumindo</span>.</h2>
+          <p class="lede">A busca deixou de ser uma lista de links para virar uma resposta pronta. Muda quem precisa ver a sua marca: antes era a pessoa, agora é também a máquina que monta a resposta.</p>
+        </div>
+        <div class="compare">
+          <div class="compare-card reveal">
+            <span class="ctag">Busca tradicional</span>
+            <h3>Dez links azuis. Você clica.</h3>
+            <p>A pessoa pesquisa, percorre os resultados e chega ao seu site. A disputa é por posição na página, e o clique ainda é o destino.</p>
+            <div class="steps"><span>Pergunta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Lista</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Clique</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Site</span></div>
+          </div>
+          <div class="compare-card is-dark reveal d1">
+            <span class="ctag">Busca generativa</span>
+            <h3>Resposta pronta. Zero clique.</h3>
+            <p>A pessoa recebe uma síntese e pode nunca clicar em nada. A disputa não é mais por posição, é por estar dentro da resposta.</p>
+            <div class="steps"><span>Pergunta</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Resposta da IA</span><iconify-icon icon="solar:arrow-right-linear"></iconify-icon><span>Decisão</span></div>
+          </div>
+        </div>
+        <p class="punch reveal d1">Se a sua marca não está dentro da resposta, ela <span class="hl">deixou de existir</span> naquela conversa.</p>
+      </div>
+    </section>
+
+    <!-- 3 · TRÊS CAMADAS -->
+    <section class="section warm">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Três camadas, não sinônimos</span>
+          <h2>SEO, GEO e GEO PR fazem coisas <span class="accent-serif">diferentes</span>.</h2>
+          <p class="lede">Os três termos se confundem, e a confusão atrapalha a decisão de onde investir. A diferença está na fonte do sinal: o que está no seu domínio, e o que terceiros de autoridade dizem sobre você.</p>
+        </div>
+        <div class="layers">
+          {camadas.map((c, i) => (
+            <div class:list={['layer-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', c.featured && 'featured']}>
+              {c.featured && <span class="badge">O que a PiaR opera</span>}
+              <div class="l-icon"><iconify-icon icon={c.icon}></iconify-icon></div>
+              <div class="l-id">{c.id}</div>
+              <div class="l-name">{c.nome}</div>
+              <p class="l-otimiza">{c.otimiza}</p>
+              <div class="l-meta">
+                <div class="row"><span class="k">Métrica</span><span class="v">{c.metrica}</span></div>
+                <div class="row"><span class="k">Fonte do sinal</span><span class="v">{c.sinal}</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="punch reveal d1">Quem corta a terceira camada deixa de fora o sinal <span class="hl">mais difícil de fabricar</span> e de copiar.</p>
+      </div>
+    </section>
+
+    <!-- 4 · DATAVIZ -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="viz-grid">
+          <div class="reveal">
+            <div class="viz-stage px" data-parallax-y="-6">
+              <canvas id="geo-network-canvas" role="img" aria-label="Rede de citação: a imprensa de autoridade cita a marca, o modelo de IA aprende a afirmação e a resposta repete."></canvas>
+            </div>
+            <div class="viz-legend" aria-hidden="true">
+              <span class="li"><span class="sw" style="background:#9aa0aa"></span>Imprensa de autoridade</span>
+              <span class="li"><span class="sw" style="background:#FED136"></span>Sua marca</span>
+              <span class="li"><span class="sw" style="background:#FF7A1A"></span>Resposta da IA</span>
+            </div>
+          </div>
+          <div class="reveal d1">
+            <span class="eyebrow on-dark">A unidade de valor</span>
+            <h2>Para a IA, o que vale não é o link. É a <span class="accent-serif on-dark">afirmação atribuível</span>.</h2>
+            <p class="lede">Quando uma fonte de autoridade afirma um fato sobre a sua empresa, esse trecho é texto que o modelo lê, associa e pode repetir. O backlink move ranking, mas não vira frase dentro de uma resposta gerada.</p>
+            <p class="lede" style="margin-top:1.25rem">O link ajuda a busca a encontrar a página. A menção ajuda a IA a saber o que dizer sobre você. É a mesma lógica que sempre regeu a assessoria: quem decide a sua reputação é quem fala de você. O que mudou é que agora um desses públicos é uma máquina.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · POR QUE É PR -->
+    <section class="section paper has-contour">
+      <div class="contour-field px" data-parallax-y="-22" aria-hidden="true"></div>
+      <div class="wrap">
+        <div style="max-width:60ch">
+          <span class="eyebrow reveal">Por que é PR, não SEO</span>
+          <p class="punch reveal d1" style="margin-top:1.25rem; max-width:30ch">
+            Um modelo não cita uma marca porque o site dela está <span class="hl">bem formatado</span>. Cita porque a imprensa de autoridade já fala dela.
+          </p>
+          <p class="lede reveal d2" style="margin-top:2rem">
+            A maioria das agências de SEO vende GEO como pacote técnico: dados estruturados, formato de pergunta e resposta. Isso ajuda o modelo a ler a sua página, e a PiaR também faz essa parte. Mas resolve só metade do problema. Disparo de release em massa nunca construiu autoridade com jornalista, e também não constrói com modelo de linguagem. A engenharia entra por último, depois da autoridade. É a ordem que define o resultado. O recorte que a PiaR opera por relações públicas tem página própria: <a href="/o-que-e-geo-pr" style="color:var(--accent-deep); text-decoration:none; border-bottom:1px solid rgba(224,180,32,.4)">GEO PR</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · MÉTODO -->
+    <section class="section warm has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="14" aria-hidden="true">método</span>
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Como funciona</span>
+          <h2>Quatro etapas, do diagnóstico ao <span class="accent-serif">loop</span>.</h2>
+          <p class="lede">O processo de GEO segue as quatro etapas do método da PiaR, com um princípio que não muda: nada vai a público sem passar por revisão jurídica.</p>
+        </div>
+        <div class="steps-grid">
+          {etapas.map((e, i) => (
+            <div class:list={['step-card', 'reveal', i === 1 && 'd1', i === 2 && 'd2', i === 3 && 'd3']}>
+              <span class="s-num">{e.num}</span>
+              <span class="s-prazo">{e.prazo}</span>
+              <h3 class="s-titulo">{e.titulo}</h3>
+              <p class="s-desc">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · FRENTES -->
+    <section class="section paper">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">O que a PiaR entrega</span>
+          <h2>Cinco frentes, conforme o <span class="accent-serif">diagnóstico</span>.</h2>
+          <p class="lede">GEO na PiaR é comunicação aplicada à visibilidade em IA. Cada frente se conecta ao trabalho de relações públicas e ao PEP, a metodologia própria da casa para comunicação integrada.</p>
+        </div>
+        <div class="frentes-grid">
+          {frentes.map((f, i) => (
+            <div class:list={['frente-card', 'reveal', (i % 3 === 1) && 'd1', (i % 3 === 2) && 'd2']}>
+              <div class="f-icon"><iconify-icon icon={f.icon}></iconify-icon></div>
+              <h3 class="f-name">{f.nome}</h3>
+              <p class="f-desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · PROVA -->
+    <section class="section dark">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:46ch">
+          <span class="eyebrow on-dark">Prova e lastro</span>
+          <h2>Método com <span class="accent-serif on-dark">13 anos</span> de estrada.</h2>
+          <p class="lede">A autoridade que coloca uma marca nas respostas de IA é a mesma que sempre colocou marcas na imprensa. A PiaR opera comunicação para tech desde {site.foundingYear}, em São Paulo.</p>
+        </div>
+        <div class="reveal d1">
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin-bottom:.9rem">/// {site.exitsSupported} startups acompanhadas até o exit</span>
+          <div class="chips">{exits.map((c) => <span class="chip">{c}</span>)}</div>
+          <span class="ds-mono" style="color:rgba(255,255,255,.5); display:block; margin:2rem 0 .9rem">/// Entre os clientes atendidos</span>
+          <div class="chips">{clientes.map((c) => <span class="chip">{c}</span>)}</div>
+        </div>
+        <div class="honesty reveal d2">
+          <iconify-icon icon="solar:shield-check-line-duotone"></iconify-icon>
+          <p>A PiaR não publica número de citação em IA que não consegue comprovar. Quando houver clipping de citação em ChatGPT, Gemini ou Perplexity com lastro, ele entra aqui, nominal e datado. Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · FAQ -->
+    <section class="section paper">
+      <div class="wrap" style="max-width:1000px">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Perguntas frequentes</span>
+          <h2>O que dá para <span class="accent-serif">responder por aqui</span>.</h2>
+        </div>
+        <div class="reveal d1">
+          {faq.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}<iconify-icon icon="solar:add-square-linear"></iconify-icon></summary>
+              <div class="faq-body">{f.a}</div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CTA -->
+    <section class="section dark cta-final has-ghost">
+      <span class="ghost-mark bl px" data-parallax-y="12" aria-hidden="true">GEO</span>
+      <div class="wrap">
+        <span class="eyebrow on-dark reveal" style="justify-content:center; display:inline-flex">Vamos conversar</span>
+        <h2 class="reveal d1">Comece pelo diagnóstico de <span class="accent-serif on-dark">visibilidade em IA</span>.</h2>
+        <p class="lede reveal d2">Medimos onde a sua marca está, quem a IA cita no seu lugar e qual o caminho mais curto para entrar na conversa. O investimento é sob consulta, definido conforme o diagnóstico de cada marca.</p>
+        <div class="cta-row reveal d3">
+          <a href="/contato" class="btn btn-accent">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="/relacoes-publicas" class="btn btn-ghost-d">Ver relações públicas<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+        </div>
+        <p class="ds-mono reveal d4" style="color:rgba(255,255,255,.4); margin-top:3rem">/// {site.email} · {site.brandDomain}</p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function () {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Lenis + ScrollTrigger (globais via bootstrap.ts) ---- */
+      try {
+        if (window.gsap && window.ScrollTrigger) window.gsap.registerPlugin(window.ScrollTrigger);
+        if (!prefersReduced && window.Lenis) {
+          var lenis = new window.Lenis({ duration: 1.15, easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, smooth: true, lerp: 0.1 });
+          if (window.ScrollTrigger) { lenis.on('scroll', window.ScrollTrigger.update); window.gsap.ticker.add(function (time) { lenis.raf(time * 1000); }); window.gsap.ticker.lagSmoothing(0); }
+          else { var raf = function (t) { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+        }
+      } catch (e) { /* noop */ }
+
+      /* ---- reveal ---- */
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('active'); io.unobserve(en.target); } });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+      /* ---- scroll progress ---- */
+      var bar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement;
+        var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+        if (bar) bar.style.width = p + '%';
+      }, { passive: true });
+
+      /* ---- parallax de profundidade (nó Mastercard) ---- */
+      if (!prefersReduced && window.gsap && window.ScrollTrigger) {
+        window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
+          var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;
+          window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+      }
+
+      /* ---- lerp mouse-parallax no herói (Três Mares) ---- */
+      if (!prefersReduced && window.gsap) {
+        var heroFloats = window.gsap.utils.toArray('[class*="hero-float"]');
+        if (heroFloats.length) {
+          var movers = heroFloats.map(function (el, i) {
+            return {
+              depth: (i % 2 ? 1 : -1) * (16 + i * 8),
+              qx: window.gsap.quickTo(el, 'x', { duration: 0.7, ease: 'power3' }),
+              qy: window.gsap.quickTo(el, 'y', { duration: 0.7, ease: 'power3' })
+            };
+          });
+          window.addEventListener('mousemove', function (e) {
+            var nx = (e.clientX / window.innerWidth - 0.5);
+            var ny = (e.clientY / window.innerHeight - 0.5);
+            for (var k = 0; k < movers.length; k++) { movers[k].qx(nx * movers[k].depth); movers[k].qy(ny * movers[k].depth); }
+          }, { passive: true });
+        }
+      }
+
+      /* ========================================================
+         HERO · campo generativo em WebGL (fragment shader fBm)
+         ======================================================== */
+      (function heroField() {
+        var canvas = document.getElementById('geo-hero-canvas');
+        if (!canvas) return;
+        var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) { canvas.style.background = 'radial-gradient(70% 90% at 75% 30%, #4a1c05 0%, #160a06 55%, #0A0A0C 100%)'; return; }
+
+        var vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p,0.0,1.0); }';
+        var fs = [
+          'precision highp float;',
+          'uniform vec2 r; uniform float t;',
+          'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453123); }',
+          'float noise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.0-2.0*f);',
+          '  return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),u.x), mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),u.x), u.y); }',
+          'float fbm(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<6;i++){ v+=a*noise(p); p*=2.03; a*=0.5; } return v; }',
+          'void main(){',
+          '  vec2 uv = gl_FragCoord.xy / r.xy;',
+          '  vec2 p = (uv - 0.5) * vec2(r.x/r.y, 1.0) * 2.4;',
+          '  float tt = t*0.035;',
+          '  vec2 q = vec2(fbm(p + tt), fbm(p + vec2(5.2,1.3) - tt));',
+          '  float f = fbm(p + 1.9*q + tt*0.6);',
+          '  vec3 ink=vec3(0.039,0.039,0.047);',
+          '  vec3 rust=vec3(0.78,0.255,0.043);',
+          '  vec3 orange=vec3(1.0,0.478,0.10);',
+          '  vec3 amber=vec3(1.0,0.69,0.125);',
+          '  vec3 col = mix(ink, rust, smoothstep(0.18,0.55,f));',
+          '  col = mix(col, orange, smoothstep(0.52,0.78,f));',
+          '  col = mix(col, amber, smoothstep(0.74,0.95,f)*0.65);',
+          '  float vig = smoothstep(1.25,0.15,length(uv-vec2(0.66,0.4)));',
+          '  col *= 0.28 + 0.72*vig;',
+          '  col *= 0.5 + 0.62*f;',
+          '  gl_FragColor = vec4(col,1.0);',
+          '}'
+        ].join('\n');
+
+        function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+        var prog = gl.createProgram();
+        gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs));
+        gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { canvas.style.background = 'radial-gradient(70% 90% at 75% 30%, #4a1c05 0%, #160a06 55%, #0A0A0C 100%)'; return; }
+        gl.useProgram(prog);
+
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        var loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        var uR = gl.getUniformLocation(prog, 'r');
+        var uT = gl.getUniformLocation(prog, 't');
+
+        function resize() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+          var w = canvas.clientWidth, h = canvas.clientHeight;
+          canvas.width = Math.max(1, Math.floor(w * dpr));
+          canvas.height = Math.max(1, Math.floor(h * dpr));
+          gl.viewport(0, 0, canvas.width, canvas.height);
+        }
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+
+        var start = 0, raf = 0, running = false;
+        function frame(now) {
+          if (!start) start = now;
+          gl.uniform2f(uR, canvas.width, canvas.height);
+          gl.uniform1f(uT, (now - start) / 1000);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+          if (running) raf = requestAnimationFrame(frame);
+        }
+        if (prefersReduced) {
+          // um único quadro estático, sem rAF contínuo
+          frame(performance.now());
+        } else if ('IntersectionObserver' in window) {
+          // só desenha enquanto o herói está na viewport (pausa o rAF fora da tela)
+          var vio = new IntersectionObserver(function (ents) {
+            if (ents[0].isIntersecting) {
+              if (!running) { running = true; raf = requestAnimationFrame(frame); }
+            } else {
+              running = false;
+              if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            }
+          }, { rootMargin: '200px' });
+          vio.observe(canvas);
+        } else {
+          running = true;
+          raf = requestAnimationFrame(frame);
+        }
+      })();
+
+      /* ========================================================
+         DATAVIZ · rede de citação (canvas 2D)
+         imprensa -> marca -> resposta da IA
+         ======================================================== */
+      (function citationNet() {
+        var canvas = document.getElementById('geo-network-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0;
+        var press = ['Exame', 'Forbes', 'Valor', 'TechCrunch', 'Veja'];
+        var pressNodes = [], brand = null, ai = null, pulses = [], hover = -1, mouse = { x: -1, y: -1 };
+        var running = false, rafId = 0, spawnTimer = null;
+
+        function layout() {
+          var rect = canvas.getBoundingClientRect();
+          W = rect.width; H = rect.height;
+          canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          var lx = W * 0.16, n = press.length;
+          pressNodes = press.map(function (name, i) {
+            var y = H * (0.16 + (0.68 * i) / (n - 1));
+            return { x: lx, y: y, name: name, r: 4.5 };
+          });
+          brand = { x: W * 0.54, y: H * 0.5, r: 9, name: 'Sua marca' };
+          ai = { x: W * 0.88, y: H * 0.5, r: 7, name: 'Resposta da IA' };
+        }
+        layout();
+
+        function spawn() {
+          if (prefersReduced) return;
+          var src = Math.floor(Math.random() * pressNodes.length);
+          pulses.push({ src: src, seg: 0, p: 0, sp: 0.006 + Math.random() * 0.006 });
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+
+          // edges press -> brand
+          pressNodes.forEach(function (pn, i) {
+            var active = hover === i;
+            ctx.beginPath();
+            ctx.moveTo(pn.x, pn.y);
+            ctx.bezierCurveTo(lerp(pn.x, brand.x, 0.5), pn.y, lerp(pn.x, brand.x, 0.5), brand.y, brand.x, brand.y);
+            ctx.strokeStyle = active ? 'rgba(254,209,54,.55)' : 'rgba(255,255,255,.12)';
+            ctx.lineWidth = active ? 1.6 : 1;
+            ctx.stroke();
+          });
+          // edge brand -> ai
+          ctx.beginPath();
+          ctx.moveTo(brand.x, brand.y);
+          ctx.bezierCurveTo(lerp(brand.x, ai.x, 0.5), brand.y, lerp(brand.x, ai.x, 0.5), ai.y, ai.x, ai.y);
+          ctx.strokeStyle = 'rgba(255,122,26,.35)';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+
+          // pulses
+          for (var k = pulses.length - 1; k >= 0; k--) {
+            var pu = pulses[k];
+            pu.p += pu.sp;
+            var pos;
+            if (pu.seg === 0) {
+              var pn = pressNodes[pu.src];
+              pos = bez(pn.x, pn.y, lerp(pn.x, brand.x, 0.5), pn.y, lerp(pn.x, brand.x, 0.5), brand.y, brand.x, brand.y, pu.p);
+              if (pu.p >= 1) { pu.seg = 1; pu.p = 0; }
+            } else {
+              pos = bez(brand.x, brand.y, lerp(brand.x, ai.x, 0.5), brand.y, lerp(brand.x, ai.x, 0.5), ai.y, ai.x, ai.y, pu.p);
+              if (pu.p >= 1) { pulses.splice(k, 1); continue; }
+            }
+            var col = pu.seg === 0 ? '254,209,54' : '255,122,26';
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 2.6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.95)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(' + col + ',.18)'; ctx.fill();
+          }
+
+          // press nodes + labels
+          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          pressNodes.forEach(function (pn, i) {
+            var active = hover === i;
+            ctx.beginPath(); ctx.arc(pn.x, pn.y, pn.r + (active ? 1.5 : 0), 0, Math.PI * 2);
+            ctx.fillStyle = active ? '#FED136' : '#9aa0aa'; ctx.fill();
+            ctx.textAlign = 'right';
+            ctx.fillStyle = active ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.55)';
+            ctx.fillText(pn.name, pn.x - 12, pn.y);
+          });
+
+          // brand node (accent, pulsing ring)
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, brand.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FED136'; ctx.fill();
+          ctx.beginPath(); ctx.arc(brand.x, brand.y, brand.r + 6 + (Math.sin(Date.now() / 600) + 1) * 3, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(254,209,54,.35)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Sua marca', brand.x, brand.y + brand.r + 16);
+
+          // ai node (chip)
+          ctx.beginPath(); ctx.arc(ai.x, ai.y, ai.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#FF7A1A'; ctx.fill();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText('Resposta da IA', ai.x, ai.y + ai.r + 16);
+
+          if (running) rafId = requestAnimationFrame(draw);
+        }
+
+        function bez(x0, y0, cx1, cy1, cx2, cy2, x1, y1, t) {
+          var u = 1 - t;
+          var x = u * u * u * x0 + 3 * u * u * t * cx1 + 3 * u * t * t * cx2 + t * t * t * x1;
+          var y = u * u * u * y0 + 3 * u * u * t * cy1 + 3 * u * t * t * cy2 + t * t * t * y1;
+          return { x: x, y: y };
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left; mouse.y = e.clientY - rect.top;
+          hover = -1;
+          for (var i = 0; i < pressNodes.length; i++) {
+            var pn = pressNodes[i];
+            if (Math.hypot(pn.x - mouse.x, pn.y - mouse.y) < 26) { hover = i; break; }
+          }
+        });
+        canvas.addEventListener('mouseleave', function () { hover = -1; });
+        window.addEventListener('resize', layout, { passive: true });
+
+        if (prefersReduced) {
+          // estado estático único, sem rAF contínuo
+          layout();
+          draw();
+        } else if ('IntersectionObserver' in window) {
+          // só anima (rAF + spawn) enquanto a rede está na viewport
+          var vioN = new IntersectionObserver(function (ents) {
+            if (ents[0].isIntersecting) {
+              if (!running) {
+                running = true;
+                spawn();
+                if (!spawnTimer) spawnTimer = setInterval(spawn, 850);
+                rafId = requestAnimationFrame(draw);
+              }
+            } else {
+              running = false;
+              if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+              if (spawnTimer) { clearInterval(spawnTimer); spawnTimer = null; }
+            }
+          }, { rootMargin: '200px' });
+          vioN.observe(canvas);
+        } else {
+          running = true;
+          setInterval(spawn, 850);
+          spawn();
+          rafId = requestAnimationFrame(draw);
+        }
+      })();
+    });
+  </script>
+</BaseLayout>
