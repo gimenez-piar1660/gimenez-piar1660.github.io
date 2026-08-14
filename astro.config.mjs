@@ -3,8 +3,10 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
+  // O repositório se chama gimenez-piar1660.github.io, então o GitHub Pages serve
+  // o site na raiz do domínio. Sem `base`: todo link e asset root-relativo do
+  // projeto (`/sobre`, `/brand/...`) resolve direto, como o código já pressupõe.
   site: 'https://gimenez-piar1660.github.io',
-  base: '/siteAstro',
   trailingSlash: 'never',
   build: {
     assets: '_assets',

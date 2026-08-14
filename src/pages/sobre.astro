@@ -19,6 +19,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import Nav from '@components/Nav.astro';
 import Footer from '@components/Footer.astro';
 import { site } from '@/data/site';
+import { withBase } from '@/lib/base';
 
 const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
 
@@ -323,7 +324,7 @@ const url = `https://${site.brandDomain}/sobre`;
           {lideranca.map((l, i) => (
             <div class:list={['leader', 'reveal', i === 1 && 'd1', i === 2 && 'd2']}>
               <div class="leader-photo">
-                <img src={`${import.meta.env.BASE_URL}${l.foto}`} alt={`${l.nome}, ${l.cargo} da PiaR`} class:list={[l.flip && 'flip']} loading="lazy" decoding="async" />
+                <img src={withBase(l.foto)} alt={`${l.nome}, ${l.cargo} da PiaR`} class:list={[l.flip && 'flip']} loading="lazy" decoding="async" />
               </div>
               <span class="leader-chip">{l.cargo}</span>
               <h3>{l.nome}</h3>

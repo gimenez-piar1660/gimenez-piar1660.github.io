@@ -1,6 +1,7 @@
 ---
 // Footer — fonte única. Editar uma vez, propaga para todas as páginas.
 import { site } from '@/data/site';
+import { withBase } from '@/lib/base';
 const year = new Date().getFullYear();
 ---
 <footer class="relative z-20 bg-white border-t border-[rgba(0,0,0,.08)] py-16">
@@ -9,7 +10,7 @@ const year = new Date().getFullYear();
       <div class="col-span-2">
         <a href="/" class="brand-mark flex items-center mb-5" aria-label="PiaR Group">
           <img
-            src={`${import.meta.env.BASE_URL}/brand/piar-horizontal-positivo.png`}
+            src={withBase('/brand/piar-horizontal-positivo.png')}
             alt="PiaR Group"
             class="brand-logo brand-logo--footer"
           />

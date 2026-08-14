@@ -2,6 +2,8 @@
 // Nav principal — fonte única. Editar um único arquivo afeta todas as páginas.
 // Prop `current` aceita: 'home' | 'processos' (expandir conforme novas páginas).
 
+import { withBase } from '@/lib/base';
+
 interface Props {
   current?: 'home' | 'sobre' | 'servicos' | 'cases' | 'pep' | 'insights' | 'blog' | 'metodo' | 'processos' | 'contato';
 }
@@ -41,7 +43,7 @@ const insights = [
 <header id="navbar">
   <div class="inner">
     <a href="/" class="brand-mark flex items-center" aria-label="PiaR Group">
-      <img src={`${import.meta.env.BASE_URL}/brand/piar-horizontal-positivo.png`} alt="PiaR Group" class="brand-logo" />
+      <img src={withBase('/brand/piar-horizontal-positivo.png')} alt="PiaR Group" class="brand-logo" />
     </a>
 
     <nav

@@ -3,6 +3,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import Nav from '@components/Nav.astro';
 import Footer from '@components/Footer.astro';
 import { site } from '@/data/site';
+import { withBase } from '@/lib/base';
 
 // HOME · "A gravidade da marca" (espinha aprovada por Danilo em 2026-06-25).
 // O filme e da VOZ (PR / assessoria de imprensa); a gravidade reforca a voz, e a
@@ -426,7 +427,7 @@ const servicosLd = [
         <div class="hero-aurora hero-aurora--right" aria-hidden="true"></div>
 
         <div class="video-scrub">
-          <video id="hero-video" src={`${import.meta.env.BASE_URL}/videos/hero.mp4`} muted playsinline preload="metadata" poster=""></video>
+          <video id="hero-video" src={withBase('/videos/hero.mp4')} muted playsinline preload="metadata" poster=""></video>
         </div>
 
         <div class="hero-center"><div class="animate-target text-1"><div class="glass-hero"><h1 class="n-title">Identificamos o <em>ativo raro</em> de cada marca e o transformamos em reputação.</h1></div></div></div>
@@ -451,7 +452,7 @@ const servicosLd = [
         <div class="clients-marquee-track">
           {[...Array(2)].flatMap((_, copy) => (
             clienteLogos.map((slug) => (
-              <img src={`${import.meta.env.BASE_URL}/brand/clients/${slug}.png`} alt={copy === 0 ? `Cliente PiaR: ${slug.replace(/-/g, ' ')}` : ''} class="client-logo" loading="lazy" aria-hidden={copy === 1 ? 'true' : undefined} />
+              <img src={withBase(`/brand/clients/${slug}.png`)} alt={copy === 0 ? `Cliente PiaR: ${slug.replace(/-/g, ' ')}` : ''} class="client-logo" loading="lazy" aria-hidden={copy === 1 ? 'true' : undefined} />
             ))
           ))}
         </div>
@@ -565,7 +566,7 @@ const servicosLd = [
           <div class="leaders">
             {lideranca.map((p, i) => (
               <div class:list={['leader', 'reveal', i === 1 && 'delay-100', i === 2 && 'delay-200']}>
-                <div class="leader-photo"><img src={`${import.meta.env.BASE_URL}${p.foto}`} class:list={[p.flip && 'flip']} loading="lazy" alt={`${p.nome}, ${p.papel} da PiaR Group`} /></div>
+                <div class="leader-photo"><img src={withBase(p.foto)} class:list={[p.flip && 'flip']} loading="lazy" alt={`${p.nome}, ${p.papel} da PiaR Group`} /></div>
                 <span class="lp">{p.papel}</span>
                 <h3>{p.nome}</h3>
                 <p>{p.desc}</p>

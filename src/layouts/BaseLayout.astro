@@ -5,6 +5,7 @@
 
 import '@styles/global.css';
 import { site } from '@/data/site';
+import { withBase } from '@/lib/base';
 
 interface Props {
   title: string;
@@ -29,15 +30,9 @@ const fullTitle = title === siteName || title.includes(siteName)
   ? title
   : `${title} · ${siteName}`;
 
-// O site é publicado sob a subpasta /siteAstro no GitHub Pages. O Astro prefixa
-// sozinho só o que ele mesmo gera (_assets). Tudo que vem de public/ e é escrito
-// à mão no HTML precisa do BASE_URL na frente, senão resolve na raiz do domínio
-// e dá 404. BASE_URL vale '/siteAstro', sem barra no fim: manter a barra do path.
-const BASE = import.meta.env.BASE_URL;
-
-// og:image e twitter:image pedem URL absoluta, então junta base + path e resolve
-// contra Astro.site.
-const ogImageUrl = new URL(`${BASE}${ogImage}`, Astro.site).href;
+// og:image e twitter:image pedem URL absoluta. withBase resolve o caminho de
+// public/ e Astro.site coloca o domínio na frente.
+const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
 ---
 <!doctype html>
 <html lang="pt-BR" class="scroll-smooth">
@@ -53,9 +48,9 @@ const ogImageUrl = new URL(`${BASE}${ogImage}`, Astro.site).href;
     {noindex && <meta name="robots" content="noindex,nofollow" />}
 
     <!-- Ícones -->
-    <link rel="icon" href={`${BASE}/favicon.svg`} type="image/svg+xml" />
-    <link rel="apple-touch-icon" href={`${BASE}/brand/piar-vertical-amarelo.png`} />
-    <link rel="manifest" href={`${BASE}/site.webmanifest`} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('/brand/piar-vertical-amarelo.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
