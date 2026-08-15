@@ -188,11 +188,13 @@ const servicosLd = [
       .btn-ghost:hover iconify-icon { transform: translateX(4px); }
       .btn-ghost.on-dark { color: #fff; border-color: rgba(255,255,255,.25); }
       .btn-ghost.on-dark:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.5); }
-      .beam-btn { position: relative; padding: 2px; border-radius: var(--radius-full); display: inline-block; isolation: isolate; text-decoration: none; }
-      .beam-btn::before { content: ''; position: absolute; inset: -2px; border-radius: inherit; z-index: -1; background: conic-gradient(from 0deg, transparent 0 70%, var(--accent) 80%, transparent 95%); animation: beam 3s linear infinite; opacity: 0; transition: opacity .4s; }
-      .beam-btn:hover::before { opacity: 1; }
-      @keyframes beam { to { transform: rotate(360deg); } }
-      .beam-btn .beam-inner { display: inline-flex; align-items: center; gap: .5rem; background: var(--accent); color: var(--primary); padding: .9rem 1.9rem; border-radius: inherit; font-weight: 600; font-size: .94rem; }
+      .beam-btn { position: relative; padding: 2px; border-radius: var(--radius-full); display: inline-block; isolation: isolate; text-decoration: none; transform-origin: center; transition: transform .45s var(--ease-out-expo); }
+      .beam-btn .beam-inner { display: inline-flex; align-items: center; gap: .5rem; background: var(--accent); color: var(--primary); padding: .9rem 1.9rem; border-radius: inherit; font-weight: 600; font-size: .94rem; transition: box-shadow .45s var(--ease-out-expo); }
+      /* Destaque no desktop: o botão cresce de leve, sem giro. Toque não dispara. */
+      @media (hover: hover) and (min-width: 769px) {
+        .beam-btn:hover { transform: scale(1.05); }
+        .beam-btn:hover .beam-inner { box-shadow: 0 12px 32px -10px rgba(254, 209, 54, .55); }
+      }
 
       #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
 
