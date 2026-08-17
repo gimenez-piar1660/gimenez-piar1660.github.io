@@ -104,8 +104,16 @@ os robôs de lerem a própria tag `noindex`, que é o oposto do efeito desejado.
 
 Quando o domínio próprio entrar, fazer as quatro coisas **no mesmo commit**:
 
-1. `astro.config.mjs`: trocar `site` para o domínio final. Isso já propaga para as
-   canônicas, para o sitemap e para `site.domain` (que lê `import.meta.env.SITE`).
+1. `astro.config.mjs`: trocar `site` para o domínio final. Vale para o build local e
+   para o `deploy:snapshot`, e propaga para canônicas, sitemap e `site.domain`
+   (que lê `import.meta.env.SITE`).
+
+   Atenção: **em produção quem decide é o GitHub Pages, não este arquivo.** O
+   workflow `.github/workflows/astro.yml` roda `astro build --site <origin> --base
+   <base_path>`, com os valores vindos do `actions/configure-pages`. Na prática, o
+   domínio de produção passa a ser o domínio próprio assim que o CNAME estiver
+   configurado nas settings do Pages, e as canônicas seguem sozinhas. Manter os dois
+   alinhados evita build local divergindo do que está no ar.
 2. `src/data/site.ts`: virar `INDEXAVEL` para `true`. É o que remove o `noindex`.
 3. `public/robots.txt`: apontar a linha `Sitemap:` para o domínio final.
 4. `public/CNAME`: criar com o domínio, senão o GitHub Pages não atende por ele.
