@@ -93,6 +93,31 @@ exato do `.zip` pra você arrastar no Netlify.
 4. No próximo `npm run deploy:snapshot`, a rota nova aparece sozinha no `manifest.json`
    (campo `routes`), então a adição já fica registrada.
 
+## Migração do protótipo para o domínio próprio
+
+Hoje o site é publicado em `gimenez-piar1660.github.io`, que é um endereço de
+protótipo. Enquanto ele estiver lá, **todas as páginas saem com `noindex`**, para o
+protótipo não ser indexado e depois disputar espaço no Google com o domínio final.
+
+O rastreamento segue liberado no `robots.txt` de propósito: um `Disallow` impediria
+os robôs de lerem a própria tag `noindex`, que é o oposto do efeito desejado.
+
+Quando o domínio próprio entrar, fazer as quatro coisas **no mesmo commit**:
+
+1. `astro.config.mjs`: trocar `site` para o domínio final. Isso já propaga para as
+   canônicas, para o sitemap e para `site.domain` (que lê `import.meta.env.SITE`).
+2. `src/data/site.ts`: virar `INDEXAVEL` para `true`. É o que remove o `noindex`.
+3. `public/robots.txt`: apontar a linha `Sitemap:` para o domínio final.
+4. `public/CNAME`: criar com o domínio, senão o GitHub Pages não atende por ele.
+
+Depois de publicar, conferir com evidência: `curl -s <dominio>/contato | grep -E
+'canonical|robots'` deve mostrar a canônica no domínio novo e nenhuma tag `noindex`.
+Só então cadastrar o sitemap no Google Search Console.
+
+Cuidado: `pep.piar.group` está no ar servindo o **site antigo** e usa barra no fim
+das URLs, enquanto este projeto usa `trailingSlash: 'never'`. Se o domínio final for
+esse, planejar os redirecionamentos antes de virar a chave.
+
 ## O fluxo com o CEO (rodadas de copy)
 
 1. Deploy `staging` → CEO revisa → anota ajustes de copy.

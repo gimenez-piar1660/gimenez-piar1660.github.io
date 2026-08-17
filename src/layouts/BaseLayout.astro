@@ -4,7 +4,7 @@
 // via slot "head" ou como style/script dentro do conteudo.
 
 import '@styles/global.css';
-import { site } from '@/data/site';
+import { site, INDEXAVEL } from '@/data/site';
 import { withBase } from '@/lib/base';
 
 interface Props {
@@ -24,6 +24,10 @@ const {
   noindex = false,
   bodyClass = 'antialiased',
 } = Astro.props;
+
+// Enquanto o deploy não é indexável, o noindex vale para tudo. A prop continua
+// mandando por página (é assim que o blend em staging fica fora do índice).
+const semIndice = noindex || !INDEXAVEL;
 
 const siteName = 'PiaR Group';
 const fullTitle = title === siteName || title.includes(siteName)
@@ -45,7 +49,7 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    {semIndice && <meta name="robots" content="noindex,nofollow" />}
 
     <!-- Ícones -->
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
@@ -83,7 +87,9 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
           });
           var temUtmNova = Object.keys(utm).length > 0;
           var jaGravado = document.cookie.split('; ').some(function (c) { return c.indexOf(CHAVE + '=') === 0; });
-          if (jaGravado && !temUtmNova) return;
+          var jaNaSessao = false;
+          try { jaNaSessao = !!sessionStorage.getItem(CHAVE); } catch (err) { /* storage bloqueado */ }
+          if ((jaGravado || jaNaSessao) && !temUtmNova) return;
 
           var ref = document.referrer || '';
           var externo = ref && ref.indexOf(location.origin) !== 0;
@@ -95,10 +101,15 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
             landing_page: (location.pathname + location.search).slice(0, 300),
             referrer: externo ? ref.slice(0, 300) : '',
           };
+          // Espelho em sessionStorage: e o unico jeito de a origem sobreviver
+          // a navegacao entre paginas quando o cookie esta bloqueado. Vale so
+          // enquanto a aba existir; o cookie continua sendo a fonte principal.
+          try { sessionStorage.setItem(CHAVE, JSON.stringify(dado)); } catch (err) { /* storage bloqueado */ }
+
           document.cookie = CHAVE + '=' + encodeURIComponent(JSON.stringify(dado)) +
             ';path=/;max-age=' + 90 * 24 * 60 * 60 + ';SameSite=Lax' +
             (location.protocol === 'https:' ? ';Secure' : '');
-        } catch (err) { /* cookie bloqueado: o form cai no fallback pela URL */ }
+        } catch (err) { /* cookie bloqueado: o form cai no fallback pela sessao ou pela URL */ }
       })();
     </script>
 

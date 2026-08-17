@@ -12,13 +12,24 @@
 //   - D-IDENT-5: prêmio padronizado (ABStartups Startup Awards, 2018)
 // ============================================================
 
+// Chave de indexação do deploy inteiro.
+// `false` enquanto o site vive no domínio de protótipo do GitHub Pages: todas
+// as páginas saem com noindex, para o protótipo não ser indexado e depois
+// competir com o domínio próprio. Virar `true` no MESMO commit que apontar o
+// `site` do astro.config para o domínio final. Checklist completo da virada em
+// docs/deploy-e-versionamento.md, seção "Migração do protótipo para o domínio próprio".
+export const INDEXAVEL = false;
+
 export const site = {
   name: 'PiaR Group',
   legalName: 'PiaR Comunicação',
   alternateNames: ['PiaR', 'PiaR Comunicação'],
 
-  // Domínio de lançamento (subdomínio do site novo).
-  domain: 'https://pep.piar.group',
+  // Domínio de publicação. Sai do `site` do astro.config para não existirem
+  // duas verdades: hoje o protótipo no GitHub Pages, depois o domínio próprio.
+  // Antes ficava fixo em pep.piar.group e as páginas que montam a canônica na
+  // mão apontavam para o site antigo, que continua no ar.
+  domain: import.meta.env.SITE,
   brandDomain: 'piar.group',
 
   // Contato canônico.

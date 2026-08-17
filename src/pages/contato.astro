@@ -316,7 +316,7 @@ import { site } from '@/data/site';
               <div class="form-step is-active" id="step-1" data-step="1">
                 <div class="step-intro">
                   <h2>Quem está do outro lado.</h2>
-                  <p>Quatro campos. Depois deles a gente já consegue te procurar, mesmo que você precise sair no meio.</p>
+                  <p>Cinco campos. Depois deles a gente já consegue te procurar, mesmo que você precise sair no meio.</p>
                 </div>
 
                 <div class="form-grid">
@@ -347,8 +347,8 @@ import { site } from '@/data/site';
                     </select>
                   </div>
                   <div class="field">
-                    <label for="f-telefone">Telefone (opcional)</label>
-                    <input id="f-telefone" name="personal_phone" type="tel" autocomplete="tel" placeholder="(11) 9 9999-9999" />
+                    <label for="f-telefone">Telefone <span class="req">*</span></label>
+                    <input id="f-telefone" name="personal_phone" type="tel" required autocomplete="tel" placeholder="(11) 9 9999-9999" />
                   </div>
 
                   <div class="full submit-row">
@@ -650,7 +650,7 @@ import { site } from '@/data/site';
       const RD_ATIVO = RD_PUBLIC_KEY && RD_PUBLIC_KEY.indexOf('COLE-SUA') !== 0;
       const WEB3_ATIVO = WEB3FORMS_KEY && WEB3FORMS_KEY.indexOf('COLE-SUA') !== 0;
 
-      // ---- 1. Rastreio: lê o cookie de atribuição gravado no BaseLayout ----
+      // ---- 1. Rastreio: lê a atribuição gravada no BaseLayout ----
       // O cookie guarda o primeiro toque (90 dias). A página de conversão é
       // sempre a atual, por isso ela não vem do cookie.
       (function preencherRastreio() {
@@ -659,7 +659,15 @@ import { site } from '@/data/site';
         if (bruto) {
           try { atrib = JSON.parse(decodeURIComponent(bruto.slice('piar_atrib='.length))); } catch (err) { atrib = {}; }
         }
-        // Se o cookie não existir (bloqueio de cookies), usa a URL desta visita.
+        // Cookie bloqueado: a mesma origem fica espelhada na sessão desta aba,
+        // o que salva quem entrou por outra página e só depois veio pro form.
+        if (!Object.keys(atrib).length) {
+          try {
+            const sessao = sessionStorage.getItem('piar_atrib');
+            if (sessao) atrib = JSON.parse(sessao);
+          } catch (err) { atrib = {}; }
+        }
+        // Sem cookie e sem sessão, resta a URL desta visita.
         const qs = new URLSearchParams(location.search);
         const set = (id, valor) => { const el = document.getElementById(id); if (el) el.value = valor || ''; };
         set('h-utm-source', atrib.utm_source || qs.get('utm_source'));
