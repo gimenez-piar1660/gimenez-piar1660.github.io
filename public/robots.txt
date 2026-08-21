@@ -42,8 +42,5 @@ Disallow: /_assets/
 Disallow: /admin/
 Disallow: /api/
 
-# Sitemap do host que está servindo este arquivo. Enquanto o site roda no
-# domínio de protótipo, as páginas saem com noindex (INDEXAVEL em src/data/site.ts),
-# então o rastreamento segue liberado de propósito: bloquear aqui impediria os
-# robôs de LEREM o noindex. Trocar esta linha junto com a migração de domínio.
-Sitemap: https://gimenez-piar1660.github.io/sitemap-index.xml
+# Sitemap do domínio oficial.
+Sitemap: https://piar.group/sitemap-index.xml
