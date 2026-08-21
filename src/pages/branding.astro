@@ -90,7 +90,7 @@ const vetores = [
   { nome: 'Veículo', desc: 'Os canais que carregam a narrativa até o destino.', eixo: false },
 ];
 
-const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const exits = site.exits;
 const clientes = ['Endemol Shine Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia', 'Sambatech', 'Liga Ventures', 'Printi', 'Corning', 'PagBrasil', 'FluencyPass'];
 
 const faq = [
@@ -211,7 +211,7 @@ const faq = [
       /* ===========================================================
          secoes base
          =========================================================== */
-      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section { padding-block: var(--sec-pad); position: relative; }
       .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
       .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
       .section.dark { background: var(--br-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }

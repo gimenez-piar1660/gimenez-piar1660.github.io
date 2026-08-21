@@ -124,7 +124,7 @@ const etapas = [
   },
 ];
 
-const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const exits = site.exits;
 
 const faq = [
   {
@@ -243,7 +243,7 @@ const faq = [
       /* ===========================================================
          seções base
          =========================================================== */
-      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section { padding-block: var(--sec-pad); position: relative; }
       .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
       .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
       .section.dark { background: var(--ledger-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }

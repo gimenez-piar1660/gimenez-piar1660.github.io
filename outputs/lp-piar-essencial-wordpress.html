@@ -1,0 +1,1776 @@
+<meta charset="utf-8" />
+<!-- =====================================================================
+     PiaR Group · Landing page "O essencial" · VERSAO WORDPRESS
+     ---------------------------------------------------------------------
+     Cole este arquivo INTEIRO num bloco de HTML personalizado do WordPress
+     (bloco "HTML personalizado", widget HTML do Elementor, ou equivalente).
+
+     NAO inclui <!doctype>, <html>, <head> nem <body>: o WordPress ja
+     fornece essa estrutura. Colar aqueles tags dentro de uma pagina
+     quebraria o documento.
+
+     Todo o CSS esta escopado sob #piar-lp, entao ele nao afeta nada fora
+     da landing page, e o CSS do tema nao entra aqui dentro.
+
+     ESTA E UMA PAGINA NOVA (ex.: piar.group/landing). A home continua
+     no ar e nao e tocada.
+
+     ANTES DE PUBLICAR, no painel do WordPress:
+       1. Crie a pagina e use um template SEM cabecalho e SEM rodape do
+          tema. Neste site tem Elementor, entao o caminho e:
+          editar com Elementor > engrenagem (Configuracoes da pagina) >
+          Layout da pagina > "Elementor Canvas". Depois arraste um widget
+          "HTML" e cole este arquivo inteiro dentro dele.
+          A landing page traz o proprio header e o proprio rodape: sem o
+          Canvas voce fica com dois de cada.
+       2. Titulo e meta description saem do SEO da pagina, nao daqui:
+          Titulo:      PiaR Group · A sua marca ja tem um ativo raro
+          Description: Ha 13 anos transformamos o ativo raro de empresas
+                       inovadoras em reputacao: a que a imprensa cita, o
+                       comprador reconhece e a inteligencia artificial
+                       repete. Agende um diagnostico de 45 minutos, sem custo.
+       3. O caminho da pagina chega sozinho no RD: PAGINA_CONVERSAO le a
+          URL real, entao /landing, /diagnostico ou o que voce escolher ja
+          aparece certo no lead, sem editar codigo.
+       4. Cache: a home do piar.group sai com 31 dias de cache no
+          Cloudflare, e a pagina nova provavelmente herda a mesma regra.
+          Isso NAO atrapalha a publicacao, mas atrapalha as EDICOES: depois
+          de cada ajuste, purgue a URL no Cloudflare, senao voce fica vendo
+          a versao velha e achando que o ajuste nao pegou.
+       5. Confira com evidencia: abra a pagina, preencha o passo 1 do
+          formulario e veja o lead cair no RD. Alguns plugins e widgets
+          removem <script> de blocos de HTML; se o formulario nao enviar,
+          e quase sempre isso.
+       6. Marque os links que apontam para ca com UTM, senao todo lead
+          chega como trafego direto e o teste nao ensina nada.
+     ===================================================================== -->
+
+<div id="piar-lp">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Open+Sans:wght@400;500;600;700&display=swap');
+
+/* =====================================================================
+   ISOLAMENTO · impede o CSS do tema do WordPress de entrar no container.
+   Sem isto, regras como ".entry-content h2 { color: ... }" ganham dos
+   nossos seletores por especificidade.
+
+   O container usa "all: initial" para cortar a heranca do tema de uma vez.
+   Isso NAO apaga as custom properties: os tokens continuam valendo, e o
+   bloco principal logo abaixo devolve fonte, cor e fundo da PiaR.
+
+   Nos filhos o reset e cirurgico, tag por tag. Um "all: unset" global
+   seria mais curto e quebraria duas coisas: os atributos fill e stroke
+   dos SVG (perdem para qualquer regra CSS) e a caixa dos checkbox
+   (appearance volta para none e o controle some).
+   ===================================================================== */
+#piar-lp { all: initial; display: block; }
+#piar-lp *, #piar-lp *::before, #piar-lp *::after { box-sizing: border-box; }
+
+#piar-lp div, #piar-lp span, #piar-lp section, #piar-lp header, #piar-lp footer, #piar-lp main, #piar-lp aside, #piar-lp form, #piar-lp p, #piar-lp h1, #piar-lp h2, #piar-lp h3, #piar-lp h4, #piar-lp table, #piar-lp thead, #piar-lp tbody, #piar-lp tr, #piar-lp th, #piar-lp td, #piar-lp caption, #piar-lp details, #piar-lp summary, #piar-lp label, #piar-lp strong, #piar-lp b, #piar-lp em, #piar-lp i, #piar-lp br {
+  margin: 0; padding: 0; border: 0; background: none; box-shadow: none;
+  font: inherit; color: inherit; text-align: inherit; text-transform: none;
+  letter-spacing: inherit; line-height: inherit; text-decoration: none;
+  list-style: none; float: none; width: auto; max-width: none; min-width: 0;
+}
+#piar-lp strong, #piar-lp b { font-weight: 700; }
+#piar-lp em, #piar-lp i { font-style: italic; }
+#piar-lp table { border-collapse: collapse; border-spacing: 0; }
+#piar-lp caption { caption-side: bottom; }
+#piar-lp summary { display: block; cursor: pointer; }
+#piar-lp summary::-webkit-details-marker, #piar-lp summary::marker { display: none; content: ''; }
+
+#piar-lp a { color: inherit; text-decoration: none; cursor: pointer; background: none; border: 0; }
+
+#piar-lp button, #piar-lp input, #piar-lp select, #piar-lp textarea {
+  margin: 0; padding: 0; border: 0; background: none; box-shadow: none;
+  font: inherit; color: inherit; letter-spacing: inherit; line-height: inherit;
+  border-radius: 0; text-transform: none; width: auto; max-width: none; min-height: 0;
+}
+#piar-lp button { cursor: pointer; text-align: center; }
+#piar-lp textarea { display: block; }
+/* O checkbox do aceite precisa da caixa nativa de volta. */
+#piar-lp input[type="checkbox"] { -webkit-appearance: checkbox; appearance: auto; cursor: pointer; }
+
+/* Os SVG ficam intocados de proposito: quem pinta e o atributo no
+   elemento, e qualquer regra CSS aqui ganharia dele. */
+#piar-lp svg { display: inline-block; vertical-align: middle; max-width: 100%; }
+
+/* O logo vem da media library. Temas costumam impor "img { height: auto }"
+   e bordas em imagem: o reset abaixo neutraliza, e a regra do .wordmark,
+   mais especifica, e quem define a altura final. */
+#piar-lp img { display: block; max-width: 100%; height: auto; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+
+/* Barra de admin do WordPress: ela e fixa no topo e cobriria o header
+   e a barra de progresso da landing page para quem esta logado. */
+body.admin-bar #piar-lp .lp-header { top: 32px; }
+body.admin-bar #piar-lp #scroll-progress { top: 32px; }
+@media (max-width: 782px) {
+  body.admin-bar #piar-lp .lp-header { top: 46px; }
+  body.admin-bar #piar-lp #scroll-progress { top: 46px; }
+}
+
+
+/* Unica regra fora do container: as ancoras da pagina precisam disso.
+   Se o tema ja definir scroll-behavior, pode remover esta linha. */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* =====================================================================
+   PiaR Group · Landing page "O essencial"
+   Design System PiaR v2 (tokens portados de src/styles/tokens.css)
+   Todo o CSS vive dentro deste documento.
+   Zero imagem: as figuras sao SVG inline, gradiente, borda e tipografia.
+   ===================================================================== */
+
+#piar-lp {
+  /* ---------- Cores nucleo ---------- */
+  --ink:      #0F0F11;
+  --paper:    #F5F5F7;
+  --white:    #FFFFFF;
+  --yellow:   #FED136;
+
+  --yellow-100: #FFF3B0;
+  --yellow-300: #FFDC50;
+  --yellow-500: #E9BC1F;
+  --yellow-700: #8F710A;
+
+  --primary:      var(--ink);
+  --accent:       var(--yellow);
+  --accent-deep:  #E0B420;
+  --paper-lifted: #FCFBFA;
+
+  /* ---------- Texto sobre claro ---------- */
+  --text-primary: #0F0F11;
+  --text-muted:   rgba(15, 15, 17, .62);
+  --text-faint:   rgba(15, 15, 17, .48);
+  --text-subtle:  rgba(15, 15, 17, .32);
+
+  /* ---------- Texto sobre escuro ---------- */
+  --text-primary-d: #FFFFFF;
+  --text-muted-d:   rgba(255, 255, 255, .70);
+  --text-faint-d:   rgba(255, 255, 255, .45);
+
+  /* ---------- Hairlines ---------- */
+  --hairline:          rgba(0, 0, 0, .08);
+  --hairline-strong:   rgba(0, 0, 0, .14);
+  --hairline-d:        rgba(255, 255, 255, .10);
+  --hairline-d-strong: rgba(255, 255, 255, .18);
+
+  /* ---------- Raios ---------- */
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+  --radius-btn: var(--r-lg);
+  --radius-input: var(--r-md);
+  --radius-stadium: 40px;
+
+  /* ---------- Tipografia oficial PiaR ---------- */
+  --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:    'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ---------- Motion ---------- */
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --t-smooth: all .6s var(--ease-out-expo);
+
+  --col-max: 1240px;
+  --col-narrow: 760px;
+}
+#piar-lp, #piar-lp * { box-sizing: border-box; }
+#piar-lp, #piar-lp { margin: 0; padding: 0; }
+#piar-lp { scroll-behavior: smooth; }
+#piar-lp {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+  line-height: 1.55;
+}
+#piar-lp ::selection { background: var(--accent); color: var(--ink); }
+#piar-lp ::-webkit-scrollbar { width: 8px; }
+#piar-lp ::-webkit-scrollbar-track { background: transparent; }
+#piar-lp ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.16); border-radius: 10px; }
+#piar-lp h1, #piar-lp h2, #piar-lp h3, #piar-lp h4 { margin: 0; }
+#piar-lp p { margin: 0; }
+#piar-lp svg { display: inline-block; vertical-align: middle; }
+#piar-lp .i { width: 1.15em; height: 1.15em; }
+/* ---------- Escala tipografica ---------- */
+#piar-lp .ds-h1 { font-family: var(--font-display); font-size: clamp(2.4rem, 6vw, 4.6rem); font-weight: 700; line-height: 1; letter-spacing: -.042em; }
+#piar-lp .ds-h2 { font-family: var(--font-display); font-size: clamp(1.95rem, 4.2vw, 3.3rem); font-weight: 600; line-height: 1.06; letter-spacing: -.035em; }
+#piar-lp .ds-h3 { font-family: var(--font-display); font-size: clamp(1.45rem, 2.6vw, 2rem); font-weight: 600; line-height: 1.14; letter-spacing: -.03em; }
+#piar-lp .ds-h4 { font-family: var(--font-display); font-size: clamp(1.15rem, 1.9vw, 1.45rem); font-weight: 600; line-height: 1.22; letter-spacing: -.02em; }
+#piar-lp .ds-body-lg { font-size: clamp(1.05rem, 1.4vw, 1.22rem); line-height: 1.58; letter-spacing: -.01em; }
+#piar-lp .ds-body { font-size: 1.0625rem; line-height: 1.6; letter-spacing: -.01em; }
+#piar-lp .ds-body-sm { font-size: .9rem; line-height: 1.55; }
+#piar-lp .italic-serif { font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+/* ---------- Secoes ---------- */
+#piar-lp .wrap { max-width: var(--col-max); margin: 0 auto; padding: 0 1.5rem; }
+#piar-lp .wrap.narrow { max-width: var(--col-narrow); }
+#piar-lp .sec { padding: clamp(4.5rem, 9vw, 7.5rem) 0; position: relative; }
+#piar-lp .sec.tight { padding: clamp(3.5rem, 6vw, 5.5rem) 0; }
+#piar-lp .sec.light { background: var(--paper); color: var(--primary); }
+#piar-lp .sec.white { background: var(--white); color: var(--primary); }
+#piar-lp .sec.dark { background: var(--ink); color: #fff; }
+#piar-lp .sec.dark .ds-body-lg, #piar-lp .sec.dark .ds-body, #piar-lp .sec.dark .ds-body-sm { color: var(--text-muted-d); }
+#piar-lp .sec.light + .sec.white, #piar-lp .sec.white + .sec.light { border-top: 1px solid var(--hairline); }
+#piar-lp .eyebrow { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+#piar-lp .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
+/* A eyebrow herda --text-muted, que e quase preto. Toda faixa escura
+   precisa reescrever a cor, inclusive o hero, que nao usa .sec.dark. */
+#piar-lp .sec.dark .eyebrow, #piar-lp .hero .eyebrow { color: rgba(255,255,255,.72); }
+#piar-lp .warm-t { color: var(--accent); }
+#piar-lp .sec.light .warm-t, #piar-lp .sec.white .warm-t { color: var(--yellow-700); }
+#piar-lp .lede-stack > * + * { margin-top: 1.15rem; }
+/* ---------- Reveal ----------
+   O padrao e VISIVEL. O opacity 0 so entra em cena depois que o JS marca a
+   raiz com .js-anim, o que ele faz na primeira linha que executa.
+   Isso e de proposito: se um plugin remover a tag de script, se outro script da
+   pagina der erro antes, ou se o observer demorar, a pagina aparece inteira
+   do mesmo jeito. Animacao e enfeite; texto e formulario nao podem depender
+   dela para existir. */
+#piar-lp .reveal { opacity: 1; transform: none; transition: var(--t-smooth); }
+#piar-lp.js-anim .reveal { opacity: 0; transform: translateY(2rem); }
+#piar-lp.js-anim .reveal.active { opacity: 1; transform: none; }
+#piar-lp .d1 { transition-delay: .08s; }
+#piar-lp .d2 { transition-delay: .16s; }
+#piar-lp .d3 { transition-delay: .24s; }
+#piar-lp .d4 { transition-delay: .32s; }
+/* ---------- Botoes ---------- */
+#piar-lp .ink-pill { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; padding: .95rem 1.8rem; border-radius: var(--radius-btn); background: var(--primary); color: var(--paper); border: 1.5px solid var(--primary); font-size: .98rem; font-weight: 600; transition: var(--t-smooth); text-decoration: none; cursor: pointer; font-family: inherit; }
+#piar-lp .ink-pill:hover { background: #000; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(0,0,0,.18); }
+#piar-lp .ink-pill:disabled { opacity: .5; cursor: wait; transform: none; }
+#piar-lp .ink-pill svg { transition: transform .4s var(--ease-out-expo); }
+#piar-lp .ink-pill:hover svg { transform: translateX(4px); }
+#piar-lp .ink-pill.yellow { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+#piar-lp .ink-pill.yellow:hover { background: var(--yellow-300); box-shadow: 0 14px 28px rgba(254,209,54,.32); }
+#piar-lp .outline-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .9rem 1.6rem; border-radius: var(--radius-btn); background: transparent; color: var(--primary); border: 1.5px solid var(--hairline-strong); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
+#piar-lp .outline-pill:hover { border-color: var(--primary); background: rgba(0,0,0,.03); }
+#piar-lp .outline-pill.on-dark { color: #fff; border-color: rgba(255,255,255,.28); }
+#piar-lp .outline-pill.on-dark:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.6); }
+#piar-lp a.ink-pill:focus-visible, #piar-lp a.outline-pill:focus-visible, #piar-lp button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* ---------- Progresso de leitura ---------- */
+#piar-lp #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
+/* ---------- Header ---------- */
+#piar-lp .lp-header { position: fixed; top: 0; left: 0; right: 0; z-index: 900; padding: 1rem 0; transition: background .4s var(--ease-out-expo), border-color .4s; border-bottom: 1px solid transparent; }
+#piar-lp .lp-header.is-stuck { background: rgba(15,15,17,.88); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); border-bottom-color: var(--hairline-d); }
+#piar-lp .lp-header .bar { max-width: var(--col-max); margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+/* Wordmark oficial, servido da media library do WordPress em piar.group.
+   Usa o horizontal-negative (branco) porque o header e o rodape sao pretos.
+   Se o dominio mudar, sao duas linhas de src no HTML para atualizar. */
+#piar-lp .wordmark { display: inline-flex; align-items: center; text-decoration: none; }
+#piar-lp .wordmark img { display: block; height: 38px; width: auto; }
+#piar-lp .lp-footer .wordmark img { height: 42px; }
+@media (max-width: 560px) {
+  #piar-lp .wordmark img { height: 30px; }
+}
+#piar-lp .header-cta { display: inline-flex; align-items: center; gap: .5rem; padding: .62rem 1.3rem; border-radius: var(--r-pill); background: var(--accent); color: var(--ink); font-size: .82rem; font-weight: 700; text-decoration: none; transition: var(--t-smooth); white-space: nowrap; }
+#piar-lp .header-cta:hover { background: var(--yellow-300); transform: translateY(-1px); }
+@media (max-width: 560px) {
+  #piar-lp .header-cta { font-size: .74rem; padding: .55rem 1rem; }
+}
+/* ---------- Hero ---------- */
+#piar-lp .hero { position: relative; background: var(--ink); color: #fff; padding: clamp(7.5rem, 15vw, 10.5rem) 0 clamp(3rem, 5vw, 4.5rem); overflow: hidden; }
+#piar-lp .hero::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(58% 45% at 80% 6%, rgba(254,209,54,.20) 0%, rgba(254,209,54,0) 62%),
+    radial-gradient(46% 40% at 4% 94%, rgba(255,154,60,.13) 0%, transparent 62%);
+}
+#piar-lp .hero-well { position: absolute; right: -12%; top: 48%; transform: translateY(-50%); width: min(720px, 74vw); opacity: .45; pointer-events: none; z-index: 1; }
+#piar-lp .hero-well svg { display: block; width: 100%; height: auto; }
+@media (max-width: 980px) {
+  #piar-lp .hero-well { right: -36%; top: 84%; opacity: .28; }
+}
+#piar-lp .hero .wrap { position: relative; z-index: 2; }
+#piar-lp .hero h1 { max-width: 16ch; margin-top: 1.6rem; }
+#piar-lp .hero h1 em { font-style: normal; color: var(--accent); }
+#piar-lp .hero-lede { max-width: 54ch; margin-top: 1.6rem; color: var(--text-muted-d); }
+#piar-lp .hero-cta { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.4rem; }
+#piar-lp .hero-note { margin-top: 1.05rem; font-family: var(--font-mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint-d); }
+#piar-lp .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: clamp(3rem, 6vw, 4.5rem); background: var(--hairline-d); border: 1px solid var(--hairline-d); border-radius: var(--r-lg); overflow: hidden; }
+#piar-lp .hero-stats .hs { background: var(--ink); padding: 1.5rem 1.35rem; }
+#piar-lp .hero-stats .hs-n { display: block; font-family: var(--font-display); font-size: clamp(1.8rem, 3.2vw, 2.5rem); font-weight: 700; letter-spacing: -.04em; line-height: 1; color: var(--accent); }
+#piar-lp .hero-stats .hs-l { display: block; margin-top: .6rem; font-size: .85rem; line-height: 1.45; color: var(--text-muted-d); }
+@media (max-width: 760px) {
+  #piar-lp .hero-stats { grid-template-columns: 1fr; }
+}
+/* ---------- Clientes: wordmarks em texto, sem imagem ---------- */
+#piar-lp .clients { background: #000; border-top: 1px solid var(--hairline-d); border-bottom: 1px solid var(--hairline-d); padding: 1.6rem 0; overflow: hidden; }
+#piar-lp .clients-head { text-align: center; font-family: var(--font-mono); font-size: .63rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(255,255,255,.36); margin-bottom: 1.15rem; }
+#piar-lp .clients-wrap { position: relative; overflow: hidden; width: 100%; }
+#piar-lp .clients-wrap::before, #piar-lp .clients-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 110px; z-index: 3; pointer-events: none; }
+#piar-lp .clients-wrap::before { left: 0; background: linear-gradient(to right, #000, transparent); }
+#piar-lp .clients-wrap::after { right: 0; background: linear-gradient(to left, #000, transparent); }
+#piar-lp .clients-track { display: flex; align-items: center; width: max-content; animation: clients-scroll 60s linear infinite; }
+@keyframes clients-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+#piar-lp .clients-track:hover { animation-play-state: paused; }
+#piar-lp .client-name { flex-shrink: 0; margin-right: 3rem; font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.02em; color: rgba(255,255,255,.6); white-space: nowrap; transition: color .35s var(--ease-out-expo); }
+#piar-lp .client-name:hover { color: var(--accent); }
+@media (max-width: 768px) {
+  #piar-lp .client-name { font-size: .92rem; margin-right: 2rem; }
+}
+/* ---------- Bloco da voz: onda desenhada em CSS ---------- */
+#piar-lp .voice-fig { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 74px; margin-bottom: 2.25rem; }
+#piar-lp .voice-fig span { display: block; width: 5px; border-radius: 3px; background: var(--accent); animation: voice-pulse 1.9s var(--ease-out-expo) infinite; }
+@keyframes voice-pulse { 0%, 100% { height: 12%; opacity: .45; } 50% { height: 100%; opacity: 1; } }
+/* ---------- Corpos em orbita ---------- */
+#piar-lp .corpos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 3rem; }
+@media (max-width: 1040px) {
+  #piar-lp .corpos { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  #piar-lp .corpos { grid-template-columns: 1fr; }
+}
+#piar-lp .corpo { background: rgba(255,255,255,.035); border: 1px solid var(--hairline-d); border-radius: var(--r-xl); padding: 1.75rem 1.6rem; transition: var(--t-smooth); }
+#piar-lp .corpo:hover { background: rgba(255,255,255,.06); border-color: var(--hairline-d-strong); transform: translateY(-4px); }
+#piar-lp .corpo .c-ic { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: var(--accent); color: var(--ink); margin-bottom: 1.15rem; }
+#piar-lp .corpo .c-ic svg { width: 22px; height: 22px; }
+#piar-lp .corpo h3 { font-family: var(--font-display); font-size: 1.12rem; font-weight: 600; letter-spacing: -.02em; }
+#piar-lp .corpo p { margin-top: .55rem; font-size: .92rem; line-height: 1.55; color: var(--text-muted-d); }
+/* ---------- Tabela das duas orbitas ---------- */
+#piar-lp .orbit-table-wrap { margin-top: 2.75rem; overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--r-xl); background: var(--white); }
+#piar-lp .orbit-table { width: 100%; border-collapse: collapse; min-width: 620px; }
+#piar-lp .orbit-table caption { caption-side: bottom; padding: 1rem 1.5rem 1.25rem; text-align: left; font-size: .82rem; line-height: 1.5; color: var(--text-faint); }
+#piar-lp .orbit-table th, #piar-lp .orbit-table td { text-align: left; padding: 1.05rem 1.5rem; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+#piar-lp .orbit-table thead th { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; color: var(--text-muted); background: var(--paper-lifted); }
+#piar-lp .orbit-table thead th:last-child { color: var(--ink); background: var(--yellow-100); }
+#piar-lp .orbit-table tbody td { font-size: .97rem; line-height: 1.5; color: var(--text-muted); }
+#piar-lp .orbit-table tbody td:last-child { color: var(--ink); font-weight: 600; background: rgba(254,209,54,.06); }
+#piar-lp .orbit-table tbody tr:last-child th, #piar-lp .orbit-table tbody tr:last-child td { border-bottom: 0; }
+/* ---------- Seis forcas ---------- */
+#piar-lp .forcas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 3rem; background: var(--hairline-d); border: 1px solid var(--hairline-d); border-radius: var(--r-xl); overflow: hidden; }
+@media (max-width: 940px) {
+  #piar-lp .forcas { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  #piar-lp .forcas { grid-template-columns: 1fr; }
+}
+#piar-lp .forca { background: var(--ink); padding: 2rem 1.75rem; transition: background .45s var(--ease-out-expo); }
+#piar-lp .forca:hover { background: #17171A; }
+#piar-lp .forca .fg { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+#piar-lp .forca .f-ic { display: block; margin: 1.15rem 0 .9rem; color: rgba(255,255,255,.8); }
+#piar-lp .forca .f-ic svg { width: 26px; height: 26px; }
+#piar-lp .forca h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; letter-spacing: -.02em; }
+#piar-lp .forca p { margin-top: .5rem; font-size: .9rem; line-height: 1.55; color: var(--text-muted-d); }
+#piar-lp .pep-note { margin-top: 1.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.15rem; padding: 1.35rem 1.6rem; border: 1px dashed var(--hairline-d-strong); border-radius: var(--r-lg); }
+#piar-lp .pep-note .pep-tag { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; color: var(--ink); background: var(--accent); padding: .35rem .7rem; border-radius: var(--r-pill); }
+#piar-lp .pep-note p { font-size: .95rem; color: var(--text-muted-d); flex: 1 1 320px; }
+#piar-lp .pep-vetores { display: flex; flex-wrap: wrap; gap: .5rem; }
+#piar-lp .pep-vetor { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.8); border: 1px solid var(--hairline-d-strong); border-radius: var(--r-pill); padding: .35rem .8rem; }
+/* ---------- Prova ---------- */
+#piar-lp .provas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.25rem; margin-top: 3rem; }
+@media (max-width: 860px) {
+  #piar-lp .provas { grid-template-columns: 1fr; gap: 1.75rem; }
+}
+#piar-lp .prova-n { font-family: var(--font-display); font-size: clamp(3rem, 7vw, 4.75rem); font-weight: 700; letter-spacing: -.05em; line-height: .95; }
+#piar-lp .prova-n .suf { color: var(--yellow-700); }
+#piar-lp .prova-n .tail { font-size: .38em; font-weight: 600; letter-spacing: -.02em; margin-left: .15em; color: var(--text-muted); }
+#piar-lp .prova-l { display: block; margin-top: .85rem; font-size: .95rem; line-height: 1.5; color: var(--text-muted); max-width: 30ch; padding-top: .85rem; border-top: 2px solid var(--accent); }
+#piar-lp .exits-line { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 2.75rem; }
+#piar-lp .exit-chip { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .06em; color: var(--text-muted); border: 1px solid var(--hairline-strong); border-radius: var(--r-pill); padding: .42rem .9rem; background: var(--white); }
+#piar-lp .prova-tail { margin-top: 2rem; max-width: 72ch; color: var(--text-muted); }
+/* ---------- PiaRBoard: figura de dashboard desenhada ---------- */
+#piar-lp .board-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 3.5rem; align-items: center; margin-top: 1rem; }
+@media (max-width: 980px) {
+  #piar-lp .board-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+#piar-lp .board-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 1.75rem; margin-top: 2.25rem; }
+@media (max-width: 560px) {
+  #piar-lp .board-list { grid-template-columns: 1fr; }
+}
+#piar-lp .board-item h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.015em; display: flex; align-items: center; gap: .55rem; }
+#piar-lp .board-item h3::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+#piar-lp .board-item p { margin-top: .4rem; font-size: .88rem; line-height: 1.5; color: var(--text-muted-d); padding-left: 1.2rem; }
+#piar-lp .board-mock { background: #08080A; border: 1px solid var(--hairline-d-strong); border-radius: var(--r-xl); padding: 1.5rem; box-shadow: 0 32px 80px rgba(0,0,0,.5); }
+#piar-lp .bm-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--hairline-d); }
+#piar-lp .bm-title { font-family: var(--font-display); font-size: .92rem; font-weight: 700; letter-spacing: -.01em; color: #fff; }
+#piar-lp .bm-live { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+#piar-lp .bm-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: bm-blink 1.8s ease-in-out infinite; }
+@keyframes bm-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+#piar-lp .bm-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: 1.1rem 0; }
+#piar-lp .bm-kpi { background: rgba(255,255,255,.04); border: 1px solid var(--hairline-d); border-radius: var(--r-md); padding: .8rem .85rem; }
+#piar-lp .bm-kpi .k-l { display: block; font-family: var(--font-mono); font-size: .54rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-faint-d); }
+#piar-lp .bm-kpi .k-v { display: block; margin-top: .4rem; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.03em; color: #fff; }
+#piar-lp .bm-kpi .k-d { display: block; margin-top: .15rem; font-family: var(--font-mono); font-size: .58rem; color: var(--accent); }
+#piar-lp .bm-chart { background: rgba(255,255,255,.03); border: 1px solid var(--hairline-d); border-radius: var(--r-md); padding: 1rem; }
+#piar-lp .bm-chart svg { width: 100%; height: 96px; display: block; }
+#piar-lp .bm-bars { display: grid; gap: .55rem; margin-top: 1rem; }
+#piar-lp .bm-bar { display: grid; grid-template-columns: 88px 1fr 34px; align-items: center; gap: .7rem; }
+#piar-lp .bm-bar .b-l { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#piar-lp .bm-bar .b-t { height: 7px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; }
+#piar-lp .bm-bar .b-f { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--yellow-500), var(--accent)); }
+#piar-lp .bm-bar .b-v { font-family: var(--font-mono); font-size: .6rem; color: rgba(255,255,255,.75); text-align: right; }
+#piar-lp .bm-legend { margin-top: 1rem; font-family: var(--font-mono); font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-subtle); color: rgba(255,255,255,.3); }
+/* =====================================================================
+   FORMULARIO · portado de src/pages/contato.astro (spec v2)
+   Dois passos, gravacao parcial, classificacao MQL automatica.
+   ===================================================================== */
+#piar-lp .form-section { padding: clamp(4rem, 8vw, 6.5rem) 0 clamp(5rem, 9vw, 7.5rem); background: var(--paper); }
+#piar-lp .form-shell { max-width: var(--col-max); margin: 0 auto; padding: 0 1.5rem; display: grid; gap: 3rem; grid-template-columns: 1fr; }
+@media (min-width: 1024px) {
+  #piar-lp .form-shell { grid-template-columns: 1.4fr 1fr; gap: 4rem; align-items: start; }
+}
+#piar-lp .form-intro { max-width: var(--col-max); margin: 0 auto clamp(2.5rem, 5vw, 3.5rem); padding: 0 1.5rem; }
+#piar-lp .form-intro h2 { max-width: 20ch; margin-top: 1.25rem; }
+#piar-lp .form-intro p { max-width: 62ch; margin-top: 1.25rem; color: var(--text-muted); }
+#piar-lp .form-card { background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-stadium); padding: clamp(1.75rem, 4vw, 3.25rem); }
+#piar-lp .form-grid { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) {
+  #piar-lp .form-grid { grid-template-columns: 1fr 1fr; }
+}
+#piar-lp .form-grid .full { grid-column: 1 / -1; }
+#piar-lp .field { display: flex; flex-direction: column; gap: .5rem; }
+#piar-lp .field label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+#piar-lp .field label .req { color: var(--accent-deep); margin-left: .25rem; }
+#piar-lp .field input, #piar-lp .field select, #piar-lp .field textarea { width: 100%; padding: .95rem 1.1rem; border-radius: var(--radius-input); border: 1.5px solid var(--hairline); background: #fff; font-family: inherit; font-size: 1rem; color: var(--primary); transition: var(--t-smooth); }
+#piar-lp .field input:hover, #piar-lp .field select:hover, #piar-lp .field textarea:hover { border-color: var(--hairline-strong); }
+#piar-lp .field input:focus, #piar-lp .field select:focus, #piar-lp .field textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(254,209,54,.22); }
+#piar-lp .field textarea { resize: vertical; min-height: 130px; line-height: 1.5; }
+#piar-lp .field select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230F0F11' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1.1rem center; padding-right: 2.5rem; cursor: pointer; }
+#piar-lp .field select:invalid { color: var(--text-faint); }
+#piar-lp .field-hint { font-size: .8rem; line-height: 1.45; color: var(--text-muted); }
+#piar-lp .field-error { display: flex; align-items: center; gap: .4rem; font-size: .8rem; line-height: 1.4; color: #a83232; font-weight: 500; }
+#piar-lp .field-error::before { content: '!'; flex-shrink: 0; width: 15px; height: 15px; border-radius: 50%; background: #a83232; color: #fff; font-size: .62rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+#piar-lp .field.is-invalid input, #piar-lp .field.is-invalid select, #piar-lp .field.is-invalid textarea { border-color: #a83232; background: rgba(168,50,50,.02); }
+#piar-lp .field.is-invalid .consent { border-color: #a83232; }
+#piar-lp .field-warn { display: flex; align-items: flex-start; gap: .45rem; font-size: .8rem; line-height: 1.45; color: var(--accent-deep); }
+#piar-lp .field-warn::before { content: ''; flex-shrink: 0; width: 8px; height: 8px; margin-top: .38rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgba(254,209,54,.24); }
+#piar-lp .field-conditional { display: none; }
+#piar-lp .field-conditional.is-visible { display: flex; animation: fieldIn .35s var(--ease-out-expo); }
+@keyframes fieldIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+#piar-lp .form-progress { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 2.25rem; }
+#piar-lp .form-progress .prog-step { display: flex; flex-direction: column; justify-content: space-between; gap: .55rem; }
+#piar-lp .form-progress .prog-bar { height: 3px; border-radius: 3px; background: var(--hairline-strong); overflow: hidden; }
+#piar-lp .form-progress .prog-bar::after { content: ''; display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s var(--ease-out-expo); }
+#piar-lp .form-progress .prog-step.is-done .prog-bar::after, #piar-lp .form-progress .prog-step.is-current .prog-bar::after { width: 100%; }
+#piar-lp .form-progress .prog-step.is-done .prog-bar::after { background: var(--primary); }
+#piar-lp .form-progress .prog-label { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; transition: color .4s; }
+#piar-lp .form-progress .prog-step.is-current .prog-label { color: var(--primary); }
+#piar-lp .form-progress .prog-step.is-done .prog-label { color: var(--text-muted); }
+#piar-lp .form-step { display: none; }
+#piar-lp .form-step.is-active { display: block; animation: stepIn .45s var(--ease-out-expo); }
+@keyframes stepIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+#piar-lp .step-intro { margin-bottom: 1.75rem; }
+#piar-lp .step-intro h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
+#piar-lp .step-intro p { font-size: .92rem; color: var(--text-muted); line-height: 1.55; margin-top: .5rem; max-width: 52ch; }
+#piar-lp .back-link { display: inline-flex; align-items: center; gap: .45rem; background: none; border: 0; padding: 0; font-family: inherit; font-size: .88rem; color: var(--text-muted); cursor: pointer; transition: color .3s; }
+#piar-lp .back-link:hover { color: var(--primary); }
+#piar-lp .consent { display: flex; gap: .85rem; align-items: flex-start; padding: 1rem 1.25rem; background: var(--paper-lifted); border: 1px solid var(--hairline); border-radius: var(--radius-input); }
+#piar-lp .consent input[type="checkbox"] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--primary); margin-top: 1px; }
+#piar-lp .consent label { font-family: var(--font-sans); font-size: .85rem; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--text-muted); line-height: 1.5; cursor: pointer; }
+#piar-lp .consent label a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+#piar-lp .botcheck { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+#piar-lp .submit-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding-top: 1rem; }
+#piar-lp .submit-row .submit-note { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
+#piar-lp .form-feedback { display: none; margin-top: 1.25rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-input); font-size: .92rem; line-height: 1.5; }
+#piar-lp .form-feedback.is-visible { display: block; }
+#piar-lp .form-feedback.error { background: rgba(168,50,50,.06); border: 1px solid rgba(168,50,50,.32); color: #a83232; }
+#piar-lp .form-feedback strong { display: block; margin-bottom: .25rem; }
+#piar-lp .success-screen { display: none; padding: 3rem 2rem; text-align: center; border-radius: var(--radius-stadium); background: linear-gradient(135deg, var(--accent) 0%, var(--yellow-300) 100%); color: var(--primary); }
+#piar-lp .success-screen.is-visible { display: block; }
+#piar-lp .success-screen .check-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: var(--accent); margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
+#piar-lp .success-screen .check-icon svg { width: 38px; height: 38px; }
+#piar-lp .confirm-path { display: none; }
+#piar-lp .confirm-path.is-visible { display: block; }
+/* ---------- Sidebar do formulario ---------- */
+#piar-lp .sidebar-block { background: var(--paper-lifted); border: 1px solid var(--hairline); border-radius: 24px; padding: 2rem; }
+#piar-lp .sidebar-block + .sidebar-block { margin-top: 1rem; }
+#piar-lp .sidebar-block.dark { background: var(--primary); color: #fff; border-color: var(--primary); }
+#piar-lp .sidebar-block.dark .eyebrow { color: rgba(255,255,255,.72); }
+#piar-lp .sidebar-block h3 { margin: 1rem 0 1.5rem; }
+#piar-lp .step-list { display: flex; flex-direction: column; gap: 1.25rem; }
+#piar-lp .step-item { display: flex; gap: 1rem; align-items: flex-start; }
+#piar-lp .step-item .step-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: .72rem; font-weight: 700; }
+#piar-lp .step-item .step-titulo { font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
+#piar-lp .step-item .step-desc { font-size: .88rem; color: var(--text-muted); line-height: 1.5; margin-top: .35rem; }
+#piar-lp .step-item .step-cad { display: inline-block; margin-top: .5rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); font-weight: 600; }
+#piar-lp .contact-direct { display: flex; flex-direction: column; gap: .85rem; }
+#piar-lp .contact-direct a { display: flex; align-items: center; gap: .85rem; padding: .85rem 1rem; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); text-decoration: none; transition: var(--t-smooth); font-size: .95rem; color: #fff; }
+#piar-lp .contact-direct a:hover { background: rgba(254,209,54,.12); border-color: rgba(254,209,54,.32); transform: translateX(2px); }
+#piar-lp .contact-direct a svg { color: var(--accent); width: 22px; height: 22px; flex-shrink: 0; }
+#piar-lp .contact-direct .cd-sub { color: rgba(255,255,255,.6); font-size: .8rem; }
+/* ---------- FAQ ---------- */
+#piar-lp .faq-item { border-bottom: 1px solid var(--hairline); }
+#piar-lp .faq-item:last-child { border-bottom: 0; }
+#piar-lp .faq-item summary { list-style: none; cursor: pointer; padding: 1.4rem 0; display: flex; justify-content: space-between; align-items: center; gap: 2rem; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; transition: color .3s; font-family: var(--font-display); }
+#piar-lp .faq-item summary::-webkit-details-marker { display: none; }
+#piar-lp .faq-item summary:hover { color: var(--yellow-700); }
+#piar-lp .faq-item summary .faq-plus { flex-shrink: 0; width: 22px; height: 22px; color: var(--text-muted); transition: transform .4s var(--ease-out-expo); }
+#piar-lp .faq-item[open] summary .faq-plus { transform: rotate(45deg); color: var(--primary); }
+#piar-lp .faq-item .faq-body { padding: 0 0 1.4rem; color: var(--text-muted); max-width: 68ch; line-height: 1.6; font-size: .97rem; }
+/* ---------- Rodape ---------- */
+#piar-lp .lp-footer { background: var(--ink); color: rgba(255,255,255,.55); padding: 3rem 0 3.5rem; border-top: 1px solid var(--hairline-d); }
+#piar-lp .lp-footer .f-in { max-width: var(--col-max); margin: 0 auto; padding: 0 1.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: flex-start; }
+#piar-lp .lp-footer a { color: rgba(255,255,255,.75); text-decoration: none; }
+#piar-lp .lp-footer a:hover { color: var(--accent); }
+#piar-lp .lp-footer .f-legal { font-size: .8rem; line-height: 1.6; max-width: 46ch; }
+@media (prefers-reduced-motion: reduce) {
+  #piar-lp, #piar-lp *, #piar-lp *::before, #piar-lp *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  #piar-lp .reveal { opacity: 1 !important; transform: none !important; }
+  #piar-lp { scroll-behavior: auto; }
+}
+@media (max-width: 640px) {
+  #piar-lp .form-progress .prog-num { display: none; }
+}
+</style>
+
+<div id="scroll-progress"></div>
+
+<!-- ============================================================
+     HEADER · minimo, sem menu, para nao vazar o trafego pago
+     ============================================================ -->
+<header class="lp-header" id="lp-header">
+  <div class="bar">
+    <a class="wordmark" href="#topo">
+      <img src="https://piar.group/wp-content/uploads/2026/06/logo-horizontal-negative.png"
+           alt="PiaR Group" width="1268" height="414" />
+    </a>
+    <a class="header-cta" href="#diagnostico">
+      Agende seu diagnóstico
+      <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<main id="topo">
+
+  <!-- ============================================================
+       1 · HERO · a tese em uma frase, com o poco de gravidade em SVG
+       ============================================================ -->
+  <section class="hero">
+    <div class="hero-well" aria-hidden="true">
+      <svg viewBox="0 0 600 600" fill="none">
+        <defs>
+          <radialGradient id="wellCore" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FED136" stop-opacity=".85" />
+            <stop offset="55%" stop-color="#FED136" stop-opacity=".18" />
+            <stop offset="100%" stop-color="#FED136" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <circle cx="300" cy="300" r="150" fill="url(#wellCore)" />
+        <g stroke="#FED136" stroke-opacity=".30" fill="none">
+          <ellipse cx="300" cy="300" rx="90"  ry="34" />
+          <ellipse cx="300" cy="300" rx="140" ry="53" />
+          <ellipse cx="300" cy="300" rx="192" ry="73" />
+          <ellipse cx="300" cy="300" rx="245" ry="93" />
+          <ellipse cx="300" cy="300" rx="292" ry="112" />
+        </g>
+        <g stroke="#FFFFFF" stroke-opacity=".12" fill="none">
+          <ellipse cx="300" cy="300" rx="115" ry="44" transform="rotate(28 300 300)" />
+          <ellipse cx="300" cy="300" rx="215" ry="82" transform="rotate(28 300 300)" />
+          <ellipse cx="300" cy="300" rx="268" ry="102" transform="rotate(-22 300 300)" />
+        </g>
+        <circle cx="300" cy="300" r="13" fill="#FED136" />
+        <circle cx="440" cy="300" r="5.5" fill="#FFFFFF" fill-opacity=".8" />
+        <circle cx="196" cy="262" r="4" fill="#FFFFFF" fill-opacity=".55" />
+        <circle cx="345" cy="393" r="4.5" fill="#FED136" fill-opacity=".8" />
+      </svg>
+    </div>
+
+    <div class="wrap">
+      <span class="eyebrow reveal">Diagnóstico de 45 minutos · sem custo</span>
+      <h1 class="ds-h1 reveal d1">A sua marca já tem um <em>ativo raro.</em> A dúvida é se o mercado já descobriu.</h1>
+      <p class="ds-body-lg hero-lede reveal d2">
+        Há 13 anos encontramos o que empresas inovadoras têm de mais único e transformamos
+        isso em reputação: a que a imprensa cita, o comprador reconhece e a inteligência
+        artificial repete. Já foram mais de 470 marcas.
+      </p>
+      <div class="hero-cta reveal d3">
+        <a href="#diagnostico" class="ink-pill yellow">
+          Quero meu diagnóstico
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#voz" class="outline-pill on-dark">Entenda a tese em 3 minutos</a>
+      </div>
+      <p class="hero-note reveal d4">Resposta em até 1 dia útil · sem proposta automática</p>
+
+      <div class="hero-stats reveal d4">
+        <div class="hs">
+          <span class="hs-n">13 anos</span>
+          <span class="hs-l">Comunicando inovação desde 2013, em São Paulo.</span>
+        </div>
+        <div class="hs">
+          <span class="hs-n">470+</span>
+          <span class="hs-l">Marcas que confiaram sua reputação à PiaR.</span>
+        </div>
+        <div class="hs">
+          <span class="hs-n">11</span>
+          <span class="hs-l">Startups acompanhadas da primeira pauta ao exit.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       2 · CLIENTES · wordmarks em texto (nenhuma imagem na pagina)
+       ============================================================ -->
+  <section class="clients" aria-label="Marcas que confiam na PiaR">
+    <p class="clients-head">Entre as marcas atendidas</p>
+    <div class="clients-wrap">
+      <div class="clients-track">
+        <span class="client-name">Sambatech</span><span class="client-name">Liga Ventures</span><span class="client-name">Printi</span><span class="client-name">Qranio</span><span class="client-name">Unifisa</span><span class="client-name">Livup</span><span class="client-name">Doctoralia</span><span class="client-name">Solides</span><span class="client-name">Corning</span><span class="client-name">PagBrasil</span><span class="client-name">Sidia</span><span class="client-name">Investidores.vc</span><span class="client-name">FluencyPass</span><span class="client-name">Layer Up</span><span class="client-name">Wylinka</span><span class="client-name">Inovativa</span><span class="client-name">Unlimitail</span><span class="client-name">Mastercard Agro</span><span class="client-name">AgroSmart</span><span class="client-name">Vila 11</span>
+        <span class="client-name" aria-hidden="true">Sambatech</span><span class="client-name" aria-hidden="true">Liga Ventures</span><span class="client-name" aria-hidden="true">Printi</span><span class="client-name" aria-hidden="true">Qranio</span><span class="client-name" aria-hidden="true">Unifisa</span><span class="client-name" aria-hidden="true">Livup</span><span class="client-name" aria-hidden="true">Doctoralia</span><span class="client-name" aria-hidden="true">Solides</span><span class="client-name" aria-hidden="true">Corning</span><span class="client-name" aria-hidden="true">PagBrasil</span><span class="client-name" aria-hidden="true">Sidia</span><span class="client-name" aria-hidden="true">Investidores.vc</span><span class="client-name" aria-hidden="true">FluencyPass</span><span class="client-name" aria-hidden="true">Layer Up</span><span class="client-name" aria-hidden="true">Wylinka</span><span class="client-name" aria-hidden="true">Inovativa</span><span class="client-name" aria-hidden="true">Unlimitail</span><span class="client-name" aria-hidden="true">Mastercard Agro</span><span class="client-name" aria-hidden="true">AgroSmart</span><span class="client-name" aria-hidden="true">Vila 11</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       3 · A VOZ · onde tudo comeca
+       ============================================================ -->
+  <section class="sec white" id="voz">
+    <div class="wrap narrow" style="text-align:center">
+      <div class="voice-fig reveal" aria-hidden="true">
+        <span style="animation-delay:0s"></span><span style="animation-delay:.09s"></span><span style="animation-delay:.18s"></span><span style="animation-delay:.27s"></span><span style="animation-delay:.36s"></span><span style="animation-delay:.45s"></span><span style="animation-delay:.36s"></span><span style="animation-delay:.27s"></span><span style="animation-delay:.18s"></span><span style="animation-delay:.09s"></span><span style="animation-delay:0s"></span>
+      </div>
+      <span class="eyebrow reveal">Onde tudo começa</span>
+      <h2 class="ds-h2 reveal d1" style="margin-top:1.5rem">Toda atração começa com uma <span class="warm-t">voz.</span></h2>
+      <div class="lede-stack" style="margin-top:2rem">
+        <p class="ds-body-lg reveal d2" style="color:var(--text-muted)">
+          Há 13 anos ouvimos o mesmo silêncio: empresas extraordinárias que passam
+          despercebidas porque ninguém traduziu o valor delas numa frase clara.
+        </p>
+        <p class="ds-body-lg reveal d3" style="color:var(--text-muted)">
+          A imprensa presta atenção em quem tem algo único a dizer. Nosso trabalho é
+          encontrar essa frase e colocá-la na voz certa, na hora certa, antes de todo mundo.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       4 · A GRAVIDADE · a tese e os quatro corpos que ela puxa
+       ============================================================ -->
+  <section class="sec dark">
+    <div class="wrap">
+      <div class="reveal">
+        <span class="eyebrow">A gravidade da marca</span>
+        <h2 class="ds-h2" style="margin-top:1.5rem;max-width:22ch">
+          Desejo é gravidade. Quanto mais massa a marca acumula, menos ela precisa <span class="warm-t">correr.</span>
+        </h2>
+        <p class="ds-body-lg" style="margin-top:1.5rem;max-width:60ch">
+          O mercado passa a entrar na órbita dela. Quando a massa cresce, quatro corpos
+          chegam juntos, sem precisar ser chamados.
+        </p>
+      </div>
+
+      <div class="corpos">
+        <div class="corpo reveal">
+          <span class="c-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.3 11.6a2 2 0 0 0 2 1.6h7.5a2 2 0 0 0 2-1.6L20.5 8H6"/><circle cx="10" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg></span>
+          <h3>O comprador</h3>
+          <p>Chega convencido, e a venda fecha com menos objeção. A reputação trabalha antes da reunião.</p>
+        </div>
+        <div class="corpo reveal d1">
+          <span class="c-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 16l4.2-5 3.3 2.8L20 6.5"/><path d="M20 11V6.5h-4.5"/></svg></span>
+          <h3>O investidor</h3>
+          <p>Valida a empresa porque o mercado já fala dela. Confiança pública abre a mesa.</p>
+        </div>
+        <div class="corpo reveal d2">
+          <span class="c-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5l4.2 3.8L12 5l4.8 6.3L21 7.5V18H3z"/><path d="M3 21h18"/></svg></span>
+          <h3>A liderança</h3>
+          <p>O fundador vira referência do setor, procurado pela imprensa pelo nome dele.</p>
+        </div>
+        <div class="corpo reveal d3">
+          <span class="c-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0"/><path d="M16.2 5.3a3.2 3.2 0 0 1 0 5.6"/><path d="M17.6 20a6.3 6.3 0 0 0-2.2-4.7"/></svg></span>
+          <h3>O talento</h3>
+          <p>As pessoas certas querem entrar onde a marca já é uma referência.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       5 · A TRADUCAO · a tabela das duas orbitas
+       ============================================================ -->
+  <section class="sec light">
+    <div class="wrap">
+      <div class="reveal" style="max-width:62ch">
+        <span class="eyebrow">A conversa que ampliamos</span>
+        <h2 class="ds-h2" style="margin-top:1.5rem">
+          <span class="italic-serif">"Saímos na Exame essa semana."</span><br />
+          <span class="warm-t">"Ótimo. E daí?"</span>
+        </h2>
+        <p class="ds-body-lg" style="margin-top:1.5rem;color:var(--text-muted)">
+          Essa pergunta é diferença de idioma. Comunicação relata cobertura, a liderança
+          decide em receita. Sentamos desse lado da mesa vezes suficientes para aprender a
+          traduzir uma coisa na outra, e é nessa língua que entregamos o relatório.
+        </p>
+      </div>
+
+      <div class="orbit-table-wrap reveal d1">
+        <table class="orbit-table">
+          <caption>As duas órbitas: a mesma marca observada de dois pontos. Marketing e comunicação querem a mesma coisa, só medem por lentes diferentes.</caption>
+          <thead>
+            <tr>
+              <th scope="col">O relatório de atividade mostra</th>
+              <th scope="col">O relatório de impacto mostra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Quantidade de publicações no mês</td>
+              <td>Quanto custaria comprar esse mesmo espaço em mídia paga</td>
+            </tr>
+            <tr>
+              <td>Veículos alcançados</td>
+              <td>Onde o comprador procura antes de decidir, e se a marca está lá</td>
+            </tr>
+            <tr>
+              <td>Menções e clipping arquivado</td>
+              <td>Objeções que deixaram de aparecer na reunião de venda</td>
+            </tr>
+            <tr>
+              <td>Alcance estimado da matéria</td>
+              <td>Pipeline que a publicação ajudou a abrir, e o ciclo que ela encurtou</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       6 · AS SEIS FORCAS · o que compramos, afinal
+       ============================================================ -->
+  <section class="sec dark">
+    <div class="wrap">
+      <div class="reveal" style="max-width:62ch">
+        <span class="eyebrow">O que fazemos</span>
+        <h2 class="ds-h2" style="margin-top:1.5rem">Seis forças geram essa gravidade.</h2>
+        <p class="ds-body-lg" style="margin-top:1.5rem">
+          Nenhuma entra no atacado: cada força responde a um diagnóstico. Juntas, somam a
+          massa que a imprensa cita pelo nome e que o mercado passa a procurar sozinho.
+        </p>
+      </div>
+
+      <div class="forcas">
+        <div class="forca reveal">
+          <span class="fg">A pauta</span>
+          <span class="f-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+          <h3>Relações Públicas</h3>
+          <p>A citação primária: pauta e cobertura nos veículos que decidem o seu mercado.</p>
+        </div>
+        <div class="forca reveal d1">
+          <span class="fg">A pauta</span>
+          <span class="f-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><path d="M6 8.6V14a4 4 0 0 0 4 4h5.4"/></svg></span>
+          <h3>Comunicação Integrada</h3>
+          <p>As frentes conduzidas como um sistema só, cada peça puxando a próxima até o mercado ouvir uma mensagem inteira.</p>
+        </div>
+        <div class="forca reveal d2">
+          <span class="fg">A presença</span>
+          <span class="f-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v6.2c0 4.4-3.2 8-7.5 8.8-4.3-.8-7.5-4.4-7.5-8.8V6z"/><path d="M9 12.2l2.1 2.1 4-4.2"/></svg></span>
+          <h3>Reputação Semântica</h3>
+          <p>Como a marca aparece na busca, na mídia e na resposta da IA. Monitorar mostra o retrato; nós reescrevemos o que está dito sobre você.</p>
+        </div>
+        <div class="forca reveal">
+          <span class="fg">A presença</span>
+          <span class="f-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></span>
+          <h3>GEO Consulting</h3>
+          <p>Faz a marca ser citada por ChatGPT, Gemini e Perplexity quando perguntam do seu mercado.</p>
+        </div>
+        <div class="forca reveal d1">
+          <span class="fg">A voz</span>
+          <span class="f-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5M9 21.5h6"/></svg></span>
+          <h3>Media Training</h3>
+          <p>Autoridade no porta-voz até a imprensa procurar ele pelo nome, com a frase certa pronta para virar manchete.</p>
+        </div>
+        <div class="forca reveal d2">
+          <span class="fg">A voz</span>
+          <span class="f-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.2 8.8a2.7 2.7 0 0 0-3.8-3.8L4 16.2z"/><path d="M14.5 5.7l3.8 3.8"/></svg></span>
+          <h3>Ghostwriting</h3>
+          <p>A experiência do executivo vira artigo, post e palco, sempre na voz dele.</p>
+        </div>
+      </div>
+
+      <div class="pep-note reveal d2">
+        <span class="pep-tag">PEP</span>
+        <p>
+          Tem ainda um trabalho que começa onde a cobertura termina. O PEP é a metodologia
+          proprietária da PiaR para transformar cobertura em continuidade de marca, com seis
+          frentes editoriais que se combinam conforme o objetivo.
+        </p>
+        <div class="pep-vetores">
+          <span class="pep-vetor">Palco</span>
+          <span class="pep-vetor">Conversa</span>
+          <span class="pep-vetor">Narrativa</span>
+          <span class="pep-vetor">Cadência</span>
+          <span class="pep-vetor">Alcance</span>
+          <span class="pep-vetor">Veículo</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       7 · A PROVA
+       ============================================================ -->
+  <section class="sec white">
+    <div class="wrap">
+      <div class="reveal" style="max-width:56ch">
+        <span class="eyebrow">A prova</span>
+        <h2 class="ds-h2" style="margin-top:1.5rem">Treze anos de comunicação em números que você pode conferir.</h2>
+      </div>
+
+      <div class="provas">
+        <div class="reveal">
+          <span class="prova-n">13<span class="tail">anos</span></span>
+          <span class="prova-l">Comunicando inovação desde 2013, em São Paulo.</span>
+        </div>
+        <div class="reveal d1">
+          <span class="prova-n">470<span class="suf">+</span></span>
+          <span class="prova-l">Marcas que confiaram sua reputação à PiaR ao longo dessa trajetória.</span>
+        </div>
+        <div class="reveal d2">
+          <span class="prova-n">11</span>
+          <span class="prova-l">Startups acompanhadas da primeira pauta ao exit.</span>
+        </div>
+      </div>
+
+      <!-- 11 exits nomeados. Os 8 primeiros vinham travados no site.ts; VExpenses
+           (comprada pela VR), Menew (combinacao de operacoes com a Linx) e
+           GaussFleet (controle adquirido pela CSN) foram confirmados em
+           2026-08-18 e liberados por Danilo. -->
+      <div class="exits-line reveal d2">
+        <span class="exit-chip">Axado</span>
+        <span class="exit-chip">Trustvox</span>
+        <span class="exit-chip">ViaNuvem</span>
+        <span class="exit-chip">Konduto</span>
+        <span class="exit-chip">Getrak</span>
+        <span class="exit-chip">GrandChef</span>
+        <span class="exit-chip">Xtech Commerce</span>
+        <span class="exit-chip">Supermercado Now</span>
+        <span class="exit-chip">VExpenses</span>
+        <span class="exit-chip">Menew</span>
+        <span class="exit-chip">GaussFleet</span>
+      </div>
+
+      <p class="ds-body prova-tail reveal d3">
+        Reputação não se compra à vista, ela se acumula. Desde 2013, já são mais de 470
+        marcas atendidas, 11 startups acompanhadas até o exit e um reconhecimento que reforça
+        essa trajetória: Bruno Pinheiro, eleito Profissional de Imprensa no Startup Awards
+        da ABStartups em 2018. Números importam. Consistência importa ainda mais.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       8 · O PIARBOARD · a caixa-preta aberta
+       Figura ilustrativa desenhada em CSS e SVG, nao um print do produto.
+       ============================================================ -->
+  <section class="sec dark">
+    <div class="wrap">
+      <div class="board-grid">
+        <div class="reveal">
+          <span class="eyebrow">O PiaRBoard</span>
+          <h2 class="ds-h2" style="margin-top:1.5rem">Transparência é inegociável.</h2>
+          <p class="ds-body-lg" style="margin-top:1.5rem">
+            A maioria das agências entrega o resultado e esconde o caminho. Abrimos a
+            caixa-preta: o PiaRBoard é o nosso dashboard proprietário, que mostra em tempo
+            real cada passo até a publicação.
+          </p>
+
+          <div class="board-list">
+            <div class="board-item">
+              <h3>Tempo real</h3>
+              <p>Você vê os resultados no instante em que acontecem, sem esperar o relatório do mês.</p>
+            </div>
+            <div class="board-item">
+              <h3>Métricas detalhadas</h3>
+              <p>Alcance, engajamento e impacto de cada publicação, abertos número a número.</p>
+            </div>
+            <div class="board-item">
+              <h3>Monitoramento de mídia</h3>
+              <p>Onde a sua marca está sendo mencionada, no momento em que a menção sai.</p>
+            </div>
+            <div class="board-item">
+              <h3>Filtros que importam</h3>
+              <p>Os resultados, filtráveis por veículo, mídia e audiência.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="board-mock reveal d1" role="figure" aria-label="Figura ilustrativa do painel PiaRBoard, com indicadores, curva de menções e ranking de veículos">
+          <div class="bm-top">
+            <span class="bm-title">PiaRBoard</span>
+            <span class="bm-live">Ao vivo</span>
+          </div>
+
+          <div class="bm-kpis">
+            <div class="bm-kpi"><span class="k-l">Menções</span><span class="k-v">312</span><span class="k-d">+18% no mês</span></div>
+            <div class="bm-kpi"><span class="k-l">Alcance</span><span class="k-v">4,8 mi</span><span class="k-d">+7% no mês</span></div>
+            <div class="bm-kpi"><span class="k-l">Veículos</span><span class="k-v">47</span><span class="k-d">+5 novos</span></div>
+          </div>
+
+          <div class="bm-chart">
+            <svg viewBox="0 0 320 96" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="bmFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FED136" stop-opacity=".38" />
+                  <stop offset="100%" stop-color="#FED136" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <g stroke="#FFFFFF" stroke-opacity=".07">
+                <line x1="0" y1="24" x2="320" y2="24" /><line x1="0" y1="48" x2="320" y2="48" /><line x1="0" y1="72" x2="320" y2="72" />
+              </g>
+              <path d="M0 78 L40 72 L80 74 L120 58 L160 52 L200 34 L240 38 L280 20 L320 12 L320 96 L0 96 Z" fill="url(#bmFill)" />
+              <path d="M0 78 L40 72 L80 74 L120 58 L160 52 L200 34 L240 38 L280 20 L320 12" fill="none" stroke="#FED136" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="320" cy="12" r="3.6" fill="#FED136" />
+            </svg>
+          </div>
+
+          <div class="bm-bars">
+            <div class="bm-bar"><span class="b-l">Imprensa</span><span class="b-t"><span class="b-f" style="width:88%"></span></span><span class="b-v">88</span></div>
+            <div class="bm-bar"><span class="b-l">Busca</span><span class="b-t"><span class="b-f" style="width:71%"></span></span><span class="b-v">71</span></div>
+            <div class="bm-bar"><span class="b-l">Respostas de IA</span><span class="b-t"><span class="b-f" style="width:54%"></span></span><span class="b-v">54</span></div>
+            <div class="bm-bar"><span class="b-l">Social</span><span class="b-t"><span class="b-f" style="width:39%"></span></span><span class="b-v">39</span></div>
+          </div>
+
+          <p class="bm-legend">Figura ilustrativa · valores de demonstração</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       9 · FORMULARIO · o mesmo da pagina de agendamento do site
+       ============================================================ -->
+  <section class="form-section" id="diagnostico">
+    <div class="form-intro reveal">
+      <span class="eyebrow">Vamos conversar</span>
+      <h2 class="ds-h2">Antes de marcar, queremos <span class="italic-serif warm-t">entender.</span></h2>
+      <p class="ds-body-lg">
+        Conte o seu contexto e, em até um dia útil, devolvemos onde está a oportunidade:
+        na busca, na imprensa e nas conversas que decidem o seu mercado. Sem proposta
+        automática, sem script. Só o diagnóstico que 470 marcas nos ensinaram a enxergar.
+      </p>
+    </div>
+
+    <div class="form-shell">
+
+      <!-- COLUNA ESQUERDA · O FORMULARIO -->
+      <div class="reveal">
+        <div class="form-card" id="form-card">
+
+          <!-- Progresso · dois passos -->
+          <div class="form-progress" id="form-progress">
+            <div class="prog-step is-current" data-prog="1">
+              <span class="prog-label"><span class="prog-num">01 · </span>Identificação</span>
+              <div class="prog-bar"></div>
+            </div>
+            <div class="prog-step" data-prog="2">
+              <span class="prog-label"><span class="prog-num">02 · </span>Briefing</span>
+              <div class="prog-bar"></div>
+            </div>
+          </div>
+
+          <form id="contato-form" novalidate>
+            <!-- Honeypot anti-spam · invisivel pra humanos -->
+            <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" />
+
+            <!-- Rastreio · preenchido por JS na carga da pagina (cookie de 90 dias) -->
+            <input type="hidden" name="cf_utm_source" id="h-utm-source" />
+            <input type="hidden" name="cf_utm_medium" id="h-utm-medium" />
+            <input type="hidden" name="cf_utm_campaign" id="h-utm-campaign" />
+            <input type="hidden" name="cf_utm_content" id="h-utm-content" />
+            <input type="hidden" name="cf_pagina_conversao" id="h-pagina-conversao" />
+            <input type="hidden" name="cf_landing_page" id="h-landing-page" />
+            <input type="hidden" name="cf_referrer" id="h-referrer" />
+            <input type="hidden" name="cf_classificacao" id="h-classificacao" />
+
+            <!-- ============ PASSO 1 · IDENTIFICACAO ============ -->
+            <div class="form-step is-active" id="step-1" data-step="1">
+              <div class="step-intro">
+                <h2>Quem está do outro lado.</h2>
+                <p>Cinco campos. Depois deles a gente já consegue te procurar, mesmo que você precise sair no meio.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="f-nome">Nome completo <span class="req">*</span></label>
+                  <input id="f-nome" name="name" type="text" required autocomplete="name" placeholder="Como podemos te chamar?" />
+                </div>
+
+                <div class="field">
+                  <label for="f-email">E-mail corporativo <span class="req">*</span></label>
+                  <input id="f-email" name="email" type="email" required autocomplete="email" placeholder="voce@suaempresa.com" />
+                </div>
+                <div class="field">
+                  <label for="f-empresa">Empresa <span class="req">*</span></label>
+                  <input id="f-empresa" name="company_name" type="text" required autocomplete="organization" placeholder="Razão social ou marca" />
+                </div>
+
+                <div class="field">
+                  <label for="f-cargo">Cargo <span class="req">*</span></label>
+                  <select id="f-cargo" name="job_title" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option>CEO, fundador ou sócio</option>
+                    <option>CMO ou diretor de marketing</option>
+                    <option>Diretor de comunicação</option>
+                    <option>Head ou gerente de marketing / comunicação</option>
+                    <option>Coordenador ou analista</option>
+                    <option>Consultor, parceiro ou agência</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="f-telefone">Telefone <span class="req">*</span></label>
+                  <input id="f-telefone" name="personal_phone" type="tel" required autocomplete="tel" placeholder="(11) 9 9999-9999" />
+                </div>
+
+                <div class="full submit-row">
+                  <span class="submit-note">/// Passo 1 de 2</span>
+                  <button type="button" class="ink-pill yellow" id="next-btn">
+                    <span class="btn-label">Continuar</span>
+                    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ PASSO 2 · BRIEFING ============ -->
+            <div class="form-step" id="step-2" data-step="2">
+              <div class="step-intro">
+                <button type="button" class="back-link" id="back-btn">
+                  <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+                  Voltar
+                </button>
+                <h2 style="margin-top:.85rem">O briefing que encurta a primeira conversa.</h2>
+                <p>Cada resposta aqui muda o que a gente leva para a reunião: o material, o case que abre, o ângulo.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="f-frente">Frente de interesse principal <span class="req">*</span></label>
+                  <select id="f-frente" name="cf_frente_interesse" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Presença da marca em busca e em respostas de IA (GEO PR)</option>
+                    <option>Cobertura de imprensa recorrente</option>
+                    <option>Autoridade e narrativa do porta-voz</option>
+                    <option>Gestão de crise</option>
+                    <option>Projetos especiais: eventos, conteúdo próprio, ghostwriting</option>
+                    <option>Diagnóstico de visibilidade em IA: o ponto de partida</option>
+                  </select>
+                </div>
+
+                <div class="field full">
+                  <label for="f-assessoria">A empresa já teve assessoria de imprensa? <span class="req">*</span></label>
+                  <select id="f-assessoria" name="cf_assessoria_previa" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Sim, temos assessoria hoje</option>
+                    <option>Sim, tivemos até recentemente</option>
+                    <option>Sim, mas há mais de dois anos</option>
+                    <option>Não, seria a primeira vez</option>
+                  </select>
+                </div>
+
+                <div class="field full">
+                  <label for="f-gatilho">O que motivou essa busca agora? <span class="req">*</span></label>
+                  <select id="f-gatilho" name="cf_gatilho" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Crescimento, lançamento ou entrada em novo mercado</option>
+                    <option>Rodada, aporte ou preparação para um evento de liquidez</option>
+                    <option>Mudança na liderança ou nova estrutura de marketing</option>
+                    <option>Um concorrente está ocupando o espaço que era nosso</option>
+                    <option>Momento sensível ou risco de reputação</option>
+                    <option>Insatisfação com a comunicação atual</option>
+                    <option>Não houve um gatilho específico, é planejamento</option>
+                  </select>
+                </div>
+
+                <div class="field full">
+                  <label for="f-faturamento">Faturamento anual aproximado <span class="req">*</span></label>
+                  <select id="f-faturamento" name="cf_faturamento_faixa" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Acima de R$ 150 milhões</option>
+                    <option>De R$ 80 a 150 milhões</option>
+                    <option>De R$ 15 a 80 milhões</option>
+                    <option>Até R$ 15 milhões</option>
+                    <option>Prefiro não informar</option>
+                  </select>
+                  <p class="field-hint">A faixa nos ajuda a calibrar escopo. Não define preço.</p>
+                </div>
+
+                <div class="field full">
+                  <label for="f-origem">Como conheceu a PiaR <span class="req">*</span></label>
+                  <select id="f-origem" name="cf_origem_declarada" required>
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Indicação de alguém</option>
+                    <option>LinkedIn</option>
+                    <option>Instagram</option>
+                    <option>Busca no Google</option>
+                    <option>Resposta de IA (ChatGPT, Gemini, Perplexity)</option>
+                    <option>Matéria ou entrevista na imprensa</option>
+                    <option>Evento</option>
+                    <option>Já fomos clientes</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+
+                <div class="field full field-conditional" id="field-indicacao">
+                  <label for="f-indicado">Quem indicou?</label>
+                  <input id="f-indicado" name="cf_indicado_por" type="text" placeholder="Nome da pessoa ou da empresa" />
+                  <p class="field-hint">Indicação é como a maior parte dos nossos clientes chega. A gente gosta de saber a quem agradecer.</p>
+                </div>
+
+                <div class="field full">
+                  <label for="f-contexto">Conte um pouco do contexto <span class="req">*</span></label>
+                  <textarea id="f-contexto" name="cf_contexto" required placeholder="Qual o momento da marca? Qual narrativa está vazando valor? 3 ou 4 linhas já bastam, a conversa abre o resto."></textarea>
+                </div>
+
+                <div class="full field field-consent">
+                  <div class="consent">
+                    <input type="checkbox" id="f-consent" name="consent" required />
+                    <label for="f-consent">
+                      Concordo em compartilhar essas informações com a PiaR Group para fins de qualificação de diagnóstico, conforme a <a href="https://piar.group/politica-de-privacidade/" target="_blank" rel="noopener">política de privacidade</a>. Os dados não são compartilhados com terceiros.
+                    </label>
+                  </div>
+                </div>
+
+                <div class="full submit-row">
+                  <span class="submit-note">/// Resposta em até 1 dia útil</span>
+                  <!-- type="button", nao "submit", de proposito. O codigo de
+                       monitoramento do RD Station captura sozinho qualquer
+                       formulario da pagina que tenha campo de nome e e-mail, e
+                       registra uma conversao extra batizada com o id do form
+                       ("contato-form"). Sem botao de submit o evento nativo
+                       nunca dispara, e a unica conversao que sai e a nossa,
+                       pela API, com o identificador certo.
+                       Com varios campos e sem botao de submit, o Enter tambem
+                       nao envia sozinho: o navegador so faz isso quando existe
+                       botao de submit ou um campo unico. -->
+                  <button type="button" class="ink-pill yellow" id="submit-btn">
+                    <span class="btn-label">Enviar pedido de diagnóstico</span>
+                    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="form-feedback" class="form-feedback" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <!-- Success screen · escondida ate o submit dar certo.
+             Dois caminhos de confirmacao, escolhidos pela classificacao. -->
+        <div class="success-screen" id="success-screen">
+          <div class="check-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h2 class="ds-h3">Recebido. Obrigado pela confiança.</h2>
+          <p class="ds-body confirm-path" id="confirm-mql" style="max-width:48ch;margin:1rem auto 0">
+            Respondemos em até 1 dia útil com proposta de horário para a conversa de 45 minutos.
+            Chega também um e-mail de confirmação com uma pergunta só, que ajuda a gente a
+            preparar melhor esses 45 minutos. Se a janela for urgente, mande WhatsApp em
+            <strong>(11) 97563-3655</strong> que aceleramos.
+          </p>
+          <p class="ds-body confirm-path" id="confirm-lead" style="max-width:48ch;margin:1rem auto 0">
+            Seu pedido está com o time. Em instantes chega um e-mail com o boletim quinzenal e
+            dois materiais dos Insights que costumam responder as primeiras dúvidas.
+            Se precisar falar com alguém agora, o WhatsApp <strong>(11) 97563-3655</strong> é o caminho mais curto.
+          </p>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA · O QUE ACONTECE DEPOIS + CANAIS DIRETOS -->
+      <aside class="reveal d1">
+        <div class="sidebar-block">
+          <span class="eyebrow">O que acontece depois</span>
+          <h3 class="ds-h4">Quatro passos, sem surpresas no meio.</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">01</div>
+              <div class="step-body">
+                <p class="step-titulo">Recebemos seu pedido</p>
+                <p class="step-desc">Lemos com atenção, sem fluxo automático. Você não cai em sequência de e-mail.</p>
+                <span class="step-cad">~1 dia útil</span>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">02</div>
+              <div class="step-body">
+                <p class="step-titulo">Proposta de horário</p>
+                <p class="step-desc">Mandamos 2 ou 3 janelas para você escolher, presencial em SP ou Google Meet.</p>
+                <span class="step-cad">~1 dia útil</span>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">03</div>
+              <div class="step-body">
+                <p class="step-titulo">Conversa de 45 minutos</p>
+                <p class="step-desc">Você fala 60% do tempo. Devolvemos hipótese editorial e onde a narrativa pode estar vazando.</p>
+                <span class="step-cad">Sem custo</span>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">04</div>
+              <div class="step-body">
+                <p class="step-titulo">Material em até 5 dias</p>
+                <p class="step-desc">Mapa editorial preliminar, um documento de 1 página, sem proposta comercial automática.</p>
+                <span class="step-cad">~5 dias úteis</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-block dark">
+          <span class="eyebrow">Prefere ir direto?</span>
+          <h3 class="ds-h4" style="color:#fff">Canais diretos, sem formulário.</h3>
+          <div class="contact-direct">
+            <a href="https://wa.me/5511975633655" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5h3l1.6 4-2 1.4a12 12 0 0 0 5.5 5.5l1.4-2 4 1.6v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 3 5.7 2 2 0 0 1 5 3.5z"/></svg>
+              <span><strong style="color:#fff">(11) 97563-3655</strong><br /><span class="cd-sub">WhatsApp, mais rápido para janelas urgentes</span></span>
+            </a>
+            <a href="mailto:contato@piar.group">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.4"/><path d="M3 7l9 6 9-6"/></svg>
+              <span><strong style="color:#fff">contato@piar.group</strong><br /><span class="cd-sub">E-mail direto, resposta em 1 dia útil</span></span>
+            </a>
+            <a href="https://www.linkedin.com/company/piargroup/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 10.5V16M9.5 8.2v.1M13 16v-3.2a1.9 1.9 0 0 1 3.8 0V16"/></svg>
+              <span><strong style="color:#fff">PiaR Group no LinkedIn</strong><br /><span class="cd-sub">Para conhecer melhor antes de marcar</span></span>
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       10 · FAQ · as objecoes que aparecem antes de marcar
+       ============================================================ -->
+  <section class="sec white tight">
+    <div class="wrap narrow">
+      <div class="reveal">
+        <span class="eyebrow">Perguntas frequentes</span>
+        <h2 class="ds-h3" style="margin-top:1.25rem;margin-bottom:1.5rem">O que já dá para responder por aqui.</h2>
+      </div>
+      <div class="reveal d1">
+        <details class="faq-item">
+          <summary>O diagnóstico tem mesmo custo zero?
+            <svg class="faq-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="faq-body">Sim. 45 minutos sem cobrança, sem compromisso, sem "primeiro pedaço grátis do projeto pago depois". É como começamos toda conversa há treze anos. A hipótese editorial preliminar, de 1 página, também é gratuita e fica com você mesmo que a parceria não avance.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Vocês assinam NDA antes da conversa?
+            <svg class="faq-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="faq-body">Se a sua área jurídica pedir, sim, mandamos um NDA mútuo padrão. No diagnóstico nunca trocamos informação confidencial: a conversa é sobre contexto público mais hipótese editorial. O NDA fica útil se a parceria avançar para o escopo.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Atendem clientes fora de São Paulo?
+            <svg class="faq-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="faq-body">Sim. A operação rodou em SP, RJ, BH, Floripa, Porto Alegre e Recife, e atualmente atendemos cliente baseado em Lisboa. O ritual semanal funciona perfeitamente remoto, e o presencial é sob demanda do cliente.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Trabalham com setores regulados (Bacen, CVM, ANS)?
+            <svg class="faq-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="faq-body">A maioria do portfólio é setor regulado. Cada peça passa por revisão jurídica e regulatória antes de circular, e o protocolo de crise já considera Bacen, CVM, ANS, Anatel e Senacon conforme o caso.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Quanto tempo de contrato vocês exigem?
+            <svg class="faq-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="faq-body">Ciclos de 6 meses como base: um trimestre de instalação mais um trimestre de cadência plena, para medir impacto com honestidade. Projetos PEP modulares podem entrar isolados em ciclos mais curtos.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="lp-footer">
+  <div class="f-in">
+    <div>
+      <a class="wordmark" href="#topo">
+        <img src="https://piar.group/wp-content/uploads/2026/06/logo-horizontal-negative.png"
+             alt="PiaR Group" width="1268" height="414" loading="lazy" />
+      </a>
+      <p class="f-legal" style="margin-top:1rem">
+        PiaR Comunicação · Rua Silva Bueno, 1660, Conjunto 205, Ipiranga, São Paulo, SP · CEP 04208-001<br />
+        <a href="mailto:contato@piar.group">contato@piar.group</a> · <a href="https://wa.me/5511975633655" target="_blank" rel="noopener">(11) 97563-3655</a>
+      </p>
+    </div>
+    <p class="f-legal">
+      Comunicando inovação desde 2013. Os dados enviados por este formulário são usados apenas
+      para qualificar o diagnóstico e não são compartilhados com terceiros. Guardamos um cookie
+      próprio de 90 dias apenas para lembrar por qual canal você chegou.<br />
+      <a href="https://piar.group/politica-de-privacidade/" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">Política de privacidade</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function () {
+/* =====================================================================
+   FORMULARIO · spec v2 · portado de src/pages/contato.astro
+   Dois passos com gravacao parcial · classificacao MQL automatica
+   =====================================================================
+
+   ---- ONDE OS LEADS CAEM ---------------------------------------------
+   O form envia para dois destinos, os dois opcionais e independentes.
+   Se os dois estiverem vazios, o form entra em modo demo e avisa na tela.
+
+   1) RD STATION (destino oficial do lead)
+      Painel RD -> Integracoes -> API -> copie o "Token Publico".
+      O token e publico por natureza: ele aparece no codigo-fonte da
+      pagina, e assim que o RD projetou para formulario em site.
+
+      Identificadores proprios desta landing page, definidos por Danilo em
+      18/08/2026. Antes eram os mesmos da /contato do site.
+      ATENCAO: as automacoes do RD que escutavam os nomes antigos precisam
+      passar a escutar estes, senao o lead entra sem tag, sem classificacao
+      gravada e sem mudar de estagio.
+        landing-page-passo-1  -> passo 1 concluido (lead parcial)
+        landing-page-briefing -> passo 2 concluido (lead completo)
+
+      A pagina de origem continua no campo cf_pagina_conversao, preenchido
+      sozinho pelo caminho real da URL (no teste veio /admiracao-vende/).
+
+      CAMPOS NATIVOS DO RD (nao criar personalizado, ja existem):
+        name · email · company_name · personal_phone · job_title
+
+      Cargo vai em job_title, o campo nativo. Por isso o painel recusa criar
+      um personalizado chamado "cargo": o nome e reservado porque o RD ja tem
+      esse campo. Antes disto o form mandava cf_cargo, que nao existia do
+      outro lado, e o cargo simplesmente sumia no caminho.
+
+      Campos personalizados que precisam existir no RD:
+        cf_frente_interesse · cf_assessoria_previa · cf_gatilho
+        cf_faturamento_faixa · cf_origem_declarada · cf_indicado_por
+        cf_contexto · cf_classificacao
+        cf_utm_source · cf_utm_medium · cf_utm_campaign · cf_utm_content
+        cf_pagina_conversao · cf_landing_page · cf_referrer
+
+   2) WEB3FORMS (copia por e-mail, util enquanto o RD nao esta pronto)
+      https://web3forms.com -> cole seu e-mail -> "Create Access Key".
+      Manda um e-mail no passo 1 e outro no passo 2, entao o mesmo lead
+      gera duas mensagens. E de proposito: quem abandona no meio ainda
+      da para ligar.
+   ===================================================================== */
+
+var RD_PUBLIC_KEY  = '0ba58cf81bc6e78d267b310a8ccafbfc';
+var RD_ID_PARCIAL  = 'landing-page-passo-1';
+var RD_ID_COMPLETO = 'landing-page-briefing';
+var WEB3FORMS_KEY  = 'COLE-SUA-CHAVE-WEB3FORMS-AQUI';
+
+/* Pagina de conversao enviada ao RD. Por padrao usa o caminho real da URL,
+   entao o slug que voce escolher no WordPress (/landing, /diagnostico, o que
+   for) ja chega certo no RD sem ninguem editar nada aqui.
+   O fallback so entra quando o arquivo e aberto direto do disco, fora de um
+   servidor. Para forcar um rotulo fixo, troque a linha inteira por
+   var PAGINA_CONVERSAO = '/landing'; */
+var PAGINA_CONVERSAO = (location.protocol === 'file:' || /\.html?$/i.test(location.pathname))
+  ? '/landing'
+  : location.pathname;
+
+// ---------------------------------------------------------------------
+// BOOTSTRAP · a pagina precisa aparecer mesmo se este script nao rodar
+// ---------------------------------------------------------------------
+// A raiz e o container da versao WordPress quando ele existe, senao o body.
+var LP_RAIZ = document.getElementById('piar-lp') || document.body || document.documentElement;
+
+// So a partir daqui os blocos podem comecar invisiveis. Se a tag de script for
+// removido por um plugin, ou se outro script da pagina quebrar antes deste,
+// a classe nunca entra e o conteudo fica visivel, que e o comportamento certo.
+LP_RAIZ.classList.add('js-anim');
+
+// Rede de seguranca: se a inicializacao nao acontecer em 2.5s, desliga a
+// animacao e mostra tudo. So dispara em falha real, entao a animacao normal
+// continua funcionando pagina abaixo.
+var LP_INICIADO = false;
+setTimeout(function () {
+  if (!LP_INICIADO) LP_RAIZ.classList.remove('js-anim');
+}, 2500);
+
+// Executa agora se o DOM ja estiver pronto. Dentro de page builder o script
+// costuma rodar depois do DOMContentLoaded, e ai o listener nunca dispararia.
+function aoPronto(fn) {
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+  else fn();
+}
+
+aoPronto(function () {
+
+  // ---- Header que ganha fundo ao sair do topo ----
+  var header = document.getElementById('lp-header');
+  var progressBar = document.getElementById('scroll-progress');
+  function onScroll() {
+    var h = document.documentElement;
+    if (header) header.classList.toggle('is-stuck', h.scrollTop > 40);
+    if (progressBar) {
+      var total = h.scrollHeight - h.clientHeight;
+      progressBar.style.width = (total > 0 ? (h.scrollTop / total) * 100 : 0) + '%';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---- Reveal on scroll ----
+  LP_INICIADO = true;
+  var blocos = document.querySelectorAll('.reveal');
+
+  // threshold 0: basta encostar na janela. O valor antigo (0.14) exigia 14%
+  // do elemento visivel, o que um bloco mais alto que a janela nunca alcanca.
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -5% 0px' });
+  blocos.forEach(function (el) { io.observe(el); });
+
+  // Varredura manual: garante que o que ja esta na janela apareca na hora,
+  // sem depender do primeiro disparo do observer. Roda de novo no load,
+  // quando as fontes chegam e o layout se acomoda.
+  function varrer() {
+    var alturaJanela = window.innerHeight || document.documentElement.clientHeight;
+    blocos.forEach(function (el) {
+      if (el.classList.contains('active')) return;
+      var r = el.getBoundingClientRect();
+      if (r.top < alturaJanela && r.bottom > 0) { el.classList.add('active'); io.unobserve(el); }
+    });
+  }
+  varrer();
+  window.addEventListener('load', varrer);
+
+  // ============================================================
+  // FORMULARIO · dois passos, gravacao parcial, classificacao MQL
+  // ============================================================
+  var form = document.getElementById('contato-form');
+  var formCard = document.getElementById('form-card');
+  var formProgress = document.getElementById('form-progress');
+  var successScreen = document.getElementById('success-screen');
+  var submitBtn = document.getElementById('submit-btn');
+  var nextBtn = document.getElementById('next-btn');
+  var backBtn = document.getElementById('back-btn');
+  var feedback = document.getElementById('form-feedback');
+  if (!form) return;
+
+  var RD_ATIVO = RD_PUBLIC_KEY && RD_PUBLIC_KEY.indexOf('COLE-SUA') !== 0;
+  var WEB3_ATIVO = WEB3FORMS_KEY && WEB3FORMS_KEY.indexOf('COLE-SUA') !== 0;
+
+  // ---- 1. Rastreio: grava a atribuicao de primeiro toque e preenche os ocultos ----
+  // Numa LP standalone nao existe o BaseLayout para gravar o cookie, entao a
+  // captura e a leitura acontecem as duas aqui.
+  (function gravarAtribuicao() {
+    var CHAVE = 'piar_atrib';
+    try {
+      var qs = new URLSearchParams(location.search);
+      var utm = {};
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) {
+        var v = qs.get(k);
+        if (v) utm[k] = v.slice(0, 150);
+      });
+      var temUtmNova = Object.keys(utm).length > 0;
+      var jaGravado = document.cookie.split('; ').some(function (c) { return c.indexOf(CHAVE + '=') === 0; });
+      var jaNaSessao = false;
+      try { jaNaSessao = !!sessionStorage.getItem(CHAVE); } catch (err) { /* storage bloqueado */ }
+      if (!((jaGravado || jaNaSessao) && !temUtmNova)) {
+        var ref = document.referrer || '';
+        var externo = ref && ref.indexOf(location.origin) !== 0;
+        var dado = {
+          utm_source: utm.utm_source || '',
+          utm_medium: utm.utm_medium || '',
+          utm_campaign: utm.utm_campaign || '',
+          utm_content: utm.utm_content || '',
+          landing_page: (location.pathname + location.search).slice(0, 300),
+          referrer: externo ? ref.slice(0, 300) : '',
+        };
+        try { sessionStorage.setItem(CHAVE, JSON.stringify(dado)); } catch (err) { /* storage bloqueado */ }
+        document.cookie = CHAVE + '=' + encodeURIComponent(JSON.stringify(dado)) +
+          ';path=/;max-age=' + 90 * 24 * 60 * 60 + ';SameSite=Lax' +
+          (location.protocol === 'https:' ? ';Secure' : '');
+      }
+    } catch (err) { /* cookie bloqueado: cai no fallback pela sessao ou pela URL */ }
+  })();
+
+  (function preencherRastreio() {
+    var atrib = {};
+    var bruto = document.cookie.split('; ').find(function (c) { return c.indexOf('piar_atrib=') === 0; });
+    if (bruto) {
+      try { atrib = JSON.parse(decodeURIComponent(bruto.slice('piar_atrib='.length))); } catch (err) { atrib = {}; }
+    }
+    if (!Object.keys(atrib).length) {
+      try {
+        var sessao = sessionStorage.getItem('piar_atrib');
+        if (sessao) atrib = JSON.parse(sessao);
+      } catch (err) { atrib = {}; }
+    }
+    var qs = new URLSearchParams(location.search);
+    var set = function (id, valor) { var el = document.getElementById(id); if (el) el.value = valor || ''; };
+    set('h-utm-source', atrib.utm_source || qs.get('utm_source'));
+    set('h-utm-medium', atrib.utm_medium || qs.get('utm_medium'));
+    set('h-utm-campaign', atrib.utm_campaign || qs.get('utm_campaign'));
+    set('h-utm-content', atrib.utm_content || qs.get('utm_content'));
+    set('h-landing-page', atrib.landing_page || (location.pathname + location.search));
+    set('h-referrer', atrib.referrer || (document.referrer && document.referrer.indexOf(location.origin) !== 0 ? document.referrer : ''));
+    set('h-pagina-conversao', PAGINA_CONVERSAO);
+  })();
+
+  // ---- 2. Regra de MQL · calculada, sem julgamento humano ----
+  var DOMINIOS_GRATUITOS = [
+    'gmail.com', 'googlemail.com', 'hotmail.com', 'hotmail.com.br', 'outlook.com',
+    'outlook.com.br', 'live.com', 'msn.com', 'yahoo.com', 'yahoo.com.br', 'ymail.com',
+    'icloud.com', 'me.com', 'mac.com', 'aol.com', 'bol.com.br', 'uol.com.br',
+    'terra.com.br', 'ig.com.br', 'globo.com', 'globomail.com', 'r7.com', 'zipmail.com.br',
+    'protonmail.com', 'proton.me', 'gmx.com', 'gmx.net', 'yandex.com', 'zoho.com', 'mail.com'
+  ];
+  var CARGOS_MQL = [
+    'CEO, fundador ou sócio',
+    'CMO ou diretor de marketing',
+    'Diretor de comunicação',
+    'Head ou gerente de marketing / comunicação'
+  ];
+  var dominioDe = function (email) { return (email || '').trim().toLowerCase().split('@')[1] || ''; };
+  var ehCorporativo = function (email) {
+    var d = dominioDe(email);
+    return !!d && DOMINIOS_GRATUITOS.indexOf(d) === -1;
+  };
+  var classificar = function () {
+    return ehCorporativo(form.email.value) && CARGOS_MQL.indexOf(form.job_title.value) !== -1 ? 'MQL' : 'Lead';
+  };
+
+  // ---- 3. Validacao inline · erro no campo, nunca em bloco no topo ----
+  function mensagemDe(campo) {
+    if (campo.validity.valueMissing) {
+      if (campo.type === 'checkbox') return 'Precisamos do seu aceite para seguir.';
+      if (campo.tagName === 'SELECT') return 'Escolha uma opção.';
+      return 'Preencha este campo.';
+    }
+    if (campo.validity.typeMismatch && campo.type === 'email') return 'Confira o e-mail: parece faltar alguma coisa.';
+    return campo.validationMessage || 'Confira este campo.';
+  }
+  function caixaDe(campo, classe) {
+    var wrap = campo.closest('.field');
+    if (!wrap) return null;
+    var box = wrap.querySelector('.' + classe);
+    if (!box) {
+      box = document.createElement('p');
+      box.className = classe;
+      wrap.appendChild(box);
+    }
+    return box;
+  }
+  function limparErro(campo) {
+    var wrap = campo.closest('.field');
+    if (!wrap) return;
+    wrap.classList.remove('is-invalid');
+    var box = wrap.querySelector('.field-error');
+    if (box) box.remove();
+    campo.removeAttribute('aria-invalid');
+  }
+  function mostrarErro(campo) {
+    var wrap = campo.closest('.field');
+    if (!wrap) return;
+    wrap.classList.add('is-invalid');
+    var box = caixaDe(campo, 'field-error');
+    if (box) box.textContent = mensagemDe(campo);
+    campo.setAttribute('aria-invalid', 'true');
+  }
+  function validarPasso(passo) {
+    var campos = Array.prototype.slice.call(passo.querySelectorAll('input, select, textarea'))
+      .filter(function (c) { return c.name !== 'botcheck' && !c.disabled && c.offsetParent !== null; });
+    var primeiroInvalido = null;
+    campos.forEach(function (campo) {
+      if (campo.checkValidity()) { limparErro(campo); return; }
+      mostrarErro(campo);
+      if (!primeiroInvalido) primeiroInvalido = campo;
+    });
+    if (primeiroInvalido) {
+      primeiroInvalido.focus({ preventScroll: true });
+      primeiroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    return true;
+  }
+  form.addEventListener('input', function (e) { if (e.target.closest('.field.is-invalid')) limparErro(e.target); });
+  form.addEventListener('change', function (e) { if (e.target.closest('.field.is-invalid')) limparErro(e.target); });
+
+  // Aviso de e-mail gratuito · avisa, nao bloqueia
+  var campoEmail = form.email;
+  campoEmail.addEventListener('blur', function () {
+    var wrap = campoEmail.closest('.field');
+    var existente = wrap.querySelector('.field-warn');
+    var gratuito = campoEmail.value.indexOf('@') > -1 && !ehCorporativo(campoEmail.value);
+    if (gratuito && !existente) {
+      var box = caixaDe(campoEmail, 'field-warn');
+      if (box) box.textContent = 'Se puder, use o e-mail da empresa. Ajuda a gente a chegar preparado na conversa.';
+    } else if (!gratuito && existente) {
+      existente.remove();
+    }
+  });
+
+  // ---- 4. Campo condicional · quem indicou ----
+  var campoOrigem = form.cf_origem_declarada;
+  var blocoIndicacao = document.getElementById('field-indicacao');
+  campoOrigem.addEventListener('change', function () {
+    var abrir = campoOrigem.value === 'Indicação de alguém';
+    blocoIndicacao.classList.toggle('is-visible', abrir);
+    if (!abrir) form.cf_indicado_por.value = '';
+  });
+
+  // ---- 5. Navegacao entre os passos ----
+  var passos = { 1: document.getElementById('step-1'), 2: document.getElementById('step-2') };
+  var passoAtual = 1;
+  function irPara(n) {
+    passoAtual = n;
+    Object.keys(passos).forEach(function (k) { passos[k].classList.toggle('is-active', Number(k) === n); });
+    formProgress.querySelectorAll('.prog-step').forEach(function (el) {
+      var i = Number(el.dataset.prog);
+      el.classList.toggle('is-current', i === n);
+      el.classList.toggle('is-done', i < n);
+    });
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var primeiro = passos[n].querySelector('input, select, textarea');
+    if (primeiro) primeiro.focus({ preventScroll: true });
+  }
+  if (backBtn) backBtn.addEventListener('click', function () { irPara(1); });
+
+  // ---- 6. Envio ----
+  function dadosDoForm() {
+    var dados = {};
+    new FormData(form).forEach(function (valor, chave) {
+      if (chave === 'botcheck' || chave === 'consent') return;
+      if (typeof valor === 'string' && valor.trim()) dados[chave] = valor.trim();
+    });
+    return dados;
+  }
+
+  // RD Station · API de conversoes com chave publica
+  function enviarRD(dados, identificador) {
+    var payload = Object.assign({}, dados, {
+      conversion_identifier: identificador,
+      traffic_source: dados.cf_utm_source || '',
+      traffic_medium: dados.cf_utm_medium || '',
+      traffic_campaign: dados.cf_utm_campaign || ''
+    });
+    return fetch('https://api.rd.services/platform/conversions?api_key=' + encodeURIComponent(RD_PUBLIC_KEY), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_type: 'CONVERSION', event_family: 'CDP', payload: payload })
+    }).then(function (resp) {
+      if (!resp.ok) throw new Error('RD Station respondeu ' + resp.status);
+      return true;
+    });
+  }
+
+  // Web3Forms · copia por e-mail, com rotulos legiveis
+  var ROTULOS = {
+    name: 'Nome', email: 'E-mail', company_name: 'Empresa', personal_phone: 'Telefone',
+    job_title: 'Cargo', cf_frente_interesse: 'Frente de interesse',
+    cf_assessoria_previa: 'Histórico de assessoria', cf_gatilho: 'Gatilho',
+    cf_faturamento_faixa: 'Faturamento', cf_origem_declarada: 'Como conheceu',
+    cf_indicado_por: 'Quem indicou', cf_contexto: 'Contexto', cf_classificacao: 'Classificação',
+    cf_pagina_conversao: 'Página de conversão', cf_landing_page: 'Página de entrada',
+    cf_referrer: 'Referrer', cf_utm_source: 'UTM source', cf_utm_medium: 'UTM medium',
+    cf_utm_campaign: 'UTM campaign', cf_utm_content: 'UTM content'
+  };
+  function enviarWeb3(dados, parcial) {
+    var corpo = { access_key: WEB3FORMS_KEY, from_name: 'Landing page PiaR Group' };
+    corpo.subject = parcial
+      ? 'Lead parcial (passo 1) · LP o essencial · piar.group'
+      : (dados.cf_classificacao || 'Lead') + ' · LP o essencial · piar.group';
+    Object.keys(dados).forEach(function (chave) { corpo[ROTULOS[chave] || chave] = dados[chave]; });
+    return fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(corpo)
+    }).then(function (resp) {
+      return resp.json().then(function (json) {
+        if (!resp.ok || !json.success) throw new Error(json.message || 'Web3Forms respondeu ' + resp.status);
+        return true;
+      });
+    });
+  }
+
+  function enviar(dados, opcoes) {
+    var tarefas = [];
+    if (RD_ATIVO) tarefas.push(enviarRD(dados, opcoes.identificador));
+    if (WEB3_ATIVO) tarefas.push(enviarWeb3(dados, opcoes.parcial));
+    if (!tarefas.length) return Promise.resolve({ ok: false, motivo: 'demo' });
+    return Promise.allSettled(tarefas).then(function (resultados) {
+      resultados.forEach(function (r) { if (r.status === 'rejected') console.warn('[form PiaR]', r.reason); });
+      var algumOk = resultados.some(function (r) { return r.status === 'fulfilled'; });
+      return { ok: algumOk, motivo: algumOk ? '' : ((resultados[0].reason && resultados[0].reason.message) || 'falha') };
+    });
+  }
+
+  var avisoDemo = '<strong>Formulário em modo demo.</strong>O envio ainda não foi conectado. Quem configura a página precisa colar a chave pública do RD Station (ou a do Web3Forms) no topo do script deste arquivo.';
+
+  // Passo 1 · grava parcial e avanca. Falha de rede nao trava a pessoa.
+  var parcialEnviado = false;
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function () {
+      if (!validarPasso(passos[1])) return;
+      feedback.classList.remove('is-visible');
+      if (!RD_ATIVO && !WEB3_ATIVO) {
+        feedback.className = 'form-feedback error is-visible';
+        feedback.innerHTML = avisoDemo;
+      } else if (!parcialEnviado) {
+        parcialEnviado = true;
+        var dados = dadosDoForm();
+        dados.cf_classificacao = 'Parcial';
+        enviar(dados, { identificador: RD_ID_PARCIAL, parcial: true }).catch(function () {});
+      }
+      irPara(2);
+    });
+  }
+
+  // Passo 2 · envio completo
+  // Disparado pelo CLIQUE do botao, nunca pelo evento submit. O monitoramento
+  // do RD escuta submit para capturar formularios sozinho; sem submit nativo
+  // nao existe conversao duplicada.
+  var btnLabel = submitBtn ? submitBtn.querySelector('.btn-label') : null;
+
+  // Cinto de seguranca: se algum caminho ainda gerar submit nativo, ele morre
+  // aqui, sem navegar e sem virar conversao fantasma.
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+
+  // Enter dentro de campo de texto nao pode enviar o formulario. Sem botao de
+  // submit o navegador ja nao faria isso com varios campos, mas a regra tem
+  // excecao e o custo de garantir e uma linha. Botao e textarea seguem
+  // funcionando normalmente com Enter.
+  form.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') e.preventDefault();
+  });
+
+  submitBtn.addEventListener('click', function () {
+    if (passoAtual !== 2 || !validarPasso(passos[2])) return;
+    if (form.botcheck && form.botcheck.checked) return;
+
+    feedback.classList.remove('is-visible');
+    if (!RD_ATIVO && !WEB3_ATIVO) {
+      feedback.className = 'form-feedback error is-visible';
+      feedback.innerHTML = avisoDemo;
+      return;
+    }
+
+    var classificacao = classificar();
+    document.getElementById('h-classificacao').value = classificacao;
+    var dados = dadosDoForm();
+
+    submitBtn.disabled = true;
+    if (btnLabel) btnLabel.textContent = 'Enviando…';
+
+    enviar(dados, { identificador: RD_ID_COMPLETO, parcial: false }).then(function (resultado) {
+      if (resultado.ok) {
+        formProgress.style.display = 'none';
+        formCard.style.display = 'none';
+        var caminho = document.getElementById(classificacao === 'MQL' ? 'confirm-mql' : 'confirm-lead');
+        if (caminho) caminho.classList.add('is-visible');
+        successScreen.classList.add('is-visible');
+        successScreen.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        form.reset();
+      } else {
+        feedback.className = 'form-feedback error is-visible';
+        feedback.innerHTML = '<strong>Algo deu errado no envio.</strong>Tente de novo em alguns minutos, ou fale direto no WhatsApp (11) 97563-3655.';
+        submitBtn.disabled = false;
+        if (btnLabel) btnLabel.textContent = 'Enviar pedido de diagnóstico';
+      }
+    });
+  });
+});
+})();
+</script>
+
+</div>

@@ -62,7 +62,7 @@ Na PiaR, esse é o desdobramento natural de como já trabalhamos desde 2013. A t
 
 ## Prova e lastro
 
-A PiaR opera comunicação para startups, scale-ups e empresas de tecnologia desde 2013, em São Paulo. Acompanhamos 8 startups até o exit: Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce e Supermercado Now. Atendemos clientes como Sambatech, Liga Ventures, Printi, Doctoralia, Solides, Corning, PagBrasil, Sidia, FluencyPass e Unlimitail, entre outros.
+A PiaR opera comunicação para startups, scale-ups e empresas de tecnologia desde 2013, em São Paulo. Acompanhamos 11 startups até o exit: Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet. Atendemos clientes como Sambatech, Liga Ventures, Printi, Doctoralia, Solides, Corning, PagBrasil, Sidia, FluencyPass e Unlimitail, entre outros.
 
 Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação é tocada com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).
 

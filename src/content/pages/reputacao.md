@@ -50,7 +50,7 @@ Gestão de crise não é um serviço à parte. Faz parte da reputação. Quando 
 
 ## A prova
 
-A PiaR acompanha startups e empresas de tecnologia desde 2013 e apoiou 8 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce e Supermercado Now. Entre os clientes de comunicação e reputação estão Sambatech, Liga Ventures, Printi, Doctoralia, Solides, Corning, PagBrasil, Sidia, Unifisa, Livup, Qranio, FluencyPass e Investidores.vc.
+A PiaR acompanha startups e empresas de tecnologia desde 2013 e apoiou 11 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet. Entre os clientes de comunicação e reputação estão Sambatech, Liga Ventures, Printi, Doctoralia, Solides, Corning, PagBrasil, Sidia, Unifisa, Livup, Qranio, FluencyPass e Investidores.vc.
 
 Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação é conduzida com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).
 

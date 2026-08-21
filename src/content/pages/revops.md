@@ -124,7 +124,7 @@ Alguns equívocos se repetem quando a comunicação não está integrada ao RevO
 
 ## Sobre a PiaR
 
-A PiaR é uma agência de comunicação em atividade desde 2013, em São Paulo, com trabalho voltado a empresas de tecnologia e a negócios orientados a crescimento. Acompanhou 8 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce e Supermercado Now, e atendeu clientes como Sambatech, Liga Ventures, Doctoralia, Solides, PagBrasil e Corning. Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).
+A PiaR é uma agência de comunicação em atividade desde 2013, em São Paulo, com trabalho voltado a empresas de tecnologia e a negócios orientados a crescimento. Acompanhou 11 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet, e atendeu clientes como Sambatech, Liga Ventures, Doctoralia, Solides, PagBrasil e Corning. Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).
 
 A operação combina a metodologia PEP e um processo com revisão jurídica, com comunicação que parte de [dados](/reputacao) e de [relacionamento com a imprensa](/relacoes-publicas). Se a sua operação de receita precisa de comunicação que aponte para pipeline, e não para vaidade, vale uma conversa. Fale com a gente em hello@piar.group.
 

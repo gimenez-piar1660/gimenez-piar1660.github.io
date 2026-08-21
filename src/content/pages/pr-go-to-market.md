@@ -118,7 +118,7 @@ Muitas agências enchem relatórios de métricas de vaidade (impressões, alcanc
 
 ## Sobre a PiaR
 
-A PiaR é uma agência de comunicação atuando desde 2013 em São Paulo. Acompanhou 8 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce e Supermercado Now, e atende ou atendeu empresas como Sambatech, Liga Ventures, Doctoralia, Solides, PagBrasil e Corning. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação roda sobre a metodologia PEP e um processo com revisão jurídica, do dado à pauta à publicação.
+A PiaR é uma agência de comunicação atuando desde 2013 em São Paulo. Acompanhou 11 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet, e atende ou atendeu empresas como Sambatech, Liga Ventures, Doctoralia, Solides, PagBrasil e Corning. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação roda sobre a metodologia PEP e um processo com revisão jurídica, do dado à pauta à publicação.
 
 A PiaR atende clientes reais com pautas reguladas e trabalha [reputação](/reputacao) e voz executiva em setores que dependem de credibilidade. Entre os clientes reais estão também Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma das capacidades da agência, conduzida com relacionamento de imprensa e revisão jurídica.
 

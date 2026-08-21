@@ -1,0 +1,63 @@
+/* =====================================================================
+   Tokens usados pela landing page "O essencial"
+   Subconjunto de src/styles/tokens.css (PiaR Design System v2).
+   A landing page nao carrega este arquivo: ela traz os tokens inline,
+   no <style> do proprio documento. Esta copia existe como referencia.
+   ===================================================================== */
+:root {
+  /* Cores nucleo */
+  --ink:    #0F0F11;
+  --paper:  #F5F5F7;
+  --white:  #FFFFFF;
+  --yellow: #FED136;
+
+  /* Escala de amarelo (so UI, nunca decoracao) */
+  --yellow-100: #FFF3B0;   /* fundo do cabecalho da tabela */
+  --yellow-300: #FFDC50;   /* hover do botao amarelo */
+  --yellow-500: #E9BC1F;   /* ponta escura do gradiente das barras */
+  --yellow-700: #8F710A;   /* unico amarelo legivel como texto sobre claro */
+
+  --primary:      var(--ink);
+  --accent:       var(--yellow);
+  --accent-deep:  #E0B420;
+  --paper-lifted: #FCFBFA;
+
+  /* Texto sobre claro */
+  --text-primary: #0F0F11;
+  --text-muted:   rgba(15, 15, 17, .62);
+  --text-faint:   rgba(15, 15, 17, .48);
+  --text-subtle:  rgba(15, 15, 17, .32);
+
+  /* Texto sobre escuro */
+  --text-primary-d: #FFFFFF;
+  --text-muted-d:   rgba(255, 255, 255, .70);
+  --text-faint-d:   rgba(255, 255, 255, .45);
+
+  /* Hairlines */
+  --hairline:          rgba(0, 0, 0, .08);
+  --hairline-strong:   rgba(0, 0, 0, .14);
+  --hairline-d:        rgba(255, 255, 255, .10);
+  --hairline-d-strong: rgba(255, 255, 255, .18);
+
+  /* Erro de formulario (unico vermelho do sistema) */
+  --error: #a83232;
+
+  /* Raios */
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+  --radius-btn:     var(--r-lg);
+  --radius-input:   var(--r-md);
+  --radius-stadium: 40px;
+
+  /* Tipografia oficial PiaR */
+  --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:    'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --t-smooth: all .6s var(--ease-out-expo);
+
+  /* Colunas */
+  --col-max:    1240px;
+  --col-narrow: 760px;
+}

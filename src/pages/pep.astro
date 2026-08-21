@@ -405,13 +405,13 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
     @keyframes cue { 0%,100% { opacity: .3; transform: scaleY(.7); transform-origin: top; } 50% { opacity: 1; transform: scaleY(1); } }
 
     /* ===================== SECOES ===================== */
-    .section { position: relative; z-index: 1; padding-block: clamp(5rem, 10vw, 8.5rem); border-top: 1px solid var(--hairline-d); }
+    .section { position: relative; z-index: 1; padding-block: var(--sec-pad); border-top: 1px solid var(--hairline-d); }
     /* secoes transparentes: o canvas (preto + bandas creme + brilho do hub) e o fundo, igual a home.
        deixa o brilho do hub aparecer FORTE atras do titulo, pra a palavra invertida da lupa ler. */
     .section.dark { background: transparent; }
     .section.warmer { background: transparent; }
     .section.deep { background: transparent; }
-    .section.tight { padding-block: clamp(4rem, 8vw, 6.5rem); }
+    .section.tight { padding-block: var(--sec-pad); }
     .sec-head { max-width: 62ch; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
     .section h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 22ch; text-wrap: balance; }
     .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--text-d-muted); margin-top: 1.4rem; max-width: 60ch; }
@@ -499,7 +499,7 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
     .faq-item[open] summary iconify-icon { transform: rotate(45deg); color: var(--warm); }
     .faq-body { padding: 0 0 1.4rem; color: var(--text-d-muted); max-width: 68ch; line-height: 1.6; }
 
-    .grav-cta { position: relative; z-index: 1; overflow: hidden; background: transparent; padding-block: clamp(6rem, 13vw, 10rem); border-top: 1px solid var(--hairline-d); }
+    .grav-cta { position: relative; z-index: 1; overflow: hidden; background: transparent; padding-block: var(--sec-pad); border-top: 1px solid var(--hairline-d); }
     .cta-inner { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
     .grav-cta h2 { font-size: clamp(2rem, 4.6vw, 3.8rem); font-weight: 600; line-height: 1.08; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 18ch; }
     .grav-cta .lede { margin-inline: auto; }

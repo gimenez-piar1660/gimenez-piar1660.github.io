@@ -9,7 +9,7 @@ import { withBase } from '@/lib/base';
 // Regras aplicadas (porte fiel ao draft aprovado):
 // - Aarin excluído de qualquer citação pública (autorização não confirmada).
 // - Cases não confirmados (Bunsen, Primis, Liquid) não aparecem.
-// - Exits travado em 8 (site.exitsSupported), com os 8 nomes verificáveis.
+// - Exits vêm de site.exits (fonte única). Hoje 11, nomeáveis e verificáveis.
 // - Prêmio canônico vindo de site.founder.award (ABStartups, 2018).
 // - Sem telefone/WhatsApp: contato só por e-mail (site.email); telefone vive em /contato.
 // - Seção "Notas de prova e pendências" (uso interno) descartada.
@@ -88,8 +88,8 @@ const roster = [
   ['FluencyPass', 'Layer Up', 'Wylinka', 'Inovativa', 'Unlimitail'],
 ];
 
-// 8 startups acompanhadas até o exit (site.exitsSupported), nomes verificáveis.
-const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+// Exits nomeados: fonte única em site.exits (site.exitsSupported conta).
+const exits = site.exits;
 
 // Método de quatro etapas, do diagnóstico à escala.
 const etapas = [
@@ -132,7 +132,7 @@ const faq = [
   },
   {
     q: 'O que significa acompanhar uma startup até o exit?',
-    a: 'Significa conduzir a comunicação de uma empresa por anos, mantendo narrativa consistente conforme ela cresce, em vez de cobrir um único lançamento. A PiaR acompanhou 8 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef.',
+    a: `Significa conduzir a comunicação de uma empresa por anos, mantendo narrativa consistente conforme ela cresce, em vez de cobrir um único lançamento. A PiaR acompanhou ${site.exitsSupported} startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef.`,
   },
   {
     q: 'Como vocês tratam clientes de setores regulados?',
@@ -441,7 +441,7 @@ const faq = [
     </section>
 
     <!-- 2 · COMO LER ESTES CASES -->
-    <section class="relative bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section class="relative bg-white border-y border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div class="lg:col-span-4 reveal">
@@ -468,7 +468,7 @@ const faq = [
     </section>
 
     <!-- 3 · CAPACIDADES · gestão de crise e reputação institucional -->
-    <section class="relative bg-[var(--paper)] py-20 md:py-28 px-4 md:px-8">
+    <section class="relative bg-[var(--paper)] sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-14 reveal">
           <div>
@@ -504,7 +504,7 @@ const faq = [
     </section>
 
     <!-- 4 · OUTROS TRABALHOS · grid de clientes reais, descrição qualitativa -->
-    <section id="trabalhos" class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section id="trabalhos" class="relative bg-white border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-14 reveal">
           <div>
@@ -539,7 +539,7 @@ const faq = [
     </section>
 
     <!-- 5 · MARCAS QUE CONFIAM · roster -->
-    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div class="lg:col-span-5 reveal">
@@ -566,7 +566,7 @@ const faq = [
     </section>
 
     <!-- 6 · EXITS · stats band + nomes -->
-    <section class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section class="relative bg-white border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div class="lg:col-span-6 reveal">
@@ -600,7 +600,7 @@ const faq = [
     </section>
 
     <!-- 7 · COMO CADA CASE NASCE · método em 4 etapas -->
-    <section id="metodo" class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section id="metodo" class="relative bg-[var(--paper)] border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="mb-12 reveal">
           <span class="eyebrow-dot">Como cada case nasce</span>
@@ -634,7 +634,7 @@ const faq = [
     </section>
 
     <!-- 8 · LIDERANÇA · quote + nomes -->
-    <section class="relative bg-white border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section class="relative bg-white border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1100px] mx-auto">
         <div class="quote-block reveal">
           <span class="ghost">"</span>
@@ -653,7 +653,7 @@ const faq = [
     </section>
 
     <!-- 9 · PERGUNTAS FREQUENTES -->
-    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1000px] mx-auto">
         <div class="mb-10 reveal">
           <span class="eyebrow-dot">Perguntas frequentes</span>
@@ -674,7 +674,7 @@ const faq = [
 
     <!-- 10 · CTA FINAL · Vamos conversar -->
     <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)]">
-      <div class="max-w-[1100px] mx-auto px-6 md:px-8 py-24 md:py-32 text-center">
+      <div class="max-w-[1100px] mx-auto px-6 md:px-8 sec-pad text-center">
         <span class="eyebrow-dot reveal" style="display:inline-flex;justify-content:center">Vamos conversar</span>
         <h2 class="ds-h1 font-semibold tracking-tight mt-6 mb-6 reveal delay-100" style="max-width:22ch;margin-inline:auto">
           O primeiro passo é um <span class="italic-serif">diagnóstico</span>.
