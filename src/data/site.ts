@@ -23,7 +23,7 @@
 // competir com o domínio próprio. Virar `true` no MESMO commit que apontar o
 // `site` do astro.config para o domínio final. Checklist completo da virada em
 // docs/deploy-e-versionamento.md, seção "Migração do protótipo para o domínio próprio".
-export const INDEXAVEL = false;
+export const INDEXAVEL = true;
 
 // Startups acompanhadas até o exit, nomeáveis e com lastro público.
 // FONTE ÚNICA: antes esta lista estava copiada em 18 páginas, e foi assim que
