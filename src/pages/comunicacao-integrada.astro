@@ -66,11 +66,6 @@ const faq = [
   <Nav />
 
   <!-- Campo fixo full-screen: tres corpos em orbita ressonante ao redor da marca. -->
-  <canvas id="field-bg" aria-hidden="true"></canvas>
-  <span id="lbl-marca" class="body-label warm" aria-hidden="true"><span class="wb-dot"></span>a marca</span>
-  <span id="lbl-rp" class="body-label warm" aria-hidden="true"><span class="wb-dot"></span>relações públicas</span>
-  <span id="lbl-brand" class="body-label amber" aria-hidden="true"><span class="ab-dot"></span>branding</span>
-  <span id="lbl-rep" class="body-label cold" aria-hidden="true"><span class="cb-dot"></span>reputação</span>
 
   <main id="main">
     <!-- ============ HERO ============ -->
@@ -238,7 +233,6 @@ const faq = [
       <div class="wrap cta-inner">
         <span class="eyebrow on-dark reveal"><span class="dot"></span>Vamos integrar</span>
         <h2 class="reveal d1">Quem contrata peças soltas paga três vezes. Quem contrata o <span class="warm">sistema</span> colhe o composto.</h2>
-        <p class="lede on-dark reveal d2">A PiaR conduz relações públicas, branding e reputação como uma só órbita: a partir de dados, na mesma mensagem, no mesmo eixo. Há {site.yearsOperating} anos, ao lado de {site.brandsServed} marcas.</p>
         <div class="cta-row reveal d3">
           <a href="/contato" class="btn btn-accent">Agendar conversa<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
           <a href="/metodo" class="btn btn-ghost-d">Ver o método</a>
@@ -294,19 +288,15 @@ const faq = [
     #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--warm); z-index: 9999; width: 0; transition: width .1s linear; }
 
     /* Campo fixo full-screen: tres corpos em orbita ressonante */
-    #field-bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; background: var(--space); }
-    .body-label { position: fixed; left: 0; top: 0; z-index: 3; display: inline-flex; align-items: center; gap: .5rem; padding: .42rem .85rem; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; backdrop-filter: blur(6px); pointer-events: none; white-space: nowrap; will-change: transform, opacity; }
-    .body-label.cold { color: rgba(186,206,224,.9); background: rgba(91,123,154,.12); border: 1px solid rgba(110,147,184,.3); }
-    .body-label.cold .cb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cold); box-shadow: 0 0 10px 1px rgba(110,147,184,.7); }
-    .body-label.amber { color: rgba(245,228,180,.95); background: rgba(235,196,86,.1); border: 1px solid rgba(235,196,86,.32); }
-    .body-label.amber .ab-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 11px 1px rgba(235,196,86,.8); }
-    .body-label.warm { color: rgba(255,236,176,.95); background: rgba(254,209,54,.1); border: 1px solid rgba(254,209,54,.34); }
-    .body-label.warm .wb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 12px 2px rgba(254,209,54,.85); }
-    @media (max-width: 820px) { .body-label { display: none; } }
 
     .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 1.5rem; position: relative; z-index: 2; }
     @media (min-width: 768px) { .wrap { padding-inline: 2.5rem; } }
-    .wrap.narrow { max-width: 760px; }
+    /* Coluna estreita ancorada no MESMO eixo esquerdo do .wrap largo. A margem da
+       esquerda repete a conta do `margin: 0 auto` do .wrap (1240px), entao os blocos
+       curtos mantem a medida de 760px sem sair da linha vertical do resto da pagina. */
+    /* A coluna estreita saiu: a pagina inteira usa a largura do .wrap. Quem segura a
+       medida de leitura agora e o proprio .lede (78ch), nao um container mais curto. */
+    .wrap.narrow { max-width: 1240px; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
     main { position: relative; z-index: 1; }
@@ -358,10 +348,13 @@ const faq = [
     .section.warmer { background: linear-gradient(180deg, rgba(11,13,19,.84), rgba(7,8,12,.7)); }
     .section.deep { background: rgba(9, 11, 17, .52); }
     .section.tight { padding-block: var(--sec-pad); }
-    .sec-head { max-width: 62ch; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
-    .section h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 22ch; text-wrap: balance; }
-    .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--text-d-muted); margin-top: 1.4rem; max-width: 58ch; }
-    .punch { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.18; letter-spacing: -.025em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 26ch; color: #fff; }
+    /* O cabecalho da secao acompanha a largura da coluna, como os cards abaixo dele.
+       Quem segura a medida de leitura agora e cada elemento (h2, lede, punch), nao
+       este container: antes ele travava tudo em 62ch (~570px) numa coluna de 1160px. */
+    .sec-head { max-width: 100%; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
+    .section h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 100%; text-wrap: pretty; }
+    .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--text-d-muted); margin-top: 1.4rem; max-width: 78ch; }
+    .punch { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.18; letter-spacing: -.025em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 42ch; color: #fff; }
 
     .strike { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3.4vw, 2.6rem); letter-spacing: -.02em; color: rgba(180,200,220,.7); margin: 1.5rem 0 0; }
     .reply { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.03em; color: var(--warm); margin: .4rem 0 0; }
@@ -391,7 +384,11 @@ const faq = [
     .c-ic { display: inline-flex; width: 46px; height: 46px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(254,209,54,.1); color: var(--warm); font-size: 1.4rem; }
 
     /* dataviz: tres ondas em fase */
+    /* O `max-height: 64vh` combinado com o aspect-ratio estrangulava a LARGURA: em 1440
+       o palco parava em ~1024px numa coluna de 1160px. No desktop o grafico passa a 21/9,
+       que preenche a coluna inteira e ainda fica mais baixo que antes. */
     .sync-stage { position: relative; border-radius: var(--r-card); overflow: hidden; border: 1px solid var(--hairline-d); background: rgba(4,5,7,.7); aspect-ratio: 16 / 9; max-height: 64vh; }
+    @media (min-width: 900px) { .sync-stage { aspect-ratio: 21 / 9; max-height: none; } }
     #sync-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     .sync-legend { position: absolute; left: 0; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 1.2rem; padding: clamp(1rem, 2.5vw, 1.6rem); pointer-events: none; }
     .sl { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: clamp(.58rem, 1vw, .7rem); letter-spacing: .1em; text-transform: uppercase; color: var(--text-d-muted); }
@@ -401,10 +398,11 @@ const faq = [
     .sl.rep::before { background: #789AB8; }
 
     .grav-cta { position: relative; z-index: 1; overflow: hidden; background: rgba(7,8,12,.5); padding-block: var(--sec-pad); border-top: 1px solid var(--hairline-d); }
-    .cta-inner { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-    .grav-cta h2 { font-size: clamp(2rem, 4.6vw, 3.8rem); font-weight: 600; line-height: 1.08; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 22ch; }
-    .grav-cta .lede { margin-inline: auto; }
-    .grav-cta .cta-row { justify-content: center; }
+    /* O fecho segue o mesmo eixo do resto da pagina: tudo alinhado a esquerda.
+       As regras que centralizavam o lede e a fileira de botoes sairam: as bases
+       de .lede e .cta-row ja alinham a esquerda sozinhas. */
+    .cta-inner { text-align: left; display: flex; flex-direction: column; align-items: flex-start; position: relative; z-index: 2; }
+    .grav-cta h2 { font-size: clamp(2rem, 4.6vw, 3.8rem); font-weight: 600; line-height: 1.08; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 100%; }
     .cta-foot { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; color: var(--text-d-faint); margin-top: 2.6rem; }
 
     .reveal { opacity: 0; transform: translateY(2rem); transition: opacity .8s var(--ease), transform .8s var(--ease); }
@@ -455,175 +453,6 @@ const faq = [
           window.gsap.fromTo(el, { yPercent: 0 }, { yPercent: yp, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
         });
       }
-
-      /* ========================================================
-         CAMPO FIXO: TRES CORPOS EM ORBITA RESSONANTE
-         RP, branding e reputacao orbitam o baricentro (a marca).
-         No topo, orbitas caoticas (silos). Conforme o scroll, o caos
-         cede a razoes limpas e os rastros se entrelacam. Clima no
-         fecho: os tres se aproximam e brilham. Sem mouse: o scroll.
-         ======================================================== */
-      (function resonantField() {
-        var canvas = document.getElementById('field-bg');
-        if (!canvas) return;
-        var mctx = canvas.getContext('2d');
-        if (!mctx) return;
-        // camada separada so para os corpos e rastros: o fundo e o brilho ficam no canvas
-        // principal e a decoracao vai nesta, para poder ser recortada nas zonas de leitura.
-        var deco = document.createElement('canvas');
-        var dctx = deco.getContext('2d');
-        var ctx = mctx;   // alvo de desenho corrente
-        var dpr = Math.min(window.devicePixelRatio || 1, 2);
-        var W = 0, H = 0;
-        function resize() {
-          W = window.innerWidth; H = window.innerHeight;
-          canvas.width = W * dpr; canvas.height = H * dpr; mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          deco.width = W * dpr; deco.height = H * dpr; dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          readDirty = true;
-        }
-        function smooth(t) { return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
-
-        /* ---- ZONA DE LEITURA ----------------------------------------------
-           Os corpos continuam orbitando pela pagina inteira, mas sao apagados onde
-           ha texto: passam pelas areas pretas e nunca por cima da leitura.
-           As caixas sao remedidas so quando o scroll ou o resize sujam o cache. */
-        var READ_SEL = ['h1', 'h2', 'h3', '.eyebrow', '.lede', '.punch', '.hero-sub', '.strike', '.reply', '.cta-foot', '.chip'];
-        var CARD_SEL = '.trio-card, .orbit-col, .faq-item, .sync-stage, .btn';
-        var PAD = 14, FEATHER = 30;
-        var FADE = [0.10, 0.14, 0.2, 0.28, 0.4, 0.55, 0.75, 0.9];   // rampa da borda macia
-        var readEls = [], readRects = [], readDirty = true;
-
-        function collectRead() {
-          readEls = [];
-          var all = document.querySelectorAll(READ_SEL.map(function (s) { return 'main ' + s; }).join(', '));
-          for (var i = 0; i < all.length; i++) { if (!all[i].closest(CARD_SEL)) readEls.push(all[i]); }
-          readDirty = true;
-        }
-        function updateRects() {
-          readRects.length = 0;
-          for (var i = 0; i < readEls.length; i++) {
-            var r = readEls[i].getBoundingClientRect();
-            if (r.width < 2 || r.height < 2 || r.bottom < -FEATHER || r.top > H + FEATHER) continue;
-            readRects.push([r.left - PAD, r.top - PAD, r.width + PAD * 2, r.height + PAD * 2]);
-          }
-          readDirty = false;
-        }
-        function softRect(c, x, y, w, h, r) {
-          if (c.roundRect) { c.beginPath(); c.roundRect(x, y, w, h, r); return; }
-          c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
-        }
-        function maskRead(c) {
-          if (!readRects.length) return;
-          c.save();
-          c.globalCompositeOperation = 'destination-out';
-          c.fillStyle = '#000';
-          for (var i = 0; i < readRects.length; i++) {
-            var R = readRects[i];
-            for (var s = 0; s < FADE.length; s++) {
-              var ins = FEATHER * (1 - s / FADE.length);
-              var w2 = R[2] - ins * 2, h2 = R[3] - ins * 2;
-              if (w2 <= 0 || h2 <= 0) continue;
-              c.globalAlpha = FADE[s];
-              softRect(c, R[0] + ins, R[1] + ins, w2, h2, 18);
-              c.fill();
-            }
-          }
-          c.restore();
-        }
-        collectRead();
-        window.addEventListener('load', collectRead);
-        window.addEventListener('scroll', function () { readDirty = true; }, { passive: true });
-        window.addEventListener('resize', resize);
-        resize();
-
-        var bodies = [
-          { k: 2, ph: 0.0, col: [254, 209, 54], rB: 0.30, trail: [] },   // RP
-          { k: 3, ph: 2.1, col: [235, 196, 86], rB: 0.235, trail: [] },  // Branding
-          { k: 4, ph: 4.2, col: [120, 150, 184], rB: 0.37, trail: [] }   // Reputacao
-        ];
-        var T = 0;
-        var lblMarca = document.getElementById('lbl-marca');
-        var lbls = [document.getElementById('lbl-rp'), document.getElementById('lbl-brand'), document.getElementById('lbl-rep')];
-        var heroFade = 1;
-
-        function frame() {
-          T += prefersReduced ? 0 : 0.006;
-          var S = smooth(scrollP);
-          var finale = smooth((scrollP - 0.72) / 0.28);
-          var base = Math.min(W, H);
-          var bx = W * 0.5, by = H * (0.46 + 0.05 * Math.sin(scrollP * Math.PI));
-
-          // fundo e brilho ficam no canvas principal: sao difusos, nao disputam com a
-          // leitura, e recortar um gradiente deixaria buraco quadrado.
-          ctx = mctx;
-          mctx.clearRect(0, 0, W, H);
-          mctx.fillStyle = '#07080C'; mctx.fillRect(0, 0, W, H);
-
-          // brilho do baricentro (a marca)
-          var glowR = base * (0.32 + S * 0.14 + finale * 0.26);
-          var g = ctx.createRadialGradient(bx, by, 0, bx, by, glowR);
-          g.addColorStop(0, 'rgba(254,209,54,' + (0.10 + S * 0.10 + finale * 0.12) + ')');
-          g.addColorStop(0.18, 'rgba(254,209,54,' + (0.04 + S * 0.04) + ')');
-          g.addColorStop(0.5, 'rgba(254,209,54,0)');
-          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-
-          // daqui pra baixo desenha na camada recortavel: rastros, corpos e baricentro
-          if (readDirty) updateRects();
-          ctx = dctx;
-          dctx.clearRect(0, 0, W, H);
-
-          var tilt = 0.4 + 0.28 * Math.sin(scrollP * Math.PI);  // o plano comum inclina (camera)
-          for (var i = 0; i < bodies.length; i++) {
-            var b = bodies[i];
-            var chaos = 1 - S;
-            var wob = chaos * 0.5 * Math.sin(T * 0.7 + b.k * 1.7);
-            var ang = b.ph + T * (0.5 + b.k * 0.28) * (1 + wob * 0.3) + chaos * 1.3 * Math.sin(T * 0.3 + i);
-            var ecc = chaos * 0.4;
-            var r = b.rB * base * (1 + ecc * Math.sin(ang * 2 + b.k)) * (1 - finale * 0.12);
-            var x = bx + Math.cos(ang) * r;
-            var y = by + Math.sin(ang) * r * tilt;
-
-            b.trail.push([x, y]); if (b.trail.length > 74) b.trail.shift();
-            ctx.beginPath();
-            for (var t2 = 0; t2 < b.trail.length; t2++) { var p = b.trail[t2]; if (t2 === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); }
-            ctx.strokeStyle = 'rgba(' + b.col[0] + ',' + b.col[1] + ',' + b.col[2] + ',' + (0.05 + S * 0.16 + finale * 0.2) + ')';
-            ctx.lineWidth = 1 + S * 0.6; ctx.stroke();
-
-            // tether do baricentro ao corpo
-            ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(x, y);
-            ctx.strokeStyle = 'rgba(' + b.col[0] + ',' + b.col[1] + ',' + b.col[2] + ',' + (0.04 + S * 0.06) + ')'; ctx.lineWidth = 1; ctx.stroke();
-
-            // o corpo
-            var rad = 3.5 + b.rB * 6 + finale * 6;
-            ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(' + b.col[0] + ',' + b.col[1] + ',' + b.col[2] + ',1)';
-            ctx.shadowColor = 'rgba(' + b.col[0] + ',' + b.col[1] + ',' + b.col[2] + ',.85)'; ctx.shadowBlur = 12 + finale * 18; ctx.fill(); ctx.shadowBlur = 0;
-
-            if (lbls[i]) { lbls[i].style.transform = 'translate(' + x + 'px,' + y + 'px) translate(-50%, 16px)'; lbls[i].style.opacity = heroFade.toFixed(3); }
-          }
-
-          // baricentro: a marca, nucleo quente que incha no fecho
-          var coreR = 5 + S * 3 + finale * finale * 26;
-          var bloom = Math.sin(finale * Math.PI);
-          if (bloom > 0.002) {
-            ctx.beginPath(); ctx.arc(bx, by, coreR + bloom * base * 0.18, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(254,209,54,' + (bloom * 0.4).toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.stroke();
-          }
-          ctx.beginPath(); ctx.arc(bx, by, coreR, 0, Math.PI * 2);
-          ctx.fillStyle = '#FED136'; ctx.shadowColor = 'rgba(254,209,54,.95)'; ctx.shadowBlur = 20 + S * 8 + finale * 30; ctx.fill(); ctx.shadowBlur = 0;
-
-          // recorta a camada nas zonas de leitura e joga sobre o fundo
-          maskRead(dctx);
-          mctx.drawImage(deco, 0, 0, W, H);
-          ctx = mctx;
-
-          heroFade += ((scrollP < 0.11 ? 1 : 0) - heroFade) * 0.07;
-          if (lblMarca) { lblMarca.style.transform = 'translate(' + bx + 'px,' + by + 'px) translate(-50%, 16px)'; lblMarca.style.opacity = heroFade.toFixed(3); }
-
-          requestAnimationFrame(frame);
-        }
-        requestAnimationFrame(frame);
-      })();
 
       /* ========================================================
          DATAVIZ: TRES ONDAS QUE ENTRAM EM FASE

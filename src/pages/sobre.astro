@@ -27,7 +27,7 @@ const clientes = [
   'Sambatech', 'Liga Ventures', 'Printi', 'Qranio', 'Unifisa', 'Livup', 'Doctoralia',
   'Solides', 'Corning', 'PagBrasil', 'Sidia', 'Investidores.vc', 'FluencyPass',
   'Layer Up', 'Wylinka', 'Inovativa', 'Unlimitail', 'Endemol Shine Brasil',
-  'Mastercard Agro', 'AgroSmart', 'Vila 11',
+  'AgroSmart', 'Vila 11',
 ];
 
 const verdades = [
@@ -441,7 +441,10 @@ const url = `https://${site.brandDomain}/sobre`;
     .sec.tight { padding-block: var(--sec-pad); }
 
     .sec-head { max-width: 64ch; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
-    .sec h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 24ch; text-wrap: balance; }
+    .sec h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 24ch; text-wrap: pretty; }
+    /* `pretty` no lugar de `balance`: o balance igualava as linhas e encurtava o
+       titulo, deixando ele mais estreito que o lede logo abaixo. O pretty enche a
+       linha ate a medida e so evita a orfa no fim. */
     .sec h2.big { font-size: clamp(2.4rem, 6vw, 5rem); max-width: 18ch; }
     .lede { font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.6; color: var(--ink-muted); margin-top: 1.4rem; max-width: 60ch; }
     .lede.on-dark { color: var(--text-d-muted); }
@@ -484,6 +487,12 @@ const url = `https://${site.brandDomain}/sobre`;
     /* ato CMO: a cena, os corpos que a massa atrai, o caminho ate a venda */
     .strike { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.6rem, 3.4vw, 2.6rem); letter-spacing: -.02em; color: rgba(180,200,220,.7); margin: 1.5rem 0 0; }
     .reply { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.03em; color: var(--warm); margin: .4rem 0 0; }
+
+    /* O bloco do "E daí?" é uma fala curta numa coluna estreita e centralizada.
+       O texto acompanha o bloco e centraliza também. O .lede precisa do
+       margin-inline porque tem max-width próprio e ficaria colado à esquerda. */
+    #cmo .wrap { text-align: center; }
+    #cmo .lede { margin-inline: auto; }
     .corpos { display: grid; grid-template-columns: 1fr; gap: 1rem; }
     @media (min-width: 560px) { .corpos { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 980px) { .corpos { grid-template-columns: repeat(4, 1fr); } }

@@ -2,15 +2,23 @@
 // Footer — fonte única. Editar uma vez, propaga para todas as páginas.
 import { site } from '@/data/site';
 import { withBase } from '@/lib/base';
+
+// `escuro` é opt-in: só quem passa a prop muda. Serve para páginas que rodam
+// escuras de ponta a ponta (hoje, /pep) e onde o rodapé claro corta a página.
+interface Props {
+  escuro?: boolean;
+}
+const { escuro = false } = Astro.props;
+
 const year = new Date().getFullYear();
 ---
-<footer class="relative z-20 bg-white border-t border-[rgba(0,0,0,.08)] py-16">
+<footer class:list={['relative z-20 border-t py-16', escuro ? 'footer-escuro' : 'bg-white border-[rgba(0,0,0,.08)]']}>
   <div class="max-w-[1400px] mx-auto px-6 md:px-8">
     <div class="grid grid-cols-2 md:grid-cols-5 gap-10 mb-16">
       <div class="col-span-2">
         <a href="/" class="brand-mark flex items-center mb-5" aria-label="PiaR Group">
           <img
-            src={withBase('/brand/piar-horizontal-positivo.png')}
+            src={withBase(escuro ? '/brand/piar-horizontal-negativo.png' : '/brand/piar-horizontal-positivo.png')}
             alt="PiaR Group"
             class="brand-logo brand-logo--footer"
           />
@@ -72,7 +80,10 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <div class="pt-8 border-t border-[rgba(0,0,0,.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class:list={[
+      'pt-8 border-t flex flex-col md:flex-row justify-between items-start md:items-center gap-4',
+      escuro ? 'borda-escura' : 'border-[rgba(0,0,0,.08)]',
+    ]}>
       <span class="ds-mono text-stone-400">© {year} PiaR Group · PR System</span>
       <span class="ds-caption text-stone-400">PiaR OS v1.0 · Narrative Edition</span>
     </div>
@@ -105,6 +116,16 @@ const year = new Date().getFullYear();
     border-color: rgba(0, 0, 0, 0.24);
     background-color: rgba(0, 0, 0, 0.03);
   }
+
+  /* ---- Tema escuro (opt-in via prop `escuro`) ---- */
+  .footer-escuro { background: #07080C; border-top-color: rgba(255, 255, 255, 0.1); }
+  .footer-escuro .borda-escura { border-top-color: rgba(255, 255, 255, 0.1); }
+  .footer-escuro .footer-link { color: rgba(255, 255, 255, 0.7); }
+  .footer-escuro .footer-link:hover { color: #fff; }
+  .footer-escuro .footer-social { color: rgba(255, 255, 255, 0.7); border-color: rgba(255, 255, 255, 0.14); }
+  .footer-escuro .footer-social:hover { color: #fff; border-color: rgba(255, 255, 255, 0.4); background-color: rgba(255, 255, 255, 0.06); }
+  .footer-escuro .text-stone-500 { color: rgba(255, 255, 255, 0.62); }
+  .footer-escuro .text-stone-400 { color: rgba(255, 255, 255, 0.45); }
 
   .brand-mark {
     text-decoration: none;

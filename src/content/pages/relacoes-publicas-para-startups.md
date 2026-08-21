@@ -104,7 +104,7 @@ Métrica sem fonte não vira número em relatório. Volume de mídia espontânea
 
 Trabalho de comunicação se mede por resultado, e resultado precisa de data e lastro. Alguns exemplos de clientes reais que a PiaR conduziu, descritos pelo escopo do trabalho.
 
-Clientes reais seguem a lógica de adequar a RP ao estágio e ao setor: Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade do trabalho, com protocolo de resposta definido antes do problema, e não no meio dele.
+Clientes reais seguem a lógica de adequar a RP ao estágio e ao setor: Endemol Shine Brasil (Big Brother Brasil), Solides, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade do trabalho, com protocolo de resposta definido antes do problema, e não no meio dele.
 
 A conexão com exits é direta. Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 11 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef. Comunicação não fecha uma aquisição, mas uma empresa que construiu reputação consistente em seed e Series A chega à mesa de negociação sendo conhecida pela versão correta da sua história, não pela primeira que aparece na busca.
 

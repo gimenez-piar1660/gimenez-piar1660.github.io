@@ -55,7 +55,7 @@ const faq = [
   { q: 'O PEP substitui a assessoria de imprensa?', a: 'Não. As duas frentes se complementam. O relacionamento com a imprensa gera a prova pública, e o PEP transforma essa prova em presença contínua.' },
 ];
 
-const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'Mastercard Agro', 'AgroSmart', 'Endemol Shine Brasil', 'Vila 11', 'FluencyPass', 'Qranio', 'Livup'];
+const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides', 'Corning', 'PagBrasil', 'Sidia', 'AgroSmart', 'Endemol Shine Brasil', 'Vila 11', 'FluencyPass', 'Qranio', 'Livup'];
 ---
 
 <BaseLayout
@@ -136,7 +136,7 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
     </section>
 
     <!-- ============ OS SEIS VETORES ============ -->
-    <section id="vetores-sec" class="section light has-g">
+    <section id="vetores-sec" class="section has-g">
       <span class="gword" data-parallax-y="16" aria-hidden="true" style="bottom:-4%; left:-2%">vetores</span>
       <div class="wrap">
         <div class="sec-head reveal">
@@ -226,7 +226,7 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
     </section>
 
     <!-- ============ A PROVA ============ -->
-    <section id="prova-sec" class="section light has-g">
+    <section id="prova-sec" class="section has-g">
       <span class="gword" data-parallax-y="14" aria-hidden="true" style="bottom:-5%; right:-3%">prova</span>
       <div class="wrap">
         <div class="prova-grid">
@@ -281,7 +281,7 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
     </section>
   </main>
 
-  <Footer />
+  <Footer escuro />
 
   <script is:inline type="application/ld+json" set:html={JSON.stringify({
     '@context': 'https://schema.org',
@@ -652,8 +652,10 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
         }
         var spin = 0;
 
-        // BRANCO E PRETO (como na home): faixas claras onde estao as secoes .light; o canvas pinta o creme e INVERTE os legos.
-        var lightEls = ['vetores-sec', 'prova-sec'].map(function (id) { return document.getElementById(id); }).filter(Boolean);
+        // Faixas claras: o canvas pinta creme atras de qualquer .section.light e INVERTE os legos.
+        // A pagina hoje e toda escura (nenhuma section tem .light), entao a lista sai vazia e o
+        // canvas fica preto de ponta a ponta. Voltar uma secao ao claro = so recolocar a classe.
+        var lightEls = [].slice.call(document.querySelectorAll('.section.light'));
         var bands = [];
         function isLight(yy) { for (var bi = 0; bi < bands.length; bi++) { if (yy >= bands[bi][0] && yy <= bands[bi][1]) return true; } return false; }
         // lupa: o hub central tinge o titulo que cruza, invertendo pra contrastar (igual a home)
@@ -669,9 +671,13 @@ const clientes = ['Sambatech', 'Liga Ventures', 'Printi', 'Doctoralia', 'Solides
           var S = smooth(scrollP);
           var finale = smooth((scrollP - 0.72) / 0.28);
           var base = Math.min(W, H);
-          var bx = W * 0.5, by = H * (0.46 + 0.04 * Math.sin(scrollP * Math.PI));
+          // O copy ocupa a coluna da esquerda, entao a animacao vive na direita: o hub sai do
+          // centro e a orbita solta encolhe, pra as pecas nao voltarem por cima do texto.
+          // Em tela estreita nao existe "direita" livre, entao ela volta ao centro original.
+          var largo = W >= 1024;
+          var bx = W * (largo ? 0.74 : 0.5), by = H * (0.46 + 0.04 * Math.sin(scrollP * Math.PI));
           var rSlot = base * 0.24;
-          var rLoose = base * 0.62;
+          var rLoose = base * (largo ? 0.42 : 0.62);
           var tilt = 0.66;
 
           // faixas claras neste frame (coords da viewport, como o canvas fixo)

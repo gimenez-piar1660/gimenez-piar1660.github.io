@@ -66,7 +66,7 @@ A PiaR opera comunicação para startups, scale-ups e empresas de tecnologia des
 
 Bruno Pinheiro, fundador e CEO, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação é tocada com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).
 
-O método tem lastro. O processo de quatro etapas (Diagnóstico, Messaging Framework, Ativação Editorial e Monitoramento) inclui revisão jurídica de todos os ativos. Os PEP (Projetos Especiais de PR), metodologia que estruturamos em 2023, organizam campanhas em seis vetores: Palco, Conversa, Narrativa, Cadência, Alcance e Veículo. O investimento é sob consulta. Outros clientes ilustram a amplitude do trabalho: Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade que oferecemos como parte do escopo.
+O método tem lastro. O processo de quatro etapas (Diagnóstico, Messaging Framework, Ativação Editorial e Monitoramento) inclui revisão jurídica de todos os ativos. Os PEP (Projetos Especiais de PR), metodologia que estruturamos em 2023, organizam campanhas em seis vetores: Palco, Conversa, Narrativa, Cadência, Alcance e Veículo. O investimento é sob consulta. Outros clientes ilustram a amplitude do trabalho: Endemol Shine Brasil (Big Brother Brasil), Solides, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade que oferecemos como parte do escopo.
 
 ## Perguntas frequentes
 
