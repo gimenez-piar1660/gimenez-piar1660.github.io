@@ -44,40 +44,46 @@ const capacidades = [
 // Outros trabalhos com cliente real, descrições qualitativas, sem métrica.
 const trabalhos = [
   {
-    cliente: 'Solides',
-    setor: 'Tecnologia · gestão de pessoas',
-    desc: 'Comunicação para uma empresa de tecnologia de gestão de pessoas, com produção editorial e relação com a imprensa.',
-    icon: 'solar:users-group-rounded-line-duotone',
-    // Quando há `foto`, ela substitui o ícone na capa do card. O ícone fica como
-    // fallback para os cards que ainda não têm imagem.
-    foto: '/brand/clients/photos/ale-garcia-e-monica-hauck.png',
-    fotoAlt: 'Ale Garcia e Mônica Hauck, fundadores da Solides',
+    cliente: 'Yellow Card · Finsiders',
+    setor: 'Cripto e pagamentos',
+    desc: 'Chegada de uma fintech africana ao Brasil anunciada sob embargo: veículos escolhidos e informados antes, publicação na data combinada. O anúncio estreou como notícia de mercado, não como release recebido no meio da fila.',
+    icon: 'solar:card-transfer-line-duotone',
+    url: 'https://finsidersbrasil.com.br/giro-noticias/yellow-card-desembarca-no-brasil-de-olho-em-pagamentos-internacionais/',
   },
   {
-    cliente: 'Endemol Shine Brasil / Big Brother Brasil',
-    setor: 'Entretenimento',
-    desc: 'Trabalho de comunicação ligado a uma das maiores operações de entretenimento do país, em um contexto de alta exposição e tempo curto de resposta.',
-    icon: 'solar:videocamera-line-duotone',
-    foto: '/brand/clients/photos/endemol-Fernando-e-Nani-1536x1152.jpeg',
-    fotoAlt: 'Fernando e Nani, da Endemol Shine Brasil',
+    cliente: 'Amure Pinho · Época Negócios',
+    setor: 'Venture capital',
+    desc: 'Artigo publicado quando a onda de demissões em startups ainda era lida como caso isolado. A tese saiu antes do consenso, e o porta-voz virou fonte recorrente do assunto nos meses seguintes.',
+    icon: 'solar:chart-square-line-duotone',
+    url: 'https://epocanegocios.globo.com/colunas/noticia/2022/04/o-inverno-chegou-onda-de-demissoes-em-grandes-startups-indica-inicio-de-uma-turbulencia.html',
   },
   {
-    cliente: 'AgroSmart',
-    setor: 'AgTech',
-    desc: 'Comunicação para uma empresa de tecnologia voltada ao agro, posicionando inovação dentro de um setor tradicional.',
-    icon: 'solar:leaf-line-duotone',
+    cliente: 'Skynova · SBT',
+    setor: 'Tecnologia',
+    desc: 'Um bolão interno de Copa do Mundo virou entrada em telejornal nacional. A pauta não estava no produto da empresa, estava no calendário do país. É por aí que entra quem não é notícia óbvia.',
+    icon: 'solar:videocamera-record-line-duotone',
+    foto: '/brand/clients/photos/skynova-sbt-externa.webp',
+    fotoAlt: 'Equipe de externa do SBT grava entrevista na Skynova durante a Copa do Mundo',
+    fotoPos: 'center 42%',
   },
   {
-    cliente: 'Vila 11',
-    setor: 'Institucional',
-    desc: 'Comunicação institucional e de marca.',
-    icon: 'solar:buildings-3-line-duotone',
+    cliente: 'Samira Cardoso · Mundo do Marketing',
+    setor: 'B2B',
+    desc: 'A participação em um palco de mercado não terminou no palco: virou artigo em veículo especializado. Evento é matéria-prima editorial quando alguém trata como tal.',
+    icon: 'solar:microphone-large-line-duotone',
+    foto: '/brand/clients/photos/samira-b2b-summit.webp',
+    fotoAlt: 'Samira Cardoso no palco B2B Stage do B2B Summit',
+    fotoPos: 'center 45%',
+    url: 'https://mundodomarketing.com.br/o-que-o-b2b-summit-revela-sobre-o-futuro-do-marketing',
   },
   {
-    cliente: 'Doctoralia',
-    setor: 'Healthtech',
-    desc: 'Orquestração editorial para uma healthtech de marca conhecida, com produção de conteúdo executivo e relação com veículos.',
-    icon: 'solar:stethoscope-line-duotone',
+    cliente: 'Sinergis · PEGN',
+    setor: 'Gestão',
+    desc: 'Capa de revista de negócios construída sobre uma decisão difícil: fechar operações e concentrar no que era rentável. É a história de gestão que sustenta a capa, e a cobertura veio atrás dela.',
+    icon: 'solar:magazine-line-duotone',
+    foto: '/brand/clients/photos/sinergis-pegn-capa.webp',
+    fotoAlt: 'Capa da revista Pequenas Empresas & Grandes Negócios com João Gabriel Chebante, da Sinergis',
+    fotoPos: 'center 5%',   // a capa precisa mostrar o cabeçalho da revista, não o meio
   },
 ];
 
@@ -830,7 +836,7 @@ const faq = [
             <article class="case-card paper reveal" style={`transition-delay:${(i % 3) * 100}ms`}>
               <div class:list={['case-cover', t.foto && 'tem-foto']}>
                 {t.foto
-                  ? <img src={withBase(t.foto)} alt={t.fotoAlt} width="1000" height="667" loading="lazy" decoding="async" />
+                  ? <img src={withBase(t.foto)} alt={t.fotoAlt} style={t.fotoPos ? `object-position:${t.fotoPos}` : undefined} loading="lazy" decoding="async" />
                   : <iconify-icon icon={t.icon}></iconify-icon>}
               </div>
               <div class="case-body">
