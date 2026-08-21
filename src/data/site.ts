@@ -7,7 +7,12 @@
 //   project/workbench/specs/pep-site-migration-2026-06-02/spec.md (seção 9)
 //   - D-IDENT-1: e-mail oficial = contato@piar.group (alterado por Danilo em 2026-06-30; antes hello@piar.group)
 //   - D-IDENT-2: telefone público aparece apenas na página /contato
-//   - D-IDENT-3: número de exits travado em 8 (verificados e nomeados)
+//   - D-IDENT-3: número de exits = quantos nomes existem em EXITS, abaixo.
+//     Era 8 até 17/08/2026. Em 18/08/2026 Danilo confirmou 11, acrescentando
+//     VExpenses (comprada pela VR), Menew (combinação de operações com a Linx)
+//     e GaussFleet (controle adquirido pela CSN), os três verificados em fonte
+//     pública na mesma data. Aarin segue fora: a pendência dele é autorização
+//     de citação, não contagem.
 //   - D-IDENT-4: endereço confirmado
 //   - D-IDENT-5: prêmio padronizado (ABStartups Startup Awards, 2018)
 // ============================================================
@@ -19,6 +24,25 @@
 // `site` do astro.config para o domínio final. Checklist completo da virada em
 // docs/deploy-e-versionamento.md, seção "Migração do protótipo para o domínio próprio".
 export const INDEXAVEL = false;
+
+// Startups acompanhadas até o exit, nomeáveis e com lastro público.
+// FONTE ÚNICA: antes esta lista estava copiada em 18 páginas, e foi assim que
+// o número desandou. Toda página deve ler `site.exits`, nunca redeclarar.
+// O contador `exitsSupported` sai do tamanho desta lista, então número e nomes
+// não têm como divergir de novo.
+const EXITS = [
+  'Axado',
+  'Trustvox',
+  'ViaNuvem',
+  'Konduto',
+  'Getrak',
+  'GrandChef',
+  'Xtech Commerce',
+  'Supermercado Now',
+  'VExpenses',
+  'Menew',
+  'GaussFleet',
+] as const;
 
 export const site = {
   name: 'PiaR Group',
@@ -42,7 +66,8 @@ export const site = {
   foundingYear: '2013',
   yearsOperating: 13,
   brandsServed: '470+',
-  exitsSupported: 8,
+  exits: EXITS,
+  exitsSupported: EXITS.length,
   slogan: 'Identificamos o ativo raro de cada marca e o transformamos em reputação.',
 
   address: {

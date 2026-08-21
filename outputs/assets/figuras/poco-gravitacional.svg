@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" fill="none">
+  <title>Poco de gravidade da marca</title>
+  <desc>Figura do hero: a massa da marca no centro e as orbitas do mercado ao redor. Desenhada para fundo escuro (#0F0F11).</desc>
+  <defs>
+    <radialGradient id="wellCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FED136" stop-opacity=".85"/>
+      <stop offset="55%" stop-color="#FED136" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#FED136" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="300" cy="300" r="150" fill="url(#wellCore)"/>
+  <g stroke="#FED136" stroke-opacity=".30" fill="none">
+    <ellipse cx="300" cy="300" rx="90" ry="34"/>
+    <ellipse cx="300" cy="300" rx="140" ry="53"/>
+    <ellipse cx="300" cy="300" rx="192" ry="73"/>
+    <ellipse cx="300" cy="300" rx="245" ry="93"/>
+    <ellipse cx="300" cy="300" rx="292" ry="112"/>
+  </g>
+  <g stroke="#FFFFFF" stroke-opacity=".12" fill="none">
+    <ellipse cx="300" cy="300" rx="115" ry="44" transform="rotate(28 300 300)"/>
+    <ellipse cx="300" cy="300" rx="215" ry="82" transform="rotate(28 300 300)"/>
+    <ellipse cx="300" cy="300" rx="268" ry="102" transform="rotate(-22 300 300)"/>
+  </g>
+  <circle cx="300" cy="300" r="13" fill="#FED136"/>
+  <circle cx="440" cy="300" r="5.5" fill="#FFFFFF" fill-opacity=".8"/>
+  <circle cx="196" cy="262" r="4" fill="#FFFFFF" fill-opacity=".55"/>
+  <circle cx="345" cy="393" r="4.5" fill="#FED136" fill-opacity=".8"/>
+</svg>

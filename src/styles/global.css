@@ -42,6 +42,11 @@ body {
   font-feature-settings: 'ss01', 'cv11';
 }
 
+/* Ritmo vertical unico das sections. Paginas que montam a section com utilitarios do
+   Tailwind usam esta classe no lugar de py-*; as paginas bespoke usam var(--sec-pad)
+   direto no <style is:global> delas. Fonte do valor: tokens.css. */
+.sec-pad { padding-block: var(--sec-pad); }
+
 ::selection { background: var(--primary); color: var(--accent); }
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -10,7 +10,7 @@
 // Voz: humano contando historia, 1a pessoa do plural (verbo carrega o nos),
 //   sem "a gente", sem antitese empilhada, sem jargao, sem travessao.
 //   Toda frase grande paga uma divida concreta (um fato da casa).
-// Fatos travados em site.ts: 2013, 13 anos, 470+ marcas, 8 exits nomeados,
+// Fatos travados em site.ts: 2013, 13 anos, 470+ marcas, exits nomeados,
 //   premio ABStartups 2018. Sem Constellation/CS-pioneer (nao confirmados).
 // Pagina indexada (nao e noindex). JSON-LD AboutPage + Breadcrumb + ItemList
 //   + FAQPage. Vídeo entra depois, por cima da narrativa (dobra #manifesto).
@@ -21,7 +21,7 @@ import Footer from '@components/Footer.astro';
 import { site } from '@/data/site';
 import { withBase } from '@/lib/base';
 
-const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const exits = site.exits;
 
 const clientes = [
   'Sambatech', 'Liga Ventures', 'Printi', 'Qranio', 'Unifisa', 'Livup', 'Doctoralia',
@@ -434,11 +434,11 @@ const url = `https://${site.brandDomain}/sobre`;
     .gword.big { color: rgba(254,209,54,.04); }
 
     /* secoes: claras (ato 1), dark (ato 2/3), clear (hero/turn/manifesto) */
-    .sec { position: relative; z-index: 1; padding-block: clamp(5rem, 10vw, 8.5rem); }
+    .sec { position: relative; z-index: 1; padding-block: var(--sec-pad); }
     .sec.light { background: rgba(250, 250, 250, .8); border-top: 1px solid var(--hairline-l); color: var(--ink); }
     .sec.dark { background: rgba(7, 8, 12, .82); border-top: 1px solid var(--hairline-d); color: var(--text-d); }
     .sec.clear { background: transparent; }
-    .sec.tight { padding-block: clamp(4rem, 8vw, 6.5rem); }
+    .sec.tight { padding-block: var(--sec-pad); }
 
     .sec-head { max-width: 64ch; margin-bottom: clamp(2.5rem, 5vw, 3.8rem); }
     .sec h2 { font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.06; letter-spacing: -.03em; margin-top: 1rem; max-width: 24ch; text-wrap: balance; }
@@ -448,6 +448,9 @@ const url = `https://${site.brandDomain}/sobre`;
     .punch { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1.18; letter-spacing: -.025em; margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 28ch; color: #fff; }
 
     /* HERO (claro) */
+    /* O hero ja carrega o proprio respiro em .hero-inner; sem isto ele somaria tambem
+       o padding padrao de .sec e abriria um vao maior que o do resto do site. */
+    .sec.hero { padding-block: 0; }
     .hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
     .hero-scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
     .hero-scrim.light { background:
@@ -536,7 +539,7 @@ const url = `https://${site.brandDomain}/sobre`;
     .leader p { font-size: .95rem; line-height: 1.55; color: var(--text-d-muted); margin: .5rem 1.5rem 0; }
 
     /* CLIMAX */
-    .climax { padding-block: clamp(6rem, 13vw, 10rem); }
+    .climax { padding-block: var(--sec-pad); }
     .climax-inner { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
     .climax h2 { font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 600; line-height: 1.06; letter-spacing: -.035em; margin-top: 1.2rem; max-width: 20ch; }
     .climax .lede { margin-inline: auto; }

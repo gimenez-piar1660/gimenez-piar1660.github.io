@@ -17,8 +17,14 @@
 //    então dá para conferir com um curl antes de publicar.)
 //    O token é público por natureza: ele aparece no código-fonte da página,
 //    é assim que o RD projetou para formulário em site.
+//    CAMPOS NATIVOS DO RD (não criar personalizado, já existem):
+//      name · email · company_name · personal_phone · job_title
+//    Cargo vai em job_title, o campo nativo. Por isso o painel recusa criar
+//    um personalizado chamado "cargo": o nome é reservado porque o RD já tem
+//    esse campo. Corrigido em 18/08/2026, antes ia como cf_cargo e o valor
+//    se perdia no caminho, sem erro nenhum na tela.
 //    Antes de publicar, criar no RD os campos personalizados da spec:
-//      cf_cargo · cf_frente_interesse · cf_assessoria_previa · cf_gatilho
+//      cf_frente_interesse · cf_assessoria_previa · cf_gatilho
 //      cf_faturamento_faixa · cf_origem_declarada · cf_indicado_por
 //      cf_contexto · cf_classificacao
 //      cf_utm_source · cf_utm_medium · cf_utm_campaign · cf_utm_content
@@ -121,7 +127,7 @@ import { site } from '@/data/site';
       /* ============================================================
          FORM SHELL · 2 colunas no desktop · sidebar com expectativa
          ============================================================ */
-      .form-section { padding: 4rem 1.5rem 6rem; }
+      .form-section { padding: var(--sec-pad) 1.5rem; }
       .form-shell { max-width: 1400px; margin: 0 auto; display: grid; gap: 3rem; grid-template-columns: 1fr; }
       @media (min-width: 1024px) { .form-shell { grid-template-columns: 1.4fr 1fr; gap: 5rem; align-items: start; } }
 
@@ -336,7 +342,7 @@ import { site } from '@/data/site';
 
                   <div class="field">
                     <label for="f-cargo">Cargo <span class="req">*</span></label>
-                    <select id="f-cargo" name="cf_cargo" required>
+                    <select id="f-cargo" name="job_title" required>
                       <option value="" disabled selected>Selecione</option>
                       <option>CEO, fundador ou sócio</option>
                       <option>CMO ou diretor de marketing</option>
@@ -557,7 +563,7 @@ import { site } from '@/data/site';
     </section>
 
     <!-- 3 · FAQ DO CONTATO -->
-    <section class="bg-white border-y border-[var(--hairline)] py-20 md:py-28 px-4 md:px-8">
+    <section class="bg-white border-y border-[var(--hairline)] sec-pad px-4 md:px-8">
       <div class="max-w-[1100px] mx-auto">
         <div class="mb-10 reveal">
           <span class="eyebrow-dot">Perguntas comuns antes da conversa</span>
@@ -591,12 +597,12 @@ import { site } from '@/data/site';
     </section>
 
     <!-- 4 · NOTA FECHAMENTO · ENXUTA -->
-    <section class="relative bg-[var(--paper)] py-16 md:py-24 px-4 md:px-8">
+    <section class="relative bg-[var(--paper)] sec-pad px-4 md:px-8">
       <div class="max-w-[900px] mx-auto text-center reveal">
         <p class="italic-serif text-stone-500" style="font-size:clamp(1.25rem,2.5vw,1.65rem);line-height:1.4">
           "Cada cliente que sustenta uma década começa com uma única decisão: parar de pedir cobertura e começar a oferecer tese."
         </p>
-        <p class="ds-mono text-stone-400 mt-6">/// PiaR Group · 13 anos · 470+ marcas · 8 exits · São Paulo desde 2013</p>
+        <p class="ds-mono text-stone-400 mt-6">/// PiaR Group · {site.yearsOperating} anos · {site.brandsServed} marcas · {site.exitsSupported} exits · São Paulo desde {site.foundingYear}</p>
       </div>
     </section>
 
@@ -699,7 +705,7 @@ import { site } from '@/data/site';
         return !!d && DOMINIOS_GRATUITOS.indexOf(d) === -1;
       };
       const classificar = () =>
-        ehCorporativo(form.email.value) && CARGOS_MQL.indexOf(form.cf_cargo.value) !== -1 ? 'MQL' : 'Lead';
+        ehCorporativo(form.email.value) && CARGOS_MQL.indexOf(form.job_title.value) !== -1 ? 'MQL' : 'Lead';
 
       // ---- 3. Validação inline · erro no campo, nunca em bloco no topo ----
       function mensagemDe(campo) {
@@ -831,7 +837,7 @@ import { site } from '@/data/site';
       // Web3Forms · cópia por e-mail, com rótulos legíveis
       const ROTULOS = {
         name: 'Nome', email: 'E-mail', company_name: 'Empresa', personal_phone: 'Telefone',
-        cf_cargo: 'Cargo', cf_frente_interesse: 'Frente de interesse',
+        job_title: 'Cargo', cf_frente_interesse: 'Frente de interesse',
         cf_assessoria_previa: 'Histórico de assessoria', cf_gatilho: 'Gatilho',
         cf_faturamento_faixa: 'Faturamento', cf_origem_declarada: 'Como conheceu',
         cf_indicado_por: 'Quem indicou', cf_contexto: 'Contexto', cf_classificacao: 'Classificação',

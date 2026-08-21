@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" fill="none">
+  <title>Wordmark PiaR Group</title>
+  <desc>Wordmark tipografico usado no header e no rodape da landing page. Montserrat 800, com o R em amarelo PiaR. Renderizado como texto: exige a fonte Montserrat instalada ou carregada.</desc>
+  <text x="0" y="30" font-family="Montserrat, sans-serif" font-weight="800" font-size="30" letter-spacing="-1.35" fill="#FFFFFF">Pia<tspan fill="#FED136">R</tspan></text>
+  <text x="94" y="30" font-family="JetBrains Mono, monospace" font-weight="400" font-size="9" letter-spacing="3.2" fill="#FFFFFF" fill-opacity=".5">GROUP</text>
+</svg>

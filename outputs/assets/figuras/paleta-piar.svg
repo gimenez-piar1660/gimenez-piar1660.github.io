@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200" fill="none" font-family="JetBrains Mono, monospace">
+  <title>Paleta PiaR usada na landing page</title>
+  <desc>As unicas cores da pagina. Amarelo, preto e branco sao a identidade inegociavel da PiaR.</desc>
+  <rect width="720" height="200" fill="#FFFFFF"/>
+  <g>
+    <rect x="24"  y="24" width="120" height="96" rx="14" fill="#0F0F11"/>
+    <rect x="168" y="24" width="120" height="96" rx="14" fill="#F5F5F7" stroke="#00000014"/>
+    <rect x="312" y="24" width="120" height="96" rx="14" fill="#FFFFFF" stroke="#00000014"/>
+    <rect x="456" y="24" width="120" height="96" rx="14" fill="#FED136"/>
+    <rect x="600" y="24" width="120" height="96" rx="14" fill="#8F710A"/>
+  </g>
+  <g font-size="11" fill="#0F0F11">
+    <text x="24"  y="146">ink</text>
+    <text x="168" y="146">paper</text>
+    <text x="312" y="146">white</text>
+    <text x="456" y="146">yellow</text>
+    <text x="600" y="146">yellow-700</text>
+  </g>
+  <g font-size="11" fill="#0F0F119E">
+    <text x="24"  y="166">#0F0F11</text>
+    <text x="168" y="166">#F5F5F7</text>
+    <text x="312" y="166">#FFFFFF</text>
+    <text x="456" y="166">#FED136</text>
+    <text x="600" y="166">#8F710A</text>
+  </g>
+  <text x="24" y="188" font-size="10" fill="#0F0F117A">Acentos de apoio usados so em estado de UI: #E0B420 (accent-deep), #FFDC50 (hover), #E9BC1F (gradiente de barra), #FFF3B0 (fundo de cabecalho de tabela), #a83232 (erro de formulario).</text>
+</svg>

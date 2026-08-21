@@ -132,7 +132,7 @@ Data PR é earned antes de paga: a aposta principal é conquistar a publicação
 
 ## Sobre a PiaR
 
-A PiaR é uma agência de comunicação em São Paulo desde 2013. Acompanhamos 8 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef, e atendemos empresas como Sambatech, Liga Ventures, Doctoralia, Solides, PagBrasil e Corning. Atendemos também clientes como Endemol Shine Brasil (Big Brother Brasil), Mastercard Agro, AgroSmart e Vila 11. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). Trabalhamos com a metodologia PEP e com processo que inclui revisão jurídica, o que importa quando a pauta nasce de dado próprio.
+A PiaR é uma agência de comunicação em São Paulo desde 2013. Acompanhamos 11 startups até o exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef, e atendemos empresas como Sambatech, Liga Ventures, Doctoralia, Solides, PagBrasil e Corning. Atendemos também clientes como Endemol Shine Brasil (Big Brother Brasil), Mastercard Agro, AgroSmart e Vila 11. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). Trabalhamos com a metodologia PEP e com processo que inclui revisão jurídica, o que importa quando a pauta nasce de dado próprio.
 
 Se você quer transformar os dados da sua operação em pauta que a imprensa publica, e medir esse resultado com critério, vale uma conversa. Fale com a gente em hello@piar.group ou em [relações públicas](/relacoes-publicas). O investimento é sob consulta.
 

@@ -90,7 +90,7 @@ Outros clientes reais ilustram o alcance do trabalho: Endemol Shine Brasil (Big 
 
 De fintechs a healthtechs, marcas que precisam de cobertura qualificada escolhem a PiaR para conduzir a comunicação, entre elas Sambatech, Liga Ventures, Printi, Qranio, Unifisa, Livup, Doctoralia, Solides, Corning, PagBrasil, Sidia, Investidores.vc, FluencyPass, Layer Up, Wylinka, Inovativa e Unlimitail. A relação completa de marcas atendidas está disponível sob consulta.
 
-Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 8 startups que chegaram ao exit: Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce e Supermercado Now.
+Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 11 startups que chegaram ao exit: Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet.
 
 ## Quem lidera
 

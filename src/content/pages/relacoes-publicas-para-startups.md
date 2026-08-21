@@ -12,7 +12,7 @@ Relações públicas para startups é o trabalho de fazer com que as pessoas cer
 
 O erro mais comum é tratar RP como um único produto, igual para qualquer empresa. Uma startup em pre-seed e uma scale-up em Series A precisam de coisas diferentes da imprensa, em momentos diferentes, com riscos diferentes. Cobrar as duas com a mesma régua é o que produz cobertura que não move o ponteiro do negócio.
 
-Este guia organiza o que a RP entrega em cada estágio, o passo a passo de ativação, como medir o resultado sem inventar número e onde a comunicação se conecta ao objetivo que costuma estar no fim da linha de uma startup financiada por venture capital: o exit. A PiaR Group acompanha startups e empresas de tecnologia desde 2013, em São Paulo, e apoiou a comunicação de 8 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef.
+Este guia organiza o que a RP entrega em cada estágio, o passo a passo de ativação, como medir o resultado sem inventar número e onde a comunicação se conecta ao objetivo que costuma estar no fim da linha de uma startup financiada por venture capital: o exit. A PiaR Group acompanha startups e empresas de tecnologia desde 2013, em São Paulo, e apoiou a comunicação de 11 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef.
 
 ## Por que RP de startup não é uma régua só
 
@@ -106,7 +106,7 @@ Trabalho de comunicação se mede por resultado, e resultado precisa de data e l
 
 Clientes reais seguem a lógica de adequar a RP ao estágio e ao setor: Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade do trabalho, com protocolo de resposta definido antes do problema, e não no meio dele.
 
-A conexão com exits é direta. Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 8 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef. Comunicação não fecha uma aquisição, mas uma empresa que construiu reputação consistente em seed e Series A chega à mesa de negociação sendo conhecida pela versão correta da sua história, não pela primeira que aparece na busca.
+A conexão com exits é direta. Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 11 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak e GrandChef. Comunicação não fecha uma aquisição, mas uma empresa que construiu reputação consistente em seed e Series A chega à mesa de negociação sendo conhecida pela versão correta da sua história, não pela primeira que aparece na busca.
 
 ## Quem assina este trabalho
 

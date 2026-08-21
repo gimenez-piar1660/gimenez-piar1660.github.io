@@ -54,7 +54,7 @@ Trabalho de marca se mede pela percepção que constrói. Alguns exemplos do que
 
 A PiaR conduz capacidade de gestão de crise, com narrativa e resposta coordenadas para momentos sensíveis. Entre os clientes reais atendidos em frentes de marca e comunicação estão Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia.
 
-Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 8 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce e Supermercado Now. Marcas que precisavam ser entendidas pelo mercado antes de serem compradas por ele.
+Ao longo de mais de uma década, a PiaR acompanhou a comunicação de 11 startups que chegaram ao exit, entre elas Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet. Marcas que precisavam ser entendidas pelo mercado antes de serem compradas por ele.
 
 Entre as empresas atendidas estão Sambatech, Liga Ventures, Printi, Doctoralia, Solides, Corning, PagBrasil e FluencyPass. A relação completa de marcas está disponível sob consulta.
 

@@ -144,7 +144,7 @@ const metricas = [
   },
 ];
 
-const exits = ['Axado', 'Trustvox', 'ViaNuvem', 'Konduto', 'Getrak', 'GrandChef', 'Xtech Commerce', 'Supermercado Now'];
+const exits = site.exits;
 const clientes = ['Endemol Shine Brasil', 'Big Brother Brasil', 'Solides', 'Mastercard Agro', 'AgroSmart', 'Vila 11', 'Doctoralia'];
 
 const faq = [
@@ -180,7 +180,7 @@ const faq = [
 ---
 <BaseLayout
   title="Relações Públicas para Startups: pre-seed, seed e Series A"
-  description="O que a RP entrega por estágio, como medir sem inventar número e como a comunicação se conecta ao exit. A PiaR acompanhou 8 startups até lá desde 2013."
+  description={`O que a RP entrega por estágio, como medir sem inventar número e como a comunicação se conecta ao exit. A PiaR acompanhou ${site.exitsSupported} startups até lá desde ${site.foundingYear}.`}
   canonical={url}
 >
   <Fragment slot="head">
@@ -272,7 +272,7 @@ const faq = [
       /* ===========================================================
          seções base
          =========================================================== */
-      .section { padding-block: clamp(5rem, 10vw, 9rem); position: relative; }
+      .section { padding-block: var(--sec-pad); position: relative; }
       .section.paper { background: var(--paper); border-top: 1px solid var(--hairline); }
       .section.warm { background: var(--paper-warm); border-top: 1px solid var(--hairline); }
       .section.dark { background: var(--rp-ink); color: #fff; border-top: 1px solid rgba(255,255,255,.06); }

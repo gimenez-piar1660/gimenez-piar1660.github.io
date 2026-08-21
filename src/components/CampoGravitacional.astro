@@ -1,0 +1,464 @@
+---
+// CAMPO GRAVITACIONAL da home (a massa que viaja e a poeira que a orbita).
+//
+// Esta DESLIGADO por ora: a home renderiza sem ele. Para religar, basta
+// CAMPO_GRAVITACIONAL = true no topo de src/pages/index.astro. Nada mais.
+//
+// O que este componente assume da pagina que o inclui:
+//   .film                 o trecho que o campo serve de fundo (liga e desliga o loop)
+//   .fsec.light           as faixas claras, cuja banda creme e pintada AQUI no canvas
+//   #virada #climax       marcadores de inicio e fim do filme
+//   #prova #metodo        as outras faixas claras
+//   .f-h2 .f-lede etc     a coluna de leitura, que a bola nao pode encostar
+// Enquanto ele estiver fora, a faixa creme vem do CSS da propria pagina.
+//
+// Pendencias conhecidas de quando voltar (motivo de ter sido desligado):
+//   - o trajeto desenhado (outputs/home-full-ball-animation-path.png) pede ate 3px
+//     de deslocamento horizontal por px de rolagem. Com inercia, a bola fica ate
+//     ~670px atras do traco nas diagonais; sem inercia, ela teleporta entre quadros.
+//     Nenhum dos dois ficou fluido. O proximo passo seria diminuir a inclinacao das
+//     diagonais do desenho, nao mexer so na inercia.
+---
+
+{/* A marca vem antes do canvas e e sincrona de proposito: o Astro embarca o CSS de
+    componentes importados mesmo quando eles nao sao renderizados, entao todo o estilo
+    daqui fica trancado atras dela. Sem a marca, o CSS abaixo existe mas nao casa com
+    nada, e a home clara continua sendo pintada pelo CSS da propria pagina. */}
+<script is:inline>document.documentElement.classList.add('com-campo');</script>
+
+<canvas id="field-bg" aria-hidden="true"></canvas>
+
+<style is:global>
+  .com-campo #field-bg { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+  /* com o campo ligado, a banda creme e pintada no canvas (a massa aparece dentro
+     dela, invertida), entao a secao clara fica transparente para deixar ver */
+  .com-campo .film .fsec.light { background: transparent; }
+  /* Scrim atras do texto do clima: so no fallback, onde nao ha corredor livre e a
+     massa ainda passa por tras da leitura. Com corredor, a massa nao chega la. */
+  html.com-campo:not(.field-corridor) .f-climax .fwrap::before {
+    content: '';
+    position: absolute;
+    inset: -14% -6%;
+    z-index: -1;
+    background: radial-gradient(ellipse 78% 72% at 50% 50%, rgba(15,15,17,.85) 0%, rgba(15,15,17,.68) 42%, rgba(15,15,17,0) 76%);
+    pointer-events: none;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ===== CAMPO GRAVITACIONAL (gravityField): massa que viaja e atrai (gargantua, sem grid) =====
+        (function gravityField() {
+          var canvas = document.getElementById('field-bg');
+          if (!canvas) return;
+          var mctx = canvas.getContext('2d');
+          if (!mctx) return;
+          // camada separada so para o campo: o fundo (preto + faixas creme) fica no canvas
+          // principal e a massa vai nesta, para poder ser recortada nas zonas de leitura.
+          var deco = document.createElement('canvas');
+          var dctx = deco.getContext('2d');
+          var ctx = mctx;   // alvo de desenho corrente
+          var dpr = Math.min(window.devicePixelRatio || 1, 2);
+          var W = 0, H = 0;
+          function resize() {
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W * dpr; canvas.height = H * dpr; mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            deco.width = W * dpr; deco.height = H * dpr; dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            measureCorridor();
+            readDirty = true;
+          }
+          function smooth(t) { return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
+
+          /* ---- CORREDOR DA MASSA ---------------------------------------------
+             A massa ORBITA o bloco de conteudo pelas margens vazias da pagina, alternando
+             os lados: desce pela direita, cruza, sobe pela esquerda, e assim por diante ate
+             estacionar no centro, na linha do rodape. O trajeto nao foi inventado aqui: foi
+             desenhado a mao em cima do print da home inteira (outputs/home-full-ball-animation-path.png)
+             e lido ponto a ponto de la (ver ORBITA).
+             Duas medidas continuam vivas no layout, nunca chutadas: as margens em que a
+             orbita cabe (ela e reencaixada nelas em cada largura de tela) e a borda do
+             conteudo na altura da bola, que empurra a bola para fora se o trajeto a jogaria
+             em cima de texto. A POEIRA nao tem essa regra: ela orbita a bola e passa por
+             onde a bola passa.
+             Fallback: se a tela e estreita demais para haver margem (texto ocupando a
+             largura toda), volta o recorte por zona de leitura, que e o unico jeito de
+             manter o texto legivel quando nao ha espaco livre nenhum. */
+          var COL_SEL = 'main .f-h2, main .f-lede, main .f-eyebrow, main .exit-chip, main .f-cta';
+          var GAP = 28, EDGE = 34, MIN_MARGEM = 150;
+          var corr = false;          // ha margem para orbitar? senao, cai no recorte antigo
+          var colEls = [];
+          function measureCorridor() {
+            colEls = document.querySelectorAll(COL_SEL);
+            var right = 0, left = 1e9;
+            for (var ci0 = 0; ci0 < colEls.length; ci0++) {
+              var rc0 = colEls[ci0].getBoundingClientRect();
+              if (rc0.width < 2) continue;
+              if (rc0.right > right) right = rc0.right;
+              if (rc0.left < left) left = rc0.left;
+            }
+            // a coluna real do conteudo, para reencaixar o desenho nesta largura de tela.
+            // tem de ser a coluna PADRAO: a .narrow (a voz, o clima) e mais estreita e
+            // esticaria as margens, jogando a orbita para dentro da pagina.
+            var fw = document.querySelector('.film .fwrap:not(.narrow)');
+            if (fw) { var rf0 = fw.getBoundingClientRect(); colL = rf0.left; colR = rf0.right; }
+            else { colL = (W - Math.min(1240, W)) / 2; colR = W - colL; }
+            // so vale orbitar se sobra margem util no pior caso (o texto mais largo da pagina)
+            corr = right > 0 && (W - EDGE) - (right + GAP) >= MIN_MARGEM;
+            document.documentElement.classList.toggle('field-corridor', corr);
+            edgeDirty = true;
+            // as particulas se redistribuem (parts ainda nao existe na primeira medicao,
+            // que roda junto com o primeiro resize)
+            if (parts) for (var ci1 = 0; ci1 < parts.length; ci1++) parts[ci1].init = false;
+          }
+          /* CAIXAS DO CONTEUDO NA ALTURA DA BOLA. So a bola respeita isso: se o trajeto a
+             jogaria em cima de um bloco de prosa, ela escorrega para a beirada mais proxima
+             em vez de cruzar por dentro. Os cartoes ficam de fora dessa trava de proposito:
+             o desenho atravessa as grades nas diagonais entre um lobo e outro, e cartao tem
+             fundo proprio. Cache renovado quando o scroll suja. */
+          var edgeDirty = true, colRects = [];
+          function updateEdges() {
+            colRects.length = 0;
+            for (var ei = 0; ei < colEls.length; ei++) {
+              var r = colEls[ei].getBoundingClientRect();
+              if (r.width < 2 || r.bottom < -120 || r.top > H + 120) continue;
+              colRects.push(r.top, r.bottom, r.left, r.right);
+            }
+            edgeDirty = false;
+          }
+          // [esquerda, direita] do conteudo que cruza a altura y, ou null se nao ha nada la
+          function boundsAtY(y, r) {
+            var l = 1e9, d = -1e9, t = y - r - 20, b = y + r + 20;
+            for (var qi = 0; qi < colRects.length; qi += 4) {
+              if (colRects[qi] < b && colRects[qi + 1] > t) {
+                if (colRects[qi + 2] < l) l = colRects[qi + 2];
+                if (colRects[qi + 3] > d) d = colRects[qi + 3];
+              }
+            }
+            return d < 0 ? null : [l, d];
+          }
+
+          /* O TRAJETO DESENHADO. Lido do traco amarelo do print, reamostrado em 48 pontos:
+             posicao no filme (0 a 1) -> fracao da largura, na referencia de 1920. Os extremos
+             (0.037 e 0.948) caem nas margens vazias da coluna de conteudo. */
+          var ORBITA = [
+            0.851, 0.859, 0.853, 0.818, 0.727, 0.375, 0.161, 0.082, 0.046, 0.041, 0.066, 0.129,
+            0.277, 0.783, 0.899, 0.943, 0.940, 0.885, 0.736, 0.190, 0.072, 0.039, 0.067, 0.182,
+            0.702, 0.836, 0.885, 0.886, 0.844, 0.714, 0.214, 0.096, 0.046, 0.037, 0.063, 0.137,
+            0.296, 0.641, 0.790, 0.861, 0.899, 0.919, 0.925, 0.915, 0.889, 0.833, 0.528, 0.505
+          ];
+          // referencia do desenho: 1920 de largura, coluna de 1240 centrada
+          var REF_W = 1920, REF_L = 340, REF_R = 1580;
+          function orbitaEm(u) {
+            var t = (u < 0 ? 0 : u > 1 ? 1 : u) * (ORBITA.length - 1);
+            var i = Math.floor(t), f = t - i;
+            if (i >= ORBITA.length - 1) return ORBITA[ORBITA.length - 1];
+            var s = f * f * (3 - 2 * f);   // suaviza a passagem entre pontos da tabela
+            return ORBITA[i] + (ORBITA[i + 1] - ORBITA[i]) * s;
+          }
+          /* Reencaixa o desenho na tela atual: margem esquerda vira margem esquerda, coluna
+             vira coluna, margem direita vira margem direita. Em 1920 e identidade. Como a
+             coluna tem 1240px FIXOS, em telas menores as margens encolhem e a orbita encolhe
+             junto, ate virar so um gingado ao lado do texto. */
+          var colL = REF_L, colR = REF_R;
+          function paraTela(xf) {
+            var x = xf * REF_W;
+            if (x <= REF_L) return colL * (x / REF_L);
+            if (x >= REF_R) return colR + (W - colR) * ((x - REF_R) / (REF_W - REF_R));
+            return colL + (colR - colL) * ((x - REF_L) / (REF_R - REF_L));
+          }
+
+          /* ---- ZONA DE LEITURA (fallback, so sem corredor) --------------------
+             A massa viaja pela pagina inteira e e apagada onde ha texto: passa pelas
+             areas pretas e nunca por cima da leitura.
+             As caixas sao remedidas so quando o scroll ou o resize sujam o cache. */
+          var READ_SEL = ['h1', 'h2', 'h3', '.f-eyebrow', '.f-lede', '.n-title', '.n-sub', '.sn', '.sl', '.exit-chip', '.lp'];
+          var CARD_SEL = '.corpo-card, .forca, .board-card, .leader, .pep-vetor, .btn, .beam-btn, .glass-hero';
+          var PAD = 14, FEATHER = 30;
+          var FADE = [0.10, 0.14, 0.2, 0.28, 0.4, 0.55, 0.75, 0.9];   // rampa da borda macia
+          var readEls = [], readRects = [], readDirty = true;
+
+          function collectRead() {
+            readEls = [];
+            var all = document.querySelectorAll(READ_SEL.map(function (s) { return 'main ' + s; }).join(', '));
+            for (var i0 = 0; i0 < all.length; i0++) { if (!all[i0].closest(CARD_SEL)) readEls.push(all[i0]); }
+            readDirty = true;
+          }
+          function updateRects() {
+            readRects.length = 0;
+            for (var i0 = 0; i0 < readEls.length; i0++) {
+              var r = readEls[i0].getBoundingClientRect();
+              if (r.width < 2 || r.height < 2 || r.bottom < -FEATHER || r.top > H + FEATHER) continue;
+              readRects.push([r.left - PAD, r.top - PAD, r.width + PAD * 2, r.height + PAD * 2]);
+            }
+            readDirty = false;
+          }
+          function softRect(c, x, y, w, h, r) {
+            if (c.roundRect) { c.beginPath(); c.roundRect(x, y, w, h, r); return; }
+            c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+          }
+          function maskRead(c) {
+            if (!readRects.length) return;
+            c.save();
+            c.globalCompositeOperation = 'destination-out';
+            c.fillStyle = '#000';
+            for (var i0 = 0; i0 < readRects.length; i0++) {
+              var R = readRects[i0];
+              for (var s = 0; s < FADE.length; s++) {
+                var ins = FEATHER * (1 - s / FADE.length);
+                var w2 = R[2] - ins * 2, h2 = R[3] - ins * 2;
+                if (w2 <= 0 || h2 <= 0) continue;
+                c.globalAlpha = FADE[s];
+                softRect(c, R[0] + ins, R[1] + ins, w2, h2, 18);
+                c.fill();
+              }
+            }
+            c.restore();
+          }
+          collectRead();
+          window.addEventListener('load', function () { collectRead(); measureCorridor(); });
+          // Montserrat entrando troca a largura do texto: remede o corredor com a fonte real
+          if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureCorridor).catch(function () {});
+          window.addEventListener('scroll', function () { readDirty = true; edgeDirty = true; }, { passive: true });
+          window.addEventListener('resize', resize);
+          resize();
+
+          var viradaEl = document.getElementById('virada');
+          var climaxEl = document.getElementById('climax');
+          // faixas claras (a voz, a prova, o metodo): a animacao continua atras, invertendo a cor por banda
+          var lightEls = [viradaEl, document.getElementById('prova'), document.getElementById('metodo')].filter(Boolean);
+          var bands = [];
+          function isLight(yy) { for (var bi = 0; bi < bands.length; bi++) { if (yy >= bands[bi][0] && yy <= bands[bi][1]) return true; } return false; }
+          // lupa: os headlines do filme que a massa atravessa e acende
+          var lensEls = document.querySelectorAll('.f-h2');
+
+          /* A POEIRA ORBITA A MASSA. Antes ela era um campo espalhado pela tela, atraido
+             pelo nucleo e recortado numa faixa. Agora cada particula tem raio, angulo e
+             velocidade proprios em volta do nucleo: a nuvem viaja junto com a bola, entao
+             nao precisa de recorte nenhum e nunca se desgarra dela. Ela pode passar por
+             cima de texto; a regra de nao encostar vale so para a bola. */
+          var N = 150, parts = [];
+          for (var i = 0; i < N; i++) parts.push({
+            rr: 0.16 + ((i * 37) % 100) / 100 * 0.84,     // raio dentro da nuvem
+            ang: ((i * 131) % 628) / 100,                 // angulo inicial
+            sp: 0.10 + ((i * 53) % 100) / 100 * 0.45,     // velocidade angular propria
+            ph: ((i * 71) % 100) / 100 * 6.28,            // fase do respiro radial
+            m: 0.4 + ((i * 97) % 100) / 130,
+            init: false
+          });
+
+          // os corpos que orbitam a massa (o mercado): comprador, investidor, lideranca, talento
+          var bodies = [
+            { ang: 0.3, rr: 0.26, sp: 0.40, col: [254, 209, 54] },
+            { ang: 1.9, rr: 0.36, sp: -0.30, col: [235, 196, 86] },
+            { ang: 3.3, rr: 0.30, sp: 0.24, col: [228, 205, 150] },
+            { ang: 4.8, rr: 0.40, sp: -0.18, col: [255, 232, 150] }
+          ];
+          // Sem corredor (fallback): a massa viaja pela homepage inteira (esquerda, direita,
+          // muda o angulo), cruzando a leitura, e o recorte por zona de texto a segura. [scrollP, x, y].
+          // o ultimo ponto desce ao centro-baixo (nao ao meio da tela) pelo mesmo motivo do S:
+          // e ali que a linha branca alcanca a bola, entao o pouso tambem vale sem corredor.
+          var PATH = [[0.00, 0.64, 0.46], [0.38, 0.66, 0.44], [0.55, 0.30, 0.52], [0.70, 0.68, 0.46], [0.85, 0.36, 0.50], [1.00, 0.50, 0.95]];
+          function corePath(pp) { var a = PATH[0], b = PATH[PATH.length - 1]; for (var ci = 0; ci < PATH.length - 1; ci++) { if (pp >= PATH[ci][0] && pp <= PATH[ci + 1][0]) { a = PATH[ci]; b = PATH[ci + 1]; break; } } var span = (b[0] - a[0]) || 1, lt = smooth((pp - a[0]) / span); return [a[1] + (b[1] - a[1]) * lt, a[2] + (b[2] - a[2]) * lt]; }
+          // Altura da bola na tela. O desenho e um mapa da PAGINA, entao ele diz onde ela
+          // esta na horizontal em cada ponto do filme, mas nao a que altura da tela ela
+          // anda: isso segue como estava, descendo de 0.20 a 0.88 ao longo do filme, para o
+          // pouso cair na vista do clima, quando a linha branca alcanca a bola.
+          function alturaNaTela(pp) { return 0.20 + 0.68 * pp; }
+          // o trajeto e cadenciado pelo filme, nao pela pagina toda: o hero come metade do
+          // scroll e a massa so aparece depois dele.
+          var filmProg = document.querySelector('.film');
+          var fp = 0, fBottom = 0, fTopo = 0, fAlt = 1;
+          function readFilm() {
+            if (!filmProg) { fp = scrollP; fBottom = H; fTopo = 0; fAlt = 1; return; }
+            var rf = filmProg.getBoundingClientRect(), spanF = rf.height - H;
+            var pf = spanF > 0 ? -rf.top / spanF : 0;
+            fp = pf < 0 ? 0 : pf > 1 ? 1 : pf;
+            fBottom = rf.bottom; fTopo = rf.top; fAlt = rf.height || 1;
+          }
+          /* ---- A ATERRISSAGEM -------------------------------------------------
+             A pista e a LINHA onde o filme preto acaba e o rodape branco comeca,
+             nunca a beira da tela. A massa desce com o S; a linha branca sobe com o
+             scroll ate encostar nela; do toque em diante a bola anda COLADA na linha,
+             sempre com metade aparecendo, e corre para o centro, onde estaciona.
+             Como ela so nao pode passar por baixo da linha (o min abaixo), o pouso
+             acontece sozinho, sem numero magico de scroll e em qualquer altura de tela.
+             O alinhamento comeca um pouco antes do toque (LAND_LEAD), entao ela ja
+             chega planando para o lugar em vez de virar de lado depois de pousar. */
+          var LAND_LEAD = 0.40, LAND_SPAN = 0.60, coreRNow = 0;
+          function landedPos(base) {
+            var ySpx = base[1] * H;
+            var yPx = Math.min(ySpx, fBottom);   // a linha nunca deixa a bola passar por baixo
+            // a vontade de ir para o centro comeca cedo; quem segura e o texto ao lado.
+            var land = smooth((ySpx + LAND_LEAD * H - fBottom) / (LAND_SPAN * H || 1));
+            if (land <= 0) return base;
+            // (nao precisa desviar de texto aqui: a trava dura roda depois, ja na posicao
+            // desenhada, e o fim do trajeto ja vem para o centro por conta do desenho)
+            return [base[0] + (0.5 - base[0]) * land, yPx / (H || 1)];
+          }
+          // arranca ja no ponto de partida do desenho, em vez de vir varrendo a tela
+          var cs = corr ? [paraTela(orbitaEm(0)) / W, 0.20] : corePath(0), coreX = cs[0], coreY = cs[1];
+          var T = 0, scrollP = 0, running = false;
+
+          function frame() {
+            T += prefersReduced ? 0 : 0.006;
+            var sc = document.documentElement;
+            scrollP = sc.scrollTop / ((sc.scrollHeight - sc.clientHeight) || 1);
+            var tr = 0; if (viradaEl) { var rv = viradaEl.getBoundingClientRect(); tr = 1 - (rv.top / (H || 1)); } tr = smooth(tr < 0 ? 0 : tr > 1 ? 1 : tr);
+            var fin = 0; if (climaxEl) { var rc = climaxEl.getBoundingClientRect(); fin = 1 - (rc.top / ((H * 0.75) || 1)); } fin = smooth(fin < 0 ? 0 : fin > 1 ? 1 : fin);
+
+            var base = Math.min(W, H);
+            // a massa cresce GRADATIVAMENTE com o scroll (nao em degrau), e estoura no clima
+            var mass = 0.5 + tr * 0.6 + scrollP * 1.7 + fin * 0.7;
+            var coreR = tr > 0.01 ? 5 + mass * 4 + fin * fin * 42 : 0;
+            coreRNow = coreR;
+
+            if (corr && edgeDirty) updateEdges();
+
+            // a massa viaja pelo scroll; a inercia do lerp da peso ao corpo
+            readFilm();
+            var basePos;
+            if (corr) {
+              /* onde o desenho manda a massa estar agora. O traco e um mapa da PAGINA, entao
+                 a leitura e feita no ponto do FILME em que a bola esta: a altura dela na tela,
+                 medida a partir do topo do filme e dividida pela altura dele. Assim o mesmo
+                 desenho serve para telas onde o texto quebra diferente e o filme fica mais alto. */
+              var altura = alturaNaTela(fp);
+              basePos = [paraTela(orbitaEm((altura * H - fTopo) / fAlt)) / W, altura];
+            } else {
+              basePos = corePath(scrollP);
+            }
+            var cp = landedPos(basePos);
+            // depois de encostar na linha ela para de balancar e anda colada nela (que sobe
+            // com a pagina): sem enrijecer o lerp, a inercia deixaria a bola fora do lugar.
+            var pk = smooth((basePos[1] * H - fBottom) / 40);
+            // a inercia de base e maior na orbita: o alvo corre ate 3px de x por px de
+            // rolagem, e com 0.06 a bola ficava centenas de px atras do trajeto desenhado.
+            // Ainda arrasta o suficiente para ter peso, sem virar uma bola presa no scroll.
+            var lerpK = prefersReduced ? 1 : (corr ? 0.16 : 0.06) + (0.9 - (corr ? 0.16 : 0.06)) * pk;
+            coreX += (cp[0] - coreX) * lerpK; coreY += (cp[1] - coreY) * lerpK;
+            var bx = coreX * W, by = coreY * H + Math.sin(T * 0.2) * H * 0.012 * (1 - pk);
+            /* A UNICA trava da bola: nao encostar em texto. Vale na posicao DESENHADA (nao no
+               alvo), porque a inercia atrasa a bola e sem isso ela cortaria o canto do bloco
+               enquanto persegue o alvo. Se o trajeto a joga em cima de um bloco, ela escorrega
+               para a beirada mais proxima. Como o desenho so raspa a prosa em dois pontos, na
+               pratica isso e um empurraozinho local, nao um desvio de rota. */
+            if (corr && coreR > 0) {
+              var lim = boundsAtY(by, coreR);
+              if (lim) {
+                var esq = lim[0] - GAP - coreR, dir = lim[1] + GAP + coreR;
+                if (bx > esq && bx < dir) bx = (bx - esq < dir - bx) ? esq : dir;
+              }
+            }
+
+            // recalcula as faixas claras neste frame (em coordenadas da viewport, como o canvas fixo)
+            bands.length = 0;
+            for (var li0 = 0; li0 < lightEls.length; li0++) { var rb = lightEls[li0].getBoundingClientRect(); if (rb.bottom > 0 && rb.top < H) bands.push([rb.top, rb.bottom]); }
+            var coreLight = isLight(by);
+
+            // fundo (preto + faixas creme) no canvas principal: a mascara de leitura nao o toca
+            ctx = mctx;
+            mctx.clearRect(0, 0, W, H);
+            mctx.fillStyle = '#000000'; mctx.fillRect(0, 0, W, H);
+            // pinta a banda creme exatamente onde a faixa clara esta (a massa segue atras, invertida)
+            for (var bi2 = 0; bi2 < bands.length; bi2++) { mctx.fillStyle = '#fafafa'; mctx.fillRect(0, bands[bi2][0], W, bands[bi2][1] - bands[bi2][0]); }
+            // Na orbita nao ha recorte nenhum (a poeira anda com a bola), entao tudo vai
+            // direto no fundo. So o fallback ainda precisa da camada separada, que e
+            // recortada nas zonas de leitura antes de entrar.
+            if (!corr) {
+              if (readDirty) updateRects();
+              ctx = dctx;
+              dctx.clearRect(0, 0, W, H);
+            }
+
+            // a nuvem: raio em px, cresce um pouco no clima e acompanha o tamanho da tela
+            var halo = (0.28 * base) * (0.8 + fin * 0.45);
+            var orbTilt = 0.22 + 0.5 * Math.sin(scrollP * Math.PI);
+
+            if (tr > 0.01) {
+              // a poeira ORBITANDO o nucleo: posicao em coordenadas locais da bola, entao a
+              // nuvem viaja com ela sem lag e sem precisar de recorte nenhum.
+              for (var i2 = 0; i2 < parts.length; i2++) {
+                var p = parts[i2];
+                var pa = p.ang + T * p.sp;
+                var praio = halo * p.rr * (0.92 + 0.08 * Math.sin(T * 0.6 + p.ph));
+                var pxx = bx + Math.cos(pa) * praio;
+                var pyy = by + Math.sin(pa) * praio * orbTilt;
+                // quanto mais perto do nucleo, mais quente; a borda da nuvem esmaece
+                var heat = (1 - p.rr) * (0.4 + tr * 0.9);
+                var fade = (1 - p.rr * 0.75) * tr;
+                ctx.beginPath(); ctx.arc(pxx, pyy, 1 + p.m * 1.3, 0, Math.PI * 2);
+                if (isLight(pyy)) {
+                  // sobre o creme: pontos escuros (o mercado difuso, legivel no branco)
+                  ctx.fillStyle = 'rgba(20,20,24,' + ((0.18 + 0.32 * heat) * fade).toFixed(3) + ')';
+                } else {
+                  var cr = Math.round(91 + 163 * heat), cg = Math.round(123 + 86 * heat), cb = Math.round(154 - 100 * heat);
+                  ctx.fillStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + ((0.3 + 0.5 * heat) * fade).toFixed(3) + ')';
+                }
+                ctx.fill();
+              }
+            }
+
+            // os corpos do mercado ao redor da massa (sem arcos de orbita; o plano inclina e gira com o scroll)
+            if (tr > 0.02) {
+              var orbRot = scrollP * 1.2, cR = Math.cos(orbRot), sR = Math.sin(orbRot);
+              // as orbitas se medem pela nuvem: os corpos giram junto com a massa
+              var orbBase = halo * 1.15;
+              for (var b2 = 0; b2 < bodies.length; b2++) {
+                var bd = bodies[b2], a = bd.ang + T * bd.sp;
+                var orbR = bd.rr * orbBase * (1 - fin * 0.8);
+                var ox = Math.cos(a) * orbR, oy = Math.sin(a) * orbR * orbTilt;
+                var mkx = bx + ox * cR - oy * sR, mky = by + ox * sR + oy * cR;
+                var rad = (2.5 + fin * 4) * tr + 0.8;
+                ctx.beginPath(); ctx.arc(mkx, mky, rad, 0, Math.PI * 2);
+                if (isLight(mky)) {
+                  // sobre o creme: corpos em ambar profundo (legivel no branco)
+                  ctx.fillStyle = 'rgba(224,180,32,' + (tr * 0.95).toFixed(3) + ')';
+                } else {
+                  ctx.fillStyle = 'rgba(' + bd.col[0] + ',' + bd.col[1] + ',' + bd.col[2] + ',' + (tr * 0.92).toFixed(3) + ')';
+                }
+                ctx.fill();   // matte: sem glow nos corpos
+              }
+            }
+
+            // o nucleo (a marca): cresce gradativamente com o scroll e vira a bola amarela no fim
+            // (placeholder pronto para o "PiaR dentro da bola" que o Danilo refina no Higgsfield)
+            // a massa matte (sem halo/glow): amarela sobre o preto; sobre o creme recua semi-transparente
+            // pra ficar atras do texto sem competir (titulos agora sem lupa).
+            var coreFill = coreLight ? 'rgba(15,15,17,' + (tr * 0.42).toFixed(3) + ')' : 'rgba(254,219,80,' + Math.min(1, tr * 1.2).toFixed(3) + ')';
+            // por ultimo, para ficar por cima da propria poeira
+            if (coreR > 0) { ctx.beginPath(); ctx.arc(bx, by, coreR, 0, Math.PI * 2); ctx.fillStyle = coreFill; ctx.fill(); }
+
+            // LUPA removida (sem brilho nos titulos): os headlines ficam na cor base, animacao sempre atras.
+
+            // fallback: recorta a camada nas zonas de leitura e joga sobre o fundo
+            if (!corr) { maskRead(dctx); mctx.drawImage(deco, 0, 0, W, H); ctx = mctx; }
+
+            if (running) requestAnimationFrame(frame);
+          }
+          if (prefersReduced) {
+            // sem loop perpétuo: redesenha só quando o usuário rola ou redimensiona
+            // (o campo é fundo das faixas claras, então precisa seguir o scroll para
+            //  a banda creme continuar atrás do texto escuro; só não anima sozinho)
+            frame();
+            var queued = false;
+            var onScrollRM = function () { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; frame(); }); } };
+            window.addEventListener('scroll', onScrollRM, { passive: true });
+            window.addEventListener('resize', onScrollRM, { passive: true });
+          } else {
+            // só anima enquanto o filme (o conteúdo que o campo serve de fundo) está na viewport
+            var filmEl = document.querySelector('.film');
+            var play = function () { if (!running) { running = true; requestAnimationFrame(frame); } };
+            if (filmEl && 'IntersectionObserver' in window) {
+              var fio = new IntersectionObserver(function (ents) {
+                if (ents[0].isIntersecting) play(); else running = false;
+              }, { rootMargin: '300px' });
+              fio.observe(filmEl);
+            } else {
+              play();
+            }
+          }
+        })();
+  });
+</script>
