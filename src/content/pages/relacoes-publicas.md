@@ -86,7 +86,7 @@ A decisão de contratar uma agência de PR costuma ser feita por reputação de 
 
 Trabalho de comunicação se mede por resultado. Alguns exemplos do que a PiaR conduz.
 
-Outros clientes reais ilustram o alcance do trabalho: Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade da casa, com protocolo de resposta, mapa de stakeholders e controle da narrativa quando o tempo conta.
+Outros clientes reais ilustram o alcance do trabalho: Endemol Shine Brasil (Big Brother Brasil), Solides, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade da casa, com protocolo de resposta, mapa de stakeholders e controle da narrativa quando o tempo conta.
 
 De fintechs a healthtechs, marcas que precisam de cobertura qualificada escolhem a PiaR para conduzir a comunicação, entre elas Sambatech, Liga Ventures, Printi, Qranio, Unifisa, Livup, Doctoralia, Solides, Corning, PagBrasil, Sidia, Investidores.vc, FluencyPass, Layer Up, Wylinka, Inovativa e Unlimitail. A relação completa de marcas atendidas está disponível sob consulta.
 

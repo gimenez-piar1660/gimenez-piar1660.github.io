@@ -69,6 +69,10 @@ const lideranca = [
   { nome: site.founder.name, papel: 'Fundador e CEO', foto: '/brand/Brunotrofeu.webp', flip: true, desc: 'Dirige a estratégia desde 2013. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
   { nome: 'Renniê Paro', papel: 'COO', foto: '/brand/team/rennie.png', flip: false, desc: 'Responde pela operação e por manter a mesma qualidade de entrega em todas as frentes da casa.' },
   { nome: 'Gabriela Calencautcy', papel: 'Projetos Especiais', foto: '/brand/team/gabriela.png', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
+  // Sem foto por enquanto: quem não tem `foto` cai no bloco de iniciais.
+  { nome: 'Bella Cascione', papel: 'Gerente de núcleo', foto: '', flip: false, desc: '' },
+  { nome: 'Ana Flávia', papel: 'Marketing', foto: '', flip: false, desc: '' },
+  { nome: 'Danilo Lastrucci', papel: 'Vendas & Business', foto: '', flip: false, desc: '' },
 ];
 
 // PiaRBoard: o dashboard proprietario (a "caixa-preta aberta"). Dados reais da proposta (Adaflow, slides 6 e 7).
@@ -159,7 +163,10 @@ const servicosLd = [
       @media (max-width: 768px) { .client-logo { height: 56px; margin-right: 2.25rem; } }
 
       /* ===== HERO video-scrub (claro, 5 atos) ===== */
-      #narrative-hero { position: relative; width: 100vw; height: 500vh; background: #fafafa; z-index: 10; }
+      /* 440vh, nao 500: o video terminava em 88% do pin e sobravam 12% (60vh) de
+         scroll com o microfone ja parado. Cortando o pin na mesma proporcao, o
+         filme roda igual e o proximo giro da roda ja solta a pagina. */
+      #narrative-hero { position: relative; width: 100vw; height: 440vh; background: #fafafa; z-index: 10; }
       .hero-sticky { position: sticky; top: 0; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fafafa; }
 
       .video-scrub { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 10; will-change: transform; transform: translateZ(0); }
@@ -195,8 +202,11 @@ const servicosLd = [
 
       /* ===== FILME DARK ===== */
       .film { position: relative; z-index: 1; }
-      .fsec { position: relative; z-index: 1; padding-block: var(--sec-pad); color: #fff; overflow: hidden; }
-      .fsec.tight { padding-block: var(--sec-pad); }
+      /* A home roda com METADE do ritmo vertical do resto do site: o vao entre duas
+         sections cai de 2x --sec-pad (224px no desktop) para 1x (112px). O token global
+         em tokens.css nao muda; as outras paginas seguem no ritmo cheio. */
+      .fsec { position: relative; z-index: 1; padding-block: calc(var(--sec-pad) / 2); color: #fff; overflow: hidden; }
+      .fsec.tight { padding-block: calc(var(--sec-pad) / 2); }
       .fwrap { max-width: 1240px; margin-inline: auto; padding-inline: clamp(1.25rem, 4vw, 2.5rem); position: relative; z-index: 2; }
       .fwrap.narrow { max-width: 880px; }
       .f-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.6); }
@@ -257,6 +267,32 @@ const servicosLd = [
       .board-card .b-ic { display: inline-flex; width: 44px; height: 44px; border-radius: 12px; align-items: center; justify-content: center; background: rgba(224,180,32,.14); color: var(--accent-deep); font-size: 1.35rem; }
       .board-card h3 { font-size: 1.1rem; font-weight: 600; letter-spacing: -.02em; color: var(--primary); margin: .8rem 0 0; }
       .board-card p { font-size: .9rem; line-height: 1.5; color: var(--text-muted); margin: .45rem 0 0; }
+      /* PiaRBoard - figura de dashboard, portada de outputs/lp-piar-essencial.html.
+         Painel escuro sobre a faixa clara: le como print do produto, nao como card. */
+      .board-topo { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+      @media (min-width: 1040px) { .board-topo { grid-template-columns: 1fr 1.05fr; gap: clamp(2.5rem, 4vw, 3.5rem); } }
+      .board-topo .f-h2 { max-width: 14ch; }
+      .board-topo .f-lede { max-width: 46ch; }
+      .board-mock { background: #08080A; border: 1px solid rgba(255,255,255,.18); border-radius: var(--radius-xl); padding: 1.5rem; box-shadow: 0 32px 80px rgba(0,0,0,.35); }
+      .bm-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1.1rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+      .bm-title { font-family: var(--font-display); font-size: .92rem; font-weight: 700; letter-spacing: -.01em; color: #fff; }
+      .bm-live { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+      .bm-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: bm-blink 1.8s ease-in-out infinite; }
+      @keyframes bm-blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+      .bm-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: 1.1rem 0; }
+      .bm-kpi { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: .8rem .85rem; }
+      .bm-kpi .k-l { display: block; font-family: var(--font-mono); font-size: .54rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+      .bm-kpi .k-v { display: block; margin-top: .4rem; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -.03em; color: #fff; }
+      .bm-kpi .k-d { display: block; margin-top: .15rem; font-family: var(--font-mono); font-size: .58rem; color: var(--accent); }
+      .bm-chart { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 1rem; }
+      .bm-chart svg { width: 100%; height: 96px; display: block; }
+      .bm-bars { display: grid; gap: .55rem; margin-top: 1rem; }
+      .bm-bar { display: grid; grid-template-columns: 88px 1fr 34px; align-items: center; gap: .7rem; }
+      .bm-bar .b-l { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .bm-bar .b-t { height: 7px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; }
+      .bm-bar .b-f { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #E9BC1F, var(--accent)); }
+      .bm-bar .b-v { font-family: var(--font-mono); font-size: .6rem; color: rgba(255,255,255,.75); text-align: right; }
+      .bm-legend { margin-top: 1rem; font-family: var(--font-mono); font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.3); }
       .board-link { display: inline-flex; align-items: center; gap: .5rem; margin-top: 2rem; font-size: .92rem; font-weight: 600; color: var(--accent-deep); text-decoration: none; }
       .board-link iconify-icon { transition: transform .4s var(--ease-out-expo); }
       .board-link:hover iconify-icon { transform: translateX(4px); }
@@ -313,12 +349,19 @@ const servicosLd = [
       .leader-photo { aspect-ratio: 1/1; overflow: hidden; background: #0d0f16; }
       .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; filter: grayscale(.15) contrast(1.02); }
       .leader-photo img.flip { transform: scaleX(-1); }
+      /* Sem foto: o quadrado vira as iniciais, no mesmo 1/1 e no mesmo fundo, para
+         a grade nao desalinhar nem parecer imagem quebrada. */
+      .leader-photo:has(.leader-iniciais) { display: grid; place-items: center; }
+      .leader-iniciais {
+        font-family: var(--font-display); font-weight: 800; font-size: clamp(2.6rem, 6vw, 4rem);
+        letter-spacing: -.04em; color: rgba(255,255,255,.14); user-select: none;
+      }
       .leader h3 { font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; margin: 1rem 1.4rem 0; color: #fff; }
       .leader .lp { display: block; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 1rem 1.4rem 0; }
       .leader p { font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.6); margin: .5rem 1.4rem 0; }
 
       /* climax + CTA */
-      .f-climax { text-align: center; padding-block: var(--sec-pad); }
+      .f-climax { text-align: center; padding-block: calc(var(--sec-pad) / 2); }
       .f-climax .f-h2 { margin-inline: auto; max-width: 24ch; }
       .f-climax .f-lede { margin-inline: auto; }
       /* (o scrim atras do texto do clima mora no CampoGravitacional: ele so existe para
@@ -329,7 +372,7 @@ const servicosLd = [
 
       @media (max-width: 768px) {
         .glass-hero { padding: 1.5rem 1.75rem; }
-        #narrative-hero { height: 400vh; }
+        #narrative-hero { height: 352vh; }
         /* No celular a faixa de 60vw seria estreita demais: o texto volta a usar a largura do card. */
         .n-title, .n-sub { max-width: 100%; }
       }
@@ -468,8 +511,8 @@ const servicosLd = [
         <div class="fwrap">
           <div class="reveal">
             <span class="f-eyebrow"><span class="dot"></span>A gravidade da marca</span>
-            <h2 class="f-h2">Toda marca quer ser desejada. Poucas entendem que desejo é gravidade:<span class="f-h2-beat">Quanto mais massa uma marca acumula, menos ela precisa correr, porque o mercado passa a entrar na órbita dela.</span></h2>
-            <p class="f-lede">Há {site.yearsOperating} anos construímos esse tipo de gravidade, marca por marca. Já são mais de 470 empresas ajudadas a alcançar o ponto em que comprador, investidor, talento e imprensa chegam naturalmente, sem precisar ser chamados.</p>
+            <h2 class="f-h2">Toda marca quer ser desejada. Poucas entendem que desejo é gravidade.<span class="f-h2-beat">Quanto mais massa uma marca acumula, menos ela precisa correr, porque o mercado passa a entrar na órbita dela.</span></h2>
+            <p class="f-lede">Há {site.yearsOperating} anos construímos esse tipo de gravidade, marca por marca. Já são mais de 470 empresas atendidas até alcançarem o ponto em que comprador, investidor, talento e imprensa chegam naturalmente, sem precisar ser chamados.</p>
           </div>
           <div class="corpos">
             {corpos.map((c) => (
@@ -555,11 +598,15 @@ const servicosLd = [
           </div>
           <div class="leaders">
             {lideranca.map((p, i) => (
-              <div class:list={['leader', 'reveal', i === 1 && 'delay-100', i === 2 && 'delay-200']}>
-                <div class="leader-photo"><img src={withBase(p.foto)} class:list={[p.flip && 'flip']} loading="lazy" alt={`${p.nome}, ${p.papel} da PiaR Group`} /></div>
+              <div class:list={['leader', 'reveal', i % 3 === 1 && 'delay-100', i % 3 === 2 && 'delay-200']}>
+                <div class="leader-photo">
+                  {p.foto
+                    ? <img src={withBase(p.foto)} class:list={[p.flip && 'flip']} loading="lazy" alt={`${p.nome}, ${p.papel} da PiaR Group`} />
+                    : <span class="leader-iniciais" aria-hidden="true">{p.nome.split(' ').map((n) => n[0]).slice(0, 2).join('')}</span>}
+                </div>
                 <span class="lp">{p.papel}</span>
                 <h3>{p.nome}</h3>
-                <p>{p.desc}</p>
+                {p.desc && <p>{p.desc}</p>}
               </div>
             ))}
           </div>
@@ -569,11 +616,55 @@ const servicosLd = [
       <!-- 9 · TRANSPARÊNCIA · O PIARBOARD (a caixa-preta aberta) -->
       <section class="fsec light" id="metodo">
         <div class="fwrap">
-          <div class="reveal" style="max-width:62ch">
-            <span class="f-eyebrow"><span class="dot"></span>O PiaRBoard</span>
-            <h2 class="f-h2">Transparência é inegociável.</h2>
-            <p class="f-lede">A maioria das agências entrega o resultado e esconde o caminho. Abrimos a caixa-preta: o PiaRBoard é o nosso dashboard proprietário, que mostra em tempo real cada passo até a publicação.</p>
+          <!-- Topo: o texto a esquerda, a figura do PiaRBoard a direita. Os seis
+               cards descem para a largura inteira, logo abaixo. -->
+          <div class="board-topo">
+            <div class="reveal">
+              <span class="f-eyebrow"><span class="dot"></span>O PiaRBoard</span>
+              <h2 class="f-h2">Transparência é inegociável.</h2>
+              <p class="f-lede">A maioria das agências entrega o resultado e esconde o caminho. Abrimos a caixa-preta: o PiaRBoard é o nosso dashboard proprietário, que mostra em tempo real cada passo até a publicação.</p>
+            </div>
+
+            <div class="board-mock reveal delay-100" role="figure" aria-label="Figura ilustrativa do painel PiaRBoard, com indicadores, curva de mencoes e ranking de canais">
+              <div class="bm-top">
+                <span class="bm-title">PiaRBoard</span>
+                <span class="bm-live">Ao vivo</span>
+              </div>
+
+              <div class="bm-kpis">
+                <div class="bm-kpi"><span class="k-l">Menções</span><span class="k-v">312</span><span class="k-d">+18% no mês</span></div>
+                <div class="bm-kpi"><span class="k-l">Alcance</span><span class="k-v">4,8 mi</span><span class="k-d">+7% no mês</span></div>
+                <div class="bm-kpi"><span class="k-l">Veículos</span><span class="k-v">47</span><span class="k-d">+5 novos</span></div>
+              </div>
+
+              <div class="bm-chart">
+                <svg viewBox="0 0 320 96" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="bmFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#FED136" stop-opacity=".38" />
+                      <stop offset="100%" stop-color="#FED136" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <g stroke="#FFFFFF" stroke-opacity=".07">
+                    <line x1="0" y1="24" x2="320" y2="24" /><line x1="0" y1="48" x2="320" y2="48" /><line x1="0" y1="72" x2="320" y2="72" />
+                  </g>
+                  <path d="M0 78 L40 72 L80 74 L120 58 L160 52 L200 34 L240 38 L280 20 L320 12 L320 96 L0 96 Z" fill="url(#bmFill)" />
+                  <path d="M0 78 L40 72 L80 74 L120 58 L160 52 L200 34 L240 38 L280 20 L320 12" fill="none" stroke="#FED136" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="320" cy="12" r="3.6" fill="#FED136" />
+                </svg>
+              </div>
+
+              <div class="bm-bars">
+                <div class="bm-bar"><span class="b-l">Imprensa</span><span class="b-t"><span class="b-f" style="width:88%"></span></span><span class="b-v">88</span></div>
+                <div class="bm-bar"><span class="b-l">Busca</span><span class="b-t"><span class="b-f" style="width:71%"></span></span><span class="b-v">71</span></div>
+                <div class="bm-bar"><span class="b-l">Respostas de IA</span><span class="b-t"><span class="b-f" style="width:54%"></span></span><span class="b-v">54</span></div>
+                <div class="bm-bar"><span class="b-l">Social</span><span class="b-t"><span class="b-f" style="width:39%"></span></span><span class="b-v">39</span></div>
+              </div>
+
+              <p class="bm-legend">Figura ilustrativa · valores de demonstração</p>
+            </div>
           </div>
+
           <div class="board">
             {piarboard.map((b, i) => (
               <div class:list={['board-card', 'reveal', i % 3 === 1 && 'delay-100', i % 3 === 2 && 'delay-200']}>
@@ -583,6 +674,7 @@ const servicosLd = [
               </div>
             ))}
           </div>
+
           <a href="/processos" class="board-link reveal delay-200">Ver como medimos<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
         </div>
       </section>
@@ -661,7 +753,7 @@ const servicosLd = [
           var applyScrub = function () {
             var dur = (!Number.isNaN(video.duration) && video.duration > 0) ? video.duration : 10;
             var state = { target: 0, current: 0 };
-            ScrollTrigger.create({ trigger: '#narrative-hero', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: function (self) { state.target = dur * Math.min(self.progress / 0.88, 1); } });
+            ScrollTrigger.create({ trigger: '#narrative-hero', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: function (self) { state.target = dur * self.progress; } });
             var rafId = null; var ease = 0.09;
             var tick = function () { if (video.readyState >= 2) { state.current += (state.target - state.current) * ease; if (Math.abs(state.target - state.current) < 0.002) state.current = state.target; try { video.currentTime = state.current; } catch (e) {} } rafId = requestAnimationFrame(tick); };
             tick();
@@ -697,7 +789,7 @@ const servicosLd = [
         ob.observe(el);
       });
 
-      // parallax scrub (Mastercard) nos ghost-words
+      // parallax scrub nos ghost-words
       if (!prefersReduced && window.gsap && window.ScrollTrigger) {
         window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
           var v = parseFloat(el.getAttribute('data-parallax-y')) || -12;

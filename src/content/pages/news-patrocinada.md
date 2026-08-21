@@ -116,7 +116,7 @@ Na prática, isso quer dizer: etiqueta no topo, linguagem inequívoca, e nada de
 
 ### Como a PiaR trata conteúdo pago
 
-A PiaR é uma agência de comunicação em São Paulo desde 2013, com trabalho de relações com a imprensa para clientes reais como Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).
+A PiaR é uma agência de comunicação em São Paulo desde 2013, com trabalho de relações com a imprensa para clientes reais como Endemol Shine Brasil (Big Brother Brasil), Solides, AgroSmart, Vila 11 e Doctoralia. Bruno Pinheiro foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).
 
 Nossa posição sobre news patrocinada é consistente com a metodologia PEP e com o processo que inclui revisão jurídica: paga complementa earned media, com sinalização clara, e nunca substitui o trabalho editorial. Recusamos o disparo em massa. A pauta certa vai para a redação certa, e o formato pago entra quando ele resolve um problema que a mídia espontânea não resolve. A gestão de crise é uma capacidade que sustenta esse trabalho quando a pauta exige resposta rápida e coordenada.
 

@@ -650,7 +650,7 @@ const faq = [
         if (bar) bar.style.width = p + '%';
       }, { passive: true });
 
-      /* ---- parallax de profundidade (nó Mastercard) ---- */
+      /* ---- parallax de profundidade ---- */
       if (!prefersReduced && window.gsap && window.ScrollTrigger) {
         window.gsap.utils.toArray('[data-parallax-y]').forEach(function (el) {
           var yp = parseFloat(el.getAttribute('data-parallax-y')) || 0;

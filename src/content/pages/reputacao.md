@@ -54,7 +54,7 @@ A PiaR acompanha startups e empresas de tecnologia desde 2013 e apoiou 11 startu
 
 Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018). A operação é conduzida com Renniê Paro (COO) e Gabriela Calencautcy (projetos especiais).
 
-Entre os clientes que ilustram o histórico da PiaR estão Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade da frente de reputação, com protocolo definido antes da crise e não improvisado sob pressão.
+Entre os clientes que ilustram o histórico da PiaR estão Endemol Shine Brasil (Big Brother Brasil), Solides, AgroSmart, Vila 11 e Doctoralia. A gestão de crise é uma capacidade da frente de reputação, com protocolo definido antes da crise e não improvisado sob pressão.
 
 A diferença para um SaaS de monitoramento é simples: o painel mostra a menção; nós mudamos o que está escrito. E a diferença para uma assessoria que só dispara release é a mesma da Home: começamos pela pergunta de quem precisa ouvir a sua história e por quê. Disparo em massa não constrói reputação, gera ruído, e a PiaR não trabalha assim.
 

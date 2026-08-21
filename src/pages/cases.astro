@@ -48,18 +48,18 @@ const trabalhos = [
     setor: 'Tecnologia · gestão de pessoas',
     desc: 'Comunicação para uma empresa de tecnologia de gestão de pessoas, com produção editorial e relação com a imprensa.',
     icon: 'solar:users-group-rounded-line-duotone',
+    // Quando há `foto`, ela substitui o ícone na capa do card. O ícone fica como
+    // fallback para os cards que ainda não têm imagem.
+    foto: '/brand/clients/photos/ale-garcia-e-monica-hauck.png',
+    fotoAlt: 'Ale Garcia e Mônica Hauck, fundadores da Solides',
   },
   {
     cliente: 'Endemol Shine Brasil / Big Brother Brasil',
     setor: 'Entretenimento',
     desc: 'Trabalho de comunicação ligado a uma das maiores operações de entretenimento do país, em um contexto de alta exposição e tempo curto de resposta.',
     icon: 'solar:videocamera-line-duotone',
-  },
-  {
-    cliente: 'Mastercard Agro',
-    setor: 'Meios de pagamento · agro',
-    desc: 'Comunicação na interseção entre meios de pagamento e agronegócio, conectando uma marca global a uma pauta setorial específica.',
-    icon: 'solar:card-line-duotone',
+    foto: '/brand/clients/photos/endemol-Fernando-e-Nani-1536x1152.jpeg',
+    fotoAlt: 'Fernando e Nani, da Endemol Shine Brasil',
   },
   {
     cliente: 'AgroSmart',
@@ -90,6 +90,145 @@ const roster = [
 
 // Exits nomeados: fonte única em site.exits (site.exitsSupported conta).
 const exits = site.exits;
+
+// Os 11 exits, um a um, com a notícia da venda como lastro. Apurado em 20/08/2026.
+// Regra: nada aqui pode ir além do que a matéria diz. Onde o valor não foi divulgado,
+// o campo fica vazio e o slide simplesmente não mostra valor.
+const exitCases = [
+  {
+    nome: 'Axado',
+    setor: 'Logística para e-commerce',
+    comprador: 'Mercado Livre',
+    ano: '2016',
+    valor: 'R$ 26 milhões',
+    resumo:
+      'Calculava o frete de mais de 2.500 lojas virtuais, com 580 transportadoras integradas. O Mercado Livre comprou a operação para reforçar a própria malha logística, e os quatro fundadores seguiram à frente da empresa.',
+    veiculo: 'Exame',
+    manchete: 'MercadoLivre compra Axado por R$ 26 mi e avança em logística',
+    url: 'https://exame.com/negocios/mercadolivre-compra-axado-por-r-26-mi-e-avanca-em-logistica/',
+  },
+  {
+    nome: 'Xtech Commerce',
+    setor: 'Plataforma de e-commerce',
+    comprador: 'VTEX',
+    ano: '2017',
+    valor: 'R$ 14 milhões',
+    resumo:
+      'Plataforma de loja virtual para pequenas e médias empresas, com mais de 45 mil lojas criadas e R$ 25 milhões transacionados por mês. A VTEX comprou para consolidar sua divisão de PMEs ao lado da Loja Integrada.',
+    veiculo: 'ABES',
+    manchete: 'VTEX anuncia compra da Xtech Commerce por R$ 14 milhões',
+    url: 'https://abes.org.br/en/vtex-anuncia-compra-da-xtech-commerce-por-r-14-milhoes-e-consolida-a-maior-solucao-de-e-commerce-para-pmes/',
+  },
+  {
+    nome: 'Supermercado Now',
+    setor: 'Marketplace de supermercado',
+    comprador: 'B2W · Americanas',
+    ano: '2020',
+    valor: '',
+    resumo:
+      'Uma das primeiras plataformas de supermercado online do país: o cliente montava a lista, escolhia entre mais de 30 mercados parceiros e recebia em até duas horas. A B2W, dona de Americanas.com e Submarino, comprou a operação.',
+    veiculo: 'Startupi',
+    manchete: 'B2W adquire Supermercado Now',
+    url: 'https://startupi.com.br/b2w-adquire-supermercado-now/',
+  },
+  {
+    nome: 'Trustvox',
+    setor: 'Avaliações de consumidor',
+    comprador: 'Reclame Aqui',
+    ano: '2020',
+    valor: '',
+    resumo:
+      'Certificava avaliações de quem realmente comprou na loja virtual, com 1,2 mil clientes como Centauro, Ri Happy e Droga Raia. O Reclame Aqui comprou para ampliar seu peso na decisão de compra.',
+    veiculo: 'Meio & Mensagem',
+    manchete: 'Reclame Aqui adquire empresa de reviews Trustvox',
+    url: 'https://www.meioemensagem.com.br/ultimas-noticias/reclame-aqui-adquire-empresa-de-reviews-trustvox',
+  },
+  {
+    nome: 'GrandChef',
+    setor: 'Gestão para restaurantes',
+    comprador: 'Magalu',
+    ano: '2021',
+    valor: '',
+    resumo:
+      'Sistema de gestão e delivery para restaurantes, bares e pizzarias, com 3 mil estabelecimentos em 25 cidades. O Magalu comprou pela Luizalabs, no mesmo movimento do ToNoLucro, e a empresa passou a integrar a vertical de food do grupo.',
+    veiculo: 'Forbes',
+    manchete: 'Magalu compra TonoLucro e GrandChef e se consolida no 4º lugar do mercado de delivery',
+    url: 'https://forbes.com.br/forbes-money/2021/03/magalu-compra-tonolucro-e-grandchef-e-se-consolida-no-4o-lugar-do-mercado-de-delivery/',
+  },
+  {
+    nome: 'Konduto',
+    setor: 'Antifraude',
+    comprador: 'Boa Vista',
+    ano: '2021',
+    valor: 'R$ 172 milhões',
+    resumo:
+      'Antifraude para lojas virtuais, fintechs e meios de pagamento. Só em 2020 analisou o risco de 244 milhões de pedidos. A Boa Vista comprou 100% do capital, com aval do Cade sem restrições.',
+    veiculo: 'Exame',
+    manchete: 'Boa Vista adquire Konduto, especializada em combate a fraudes, por R$ 172 milhões',
+    url: 'https://exame.com/tecnologia/boa-vista-adquire-konduto-especializada-em-combate-a-fraudes-por-r-172-milhoes/',
+  },
+  {
+    nome: 'ViaNuvem',
+    setor: 'Onboarding digital · automotivo',
+    comprador: 'Unico',
+    ano: '2021',
+    valor: '',
+    resumo:
+      'Levou a papelada da compra de carro para o digital e chegou a 2.500 concessionárias. Foi a primeira aquisição da Unico depois do aporte de R$ 580 milhões liderado por SoftBank e General Atlantic.',
+    veiculo: 'Exame INSIGHT',
+    manchete: 'Unico faz primeira aquisição após aporte de R$ 580 mi do SoftBank e GA',
+    url: 'https://exame.com/insight/unico-faz-primeira-aquisicao-apos-aporte-de-r-580-mi-do-softbank-e-ga/p',
+  },
+  {
+    nome: 'Getrak',
+    setor: 'Rastreamento veicular',
+    comprador: 'Unidas',
+    ano: '2021',
+    valor: 'R$ 120 milhões',
+    resumo:
+      'Dezessete anos de rastreamento e telemetria, com operação nacional. A Unidas comprou 100% do capital pela Ágila e somou a empresa à iTer, chegando a mais de um milhão de veículos rastreados.',
+    veiculo: 'Automotive Business',
+    manchete: 'Unidas compra a startup de rastreamento Getrak',
+    url: 'https://www.automotivebusiness.com.br/noticias/unidas-compra-a-startup-de-rastreamento-getrak',
+  },
+  {
+    nome: 'Menew',
+    setor: 'PDV para food service',
+    comprador: 'Linx',
+    ano: '2021',
+    valor: '',
+    resumo:
+      'PDV, serviços financeiros e integração com apps de delivery para bares e restaurantes, com cerca de 2.300 clientes. Com a incorporação, a vertical de food service da Linx passou de 12 mil clientes.',
+    veiculo: 'Rede Food Service',
+    manchete: 'Linx fortalece vertical de Food Service com Menew',
+    url: 'https://redefoodservice.com.br/2021/12/linx-fortalece-vertical-de-food-service-com-menew/',
+  },
+  {
+    nome: 'VExpenses',
+    setor: 'Gestão de despesas',
+    comprador: 'VR',
+    ano: '2023',
+    valor: 'R$ 120 milhões',
+    resumo:
+      'Maior plataforma de gestão de despesas corporativas da América Latina, com mais de 4.500 clientes em nove países. A VR comprou para ampliar seu ecossistema de serviços, na quarta aquisição do grupo naquele ano.',
+    veiculo: 'Startups',
+    manchete: 'VR compra VExpenses e “ataca” gestão de despesas',
+    url: 'https://startups.com.br/negocios/ma/vr-compra-vexpenses-e-ataca-gestao-de-despesas/',
+  },
+  {
+    nome: 'GaussFleet',
+    setor: 'Telemetria para frotas pesadas',
+    comprador: 'CSN',
+    ano: '2023 · 2026',
+    valor: '',
+    resumo:
+      'Telemetria, IoT e geoprocessamento para as frotas de siderúrgicas, mineradoras e construtoras. A CSN entrou em 2023 pela Inova Ventures e foi ampliando a participação até assumir o controle da companhia, com aval do Cade.',
+    veiculo: 'Revista Ferroviária',
+    manchete: 'CSN aumenta (ainda mais) sua fatia em startup de gestão de frotas',
+    url: 'https://revistaferroviaria.com.br/2026/03/csn-aumenta-ainda-mais-sua-fatia-em-startup-de-gestao-de-frotas/',
+  },
+];
+
 
 // Método de quatro etapas, do diagnóstico à escala.
 const etapas = [
@@ -156,13 +295,24 @@ const faq = [
     <style is:global>
       /* Tokens herdados de tokens.css (fonte única da verdade): paper, acento,
          texto, raios, fontes e easings vêm todos do Design System. Sem override local. */
+      :root {
+        /* Paleta escura das páginas-deck (comunicacao-integrada, para-cmos, pep...).
+           Estes nomes não estão em tokens.css; cada página do time escuro os declara. */
+        --space: #07080C;
+        --text-d: #FFFFFF;
+        --text-d-muted: rgba(255, 255, 255, .68);
+        --text-d-faint: rgba(255, 255, 255, .42);
+      }
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
-      body { font-family: var(--font-sans); background: var(--paper); color: var(--primary); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+      /* A pagina roda escura por padrao, como o resto do site, e alterna faixas claras
+         (.sec-light) secao a secao. Antes ela era clara de ponta a ponta, herdeira da
+         direcao blend que foi descartada. */
+      body { font-family: var(--font-sans); background: var(--space); color: var(--text-d); overflow-x: hidden; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
       ::selection { background: var(--primary); color: var(--accent); }
       ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 10px; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border-radius: 10px; }
       html.lenis { height: auto; }
       .lenis.lenis-smooth { scroll-behavior: auto; }
 
@@ -172,6 +322,10 @@ const faq = [
       .ds-mono { font-family: var(--font-mono); font-size: .72rem; letter-spacing: -.01em; text-transform: uppercase; }
       .italic-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
 
+      /* ---- Alternancia escuro / claro (o ritmo das demais paginas) ---- */
+      .sec-dark  { background: var(--space); color: var(--text-d); border-top: 1px solid var(--hairline-d); }
+      .sec-light { background: #fafafa; color: var(--primary); border-top: 1px solid var(--hairline); }
+
       .reveal { opacity: 0; transform: translateY(2rem); transition: var(--t-smooth); }
       .reveal.active { opacity: 1; transform: none; }
       .delay-100 { transition-delay: .1s; } .delay-200 { transition-delay: .2s; }
@@ -179,12 +333,12 @@ const faq = [
 
       #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 9999; width: 0; transition: width .1s linear; }
 
-      /* eyebrow + bullet · mastercard signal */
+      /* eyebrow + bullet */
       .eyebrow-dot { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
       .eyebrow-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 0 4px rgba(254,209,54,.18); }
       .eyebrow-dot.on-dark { color: rgba(255,255,255,.72); }
 
-      /* botões · só 3 raios, igual ao DS Mastercard (20 / 999 / 50%) */
+      /* botões · só 3 raios (20 / 999 / 50%) */
       .ink-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.6rem; border-radius: var(--radius-btn); background: var(--primary); color: var(--paper); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; letter-spacing: -.01em; transition: var(--t-smooth); text-decoration: none; }
       .ink-pill:hover { background: #000; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(0,0,0,.18); }
       .ink-pill iconify-icon { transition: transform .4s var(--ease-out-expo); }
@@ -194,22 +348,6 @@ const faq = [
       .outline-pill { display: inline-flex; align-items: center; gap: .55rem; padding: .85rem 1.55rem; border-radius: var(--radius-btn); background: #fff; color: var(--primary); border: 1.5px solid var(--primary); font-size: .94rem; font-weight: 500; transition: var(--t-smooth); text-decoration: none; }
       .outline-pill:hover { background: var(--primary); color: var(--paper); }
 
-      /* stadium hero · ar mastercard */
-      .stadium-hero {
-        position: relative; min-height: 660px; border-radius: var(--radius-stadium); overflow: hidden;
-        background:
-          radial-gradient(120% 80% at 78% 22%, rgba(254,209,54,.28) 0%, rgba(254,209,54,0) 55%),
-          radial-gradient(80% 100% at 18% 92%, rgba(255,122,26,.12) 0%, transparent 60%),
-          linear-gradient(160deg, #1A1A1D 0%, #0F0F11 60%, #050507 100%);
-        display: flex; flex-direction: column; justify-content: flex-end;
-        padding: clamp(2rem, 5vw, 4.5rem); color: #fff;
-      }
-      .stadium-hero::before {
-        content: ''; position: absolute; inset: 0; pointer-events: none;
-        background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-        background-size: 80px 80px; opacity: .55;
-      }
-      .stadium-hero .stadium-meta { position: relative; z-index: 2; max-width: 60rem; }
 
       /* chip pill */
       .chip-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1.1rem; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
@@ -343,12 +481,167 @@ const faq = [
       .faq-item .faq-body { padding: 0 0 1.5rem; color: var(--text-muted); max-width: 72ch; line-height: 1.6; }
 
       @media (max-width: 768px) {
-        .stadium-hero { min-height: 540px; }
       }
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
         .reveal { opacity: 1 !important; transform: none !important; }
       }
+
+      /* =================================================================
+         INVERSAO PARA AS FAIXAS ESCURAS
+         Fica no fim da folha de proposito: precisa vir depois de
+         .case-card.paper, .cap-card e cia, que tem a mesma especificidade.
+         ================================================================= */
+      .sec-dark .text-stone-500 { color: var(--text-d-muted); }
+      .sec-dark .text-stone-400 { color: var(--text-d-faint); }
+      .sec-dark .eyebrow-dot { color: var(--text-d-muted); }
+
+      .sec-dark .case-card.paper { background: rgba(13,15,22,.55); border-color: var(--hairline-d); }
+      .sec-dark .case-card.paper:hover { box-shadow: 0 30px 60px rgba(0,0,0,.45); border-color: rgba(255,255,255,.22); }
+      .sec-dark .case-card.paper .case-cover { background: rgba(255,255,255,.03); }
+      .sec-dark .case-card.paper .case-cover iconify-icon { color: rgba(255,255,255,.55); }
+      .sec-dark .case-card.paper .case-cover::after { background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px); }
+      .sec-dark .case-card.paper .case-cue { background: var(--accent); color: var(--primary); }
+      .sec-dark .case-card .case-titulo { color: #fff; }
+      .sec-dark .case-card .case-titulo em { color: var(--text-d-muted); }
+      .sec-dark .case-card .case-lead { color: var(--text-d-muted); }
+      .sec-dark .case-card .case-meta { color: var(--text-d-faint); }
+      .sec-dark .case-card .case-meta .dot { background: var(--text-d-faint); }
+      .sec-dark .case-card .case-foot { border-color: var(--hairline-d); }
+      .sec-dark .case-card .case-metric .m-label { color: var(--text-d-faint); }
+      .sec-dark .case-card .case-metric .m-val { color: #fff; }
+      .sec-dark .case-card .case-metric .m-note { color: var(--text-d-muted); }
+
+      .sec-dark .cap-card { background: rgba(13,15,22,.55); border-color: var(--hairline-d); }
+      .sec-dark .cap-card h3 { color: #fff; }
+      .sec-dark .cap-card p { color: var(--text-d-muted); }
+
+      .sec-dark .etapa-card { background: rgba(13,15,22,.55); border-color: var(--hairline-d); }
+      .sec-dark .etapa-card h3 { color: #fff; }
+      .sec-dark .etapa-card p { color: var(--text-d-muted); }
+
+      .sec-dark .stat-cell { border-color: var(--hairline-d); }
+      .sec-dark .stat-num { color: #fff; }
+      .sec-dark .stat-label { color: var(--text-d-muted); }
+      .sec-dark .stat-desc { color: var(--text-d-faint); }
+
+      .sec-dark .quote-block { background: rgba(13,15,22,.55); border-color: var(--hairline-d); }
+      .sec-dark .quote-block .quote { color: #fff; }
+      .sec-dark .quote-block .ghost { color: rgba(255,255,255,.06); }
+
+      .sec-dark .partners-strip .partner { background: rgba(255,255,255,.05); border-color: var(--hairline-d); color: var(--text-d-muted); }
+
+      .sec-dark .faq-item { border-color: var(--hairline-d); }
+      .sec-dark .faq-item summary { color: #fff; }
+      .sec-dark .faq-item p { color: var(--text-d-muted); }
+
+      .sec-dark .chip-pill.outline-dark { color: #fff; border-color: rgba(255,255,255,.28); }
+      .sec-dark .outline-pill { background: transparent; color: #fff; border-color: rgba(255,255,255,.28); }
+      .sec-dark .outline-pill:hover { background: #fff; color: var(--primary); }
+      .sec-dark .ink-pill { background: #fff; color: var(--primary); }
+      .sec-dark .ink-pill:hover { background: #fff; box-shadow: 0 14px 28px rgba(255,255,255,.14); }
+      .sec-dark .ink-pill.yellow { background: var(--accent); color: var(--primary); }
+
+
+      /* =================================================================
+         CARROSSEL DOS EXITS (hero da pagina)
+         Trilho com scroll-snap: o dedo arrasta de graca no celular e o
+         teclado/os botoes so empurram o scroll. Sem lib.
+         ================================================================= */
+      .exit-carrossel { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+      .ec-trilho {
+        display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
+        gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+        scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth;
+      }
+      .ec-trilho::-webkit-scrollbar { display: none; }
+      .ec-slide {
+        scroll-snap-align: start;
+        display: grid; grid-template-columns: 1fr; gap: 1.75rem;
+        padding: clamp(1.75rem, 3.5vw, 2.75rem);
+        border: 1px solid var(--hairline-d); border-radius: 24px;
+        background: rgba(13,15,22,.55);
+      }
+      @media (min-width: 900px) { .ec-slide { grid-template-columns: 1.25fr .85fr; gap: 3rem; align-items: center; } }
+
+      .ec-num { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .2em; color: var(--text-d-faint); }
+      /* O nome do cliente no lugar do logo: Montserrat, caixa alta, bem apertado. */
+      .ec-nome {
+        font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+        font-size: clamp(1.9rem, 4.4vw, 3.4rem); line-height: .98; letter-spacing: -.035em;
+        color: #fff; margin: .75rem 0 0; text-wrap: balance;
+      }
+      .ec-setor { display: block; margin-top: .6rem; font-family: var(--font-mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+      .ec-resumo { margin-top: 1.25rem; font-size: 1.02rem; line-height: 1.6; color: var(--text-d-muted); max-width: 62ch; }
+
+      .ec-meta { display: flex; flex-wrap: wrap; gap: 1.75rem; margin: 1.5rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--hairline-d); }
+      .ec-meta dt { font-family: var(--font-mono); font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-d-faint); }
+      .ec-meta dd { margin: .3rem 0 0; font-size: 1rem; font-weight: 600; color: #fff; }
+
+      /* Recorte de imprensa: veiculo + manchete, linkando a materia. */
+      .ec-recorte {
+        display: flex; flex-direction: column; gap: .9rem; text-decoration: none;
+        padding: clamp(1.4rem, 2.5vw, 1.9rem);
+        border: 1px solid var(--hairline-d); border-left: 3px solid var(--accent);
+        border-radius: 16px; background: rgba(255,255,255,.04);
+        transition: background .35s var(--ease-out-expo), border-color .35s var(--ease-out-expo);
+      }
+      .ec-recorte:hover { background: rgba(255,255,255,.07); border-color: rgba(254,209,54,.4); border-left-color: var(--accent); }
+      .ec-veiculo { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-d-faint); }
+      .ec-manchete { font-family: var(--font-display); font-size: clamp(1.05rem, 1.7vw, 1.3rem); font-weight: 600; line-height: 1.3; letter-spacing: -.02em; color: #fff; }
+      .ec-link { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+
+      .ec-controles { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-top: 1.5rem; }
+      .ec-pontos { display: flex; flex-wrap: wrap; gap: .45rem; }
+      .ec-ponto { width: 26px; height: 4px; border-radius: 2px; border: 0; padding: 0; cursor: pointer; background: rgba(255,255,255,.18); transition: background .3s; }
+      .ec-ponto:hover { background: rgba(255,255,255,.4); }
+      .ec-ponto[aria-current='true'] { background: var(--accent); }
+      .ec-setas { display: flex; gap: .5rem; flex-shrink: 0; }
+      .ec-seta {
+        width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.24);
+        font-size: 1.1rem; transition: background .3s, border-color .3s, transform .3s;
+      }
+      .ec-seta:hover { background: #fff; color: var(--primary); border-color: #fff; }
+      .ec-seta:disabled { opacity: .3; cursor: default; }
+      .ec-seta:disabled:hover { background: transparent; color: #fff; border-color: rgba(255,255,255,.24); }
+
+      @media (prefers-reduced-motion: reduce) { .ec-trilho { scroll-behavior: auto; } }
+
+
+      /* =================================================================
+         HERO DA /CASES
+         Texto na coluna da esquerda, foto no alto a direita. Sem card: o
+         escuro e o fundo da propria section, nada de caixa arredondada por
+         cima. O carrossel entra abaixo, ocupando a largura inteira.
+         ================================================================= */
+      .hero-cases { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
+      @media (min-width: 1000px) {
+        /* `start`, não `center`: a foto encosta no topo do bloco de texto em vez de
+           flutuar no meio da coluna, que é bem mais alta que ela. */
+        .hero-cases { grid-template-columns: 1.08fr .92fr; gap: clamp(2.5rem, 4vw, 4rem); align-items: start; }
+      }
+      /* A medida do texto passa a ser a coluna, nao um max-width solto: por isso
+         os antigos style="max-width:22ch/78ch" sairam do markup. */
+      .hc-texto .ds-h1 { max-width: 16ch; }
+      .hc-texto .ds-body-lg { max-width: 46ch; }
+      @media (max-width: 999px) {
+        .hc-texto .ds-h1 { max-width: 22ch; }
+        .hc-texto .ds-body-lg { max-width: 62ch; }
+      }
+      .hc-foto { margin: 0; border-radius: 24px; overflow: hidden; line-height: 0; }
+      .hc-foto img { display: block; width: 100%; height: auto; }
+
+
+      /* Capa do card com foto: a imagem ocupa a capa inteira no mesmo 16/10 dos
+         cards com ícone, então a grade não desalinha. O véu de pontinhos sai. */
+      .case-card .case-cover.tem-foto { background: #0F0F11; }
+      .case-card .case-cover.tem-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .case-card .case-cover.tem-foto::after { content: none; }
+      .case-card .case-cover.tem-foto { transition: transform .6s var(--ease-out-expo); }
+      .case-card:hover .case-cover.tem-foto img { transform: scale(1.04); transition: transform .6s var(--ease-out-expo); }
+
     </style>
 
     <script
@@ -412,63 +705,77 @@ const faq = [
     <!-- 1 · HERO STADIUM · F-pattern, 1 foco, top-left -->
     <section class="relative pt-32 md:pt-40 pb-16 md:pb-20 px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
-        <article class="stadium-hero reveal">
-          <div class="stadium-meta">
-            <span class="eyebrow-dot on-dark">Cases · comunicação para inovação</span>
-            <h1 class="ds-h1 font-semibold tracking-tight mt-8" style="max-width:20ch">
+        <div class="hero-cases">
+          <div class="hc-texto">
+            <span class="eyebrow-dot reveal">Cases · comunicação para inovação</span>
+            <h1 class="ds-h1 font-semibold tracking-tight mt-6 reveal">
               O trabalho da PiaR se lê nos cases, não nas <span class="italic-serif" style="color:var(--accent)">promessas</span>.
             </h1>
-            <p class="ds-body-lg mt-8 max-w-3xl" style="color:rgba(255,255,255,.72)">
-              A PiaR Group é uma agência de comunicação para startups, scale-ups e empresas de
-              tecnologia. Esta página reúne os projetos que mostram como conduzimos comunicação a
-              partir de dados e de relacionamento com a imprensa, de fintech regulada a gestão de
-              crise. Cada case descreve o contexto, o ângulo e o trabalho. Onde houver número, ele vem
-              com lastro ou não vem.
+            <p class="ds-body-lg mt-6 reveal delay-100" style="color:var(--text-d-muted)">
+              Em {site.yearsOperating} anos, {site.exitsSupported} das empresas que a PiaR acompanhou
+              chegaram ao exit. Cada uma abaixo tem a notícia da venda como lastro.
             </p>
-            <div class="flex flex-wrap gap-2 mt-10">
-              <span class="chip-pill yellow">13 anos de comunicação para inovação</span>
-              <span class="chip-pill outline-light">{site.exitsSupported} startups até o exit</span>
-              <span class="chip-pill outline-light">Fintech · healthtech · agro · crise · institucional</span>
-            </div>
-            <div class="flex flex-wrap gap-3 mt-10">
-              <a href="/contato" class="ink-pill yellow">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
-              <a href="#metodo" class="ink-pill" style="background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.22)">Conhecer o método<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
-            </div>
-            <img src={withBase('/brand/Bruno2podcast.webp')} alt="Bruno Pinheiro, CEO da PiaR Group, em entrevista de podcast institucional" width="1120" height="840" style="display:block;width:100%;max-width:560px;height:auto;border-radius:24px;margin:3rem auto 0;box-shadow:0 24px 48px rgba(0,0,0,.32);" loading="eager" decoding="async" />
           </div>
-        </article>
-      </div>
-    </section>
 
-    <!-- 2 · COMO LER ESTES CASES -->
-    <section class="relative bg-white border-y border-[var(--hairline)] sec-pad px-4 md:px-8">
-      <div class="max-w-[1400px] mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div class="lg:col-span-4 reveal">
-            <span class="eyebrow-dot">Como ler estes cases</span>
-            <h2 class="ds-h3 font-semibold tracking-tight mt-6" style="max-width:16ch">
-              Portfólio se lê de <span class="italic-serif">outro jeito</span>.
-            </h2>
+          <figure class="hc-foto reveal delay-100">
+            <img
+              src={withBase('/brand/Bruno2podcast.webp')}
+              alt="Bruno Pinheiro, CEO da PiaR Group, em entrevista de podcast institucional"
+              width="1120"
+              height="840"
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+        </div>
+
+        <div class="exit-carrossel reveal delay-200" aria-roledescription="carrossel" aria-label="Startups acompanhadas até o exit">
+          <div class="ec-trilho" id="ec-trilho">
+            {exitCases.map((c, i) => (
+              <article class="ec-slide" role="group" aria-roledescription="slide" aria-label={`${i + 1} de ${exitCases.length}: ${c.nome}`}>
+                <div class="ec-esq">
+                  <span class="ec-num">{String(i + 1).padStart(2, '0')} / {String(exitCases.length).padStart(2, '0')}</span>
+                  <h2 class="ec-nome">{c.nome}</h2>
+                  <span class="ec-setor">{c.setor}</span>
+                  <p class="ec-resumo">{c.resumo}</p>
+                  <dl class="ec-meta">
+                    <div><dt>Comprador</dt><dd>{c.comprador}</dd></div>
+                    <div><dt>Ano</dt><dd>{c.ano}</dd></div>
+                    {c.valor && <div><dt>Valor</dt><dd>{c.valor}</dd></div>}
+                  </dl>
+                </div>
+
+                <a class="ec-recorte" href={c.url} target="_blank" rel="noopener">
+                  <span class="ec-veiculo">{c.veiculo}</span>
+                  <span class="ec-manchete">{c.manchete}</span>
+                  <span class="ec-link">Ler a notícia<iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></span>
+                </a>
+              </article>
+            ))}
           </div>
-          <div class="lg:col-span-8 reveal delay-100 space-y-6">
-            <p class="ds-body-lg" style="color:var(--text-muted)">
-              A maioria das páginas de portfólio empilha logo e número solto. Para cada projeto, a
-              pergunta é quem precisava ouvir aquela história e por quê, qual era o ângulo que
-              sustentava a marca e que prova pública o trabalho construiu. Disparo de release em massa
-              não é estratégia, é ruído, e a PiaR não trabalha assim.
-            </p>
-            <p class="ds-body" style="color:var(--text-muted)">
-              Por isso os cases abaixo descrevem o que foi feito antes de qualquer métrica, e métrica
-              sem clipping não vira manchete. Os trabalhos abaixo têm cliente real. A relação completa
-              de marcas atendidas vem logo depois.
-            </p>
+
+          <div class="ec-controles">
+            <div class="ec-pontos" id="ec-pontos" role="tablist" aria-label="Ir para o slide">
+              {exitCases.map((c, i) => (
+                <button type="button" class="ec-ponto" data-ir={i} aria-label={`Ir para ${c.nome}`}></button>
+              ))}
+            </div>
+            <div class="ec-setas">
+              <button type="button" class="ec-seta" id="ec-ant" aria-label="Anterior"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>
+              <button type="button" class="ec-seta" id="ec-prox" aria-label="Próximo"><iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>
+            </div>
           </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3 mt-12 reveal delay-300">
+          <a href="/contato" class="ink-pill yellow">Agendar diagnóstico<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+          <a href="#metodo" class="outline-pill">Conhecer o método<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
         </div>
       </div>
     </section>
 
-    <!-- 3 · CAPACIDADES · gestão de crise e reputação institucional -->
-    <section class="relative bg-[var(--paper)] sec-pad px-4 md:px-8">
+    <!-- 2 · CAPACIDADES · gestão de crise e reputação institucional -->
+    <section class="relative sec-light sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-14 reveal">
           <div>
@@ -503,8 +810,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 4 · OUTROS TRABALHOS · grid de clientes reais, descrição qualitativa -->
-    <section id="trabalhos" class="relative bg-white border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
+    <!-- 3 · OUTROS TRABALHOS · grid de clientes reais, descrição qualitativa -->
+    <section id="trabalhos" class="relative sec-dark sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-14 reveal">
           <div>
@@ -521,8 +828,10 @@ const faq = [
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trabalhos.map((t, i) => (
             <article class="case-card paper reveal" style={`transition-delay:${(i % 3) * 100}ms`}>
-              <div class="case-cover">
-                <iconify-icon icon={t.icon}></iconify-icon>
+              <div class:list={['case-cover', t.foto && 'tem-foto']}>
+                {t.foto
+                  ? <img src={withBase(t.foto)} alt={t.fotoAlt} width="1000" height="667" loading="lazy" decoding="async" />
+                  : <iconify-icon icon={t.icon}></iconify-icon>}
               </div>
               <div class="case-body">
                 <div class="case-meta">
@@ -538,8 +847,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 5 · MARCAS QUE CONFIAM · roster -->
-    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
+    <!-- 4 · MARCAS QUE CONFIAM · roster -->
+    <section class="relative sec-light sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div class="lg:col-span-5 reveal">
@@ -565,8 +874,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 6 · EXITS · stats band + nomes -->
-    <section class="relative bg-white border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
+    <!-- 5 · EXITS · stats band + nomes -->
+    <section class="relative sec-dark sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div class="lg:col-span-6 reveal">
@@ -599,8 +908,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 7 · COMO CADA CASE NASCE · método em 4 etapas -->
-    <section id="metodo" class="relative bg-[var(--paper)] border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
+    <!-- 6 · COMO CADA CASE NASCE · método em 4 etapas -->
+    <section id="metodo" class="relative sec-light sec-pad px-4 md:px-8">
       <div class="max-w-[1400px] mx-auto">
         <div class="mb-12 reveal">
           <span class="eyebrow-dot">Como cada case nasce</span>
@@ -633,8 +942,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 8 · LIDERANÇA · quote + nomes -->
-    <section class="relative bg-white border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
+    <!-- 7 · LIDERANÇA · quote + nomes -->
+    <section class="relative sec-dark sec-pad px-4 md:px-8">
       <div class="max-w-[1100px] mx-auto">
         <div class="quote-block reveal">
           <span class="ghost">"</span>
@@ -652,8 +961,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 9 · PERGUNTAS FREQUENTES -->
-    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)] sec-pad px-4 md:px-8">
+    <!-- 8 · PERGUNTAS FREQUENTES -->
+    <section class="relative sec-light sec-pad px-4 md:px-8">
       <div class="max-w-[1000px] mx-auto">
         <div class="mb-10 reveal">
           <span class="eyebrow-dot">Perguntas frequentes</span>
@@ -672,8 +981,8 @@ const faq = [
       </div>
     </section>
 
-    <!-- 10 · CTA FINAL · Vamos conversar -->
-    <section class="relative bg-[var(--paper)] border-t border-[var(--hairline)]">
+    <!-- 9 · CTA FINAL · Vamos conversar -->
+    <section class="relative sec-dark">
       <div class="max-w-[1100px] mx-auto px-6 md:px-8 sec-pad text-center">
         <span class="eyebrow-dot reveal" style="display:inline-flex;justify-content:center">Vamos conversar</span>
         <h2 class="ds-h1 font-semibold tracking-tight mt-6 mb-6 reveal delay-100" style="max-width:22ch;margin-inline:auto">
@@ -721,5 +1030,50 @@ const faq = [
       }, { threshold: 0.15 });
       document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
     });
+      /* ---- Carrossel dos exits ---- */
+      (function carrosselExits() {
+        var trilho = document.getElementById('ec-trilho');
+        if (!trilho) return;
+        var slides = Array.prototype.slice.call(trilho.querySelectorAll('.ec-slide'));
+        var pontos = Array.prototype.slice.call(document.querySelectorAll('.ec-ponto'));
+        var ant = document.getElementById('ec-ant');
+        var prox = document.getElementById('ec-prox');
+        if (!slides.length) return;
+
+        var atual = 0;
+        function irPara(i) {
+          i = Math.max(0, Math.min(slides.length - 1, i));
+          trilho.scrollTo({ left: slides[i].offsetLeft - trilho.offsetLeft, behavior: 'smooth' });
+        }
+        function pintar(i) {
+          atual = i;
+          pontos.forEach(function (p, k) { p.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+          if (ant) ant.disabled = i === 0;
+          if (prox) prox.disabled = i === slides.length - 1;
+        }
+        pintar(0);
+
+        // quem manda no indicador e o scroll, nao o clique: arrastar no dedo tambem atualiza
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (ents) {
+            ents.forEach(function (e) {
+              if (e.isIntersecting && e.intersectionRatio > 0.6) pintar(slides.indexOf(e.target));
+            });
+          }, { root: trilho, threshold: [0.6] });
+          slides.forEach(function (sl) { io.observe(sl); });
+        }
+
+        if (ant) ant.addEventListener('click', function () { irPara(atual - 1); });
+        if (prox) prox.addEventListener('click', function () { irPara(atual + 1); });
+        pontos.forEach(function (p) {
+          p.addEventListener('click', function () { irPara(parseInt(p.getAttribute('data-ir'), 10) || 0); });
+        });
+        trilho.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight') { e.preventDefault(); irPara(atual + 1); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); irPara(atual - 1); }
+        });
+        trilho.setAttribute('tabindex', '0');
+      })();
+
   </script>
 </BaseLayout>

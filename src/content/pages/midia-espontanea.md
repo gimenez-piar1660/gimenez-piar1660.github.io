@@ -68,7 +68,7 @@ A ordem importa. Mídia-alvo primeiro, depois o jornalista, depois a abordagem, 
 
 A PiaR acompanha startups e empresas de tecnologia desde 2013 e apoiou 11 startups até o exit: Axado, Trustvox, ViaNuvem, Konduto, Getrak, GrandChef, Xtech Commerce, Supermercado Now, VExpenses, Menew e GaussFleet. Entre os clientes de comunicação estão Sambatech, Liga Ventures, Printi, Doctoralia, Solides, Corning, PagBrasil, Sidia, Unifisa, Livup, Qranio, FluencyPass e Investidores.vc.
 
-Entre os clientes reais estão Endemol Shine Brasil (Big Brother Brasil), Solides, Mastercard Agro, AgroSmart, Vila 11 e Doctoralia (healthtech), incluindo trabalho em setores regulados, em que segurança e compliance entram como ângulo de pauta e não como tema a evitar, com revisão jurídica de cada ativo. A gestão de crise é uma capacidade do time, aplicada quando a pauta exige resposta rápida e coordenada. Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).
+Entre os clientes reais estão Endemol Shine Brasil (Big Brother Brasil), Solides, AgroSmart, Vila 11 e Doctoralia (healthtech), incluindo trabalho em setores regulados, em que segurança e compliance entram como ângulo de pauta e não como tema a evitar, com revisão jurídica de cada ativo. A gestão de crise é uma capacidade do time, aplicada quando a pauta exige resposta rápida e coordenada. Bruno Pinheiro, fundador e CEO da PiaR, foi eleito Profissional de imprensa no Startup Awards da ABStartups (2018).
 
 ## Perguntas frequentes
 
