@@ -203,6 +203,9 @@ import { site } from '@/data/site';
       /* Submit row */
       .submit-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding-top: 1rem; }
       .submit-row .submit-note { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
+      .termos-nota { margin: .35rem 0 0; font-family: var(--font-sans); font-size: .78rem; line-height: 1.5; color: var(--text-faint); }
+      .termos-nota a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
+      .termos-nota a:hover { color: var(--primary); }
 
       /* Form feedback states */
       .form-feedback { display: none; margin-top: 1.25rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-input); }
@@ -459,8 +462,16 @@ import { site } from '@/data/site';
                   <div class="full field field-consent">
                     <div class="consent">
                       <input type="checkbox" id="f-consent" name="consent" required />
+                      <!-- LGPD: a versão anterior afirmava "não compartilhados com
+                           terceiros" e apontava para uma política que não existia. Os
+                           dados passam pelo RD Station, que opera a nosso pedido, e
+                           agora a política existe em /privacidade. -->
                       <label for="f-consent">
-                        Concordo em compartilhar essas informações com a PiaR Group para fins de qualificação de diagnóstico, conforme nossa política de privacidade. Os dados não são compartilhados com terceiros.
+                        Concordo em compartilhar essas informações com a PiaR Group para qualificar e
+                        responder a este pedido. Os dados são tratados nas ferramentas que operam a
+                        nosso pedido, nunca são vendidos nem cedidos a terceiros, e você pode pedir a
+                        exclusão quando quiser, conforme a
+                        <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.
                       </label>
                     </div>
                   </div>
@@ -472,6 +483,17 @@ import { site } from '@/data/site';
                       <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
                     </button>
                   </div>
+
+                  <!-- O aceite dos Termos fica FORA do checkbox de consentimento
+                       de propósito. O art. 8, §4 da LGPD pede consentimento
+                       específico e destacado; empacotar "aceito os termos" dentro
+                       dele contamina a base legal do tratamento. Aqui o aceite é
+                       contratual, informado antes do envio, e o checkbox acima
+                       continua tratando só de dado pessoal. -->
+                  <p class="full termos-nota">
+                    Ao enviar, você concorda com os
+                    <a href="/termos" target="_blank" rel="noopener">Termos de Uso</a>.
+                  </p>
                 </div>
               </div>
 

@@ -85,6 +85,19 @@ const year = new Date().getFullYear();
       escuro ? 'borda-escura' : 'border-[rgba(0,0,0,.08)]',
     ]}>
       <span class="ds-mono text-stone-400">© {year} PiaR Group · PR System</span>
+
+      <!-- LGPD: a política precisa estar a um clique de qualquer página, e a
+           revogação do consentimento precisa ser tão fácil quanto o aceite
+           (art. 8, §5). Daí o botão que reabre o painel de cookies. O handler
+           mora em src/components/ConsentimentoCookies.astro, via data-ck. -->
+      <nav class="footer-legal" aria-label="Links legais">
+        <a class="footer-link" href="/privacidade">Privacidade</a>
+        <span class="footer-legal-sep" aria-hidden="true">·</span>
+        <a class="footer-link" href="/termos">Termos de uso</a>
+        <span class="footer-legal-sep" aria-hidden="true">·</span>
+        <button type="button" class="footer-link footer-botao" data-ck="gerenciar">Gerenciar cookies</button>
+      </nav>
+
       <span class="ds-caption text-stone-400">PiaR OS v1.0 · Narrative Edition</span>
     </div>
   </div>
@@ -99,6 +112,19 @@ const year = new Date().getFullYear();
     text-decoration: none;
   }
   .footer-link:hover { color: #0F0F11; }
+
+  .footer-legal { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+  .footer-legal-sep { color: rgba(15, 15, 17, 0.28); font-size: 0.82rem; }
+  /* Botão que se comporta como link: mesma tipografia dos vizinhos, sem herdar
+     nada de <button> (fundo, borda, fonte do sistema). */
+  .footer-botao {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .footer-botao:focus-visible { outline: 2px solid #FED136; outline-offset: 3px; border-radius: 4px; }
 
   .footer-social {
     display: inline-flex;
@@ -122,6 +148,7 @@ const year = new Date().getFullYear();
   .footer-escuro .borda-escura { border-top-color: rgba(255, 255, 255, 0.1); }
   .footer-escuro .footer-link { color: rgba(255, 255, 255, 0.7); }
   .footer-escuro .footer-link:hover { color: #fff; }
+  .footer-escuro .footer-legal-sep { color: rgba(255, 255, 255, 0.3); }
   .footer-escuro .footer-social { color: rgba(255, 255, 255, 0.7); border-color: rgba(255, 255, 255, 0.14); }
   .footer-escuro .footer-social:hover { color: #fff; border-color: rgba(255, 255, 255, 0.4); background-color: rgba(255, 255, 255, 0.06); }
   .footer-escuro .text-stone-500 { color: rgba(255, 255, 255, 0.62); }

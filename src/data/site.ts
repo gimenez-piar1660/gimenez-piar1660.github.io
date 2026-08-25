@@ -49,6 +49,10 @@ export const site = {
   legalName: 'PiaR Comunicação',
   alternateNames: ['PiaR', 'PiaR Comunicação'],
 
+  // CNPJ. Vazio significa que a /privacidade omite a linha em vez de mostrar um
+  // campo pela metade. Preencher aqui já identifica o controlador na política.
+  cnpj: '' as string,
+
   // Domínio de publicação. Sai do `site` do astro.config para não existirem
   // duas verdades: hoje o protótipo no GitHub Pages, depois o domínio próprio.
   // Antes ficava fixo em pep.piar.group e as páginas que montam a canônica na
@@ -88,6 +92,33 @@ export const site = {
     linkedin: 'https://www.linkedin.com/company/piargroup/',
     instagram: 'https://www.instagram.com/group.piar/',
   },
+
+  // ---------- LGPD ----------
+  // Encarregado pelo tratamento de dados pessoais (art. 41). O contato precisa
+  // ser público: é o canal do titular e da ANPD, não o canal comercial. Aparece
+  // na /privacidade e é para onde vão pedidos de acesso, correção e exclusão.
+  encarregado: {
+    nome: 'Ana Flávia',
+    email: 'anaflavia@piarcomunicacao.com.br',
+  },
+
+  // Medição. Vazio significa que nada é carregado. Preencher com o ID do GA4
+  // (formato G-XXXXXXXXXX) liga a medição, que mesmo assim só dispara depois do
+  // consentimento de análise dado no banner. Ver src/components/ConsentimentoCookies.astro.
+  ga4Id: '' as string,
+
+  // Loader do RD Station. Sai daqui para o componente de consentimento poder
+  // injetá-lo só quando houver consentimento de marketing.
+  rdStationLoader:
+    'https://d335luupugsy2.cloudfront.net/js/loader-scripts/9e65bedd-a60f-486e-932f-c88f1ac8ea32-loader.js',
+
+  // Última revisão da política de privacidade, exibida na própria página.
+  privacidadeRevisada: '21 de agosto de 2026',
+
+  // Última revisão dos termos de uso, exibida na própria página. Data separada
+  // da privacidade de propósito: os dois documentos mudam por motivos diferentes,
+  // e carimbar os dois de uma vez esconderia qual deles foi realmente revisado.
+  termosRevisada: '25 de agosto de 2026',
 } as const;
 
 export type Site = typeof site;

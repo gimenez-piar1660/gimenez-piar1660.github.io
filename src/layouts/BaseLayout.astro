@@ -6,6 +6,7 @@
 import '@styles/global.css';
 import { site, INDEXAVEL } from '@/data/site';
 import { withBase } from '@/lib/base';
+import ConsentimentoCookies from '@components/ConsentimentoCookies.astro';
 
 interface Props {
   title: string;
@@ -52,7 +53,7 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
     {semIndice && <meta name="robots" content="noindex,nofollow" />}
 
     <!-- Ícones -->
-    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/brand/p_icon_negative.png')} type="image/png" />
     <link rel="apple-touch-icon" href={withBase('/brand/piar-vertical-amarelo.png')} />
     <link rel="manifest" href={withBase('/site.webmanifest')} />
 
@@ -71,47 +72,11 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <!-- Atribuicao de origem: grava UTM, pagina de entrada e referrer num cookie
-         proprio de 90 dias, para o formulario de /contato conseguir dizer de onde
-         o lead veio mesmo quando a visita e a conversao acontecem em dias diferentes.
-         Primeiro toque manda; UTM nova sobrescreve (a campanha paga mais recente vence). -->
-    <script is:inline>
-      (function () {
-        try {
-          var CHAVE = 'piar_atrib';
-          var qs = new URLSearchParams(location.search);
-          var utm = {};
-          ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) {
-            var v = qs.get(k);
-            if (v) utm[k] = v.slice(0, 150);
-          });
-          var temUtmNova = Object.keys(utm).length > 0;
-          var jaGravado = document.cookie.split('; ').some(function (c) { return c.indexOf(CHAVE + '=') === 0; });
-          var jaNaSessao = false;
-          try { jaNaSessao = !!sessionStorage.getItem(CHAVE); } catch (err) { /* storage bloqueado */ }
-          if ((jaGravado || jaNaSessao) && !temUtmNova) return;
-
-          var ref = document.referrer || '';
-          var externo = ref && ref.indexOf(location.origin) !== 0;
-          var dado = {
-            utm_source: utm.utm_source || '',
-            utm_medium: utm.utm_medium || '',
-            utm_campaign: utm.utm_campaign || '',
-            utm_content: utm.utm_content || '',
-            landing_page: (location.pathname + location.search).slice(0, 300),
-            referrer: externo ? ref.slice(0, 300) : '',
-          };
-          // Espelho em sessionStorage: e o unico jeito de a origem sobreviver
-          // a navegacao entre paginas quando o cookie esta bloqueado. Vale so
-          // enquanto a aba existir; o cookie continua sendo a fonte principal.
-          try { sessionStorage.setItem(CHAVE, JSON.stringify(dado)); } catch (err) { /* storage bloqueado */ }
-
-          document.cookie = CHAVE + '=' + encodeURIComponent(JSON.stringify(dado)) +
-            ';path=/;max-age=' + 90 * 24 * 60 * 60 + ';SameSite=Lax' +
-            (location.protocol === 'https:' ? ';Secure' : '');
-        } catch (err) { /* cookie bloqueado: o form cai no fallback pela sessao ou pela URL */ }
-      })();
-    </script>
+    <!-- LGPD: a atribuicao de origem (cookie piar_atrib) NAO mora mais aqui.
+         Ela e um cookie de marketing, entao passou a ser gravada apenas apos
+         consentimento, dentro de src/components/ConsentimentoCookies.astro.
+         Nao trazer de volta para o head: rastreador que dispara antes do aceite
+         transforma o banner em enfeite. -->
 
     <!-- Fontes: self-hosted via @fontsource em global.css (pacote npm). -->
 
@@ -201,17 +166,11 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
 
     <slot name="head" />
 
-    <!-- RD Station · script de monitoramento de trafego (ultima tag antes do </head>,
-         conforme instrucao do proprio RD). Vale para todas as paginas porque toda
-         pagina .astro consome este layout. Precisa de is:inline para o Astro emitir
-         a tag exatamente como o RD entregou, sem bundle. O dominio do loader tambem
-         esta liberado no script-src do CSP em public/_headers. -->
-    <script
-      is:inline
-      type="text/javascript"
-      async
-      src="https://d335luupugsy2.cloudfront.net/js/loader-scripts/9e65bedd-a60f-486e-932f-c88f1ac8ea32-loader.js"
-    ></script>
+    <!-- LGPD: o loader do RD Station tambem saiu daqui. Ele monta um perfil de
+         navegacao que vira identificado assim que a pessoa preenche o formulario,
+         entao e cookie de marketing e depende de consentimento. A URL do loader
+         vive em src/data/site.ts e e injetada por JS em ConsentimentoCookies.astro.
+         Os dois dominios do RD continuam liberados no script-src do CSP. -->
   </head>
   <body class={bodyClass}>
     <a
@@ -221,5 +180,6 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
       Pular para o conteúdo
     </a>
     <slot />
+    <ConsentimentoCookies />
   </body>
 </html>

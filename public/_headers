@@ -23,7 +23,10 @@
   # d1sag09wwfbul8 (rdtracker.min.js, injetado pelo loader, é quem registra a visita).
   # Faltando o segundo, a tag carrega e mesmo assim nada é monitorado. Os eventos saem
   # para event-harbor.rdstation.com, já coberto pelo connect-src https:.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.iconify.design https://d335luupugsy2.cloudfront.net https://d1sag09wwfbul8.cloudfront.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  # googletagmanager.com libera o GA4, que só é injetado após consentimento de análise
+  # (src/components/ConsentimentoCookies.astro). Fica liberado mesmo com site.ga4Id vazio:
+  # sem ID nada é carregado, e no dia em que o ID entrar o CSP não vira o bloqueio surpresa.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.iconify.design https://d335luupugsy2.cloudfront.net https://d1sag09wwfbul8.cloudfront.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
 
   # Cross-origin policies
   Cross-Origin-Opener-Policy: same-origin
