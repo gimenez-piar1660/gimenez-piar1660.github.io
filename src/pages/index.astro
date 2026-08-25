@@ -33,6 +33,15 @@ const clienteLogos = [
   'solides', 'layer-up', 'pagbrasil',
 ];
 
+// Arquivo por slug quando difere do padrao `${slug}.png`. O unlimitail.png tem a
+// marca escura sobre fundo preto; com mix-blend-mode:lighten na faixa (fundo
+// tambem preto), a marca escura soma com o preto e quase some. O arquivo
+// -branco.png ja existia em /brand/clients (versao negativa pronta, nunca
+// usada) e resolve isso sem gerar asset novo.
+const logoArquivo: Record<string, string> = {
+  unlimitail: 'unlimitail-branco',
+};
+
 // Os corpos que a gravidade puxa (o mercado). Beneficio antes do nome.
 const corpos = [
   { ic: 'solar:cart-check-line-duotone', t: 'O comprador', d: 'Chega convencido, e a venda fecha com menos objeção. A reputação trabalha antes da reunião.' },
@@ -160,7 +169,14 @@ const servicosLd = [
       .clients-marquee-track:hover { animation-play-state: paused; }
       .client-logo { height: 74px; width: auto; max-width: 210px; margin-right: 3.5rem; flex-shrink: 0; object-fit: contain; opacity: .85; mix-blend-mode: lighten; transition: opacity .35s var(--ease-out-expo), transform .35s var(--ease-out-expo); }
       .client-logo:hover { opacity: 1; transform: scale(1.08); }
-      @media (max-width: 768px) { .client-logo { height: 56px; margin-right: 2.25rem; } }
+      /* LivUp e uma marca quase quadrada que preenche o proprio canvas de ponta
+         a ponta; na mesma altura das wordmarks (finas, com folga), ela pesa
+         visualmente mais que as vizinhas. Reduzida a parte, nao no grupo todo. */
+      .client-logo-livup { height: 58px; }
+      @media (max-width: 768px) {
+        .client-logo { height: 56px; margin-right: 2.25rem; }
+        .client-logo-livup { height: 44px; }
+      }
 
       /* ===== HERO video-scrub (claro, 5 atos) ===== */
       /* 440vh, nao 500: o video terminava em 88% do pin e sobravam 12% (60vh) de
@@ -485,7 +501,13 @@ const servicosLd = [
         <div class="clients-marquee-track">
           {[...Array(2)].flatMap((_, copy) => (
             clienteLogos.map((slug) => (
-              <img src={withBase(`/brand/clients/${slug}.png`)} alt={copy === 0 ? `Cliente PiaR: ${slug.replace(/-/g, ' ')}` : ''} class="client-logo" loading="lazy" aria-hidden={copy === 1 ? 'true' : undefined} />
+              <img
+                src={withBase(`/brand/clients/${logoArquivo[slug] ?? slug}.png`)}
+                alt={copy === 0 ? `Cliente PiaR: ${slug.replace(/-/g, ' ')}` : ''}
+                class:list={['client-logo', `client-logo-${slug}`]}
+                loading="lazy"
+                aria-hidden={copy === 1 ? 'true' : undefined}
+              />
             ))
           ))}
         </div>

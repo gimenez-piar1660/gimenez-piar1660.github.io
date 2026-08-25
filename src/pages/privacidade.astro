@@ -1,0 +1,402 @@
+---
+// Política de Privacidade e de Cookies (LGPD).
+// Página bespoke em vez de Markdown na coleção "pages" de propósito: o template
+// [slug].astro volta para /insights, injeta schema de Article e fecha com CTA
+// comercial, três coisas que não cabem num documento legal.
+//
+// O que é dinâmico sai de src/data/site.ts (controlador, encarregada, CNPJ,
+// data de revisão). Editar lá propaga para cá.
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+// Folha compartilhada com /termos. Ver o cabeçalho de src/styles/legal.css.
+import '@styles/legal.css';
+
+const titulo = 'Política de Privacidade';
+const descricao =
+  'Como a PiaR Group coleta, usa, compartilha e guarda dados pessoais, quais cookies o site grava e como exercer seus direitos de titular.';
+
+// Tabela de cookies. Fonte única desta página: mexeu no que o site carrega,
+// mexe aqui também, senão a política passa a descrever um site que não existe.
+const cookies = [
+  {
+    nome: 'piar_consent',
+    categoria: 'Necessário',
+    origem: 'PiaR (próprio)',
+    finalidade: 'Guarda a sua escolha sobre cookies. Sem ele, o aviso reapareceria a cada página.',
+    prazo: '12 meses',
+  },
+  {
+    nome: 'piar_atrib',
+    categoria: 'Marketing',
+    origem: 'PiaR (próprio)',
+    finalidade:
+      'Registra a campanha, a página de entrada e o site que trouxe você, para sabermos de onde veio um contato feito dias depois.',
+    prazo: '90 dias',
+  },
+  {
+    nome: 'rdtrk, __trf.src',
+    categoria: 'Marketing',
+    origem: 'RD Station',
+    finalidade:
+      'Reconhecem o navegador entre visitas e ligam o histórico de navegação ao contato, caso você preencha o formulário.',
+    prazo: 'Até 12 meses',
+  },
+  {
+    nome: '_ga, _ga_*',
+    categoria: 'Análise',
+    origem: 'Google Analytics 4',
+    finalidade:
+      'Contam visitantes e sessões de forma agregada: quantas pessoas chegam, por quais páginas passam e onde desistem.',
+    prazo: 'Até 24 meses',
+  },
+  {
+    nome: '_gid, _gat',
+    categoria: 'Análise',
+    origem: 'Google Analytics 4',
+    finalidade: 'Distinguem sessões e limitam a taxa de envio de eventos.',
+    prazo: '24 horas',
+  },
+];
+
+// Finalidade e base legal, uma linha por tratamento (art. 7 e art. 9, II).
+const bases = [
+  {
+    tratamento: 'Responder a um pedido de diagnóstico ou a um contato pelo formulário',
+    base: 'Procedimentos preliminares de contrato (art. 7, V)',
+  },
+  {
+    tratamento: 'Qualificar o contato e conduzir a conversa comercial',
+    base: 'Consentimento dado no envio do formulário (art. 7, I)',
+  },
+  {
+    tratamento: 'Cookies de análise de audiência',
+    base: 'Consentimento dado no aviso de cookies (art. 7, I)',
+  },
+  {
+    tratamento: 'Cookies de marketing e registro de origem da visita',
+    base: 'Consentimento dado no aviso de cookies (art. 7, I)',
+  },
+  {
+    tratamento: 'Guardar registros para cumprir prazos fiscais e legais',
+    base: 'Cumprimento de obrigação legal (art. 7, II)',
+  },
+  {
+    tratamento: 'Manter a segurança do site e prevenir fraude',
+    base: 'Legítimo interesse (art. 7, IX)',
+  },
+];
+
+// Montado aqui, e não no markup, porque quebrar a frase em linhas deixava um
+// espaço solto antes da vírgula ("PiaR Comunicação , com sede na...").
+const controladorResto =
+  `${site.cnpj ? `, inscrita no CNPJ sob o nº ${site.cnpj}` : ''}` +
+  `, com sede na ${site.address.street}, ${site.address.locality}, ` +
+  `${site.address.region}, CEP ${site.address.postalCode}.`;
+
+const direitos = [
+  'Confirmar que tratamos dados seus e acessar esses dados.',
+  'Corrigir dados incompletos, inexatos ou desatualizados.',
+  'Pedir anonimização, bloqueio ou eliminação de dados desnecessários ou excessivos.',
+  'Pedir a portabilidade dos dados para outro fornecedor.',
+  'Pedir a eliminação dos dados tratados com base no seu consentimento.',
+  'Saber com quem compartilhamos seus dados.',
+  'Saber o que acontece se você negar o consentimento.',
+  'Revogar o consentimento a qualquer momento.',
+  'Se opor a um tratamento feito sem consentimento, quando houver descumprimento da lei.',
+];
+---
+
+<BaseLayout title={titulo} description={descricao}>
+  <Nav />
+
+  <main id="main" class="lg-main">
+    <div class="lg-shell">
+      <span class="lg-eyebrow">Documento legal</span>
+      <h1 class="lg-titulo">Política de Privacidade</h1>
+      <p class="lg-lede">
+        Este documento explica, sem juridiquês desnecessário, quais dados a PiaR coleta neste
+        site, o que fazemos com eles, com quem eles são compartilhados e como você retoma o
+        controle sobre isso a qualquer momento.
+      </p>
+      <p class="lg-revisao">Última revisão: {site.privacidadeRevisada}</p>
+
+      <nav class="lg-indice" aria-label="Índice da política">
+        <h2>Nesta página</h2>
+        <ol>
+          <li><a href="#controlador">Quem trata seus dados</a></li>
+          <li><a href="#encarregada">Encarregada de dados</a></li>
+          <li><a href="#coleta">O que coletamos</a></li>
+          <li><a href="#cookies">Cookies que este site grava</a></li>
+          <li><a href="#bases">Finalidades e bases legais</a></li>
+          <li><a href="#compartilhamento">Com quem compartilhamos</a></li>
+          <li><a href="#internacional">Transferência internacional</a></li>
+          <li><a href="#prazos">Por quanto tempo guardamos</a></li>
+          <li><a href="#direitos">Seus direitos</a></li>
+          <li><a href="#seguranca">Segurança</a></li>
+          <li><a href="#gerenciar">Gerenciar cookies</a></li>
+          <li><a href="#mudancas">Mudanças nesta política</a></li>
+        </ol>
+      </nav>
+
+      <hr class="lg-regua" />
+
+      <section class="lg-secao" id="controlador">
+        <h2>1. Quem trata seus dados</h2>
+        <p>
+          O controlador dos dados pessoais coletados neste site é a <strong>{site.legalName}</strong>{controladorResto}
+        </p>
+        <p>
+          Controlador, na linguagem da Lei Geral de Proteção de Dados (Lei 13.709/2018), é quem
+          decide o que é coletado e para quê. Essa decisão é nossa, e a responsabilidade também.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="encarregada">
+        <h2>2. Encarregada de dados</h2>
+        <p>
+          A encarregada pelo tratamento de dados pessoais, prevista no art. 41 da LGPD,
+          é <strong>{site.encarregado.nome}</strong>. É com ela que você fala para exercer
+          qualquer direito descrito aqui, e é ela quem responde à Autoridade Nacional de
+          Proteção de Dados em nome da PiaR.
+        </p>
+        <div class="lg-caixa">
+          <p><strong>{site.encarregado.nome}</strong>, encarregada de proteção de dados</p>
+          <p><a href={`mailto:${site.encarregado.email}`}>{site.encarregado.email}</a></p>
+          <p style="color: var(--text-faint); font-size: .88rem;">
+            Respondemos pedidos de titular em até 15 dias.
+          </p>
+        </div>
+      </section>
+
+      <section class="lg-secao" id="coleta">
+        <h2>3. O que coletamos</h2>
+
+        <h3>Dados que você nos entrega</h3>
+        <p>
+          Quando você preenche o formulário da página de <a href="/contato">contato</a>, pedimos
+          nome, e-mail, telefone, empresa, cargo e uma descrição do seu contexto. Só isso. Não
+          pedimos documento, dado bancário nem qualquer categoria de dado sensível, e pedimos que
+          você também não escreva esse tipo de informação no campo aberto.
+        </p>
+
+        <h3>Dados que o navegador conta</h3>
+        <p>
+          Se você autorizar no aviso de cookies, o site registra dados de navegação: páginas
+          visitadas, tempo de permanência, tipo de dispositivo, e a origem da visita, ou seja, a
+          campanha, o link ou o site que trouxe você até aqui. Esses dados nascem sem nome. Eles
+          passam a estar ligados a você no momento em que você preenche o formulário, porque é
+          assim que conseguimos saber de onde veio um contato.
+        </p>
+        <p>
+          Se você recusar os cookies de análise e marketing, nada disso é gravado, e o site
+          continua funcionando por inteiro. Não usamos muro de cookies.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="cookies">
+        <h2>4. Cookies que este site grava</h2>
+        <p>
+          Cookie é um arquivo pequeno que fica guardado no seu navegador. Abaixo está a lista
+          completa do que este site pode gravar, com a finalidade e o prazo de cada item. Os
+          cookies de análise e de marketing só existem depois que você aceita.
+        </p>
+        <div class="lg-tabela-caixa">
+          <table class="lg-tabela">
+            <thead>
+              <tr>
+                <th scope="col">Cookie</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Origem</th>
+                <th scope="col">Para que serve</th>
+                <th scope="col">Prazo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cookies.map((c) => (
+                <tr>
+                  <td class="lg-nome">{c.nome}</td>
+                  <td><span class="lg-selo" data-cat={c.categoria}>{c.categoria}</span></td>
+                  <td>{c.origem}</td>
+                  <td>{c.finalidade}</td>
+                  <td>{c.prazo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Você também pode apagar ou bloquear cookies direto nas configurações do seu navegador.
+          Fazendo isso, a sua escolha registrada aqui se perde, e o aviso volta a aparecer.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="bases">
+        <h2>5. Finalidades e bases legais</h2>
+        <p>
+          A LGPD exige que todo tratamento tenha uma base legal declarada. Estas são as nossas,
+          uma para cada coisa que fazemos com dado pessoal.
+        </p>
+        <div class="lg-tabela-caixa">
+          <table class="lg-tabela">
+            <thead>
+              <tr>
+                <th scope="col">O que fazemos</th>
+                <th scope="col">Base legal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bases.map((b) => (
+                <tr>
+                  <td>{b.tratamento}</td>
+                  <td>{b.base}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Não vendemos dados pessoais, não fazemos decisão automatizada de perfil que afete
+          seus interesses e não usamos seus dados para nada além do que está descrito aqui.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="compartilhamento">
+        <h2>6. Com quem compartilhamos</h2>
+        <p>
+          Seus dados não são vendidos nem cedidos para terceiros usarem por conta própria. Eles
+          passam por fornecedores que operam a nosso pedido e sob nossas instruções, na condição
+          de operadores:
+        </p>
+        <ul>
+          <li>
+            <strong>RD Station</strong>, plataforma brasileira de automação de marketing, que
+            recebe o formulário de contato e registra a navegação autorizada.
+          </li>
+          <li>
+            <strong>Google Analytics 4</strong>, do Google, que mede a audiência do site de forma
+            agregada, quando você autoriza os cookies de análise.
+          </li>
+          <li>
+            <strong>Serviços de hospedagem e de e-mail</strong>, que sustentam o site e as
+            respostas que enviamos a você.
+          </li>
+        </ul>
+        <p>
+          Também podemos compartilhar dados quando uma lei, uma ordem judicial ou uma autoridade
+          competente exigir. Nesse caso, avisamos você sempre que a própria lei permitir.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="internacional">
+        <h2>7. Transferência internacional</h2>
+        <p>
+          O Google Analytics processa dados em servidores fora do Brasil, inclusive nos Estados
+          Unidos. Essa transferência acontece com base nas cláusulas contratuais e nas garantias
+          oferecidas pelo próprio fornecedor, conforme o art. 33 da LGPD. Recusar os cookies de
+          análise evita essa transferência por completo.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="prazos">
+        <h2>8. Por quanto tempo guardamos</h2>
+        <p>
+          Guardamos cada dado apenas enquanto ele tem função. Depois disso ele é eliminado ou
+          anonimizado.
+        </p>
+        <ul>
+          <li>
+            <strong>Contato que não vira cliente:</strong> até 24 meses a partir da última
+            interação sua com a gente.
+          </li>
+          <li>
+            <strong>Cliente:</strong> durante toda a relação contratual e por 5 anos após o
+            encerramento, prazo que atende às obrigações fiscais e ao prazo prescricional do
+            Código Civil.
+          </li>
+          <li>
+            <strong>Cookies:</strong> os prazos individuais estão na tabela da seção 4.
+          </li>
+          <li>
+            <strong>Consentimento revogado:</strong> encerramos na hora o tratamento que dependia
+            dele e apagamos os dados correspondentes, salvo o que a lei nos obrigar a manter.
+          </li>
+        </ul>
+      </section>
+
+      <section class="lg-secao" id="direitos">
+        <h2>9. Seus direitos</h2>
+        <p>
+          O art. 18 da LGPD garante a você, a qualquer momento e sem custo:
+        </p>
+        <ul>
+          {direitos.map((d) => <li>{d}</li>)}
+        </ul>
+        <p>
+          Para exercer qualquer um deles, escreva para
+          {' '}<a href={`mailto:${site.encarregado.email}`}>{site.encarregado.email}</a>. Podemos
+          pedir alguma informação que confirme que você é mesmo o titular, justamente para não
+          entregar dados seus a outra pessoa.
+        </p>
+        <p>
+          Se a nossa resposta não resolver, você pode registrar uma reclamação na Autoridade
+          Nacional de Proteção de Dados, a ANPD, em
+          {' '}<a href="https://www.gov.br/anpd" target="_blank" rel="noopener">gov.br/anpd</a>.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="seguranca">
+        <h2>10. Segurança</h2>
+        <p>
+          O site roda inteiro em HTTPS, com política de segurança de conteúdo que restringe o que
+          pode ser carregado nas páginas. O acesso aos dados de contato é limitado a quem precisa
+          deles para trabalhar, dentro de plataformas com controle de acesso próprio.
+        </p>
+        <p>
+          Nenhum sistema é perfeitamente seguro, e prometer o contrário seria desonesto. Se
+          acontecer um incidente com risco relevante para você, comunicamos você e a ANPD, como
+          manda o art. 48.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="gerenciar">
+        <h2>11. Gerenciar cookies</h2>
+        <p>
+          Mudar de ideia é um direito, previsto no art. 8, §5. O botão abaixo reabre a mesma
+          janela de escolha que apareceu na sua primeira visita. Ao desligar uma categoria,
+          apagamos os cookies dela e recarregamos a página, para que nada continue rodando por
+          inércia.
+        </p>
+        <div class="lg-caixa lg-caixa-escura">
+          <p><strong>Suas preferências de cookies</strong></p>
+          <p>Aceitar, recusar ou escolher categoria por categoria. Vale a partir do clique.</p>
+          <button type="button" class="lg-botao" data-ck="gerenciar">
+            Gerenciar cookies
+            <iconify-icon icon="solar:settings-linear"></iconify-icon>
+          </button>
+        </div>
+      </section>
+
+      <section class="lg-secao" id="mudancas">
+        <h2>12. Mudanças nesta política</h2>
+        <p>
+          Quando o site passar a coletar algo diferente, este documento muda junto e a data de
+          revisão no topo é atualizada. Se a mudança alterar as categorias de cookies, o aviso de
+          escolha volta a aparecer para você decidir de novo, porque um consentimento antigo não
+          cobre uma finalidade nova.
+        </p>
+        <p>
+          Dúvida sobre qualquer ponto daqui:
+          {' '}<a href={`mailto:${site.encarregado.email}`}>{site.encarregado.email}</a>.
+        </p>
+        <p>
+          As regras de uso do site e do conteúdo publicado nele estão em documento separado,
+          nos <a href="/termos">Termos de Uso</a>.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

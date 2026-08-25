@@ -1,0 +1,680 @@
+---
+// =====================================================================
+// Consentimento de cookies (LGPD)
+// ---------------------------------------------------------------------
+// A LGPD não exige banner por artigo. O que ela exige é base legal (art. 7),
+// transparência (art. 6, VI e art. 9) e revogação tão fácil quanto o aceite
+// (art. 8, §5). O Guia Orientativo sobre Cookies da ANPD (2022) é o que puxa
+// consentimento para cookies não essenciais. Este componente existe para isso.
+//
+// REGRA CENTRAL: nada de marketing ou análise roda antes do aceite. Por isso o
+// loader do RD Station e o cookie de atribuição saíram do <head> do BaseLayout
+// e passaram a ser injetados por JS, aqui, mediante consentimento. Banner que
+// aparece com o rastreador já disparado é decoração, não conformidade.
+//
+// Categorias:
+//   necessários  sempre ligados. Hoje só o próprio cookie de escolha.
+//   análise      GA4 (só existe se site.ga4Id estiver preenchido).
+//   marketing    RD Station + cookie piar_atrib (UTM, landing page, referrer).
+//
+// Revogar de verdade: quando uma categoria é desligada, os cookies dela são
+// apagados e a página recarrega, porque script já injetado não se desinjeta.
+// =====================================================================
+import { site } from '@/data/site';
+
+const ga4 = site.ga4Id;
+const rdLoader = site.rdStationLoader;
+---
+
+<div id="ck-raiz" class="ck-raiz">
+  <!-- Banner. Nasce com [hidden]: o JS decide se aparece, para quem já
+       escolheu não ver um flash de banner a cada navegação. -->
+  <div id="ck-banner" class="ck-banner" role="region" aria-label="Aviso de cookies" hidden>
+    <div class="ck-cartao">
+      <div class="ck-texto">
+        <h2 class="ck-titulo">Cookies, sem enrolação</h2>
+        <p class="ck-corpo">
+          Alguns cookies fazem o site funcionar e não dá para desligar. Os outros servem
+          para medir audiência e entender por onde as pessoas chegaram até nós. Esses só
+          rodam se você deixar, e você pode mudar de ideia quando quiser.
+          <a href="/privacidade">Ler a Política de Privacidade</a>.
+        </p>
+      </div>
+      <div class="ck-acoes">
+        <button type="button" class="ck-btn ck-btn-linha" data-ck="recusar">Recusar</button>
+        <button type="button" class="ck-btn ck-btn-linha" data-ck="abrir">Escolher</button>
+        <button type="button" class="ck-btn ck-btn-cheio" data-ck="aceitar">Aceitar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Painel de preferências. Também abre pelo rodapé e pela /privacidade. -->
+  <div id="ck-painel" class="ck-painel" hidden>
+    <div class="ck-veu" data-ck="fechar"></div>
+    <div
+      class="ck-caixa"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ck-painel-titulo"
+      data-lenis-prevent
+    >
+      <div class="ck-caixa-topo">
+        <h2 class="ck-titulo" id="ck-painel-titulo">Preferências de cookies</h2>
+        <button type="button" class="ck-fechar" data-ck="fechar" aria-label="Fechar preferências">
+          <iconify-icon icon="solar:close-circle-linear"></iconify-icon>
+        </button>
+      </div>
+
+      <ul class="ck-lista">
+        <li class="ck-item">
+          <div class="ck-item-texto">
+            <h3>Necessários</h3>
+            <p>
+              Guardam a sua escolha aqui e mantêm o site de pé. Sem eles esta janela
+              voltaria a aparecer a cada página. Não têm como ser desligados.
+            </p>
+          </div>
+          <label class="ck-chave ck-chave-presa">
+            <input type="checkbox" checked disabled aria-label="Cookies necessários, sempre ativos" />
+            <span class="ck-trilho" aria-hidden="true"></span>
+          </label>
+        </li>
+
+        <li class="ck-item">
+          <div class="ck-item-texto">
+            <h3>Análise</h3>
+            <p>
+              Google Analytics 4. Mostra quantas pessoas visitam, quais páginas prendem
+              atenção e onde elas desistem. É o que nos diz o que reescrever.
+            </p>
+          </div>
+          <label class="ck-chave">
+            <input type="checkbox" id="ck-analise" aria-label="Cookies de análise" />
+            <span class="ck-trilho" aria-hidden="true"></span>
+          </label>
+        </li>
+
+        <li class="ck-item">
+          <div class="ck-item-texto">
+            <h3>Marketing</h3>
+            <p>
+              RD Station e o registro da origem da sua visita (campanha, link de entrada,
+              site que trouxe você). Se você preencher o formulário, é isso que nos permite
+              saber de onde veio o contato.
+            </p>
+          </div>
+          <label class="ck-chave">
+            <input type="checkbox" id="ck-marketing" aria-label="Cookies de marketing" />
+            <span class="ck-trilho" aria-hidden="true"></span>
+          </label>
+        </li>
+      </ul>
+
+      <div class="ck-caixa-pe">
+        <a class="ck-link" href="/privacidade">Política de Privacidade</a>
+        <div class="ck-acoes">
+          <button type="button" class="ck-btn ck-btn-linha" data-ck="recusar">Recusar todos</button>
+          <button type="button" class="ck-btn ck-btn-cheio" data-ck="salvar">Salvar escolha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ ga4, rdLoader }}>
+  (function () {
+    var CHAVE = 'piar_consent';
+    var VERSAO = 1;
+    var DIAS = 365;
+    // Meio segundo antes de o banner deslizar para dentro. Tempo de a página
+    // se compor primeiro, sem custo de conformidade: nada de análise ou
+    // marketing roda nesse intervalo, porque ligarAnalise e ligarMarketing
+    // dependem de escolha já gravada.
+    var ATRASO_BANNER = 500;
+    // Como as chaves opcionais chegam no painel de quem ainda não escolheu.
+    // `true` = ligadas, para a pessoa desligar o que não quiser (decisão do
+    // Danilo em 25/08/2026). Ressalva registrada: o Guia de Cookies da ANPD e a
+    // jurisprudência europeia (caso Planet49) tratam caixa pré-marcada como
+    // indício de consentimento inválido, porque o aceite deve ser um ato
+    // positivo. O que segura a barra aqui é que nada é gravado nem injetado sem
+    // clique em "Salvar escolha": fechar no X ou no Esc não consente, e o
+    // banner volta. Para reverter ao opt-in puro, basta trocar por `false`.
+    var PADRAO_OPCIONAIS = true;
+    // Precisa acompanhar a duração da transição de saída lá embaixo no CSS.
+    // Se ficar menor, o display:none corta a animação pela metade.
+    var SAIDA_BANNER = 460;
+
+    // Cookies que cada categoria cria. Usado para apagar de verdade na revogação.
+    // Prefixo casa com nomes variáveis (_ga_G-XXXX, _gat_gtag_...).
+    var RASTRO = {
+      analise: ['_ga', '_gid', '_gat'],
+      marketing: ['piar_atrib', 'rdtrk', '__trf.src', '__utmz', '_rdtrk'],
+    };
+
+    // A atribuição também tem um espelho em sessionStorage (ver gravarAtribuicao).
+    // Sem apagar isto na revogação, o formulário de /contato continuava lendo a
+    // origem da visita depois de a pessoa desligar o marketing.
+    var RASTRO_SESSAO = {
+      analise: [],
+      marketing: ['piar_atrib'],
+    };
+
+    var memoria = null;
+    var ligado = { analise: false, marketing: false };
+
+    // ---------------------------------------------------------------- cookie
+    function pegarCookie(nome) {
+      try {
+        var alvo = nome + '=';
+        var lista = document.cookie ? document.cookie.split('; ') : [];
+        for (var i = 0; i < lista.length; i++) {
+          if (lista[i].indexOf(alvo) === 0) return decodeURIComponent(lista[i].slice(alvo.length));
+        }
+      } catch (err) { /* cookie bloqueado */ }
+      return '';
+    }
+
+    function apagarCookies(prefixos) {
+      var lista = [];
+      try {
+        lista = document.cookie ? document.cookie.split('; ') : [];
+      } catch (err) { return; }
+      var host = location.hostname;
+      var raiz = host.split('.').slice(-2).join('.');
+      lista.forEach(function (par) {
+        var nome = par.split('=')[0];
+        var casa = prefixos.some(function (p) { return nome === p || nome.indexOf(p) === 0; });
+        if (!casa) return;
+        // O mesmo cookie pode ter sido gravado em domínios e paths diferentes.
+        // Sem varrer as variações, ele volta a ser lido depois do reload.
+        ['/', location.pathname].forEach(function (caminho) {
+          ['', host, '.' + host, '.' + raiz].forEach(function (dominio) {
+            try {
+              document.cookie = nome + '=;path=' + caminho + ';max-age=0' +
+                (dominio ? ';domain=' + dominio : '');
+            } catch (err) { /* ignora */ }
+          });
+        });
+      });
+    }
+
+    // ---------------------------------------------------------------- estado
+    function ler() {
+      if (memoria) return memoria;
+      var bruto = pegarCookie(CHAVE);
+      if (!bruto) return null;
+      try {
+        var d = JSON.parse(bruto);
+        // Versão diferente significa que as categorias mudaram desde a escolha.
+        // Nesse caso a escolha antiga não vale e o banner volta.
+        if (!d || d.v !== VERSAO) return null;
+        memoria = { analise: !!d.analise, marketing: !!d.marketing, data: d.data || '' };
+        return memoria;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function gravar(prefs) {
+      var novo = {
+        analise: !!prefs.analise,
+        marketing: !!prefs.marketing,
+        data: new Date().toISOString(),
+      };
+      memoria = novo;
+      try {
+        document.cookie = CHAVE + '=' +
+          encodeURIComponent(JSON.stringify({ v: VERSAO, analise: novo.analise, marketing: novo.marketing, data: novo.data })) +
+          ';path=/;max-age=' + DIAS * 24 * 60 * 60 + ';SameSite=Lax' +
+          (location.protocol === 'https:' ? ';Secure' : '');
+      } catch (err) { /* cookie bloqueado: a escolha vale só nesta página */ }
+
+      // Toda categoria que ficou desligada tem o rastro apagado, e não só a que
+      // acabou de ser revogada. Assim o caso "aceitou, limpou o cookie na mão,
+      // recusou" não deixa sobra para trás.
+      var desligadas = ['analise', 'marketing'].filter(function (c) { return !novo[c]; });
+      desligadas.forEach(function (c) {
+        apagarCookies(RASTRO[c]);
+        RASTRO_SESSAO[c].forEach(function (k) {
+          try { sessionStorage.removeItem(k); } catch (err) { /* storage bloqueado */ }
+        });
+      });
+
+      // Recarrega só quando havia mesmo algo rodando nesta página: script já
+      // injetado não se desinjeta. Numa recusa logo de cara não há o que parar,
+      // e recarregar seria um susto sem motivo.
+      if (desligadas.some(function (c) { return ligado[c]; })) {
+        fecharTudo();
+        location.reload();
+        return;
+      }
+
+      aplicar();
+      try {
+        document.dispatchEvent(new CustomEvent('piar:consentimento', { detail: novo }));
+      } catch (err) { /* navegador antigo */ }
+    }
+
+    // ------------------------------------------------------------- os gatilhos
+    function injetar(src) {
+      var s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = src;
+      document.head.appendChild(s);
+    }
+
+    // Atribuição de origem: grava UTM, página de entrada e referrer num cookie
+    // próprio de 90 dias, para o formulário de /contato conseguir dizer de onde
+    // o lead veio mesmo quando a visita e a conversão acontecem em dias diferentes.
+    // Primeiro toque manda; UTM nova sobrescreve (a campanha paga mais recente vence).
+    function gravarAtribuicao() {
+      try {
+        var NOME = 'piar_atrib';
+        var qs = new URLSearchParams(location.search);
+        var utm = {};
+        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) {
+          var v = qs.get(k);
+          if (v) utm[k] = v.slice(0, 150);
+        });
+        var temUtmNova = Object.keys(utm).length > 0;
+        var jaGravado = !!pegarCookie(NOME);
+        var jaNaSessao = false;
+        try { jaNaSessao = !!sessionStorage.getItem(NOME); } catch (err) { /* storage bloqueado */ }
+        if ((jaGravado || jaNaSessao) && !temUtmNova) return;
+
+        var ref = document.referrer || '';
+        var externo = ref && ref.indexOf(location.origin) !== 0;
+        var dado = {
+          utm_source: utm.utm_source || '',
+          utm_medium: utm.utm_medium || '',
+          utm_campaign: utm.utm_campaign || '',
+          utm_content: utm.utm_content || '',
+          landing_page: (location.pathname + location.search).slice(0, 300),
+          referrer: externo ? ref.slice(0, 300) : '',
+        };
+        // Espelho em sessionStorage: é o único jeito de a origem sobreviver à
+        // navegação entre páginas quando o cookie está bloqueado. Vale só
+        // enquanto a aba existir; o cookie continua sendo a fonte principal.
+        try { sessionStorage.setItem(NOME, JSON.stringify(dado)); } catch (err) { /* storage bloqueado */ }
+
+        document.cookie = NOME + '=' + encodeURIComponent(JSON.stringify(dado)) +
+          ';path=/;max-age=' + 90 * 24 * 60 * 60 + ';SameSite=Lax' +
+          (location.protocol === 'https:' ? ';Secure' : '');
+      } catch (err) { /* cookie bloqueado: o form cai no fallback pela URL */ }
+    }
+
+    function ligarMarketing() {
+      if (ligado.marketing) return;
+      ligado.marketing = true;
+      gravarAtribuicao();
+      if (rdLoader) injetar(rdLoader);
+    }
+
+    function ligarAnalise() {
+      // Sem ID configurado em src/data/site.ts não há o que carregar. O banner
+      // continua oferecendo a categoria para o dia em que o ID entrar.
+      if (ligado.analise || !ga4) return;
+      ligado.analise = true;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', ga4, { anonymize_ip: true });
+      injetar('https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga4));
+    }
+
+    function aplicar() {
+      var c = ler();
+      if (!c) return;
+      if (c.analise) ligarAnalise();
+      if (c.marketing) ligarMarketing();
+    }
+
+    // ------------------------------------------------------------------- a UI
+    var banner = document.getElementById('ck-banner');
+    var painel = document.getElementById('ck-painel');
+    var caixaAnalise = document.getElementById('ck-analise');
+    var caixaMarketing = document.getElementById('ck-marketing');
+    var focoAnterior = null;
+
+    var saindo = null;
+
+    function mostrarBanner(v) {
+      if (!banner) return;
+      if (saindo) { clearTimeout(saindo); saindo = null; }
+      if (v) {
+        banner.hidden = false;
+        // Dois quadros: o primeiro pinta o cartão lá embaixo, o segundo dispara
+        // a transição. Com um só, o navegador agrupa as duas mudanças e o
+        // cartão aparece no lugar, sem deslizar.
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { banner.classList.add('ck-entrou'); });
+        });
+        return;
+      }
+      if (banner.hidden) return;
+      // Sai pelo mesmo caminho por onde entrou. O hidden só entra no fim,
+      // senão o display:none mata a animação no primeiro quadro.
+      banner.classList.remove('ck-entrou');
+      saindo = setTimeout(function () { banner.hidden = true; saindo = null; }, SAIDA_BANNER);
+    }
+
+    function abrirPainel() {
+      if (!painel) return;
+      // Quem já escolheu vê exatamente o que salvou. Quem nunca escolheu vê o
+      // padrão de PADRAO_OPCIONAIS, que é sugestão, e não consentimento: só vira
+      // escolha depois do clique em salvar.
+      var c = ler();
+      if (caixaAnalise) caixaAnalise.checked = c ? !!c.analise : PADRAO_OPCIONAIS;
+      if (caixaMarketing) caixaMarketing.checked = c ? !!c.marketing : PADRAO_OPCIONAIS;
+      focoAnterior = document.activeElement;
+      painel.hidden = false;
+      requestAnimationFrame(function () {
+        painel.classList.add('ck-entrou');
+        var alvo = painel.querySelector('[data-ck="salvar"]');
+        if (alvo) alvo.focus();
+      });
+      document.addEventListener('keydown', naTecla);
+    }
+
+    function fecharPainel() {
+      if (!painel) return;
+      painel.classList.remove('ck-entrou');
+      painel.hidden = true;
+      document.removeEventListener('keydown', naTecla);
+      if (focoAnterior && focoAnterior.focus) focoAnterior.focus();
+      // Fechar no X ou no Esc não é consentir. Sem escolha gravada, o banner
+      // volta: com as chaves opcionais pré-ligadas, sumir daqui em silêncio
+      // pareceria aceite, que é exatamente o que a LGPD não admite.
+      if (!ler()) mostrarBanner(true);
+    }
+
+    function fecharTudo() {
+      mostrarBanner(false);
+      if (painel) { painel.classList.remove('ck-entrou'); painel.hidden = true; }
+      document.removeEventListener('keydown', naTecla);
+    }
+
+    function naTecla(e) {
+      if (e.key === 'Escape') fecharPainel();
+    }
+
+    function decidir(prefs) {
+      gravar(prefs);
+      fecharTudo();
+    }
+
+    document.addEventListener('click', function (e) {
+      var alvo = e.target.closest ? e.target.closest('[data-ck]') : null;
+      if (!alvo) return;
+      var acao = alvo.getAttribute('data-ck');
+      if (acao === 'aceitar') decidir({ analise: true, marketing: true });
+      else if (acao === 'recusar') decidir({ analise: false, marketing: false });
+      else if (acao === 'salvar') decidir({
+        analise: !!(caixaAnalise && caixaAnalise.checked),
+        marketing: !!(caixaMarketing && caixaMarketing.checked),
+      });
+      else if (acao === 'abrir') { mostrarBanner(false); abrirPainel(); }
+      else if (acao === 'fechar') fecharPainel();
+      else if (acao === 'gerenciar') { e.preventDefault(); abrirPainel(); }
+    });
+
+    // API pública. O rodapé e a /privacidade chamam piarConsent.abrir() para
+    // reabrir a escolha, que é a revogação exigida pelo art. 8, §5.
+    window.piarConsent = {
+      ler: ler,
+      salvar: gravar,
+      abrir: abrirPainel,
+    };
+
+    // ---------------------------------------------------------------- arranque
+    aplicar();
+    if (!ler()) setTimeout(function () { mostrarBanner(true); }, ATRASO_BANNER);
+  })();
+</script>
+
+<style is:global>
+  /* O banner vive acima de tudo: o Nav da PiaR chega a z-index 600. */
+  .ck-banner,
+  .ck-painel {
+    --ck-preto: #0F0F11;
+    --ck-amarelo: #FED136;
+    --ck-branco: #FFFFFF;
+    position: fixed;
+    z-index: 950;
+    font-family: var(--font-sans, 'Open Sans', sans-serif);
+  }
+  .ck-banner[hidden],
+  .ck-painel[hidden] { display: none; }
+
+  /* ---------------------------------------------------------- banner */
+  .ck-banner {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: clamp(.75rem, 2vw, 1.25rem);
+    display: flex;
+    justify-content: flex-start;
+    pointer-events: none;
+  }
+  .ck-cartao {
+    pointer-events: auto;
+    width: min(560px, 100%);
+    background: rgba(15, 15, 17, .96);
+    color: var(--ck-branco);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 18px;
+    padding: clamp(1.15rem, 2.4vw, 1.5rem);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .38);
+    backdrop-filter: blur(10px);
+    /* Nasce inteiro abaixo da dobra e sobe. O 100% é a altura do próprio
+       cartão; a folga extra cobre o padding do .ck-banner e a sombra, para
+       nenhum pedaço ficar espiando antes da hora. */
+    transform: translateY(calc(100% + 3rem));
+    opacity: 0;
+    transition: transform .58s cubic-bezier(.16, 1, .3, 1), opacity .38s ease;
+  }
+  .ck-banner.ck-entrou .ck-cartao { transform: none; opacity: 1; }
+
+  .ck-titulo {
+    font-family: var(--font-display, 'Montserrat', sans-serif);
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin: 0 0 .45rem;
+    color: var(--ck-branco);
+  }
+  .ck-corpo {
+    margin: 0;
+    font-size: .855rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, .72);
+  }
+  .ck-corpo a,
+  .ck-link {
+    color: var(--ck-amarelo);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .ck-corpo a:hover,
+  .ck-link:hover { color: #FFE182; }
+
+  .ck-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: 1.05rem;
+  }
+  /* Recusar tem o mesmo peso de aceitar. O Guia da ANPD pede que negar seja tão
+     fácil quanto consentir, então nada de esconder a recusa num link cinza. */
+  .ck-btn {
+    flex: 1 1 auto;
+    min-width: 104px;
+    padding: .62rem 1.05rem;
+    border-radius: 999px;
+    font-family: var(--font-sans, 'Open Sans', sans-serif);
+    font-size: .84rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color .25s, border-color .25s, color .25s, transform .25s;
+  }
+  .ck-btn:focus-visible { outline: 2px solid var(--ck-amarelo); outline-offset: 3px; }
+  .ck-btn-linha {
+    background: transparent;
+    color: rgba(255, 255, 255, .88);
+    border: 1.5px solid rgba(255, 255, 255, .28);
+  }
+  .ck-btn-linha:hover {
+    background: rgba(255, 255, 255, .08);
+    border-color: rgba(255, 255, 255, .5);
+    color: #fff;
+  }
+  .ck-btn-cheio {
+    background: var(--ck-amarelo);
+    color: var(--ck-preto);
+    border: 1.5px solid var(--ck-amarelo);
+  }
+  .ck-btn-cheio:hover { background: #FFDC50; transform: translateY(-1px); }
+
+  /* -------------------------------------------------------- preferências */
+  .ck-painel {
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+  }
+  .ck-veu {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 8, 12, .68);
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .ck-painel.ck-entrou .ck-veu { opacity: 1; }
+  .ck-caixa {
+    position: relative;
+    width: min(620px, 100%);
+    max-height: min(86vh, 720px);
+    overflow-y: auto;
+    background: rgba(15, 15, 17, .98);
+    color: var(--ck-branco);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 20px;
+    padding: clamp(1.25rem, 3vw, 1.85rem);
+    box-shadow: 0 32px 80px rgba(0, 0, 0, .5);
+    transform: translateY(16px) scale(.985);
+    opacity: 0;
+    transition: transform .45s cubic-bezier(.16, 1, .3, 1), opacity .35s ease;
+  }
+  .ck-painel.ck-entrou .ck-caixa { transform: none; opacity: 1; }
+
+  .ck-caixa-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .ck-caixa-topo .ck-titulo { font-size: 1.25rem; margin-bottom: 0; }
+  .ck-fechar {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, .5);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .25s;
+  }
+  .ck-fechar:hover { color: #fff; }
+  .ck-fechar:focus-visible { outline: 2px solid var(--ck-amarelo); outline-offset: 3px; border-radius: 6px; }
+
+  .ck-lista { list-style: none; margin: 1.35rem 0 0; padding: 0; }
+  .ck-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.05rem 0;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+  }
+  .ck-item:last-child { border-bottom: 1px solid rgba(255, 255, 255, .1); }
+  .ck-item-texto h3 {
+    font-family: var(--font-display, 'Montserrat', sans-serif);
+    font-size: .92rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin: 0 0 .3rem;
+    color: var(--ck-branco);
+  }
+  .ck-item-texto p {
+    margin: 0;
+    font-size: .82rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, .62);
+    max-width: 46ch;
+  }
+
+  .ck-chave { position: relative; flex-shrink: 0; margin-top: .15rem; cursor: pointer; }
+  .ck-chave input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .ck-trilho {
+    display: block;
+    width: 46px;
+    height: 26px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .18);
+    transition: background-color .3s, border-color .3s;
+  }
+  .ck-trilho::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .78);
+    transition: transform .3s cubic-bezier(.16, 1, .3, 1), background-color .3s;
+  }
+  .ck-chave input:checked + .ck-trilho { background: var(--ck-amarelo); border-color: var(--ck-amarelo); }
+  .ck-chave input:checked + .ck-trilho::after { transform: translateX(20px); background: var(--ck-preto); }
+  .ck-chave input:focus-visible + .ck-trilho { outline: 2px solid var(--ck-amarelo); outline-offset: 3px; }
+  .ck-chave-presa { cursor: default; opacity: .55; }
+  .ck-chave-presa input { cursor: not-allowed; }
+
+  .ck-caixa-pe {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.35rem;
+    font-size: .82rem;
+  }
+  .ck-caixa-pe .ck-acoes { margin-top: 0; flex: 0 1 auto; }
+  .ck-caixa-pe .ck-btn { flex: 0 0 auto; }
+
+  /* Quem pediu menos movimento no sistema recebe o mesmo banner, sem o
+     deslize. O atraso de meio segundo continua: ele é ritmo, não animação. */
+  @media (prefers-reduced-motion: reduce) {
+    .ck-cartao,
+    .ck-caixa,
+    .ck-veu { transition-duration: .01ms; }
+    .ck-cartao { transform: none; }
+    .ck-caixa { transform: none; }
+  }
+
+  @media (max-width: 560px) {
+    .ck-banner { padding: .6rem; }
+    .ck-cartao { border-radius: 16px; }
+    .ck-item { flex-direction: row; gap: .9rem; }
+    .ck-caixa-pe { flex-direction: column; align-items: stretch; }
+    .ck-caixa-pe .ck-acoes { width: 100%; }
+    .ck-caixa-pe .ck-btn { flex: 1 1 auto; }
+  }
+</style>

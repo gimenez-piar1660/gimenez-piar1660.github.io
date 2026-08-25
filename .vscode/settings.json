@@ -10,5 +10,7 @@
   "files.trimTrailingWhitespace": true,
   "tailwindCSS.includeLanguages": { "astro": "html" },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "claudeCode.useTerminal": true
+  "claudeCode.useTerminal": false,
+  "claudeCode.disableLoginPrompt": true,
+  "claudeCode.preferredLocation": "sidebar"
 }

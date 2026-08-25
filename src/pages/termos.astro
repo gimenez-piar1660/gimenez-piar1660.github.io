@@ -1,0 +1,318 @@
+---
+// Termos de Uso.
+// Irmã da /privacidade: mesma coluna de leitura, mesmo índice, mesma folha de
+// estilo (src/styles/legal.css). A divisão entre as duas é proposital. Este
+// documento trata do uso do site e do conteúdo; a Política de Privacidade trata
+// dos dados pessoais. Misturar os dois enfraquece o consentimento da LGPD, que
+// precisa ser específico, e some com o que importa dentro de um texto só.
+//
+// O que é dinâmico sai de src/data/site.ts (razão social, CNPJ, endereço,
+// e-mail, data de revisão). Editar lá propaga para cá.
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import { site } from '@/data/site';
+// Folha compartilhada com /privacidade. Ver o cabeçalho de src/styles/legal.css.
+import '@styles/legal.css';
+
+const titulo = 'Termos de Uso';
+const descricao =
+  'As regras de uso do site da PiaR Group: o que você pode fazer com o conteúdo, o que garantimos, o que não garantimos e quem responde por cada coisa.';
+
+// Mesma montagem usada na /privacidade: a frase é quebrada aqui, e não no
+// markup, para o CNPJ ausente não deixar um espaço solto antes da vírgula.
+const identificacaoResto =
+  `${site.cnpj ? `, inscrita no CNPJ sob o nº ${site.cnpj}` : ''}` +
+  `, com sede na ${site.address.street}, ${site.address.locality}, ` +
+  `${site.address.region}, CEP ${site.address.postalCode}.`;
+
+// Índice. Fonte única do sumário: cada item aponta para o id de uma <section>
+// abaixo, então seção nova entra aqui junto ou o sumário passa a mentir.
+const indice = [
+  { id: 'aceite', texto: 'O que você aceita ao usar o site' },
+  { id: 'quem', texto: 'Quem responde por este site' },
+  { id: 'uso', texto: 'Como usar o conteúdo' },
+  { id: 'vedado', texto: 'O que não é permitido' },
+  { id: 'propriedade', texto: 'Propriedade intelectual' },
+  { id: 'terceiros', texto: 'Marcas e logos de terceiros' },
+  { id: 'alcance', texto: 'O alcance do que publicamos' },
+  { id: 'formulario', texto: 'Formulário de contato' },
+  { id: 'links', texto: 'Links e ferramentas externas' },
+  { id: 'responsabilidade', texto: 'Disponibilidade e responsabilidade' },
+  { id: 'privacidade', texto: 'Privacidade, dados e cookies' },
+  { id: 'mudancas', texto: 'Mudanças nestes termos' },
+  { id: 'foro', texto: 'Lei aplicável e foro' },
+];
+---
+
+<BaseLayout title={titulo} description={descricao}>
+  <Nav />
+
+  <main id="main" class="lg-main">
+    <div class="lg-shell">
+      <span class="lg-eyebrow">Documento legal</span>
+      <h1 class="lg-titulo">Termos de Uso</h1>
+      <p class="lg-lede">
+        Este documento diz o que você pode fazer com o que está publicado aqui, o que a gente
+        garante, o que não garante e quem responde por cada coisa. Vale para qualquer página
+        deste site, em qualquer visita.
+      </p>
+      <p class="lg-revisao">Última revisão: {site.termosRevisada}</p>
+
+      <nav class="lg-indice" aria-label="Índice dos termos">
+        <h2>Nesta página</h2>
+        <ol>
+          {indice.map((i) => (
+            <li><a href={`#${i.id}`}>{i.texto}</a></li>
+          ))}
+        </ol>
+      </nav>
+
+      <hr class="lg-regua" />
+
+      <section class="lg-secao" id="aceite">
+        <h2>1. O que você aceita ao usar o site</h2>
+        <p>
+          Ao navegar por qualquer página daqui, você concorda com as regras deste documento. Se
+          discordar de alguma delas, o caminho honesto é fechar a aba. Não cobramos pelo acesso e
+          não exigimos cadastro para ler o que está publicado. O único momento em que pedimos
+          alguma informação sua é o formulário de contato, tratado na seção 8.
+        </p>
+        <p>
+          Estes termos andam junto com a <a href="/privacidade">Política de Privacidade</a>. Um
+          documento cuida do uso do site, o outro cuida dos seus dados pessoais. Ler os dois dá o
+          quadro inteiro.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="quem">
+        <h2>2. Quem responde por este site</h2>
+        <p>
+          Este site é operado pela <strong>{site.legalName}</strong>{identificacaoResto}
+        </p>
+        <p>
+          Canal aberto para qualquer assunto deste documento:
+          {' '}<a href={`mailto:${site.email}`}>{site.email}</a>.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="uso">
+        <h2>3. Como usar o conteúdo</h2>
+        <p>
+          Você pode ler, imprimir, salvar e mandar para quem quiser qualquer página deste site.
+          Pode usar o que está aqui no seu trabalho e dentro da sua empresa. Pode citar trechos em
+          apresentações, artigos, teses e posts.
+        </p>
+        <p>
+          O que pedimos em troca é curto: <strong>crédito à PiaR e link para a página
+          original</strong>. Vale para gente e vale para máquina. Citação feita por buscadores e
+          por assistentes de inteligência artificial é bem-vinda, desde que a atribuição e o link
+          sobrevivam ao caminho. Publicamos para ser citados.
+        </p>
+        <p>
+          Uso comercial, licenciamento, tradução ou reprodução integral em outro veículo depende
+          de autorização por escrito. Escreva para
+          {' '}<a href={`mailto:${site.email}`}>{site.email}</a>. A resposta costuma ser sim, com
+          o crédito combinado antes.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="vedado">
+        <h2>4. O que não é permitido</h2>
+        <p>Fora do que está na seção 3, estas coisas ficam de fora:</p>
+        <ul>
+          <li>
+            Republicar texto, estudo ou peça inteira em outro domínio, com ou sem alteração,
+            apagando a autoria.
+          </li>
+          <li>
+            Raspagem automatizada em volume que degrade a performance do site ou que exista para
+            reempacotar o conteúdo como produto de terceiro.
+          </li>
+          <li>
+            Usar a marca PiaR, nosso logotipo ou o nome de clientes citados para sugerir parceria,
+            patrocínio ou endosso que não existe.
+          </li>
+          <li>
+            Sondar vulnerabilidade, tentar acesso a área restrita, injetar código ou interferir no
+            funcionamento do site e de quem o hospeda.
+          </li>
+          <li>
+            Enviar pelo formulário conteúdo ilegal, ofensivo, informação falsa ou dado pessoal de
+            outra pessoa sem que ela tenha autorizado.
+          </li>
+        </ul>
+        <p>
+          Encontrou uma falha de segurança e quer relatar: escreva para
+          {' '}<a href={`mailto:${site.email}`}>{site.email}</a>. Relato responsável é bem recebido
+          aqui.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="propriedade">
+        <h2>5. Propriedade intelectual</h2>
+        <p>
+          Textos, estudos, metodologias nomeadas, imagens, ilustrações, código e a própria
+          organização das páginas pertencem à PiaR ou foram licenciados para ela. Estão protegidos
+          pela Lei de Direitos Autorais (Lei 9.610/1998) e, no que toca a marca e o nome, pela Lei
+          da Propriedade Industrial (Lei 9.279/1996).
+        </p>
+        <p>
+          Nada neste documento transfere titularidade. O que existe é a permissão de leitura e de
+          citação com crédito descrita na seção 3, e ela pode ser revista a qualquer tempo para
+          usos futuros.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="terceiros">
+        <h2>6. Marcas e logos de terceiros</h2>
+        <p>
+          Nomes, marcas e logotipos de clientes, veículos de imprensa e ferramentas citados neste
+          site pertencem a seus titulares. Aparecem aqui com finalidade informativa, para mostrar
+          trabalho realizado e cobertura conquistada. A presença de uma marca não significa que
+          ela endossa a PiaR, nem que a PiaR endossa tudo que ela faz.
+        </p>
+        <p>
+          Se você é titular de alguma marca mencionada e quer a citação ajustada, creditada de
+          outro jeito ou removida, escreva para
+          {' '}<a href={`mailto:${site.email}`}>{site.email}</a>. Resolvemos rápido e sem
+          discussão.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="alcance">
+        <h2>7. O alcance do que publicamos</h2>
+        <p>
+          Artigos, estudos, cases e materiais deste site existem para informar e para mostrar como
+          a gente pensa. Eles têm valor de leitura, e nenhum texto daqui substitui parecer
+          jurídico, análise de investimento ou um plano feito sob medida para o seu contexto.
+          Opinião sobre a sua marca só depois de conversar com você.
+        </p>
+        <p>
+          Números, prazos e resultados que aparecem nos cases descrevem o que aconteceu naqueles
+          projetos, com aquelas marcas, naquele momento. Não funcionam como promessa do que vai
+          acontecer com a sua. Reputação e imprensa dependem de fatores fora do nosso controle, a
+          começar pela decisão editorial de terceiros, e quem promete resultado garantido de mídia
+          espontânea está vendendo o que não pode entregar.
+        </p>
+        <p>
+          Trabalhamos para manter tudo correto e atualizado, e ainda assim conteúdo envelhece e
+          erro acontece. Achou um: <a href={`mailto:${site.email}`}>{site.email}</a>, a gente
+          corrige e credita quem apontou.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="formulario">
+        <h2>8. Formulário de contato</h2>
+        <p>Ao enviar o formulário da página de <a href="/contato">contato</a>, você declara que:</p>
+        <ul>
+          <li>as informações que preencheu são verdadeiras;</li>
+          <li>tem pelo menos 18 anos;</li>
+          <li>fala em nome próprio ou tem autorização da empresa que informou.</li>
+        </ul>
+        <p>
+          O campo aberto serve para descrever o contexto do negócio. Não escreva ali documento,
+          senha, dado bancário, informação sigilosa de um cliente seu nem dado pessoal de
+          terceiro. Se isso chegar até nós sem necessidade, eliminamos.
+        </p>
+        <p>
+          Enviar o formulário não cria contrato nem obriga a PiaR a prestar serviço. É o começo de
+          uma conversa. Trabalho só existe depois de proposta aceita e contrato assinado. O que
+          fazemos com os dados enviados está descrito na
+          {' '}<a href="/privacidade">Política de Privacidade</a>.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="links">
+        <h2>9. Links e ferramentas externas</h2>
+        <p>
+          Este site aponta para veículos de imprensa, redes sociais e materiais de terceiros, e se
+          apoia em serviços externos para funcionar: hospedagem, o RD Station no formulário e na
+          automação de marketing, e a medição de audiência do Google, quando você autoriza os
+          cookies de análise.
+        </p>
+        <p>
+          Não controlamos o conteúdo nem as políticas de nenhum deles. A partir do momento em que
+          você clica num link e sai daqui, valem os termos de quem está do outro lado. Link para
+          uma reportagem também não significa concordância com tudo que aquele veículo publica.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="responsabilidade">
+        <h2>10. Disponibilidade e responsabilidade</h2>
+        <p>
+          O site é oferecido no estado em que se encontra, sem garantia de funcionamento
+          ininterrupto. Podemos alterar, suspender ou tirar do ar qualquer página a qualquer
+          momento, inclusive para manutenção, sem aviso prévio. Endereços podem mudar, e quando
+          isso acontece tentamos redirecionar o antigo para o novo.
+        </p>
+        <p>
+          Na medida em que a lei permite, a PiaR não responde por lucro cessante, perda de
+          oportunidade ou dano indireto decorrente de decisão tomada com base em conteúdo
+          publicado aqui, nem por indisponibilidade, falha de conexão ou ação de terceiro que
+          escape do nosso controle.
+        </p>
+        <p>
+          Nenhuma linha deste documento afasta direito garantido por lei. Se você acessa este site
+          na condição de consumidor, o Código de Defesa do Consumidor continua valendo por
+          inteiro, e cláusula nenhuma daqui se sobrepõe a ele.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="privacidade">
+        <h2>11. Privacidade, dados e cookies</h2>
+        <p>
+          Tudo sobre dado pessoal mora em documento próprio: quem é o controlador, quem é a
+          encarregada, o que coletamos, quais cookies o site grava, com quem compartilhamos, por
+          quanto tempo guardamos e como exercer os direitos do art. 18 da LGPD.
+        </p>
+        <p>
+          Os cookies de análise e de marketing só rodam depois que você aceita, e a escolha pode
+          ser revista a qualquer momento, com a mesma facilidade do aceite, como manda o art. 8,
+          §5 da LGPD.
+        </p>
+        <div class="lg-caixa lg-caixa-escura">
+          <p><strong>Seus dados e suas preferências</strong></p>
+          <p>
+            A política completa está em
+            {' '}<a href="/privacidade" style="color: var(--accent);">/privacidade</a>. O botão
+            abaixo reabre a janela de escolha de cookies.
+          </p>
+          <button type="button" class="lg-botao" data-ck="gerenciar">
+            Gerenciar cookies
+            <iconify-icon icon="solar:settings-linear"></iconify-icon>
+          </button>
+        </div>
+      </section>
+
+      <section class="lg-secao" id="mudancas">
+        <h2>12. Mudanças nestes termos</h2>
+        <p>
+          A versão que vale é a publicada nesta página, com a data de revisão no topo. Quando
+          mudarmos algo relevante, a data muda junto. Continuar usando o site depois de uma
+          alteração significa aceitar a versão nova, então vale reler de vez em quando.
+        </p>
+      </section>
+
+      <section class="lg-secao" id="foro">
+        <h2>13. Lei aplicável e foro</h2>
+        <p>
+          Estes termos são regidos pelas leis brasileiras, entre elas o Código Civil, o Marco
+          Civil da Internet (Lei 12.965/2014), o Código de Defesa do Consumidor e a Lei Geral de
+          Proteção de Dados (Lei 13.709/2018). Fica eleito o foro da comarca de São Paulo, SP,
+          para o que não se resolver por conversa, preservado o direito do consumidor de escolher
+          o foro do próprio domicílio.
+        </p>
+        <div class="lg-caixa">
+          <p><strong>Antes de qualquer foro, tem o e-mail.</strong></p>
+          <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+          <p style="color: var(--text-faint); font-size: .88rem;">
+            Quase tudo se resolve numa troca de mensagens.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
