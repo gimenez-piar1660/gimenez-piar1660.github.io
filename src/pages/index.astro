@@ -73,15 +73,16 @@ const provas = [
   { n: site.exitsSupported, suf: '', tail: '', l: 'Startups acompanhadas da primeira pauta ao exit.' },
 ];
 
-// Quem lidera. FOTOS REAIS (mesmas de /sobre). Bruno tem a webp espelhada: flip corrige.
+// Quem lidera. Set padronizado de retratos (estudio, fundo amarelo PiaR, 657x657),
+// o mesmo enquadramento para as seis pessoas. Ninguem precisa de `flip` aqui: as
+// fotos ja vem na orientacao correta.
 const lideranca = [
-  { nome: site.founder.name, papel: 'Fundador e CEO', foto: '/brand/Brunotrofeu.webp', flip: true, desc: 'Dirige a estratégia desde 2013. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
-  { nome: 'Renniê Paro', papel: 'COO', foto: '/brand/team/rennie.png', flip: false, desc: 'Responde pela operação e por manter a mesma qualidade de entrega em todas as frentes da casa.' },
-  { nome: 'Gabriela Calencautcy', papel: 'Projetos Especiais', foto: '/brand/team/gabriela.png', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
-  // Sem foto por enquanto: quem não tem `foto` cai no bloco de iniciais.
-  { nome: 'Bella Cascione', papel: 'Gerente de núcleo', foto: '', flip: false, desc: '' },
-  { nome: 'Ana Flávia', papel: 'Marketing', foto: '', flip: false, desc: '' },
-  { nome: 'Danilo Lastrucci', papel: 'Vendas & Business', foto: '', flip: false, desc: '' },
+  { nome: site.founder.name, papel: 'Fundador e CEO', foto: '/brand/team/bruno.webp', flip: false, desc: 'Dirige a estratégia desde 2013. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
+  { nome: 'Renniê Paro', papel: 'COO', foto: '/brand/team/rennie.webp', flip: false, desc: 'Responde pela operação e por manter a mesma qualidade de entrega em todas as frentes da casa.' },
+  { nome: 'Gabriela Calencautcy', papel: 'Projetos Especiais', foto: '/brand/team/gabriela.webp', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
+  { nome: 'Bella Cascione', papel: 'Gerente de núcleo', foto: '/brand/team/bella.webp', flip: false, desc: 'Lidera nosso núcleo Alfa e garante que o combinado na estratégia chegue inteiro na entrega.' },
+  { nome: 'Ana Flávia', papel: 'Marketing', foto: '/brand/team/ana-flavia.webp', flip: false, desc: 'Cuida do marketing da casa e da comunicação que a PiaR faz da própria marca.' },
+  { nome: 'Danilo Lastrucci', papel: 'Vendas & Business', foto: '/brand/team/danilo.webp', flip: false, desc: 'Abre as conversas comerciais e desenha o formato de cada nova parceria.' },
 ];
 
 // PiaRBoard: o dashboard proprietario (a "caixa-preta aberta"). Dados reais da proposta (Adaflow, slides 6 e 7).
@@ -363,7 +364,7 @@ const servicosLd = [
       .leader { border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,.1); background: rgba(13,15,22,.55); overflow: hidden; transition: var(--t-smooth); padding-bottom: 1.4rem; }
       .leader:hover { border-color: rgba(255,255,255,.2); transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.3); }
       .leader-photo { aspect-ratio: 1/1; overflow: hidden; background: #0d0f16; }
-      .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; filter: grayscale(.15) contrast(1.02); }
+      .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
       .leader-photo img.flip { transform: scaleX(-1); }
       /* Sem foto: o quadrado vira as iniciais, no mesmo 1/1 e no mesmo fundo, para
          a grade nao desalinhar nem parecer imagem quebrada. */

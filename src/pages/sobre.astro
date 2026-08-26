@@ -52,9 +52,9 @@ const traducoes = [
 ];
 
 const lideranca = [
-  { nome: 'Bruno Pinheiro', cargo: 'Fundador e CEO', foto: '/brand/Brunotrofeu.webp', flip: true, desc: 'Fundou a PiaR em 2013 e dirige a estratégia desde então. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
-  { nome: 'Renniê Paro', cargo: 'COO', foto: '/brand/team/rennie.png', flip: false, desc: 'Cuida da operação e de manter a mesma qualidade de entrega em todas as frentes da casa.' },
-  { nome: 'Gabriela Calencautcy', cargo: 'Projetos Especiais', foto: '/brand/team/gabriela.png', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
+  { nome: 'Bruno Pinheiro', cargo: 'Fundador e CEO', foto: '/brand/team/bruno.webp', flip: false, desc: 'Fundou a PiaR em 2013 e dirige a estratégia desde então. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
+  { nome: 'Renniê Paro', cargo: 'COO', foto: '/brand/team/rennie.webp', flip: false, desc: 'Cuida da operação e de manter a mesma qualidade de entrega em todas as frentes da casa.' },
+  { nome: 'Gabriela Calencautcy', cargo: 'Projetos Especiais', foto: '/brand/team/gabriela.webp', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
 ];
 
 const faq = [
@@ -541,7 +541,7 @@ const url = `https://${site.brandDomain}/sobre`;
     .leader:hover { border-color: rgba(255,255,255,.18); transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.3); }
     .leader-photo { aspect-ratio: 4 / 5; overflow: hidden; background: #0d0f16; position: relative; }
     .leader-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,8,12,0) 55%, rgba(7,8,12,.55) 100%); }
-    .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; filter: grayscale(.15) contrast(1.02); }
+    .leader-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
     .leader-photo img.flip { transform: scaleX(-1); }
     .leader-chip { display: inline-flex; align-items: center; gap: .35rem; margin: 1.2rem 1.5rem 0; padding: .3rem .7rem; border-radius: 999px; background: rgba(254,209,54,.12); color: var(--warm); font-family: var(--font-mono); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; }
     .leader h3 { font-size: 1.4rem; font-weight: 600; letter-spacing: -.02em; margin: .7rem 1.5rem 0; color: #fff; }
