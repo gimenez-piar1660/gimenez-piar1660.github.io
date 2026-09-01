@@ -13,7 +13,8 @@
 //   --label <nome>            apelido do deploy (parte do nome da pasta). Padrao: deploy
 //   --bump patch|minor|major  como subir a versao. Padrao: patch
 //   --version X.Y.Z           fixa a versao exata (ignora --bump)
-//   --env staging|production  controla o noindex. Padrao: staging
+//   --env staging|production  controla o noindex. Padrao: production (site indexavel).
+//                             Use --env staging so para um preview privado pontual.
 //   --no-git                  nao faz commit nem tag (so gera a pasta e o zip)
 
 import { execSync, execFileSync } from 'node:child_process';
@@ -39,7 +40,10 @@ const hasFlag = (name) => args.includes(`--${name}`);
 const label = (getArg('label', 'deploy') || 'deploy').replace(/[^a-zA-Z0-9._-]/g, '-');
 const bump = getArg('bump', 'patch');
 const explicitVersion = getArg('version');
-const env = getArg('env', 'staging');
+// Padrao production: o site esta no ar e deve ser indexado. O bloqueio de
+// buscadores agora exige --env staging explicito, para nenhum deploy sair
+// noindex por descuido (foi o que aconteceu ate a v0.2.2).
+const env = getArg('env', 'production');
 const doGit = !hasFlag('no-git');
 
 if (!['staging', 'production'].includes(env)) {

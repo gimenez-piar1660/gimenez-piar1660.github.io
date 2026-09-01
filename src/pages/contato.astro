@@ -24,7 +24,7 @@
 //    esse campo. Corrigido em 18/08/2026, antes ia como cf_cargo e o valor
 //    se perdia no caminho, sem erro nenhum na tela.
 //    Antes de publicar, criar no RD os campos personalizados da spec:
-//      cf_frente_interesse · cf_assessoria_previa · cf_gatilho
+//      cf_frente_interesse · cf_assessoria_previa · cf_motivo_busca
 //      cf_faturamento_faixa · cf_origem_declarada · cf_indicado_por
 //      cf_contexto · cf_classificacao
 //      cf_utm_source · cf_utm_medium · cf_utm_campaign · cf_utm_content
@@ -280,9 +280,9 @@ import { site } from '@/data/site';
         </h1>
         <p class="ds-body-lg text-stone-500 mt-8 max-w-2xl reveal delay-200">
           Diagnóstico de 45 minutos com a PiaR Group, agência boutique de relações
-          públicas em São Paulo desde 2013. Resposta em até 1 dia útil. WhatsApp:
-          (11) 97563-3655. Para o caso já estar quente: chame direto no WhatsApp ou
-          em <a href={`mailto:${site.email}`} style="color:var(--accent-deep);text-decoration:underline;">{site.email}</a>.
+          públicas em São Paulo desde 2013. Resposta em até 1 dia útil. Para o caso já
+          estar quente: escreva direto para
+          <a href={`mailto:${site.email}`} style="color:var(--accent-deep);text-decoration:underline;">{site.email}</a>.
           Sem custo, sem pitch genérico, sem proposta no follow-up imediato.
         </p>
       </div>
@@ -407,7 +407,7 @@ import { site } from '@/data/site';
 
                   <div class="field full">
                     <label for="f-gatilho">O que motivou essa busca agora? <span class="req">*</span></label>
-                    <select id="f-gatilho" name="cf_gatilho" required>
+                    <select id="f-gatilho" name="cf_motivo_busca" required>
                       <option value="" disabled selected>Selecione</option>
                       <option>Crescimento, lançamento ou entrada em novo mercado</option>
                       <option>Rodada, aporte ou preparação para um evento de liquidez</option>
@@ -423,10 +423,12 @@ import { site } from '@/data/site';
                     <label for="f-faturamento">Faturamento anual aproximado <span class="req">*</span></label>
                     <select id="f-faturamento" name="cf_faturamento_faixa" required>
                       <option value="" disabled selected>Selecione</option>
-                      <option>Acima de R$ 150 milhões</option>
+                      <option>Até R$ 5 milhões</option>
+                      <option>De R$ 5 a 15 milhões</option>
+                      <option>De R$ 15 a 40 milhões</option>
+                      <option>De R$ 40 a 80 milhões</option>
                       <option>De R$ 80 a 150 milhões</option>
-                      <option>De R$ 15 a 80 milhões</option>
-                      <option>Até R$ 15 milhões</option>
+                      <option>Acima de R$ 150 milhões</option>
                       <option>Prefiro não informar</option>
                     </select>
                     <p class="field-hint">A faixa nos ajuda a calibrar escopo. Não define preço.</p>
@@ -509,13 +511,13 @@ import { site } from '@/data/site';
             <p class="ds-body confirm-path" id="confirm-mql" style="max-width:48ch;margin:0 auto">
               Respondemos em até 1 dia útil com proposta de horário para a conversa de 45 minutos.
               Chega também um e-mail de confirmação com uma pergunta só, que ajuda a gente a
-              preparar melhor esses 45 minutos. Se a janela for urgente, mande WhatsApp em
-              <strong>{site.phone}</strong> que aceleramos.
+              preparar melhor esses 45 minutos. Se a janela for urgente, responda esse
+              e-mail que aceleramos.
             </p>
             <p class="ds-body confirm-path" id="confirm-lead" style="max-width:48ch;margin:0 auto">
               Seu pedido está com o time. Em instantes chega um e-mail com o boletim quinzenal e
               dois materiais dos Insights que costumam responder as primeiras dúvidas.
-              Se precisar falar com alguém agora, o WhatsApp <strong>{site.phone}</strong> é o caminho mais curto.
+              Se precisar falar com alguém agora, <strong>{site.email}</strong> é o caminho mais curto.
             </p>
             <a href="/" class="outline-pill" style="margin-top:2rem">Voltar para a home<iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
           </div>
@@ -525,7 +527,7 @@ import { site } from '@/data/site';
         <aside class="reveal delay-100">
           <div class="sidebar-block">
             <span class="eyebrow-dot">O que acontece depois</span>
-            <h3 class="ds-h4 font-semibold tracking-tight mt-4 mb-6">Quatro passos · sem surpresas no meio.</h3>
+            <h3 class="ds-h4 font-semibold tracking-tight mt-4 mb-6">Três passos · sem surpresas no meio.</h3>
             <div class="step-list">
               <div class="step-item">
                 <div class="step-num">01</div>
@@ -551,14 +553,6 @@ import { site } from '@/data/site';
                   <span class="step-cad">Sem custo</span>
                 </div>
               </div>
-              <div class="step-item">
-                <div class="step-num">04</div>
-                <div class="step-body">
-                  <p class="step-titulo">Material em até 5 dias</p>
-                  <p class="step-desc">Mapa editorial preliminar · um documento de 1 página · sem proposta comercial automática.</p>
-                  <span class="step-cad">~5 dias úteis</span>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -566,10 +560,6 @@ import { site } from '@/data/site';
             <span class="eyebrow-dot on-dark">Prefere ir direto?</span>
             <h3 class="ds-h4 font-semibold tracking-tight mt-4 mb-5" style="color:#fff">Canais diretos · sem formulário.</h3>
             <div class="contact-direct">
-              <a href="https://wa.me/5511975633655" target="_blank" rel="noopener">
-                <iconify-icon icon="solar:phone-rounded-line-duotone"></iconify-icon>
-                <span><strong style="color:#fff">(11) 97563-3655</strong><br/><span style="color:rgba(255,255,255,.6);font-size:.82rem">WhatsApp · mais rápido para janelas urgentes</span></span>
-              </a>
               <a href={`mailto:${site.email}`}>
                 <iconify-icon icon="solar:letter-line-duotone"></iconify-icon>
                 <span><strong style="color:#fff">{site.email}</strong><br/><span style="color:rgba(255,255,255,.6);font-size:.82rem">E-mail direto · resposta em 1 dia útil</span></span>
@@ -860,7 +850,7 @@ import { site } from '@/data/site';
       const ROTULOS = {
         name: 'Nome', email: 'E-mail', company_name: 'Empresa', personal_phone: 'Telefone',
         job_title: 'Cargo', cf_frente_interesse: 'Frente de interesse',
-        cf_assessoria_previa: 'Histórico de assessoria', cf_gatilho: 'Gatilho',
+        cf_assessoria_previa: 'Histórico de assessoria', cf_motivo_busca: 'Motivo da busca',
         cf_faturamento_faixa: 'Faturamento', cf_origem_declarada: 'Como conheceu',
         cf_indicado_por: 'Quem indicou', cf_contexto: 'Contexto', cf_classificacao: 'Classificação',
         cf_pagina_conversao: 'Página de conversão', cf_landing_page: 'Página de entrada',
@@ -948,7 +938,7 @@ import { site } from '@/data/site';
           form.reset();
         } else {
           feedback.className = 'form-feedback error is-visible';
-          feedback.innerHTML = '<strong>Algo deu errado no envio.</strong>Tente de novo em alguns minutos, ou fale direto no WhatsApp (11) 97563-3655.';
+          feedback.innerHTML = '<strong>Algo deu errado no envio.</strong>Tente de novo em alguns minutos, ou escreva direto para contato@piar.group.';
           submitBtn.disabled = false;
           if (btnLabel) btnLabel.textContent = 'Enviar pedido de diagnóstico';
         }

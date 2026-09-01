@@ -16,9 +16,11 @@ faz o passo manual final: arrastar o `.zip` no Netlify.
   pronto; você arrasta no painel do Netlify.
 - **`main` é o que está no ar.** Todo deploy sai da `main`. Trabalho novo vive em
   branch e só vira deploy depois de mesclar na `main`.
-- **Preview do CEO é `noindex`.** Enquanto o site está em teste (env `staging`), o
-  build sai bloqueado pra buscadores, pra não indexar uma versão duplicada. Quando for
-  pro ar de verdade (env `production`), o build sai liberado.
+- **O padrão agora é indexável.** Desde 26/08/2026 o site está no ar e todo deploy sai
+  liberado pra buscadores (env `production`, o padrão do script). O bloqueio virou
+  exceção: só acontece se alguém passar `--env staging` de propósito, para um preview
+  privado pontual. Foi essa inversão que consertou o site: até a v0.2.2 o padrão era
+  `staging`, e todo zip publicado carregava `Disallow: /` no `robots.txt`.
 
 ## Estrutura de pastas
 
@@ -41,7 +43,7 @@ Guarda, gerado automaticamente:
 
 - `name` / `label` — o apelido do deploy (ex.: `ceo-preview`).
 - `version` — versão semântica (ex.: `0.2.0`).
-- `env` — `staging` (noindex) ou `production` (indexável).
+- `env` — `production` (indexável, o padrão) ou `staging` (noindex, preview privado).
 - `timestamp` — data e hora ISO + versão legível.
 - `git` — branch, commit (completo e curto), tag criada.
 - `changes` — a lista de arquivos que mudaram **desde o último deploy**
@@ -65,10 +67,11 @@ Opções:
 - `--label <nome>` — apelido do deploy (vira parte do nome da pasta). Padrão: `deploy`.
 - `--bump patch|minor|major` — como subir a versão. Padrão: `patch`.
 - `--version X.Y.Z` — fixa a versão exata (ignora o `--bump`).
-- `--env staging|production` — controla o `noindex`. Padrão: `staging`.
+- `--env staging|production` — controla o `noindex`. Padrão: `production` (indexável).
+  Só use `staging` se quiser mesmo um preview fora do Google.
 
 O comando, em sequência: roda o build (`astro check && astro build`), aplica o
-`noindex` se for staging, calcula o diff desde o último deploy, cria a pasta carimbada,
+`noindex` só se você pedir `--env staging`, calcula o diff desde o último deploy, cria a pasta carimbada,
 zipa o site, escreve o `manifest.json` e o `notes.md`, atualiza o `DEPLOYS.md`, sobe a
 versão no `package.json`, faz **um commit** e cria a **tag** `vX.Y.Z`. Ele **não** faz
 `git push` — você decide quando publicar o histórico. No fim, ele imprime o caminho
@@ -95,12 +98,14 @@ exato do `.zip` pra você arrastar no Netlify.
 
 ## Migração do protótipo para o domínio próprio
 
-Hoje o site é publicado em `gimenez-piar1660.github.io`, que é um endereço de
-protótipo. Enquanto ele estiver lá, **todas as páginas saem com `noindex`**, para o
-protótipo não ser indexado e depois disputar espaço no Google com o domínio final.
+Histórico: o site nasceu em `gimenez-piar1660.github.io`, um endereço de protótipo, e
+enquanto esteve lá todas as páginas saíam com `noindex`, para o protótipo não disputar
+espaço no Google com o domínio final.
 
-O rastreamento segue liberado no `robots.txt` de propósito: um `Disallow` impediria
-os robôs de lerem a própria tag `noindex`, que é o oposto do efeito desejado.
+**Isso acabou.** Desde 26/08/2026 não existe mais `noindex` em lugar nenhum do projeto:
+`INDEXAVEL` está `true`, o `site` do astro.config aponta para `https://piar.group` e o
+`deploy:snapshot` sai como `production` por padrão. As quatro etapas abaixo ficam como
+registro do que foi feito.
 
 Quando o domínio próprio entrar, fazer as quatro coisas **no mesmo commit**:
 
@@ -114,7 +119,7 @@ Quando o domínio próprio entrar, fazer as quatro coisas **no mesmo commit**:
    domínio de produção passa a ser o domínio próprio assim que o CNAME estiver
    configurado nas settings do Pages, e as canônicas seguem sozinhas. Manter os dois
    alinhados evita build local divergindo do que está no ar.
-2. `src/data/site.ts`: virar `INDEXAVEL` para `true`. É o que remove o `noindex`.
+2. `src/data/site.ts`: virar `INDEXAVEL` para `true`. É o que remove o `noindex`. **Feito.**
 3. `public/robots.txt`: apontar a linha `Sitemap:` para o domínio final.
 4. `public/CNAME`: criar com o domínio, senão o GitHub Pages não atende por ele.
 

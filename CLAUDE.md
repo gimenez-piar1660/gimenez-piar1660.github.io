@@ -39,7 +39,9 @@ Guias operacionais complementares: [PILOTAR.md](PILOTAR.md) (como rodar e editar
 ## Estrutura do projeto
 
 - **19 páginas bespoke** foram promovidas de `/pre-deploy` para a raiz (deploy-ready).
-  `processos` virou `/para-cmos`. Nav usa `BASE=''`. O blend fica em staging (noindex).
+  `processos` virou `/para-cmos`. Nav usa `BASE=''`. **Tudo é indexável**: desde
+  26/08/2026 não há `noindex` em página nenhuma, o blend incluído (decisão do Danilo,
+  que revogou a regra anterior de manter o blend fora do índice).
 - `/pep` é o "sistema modular" lego/encaixe, animado e indexado.
 - Páginas simples em Markdown: `src/content/pages/`. Páginas complexas: `src/pages/`.
 - Mídia bruta e pesada (vídeos originais, PSDs) fica **fora do repo**, em `artools-raw/`.
@@ -50,7 +52,8 @@ Guias operacionais complementares: [PILOTAR.md](PILOTAR.md) (como rodar e editar
   Causa: `.vite/deps` obsoleto. Fix: matar o dev, `rm -rf node_modules/.vite`, reiniciar.
   Commit e build de produção **não** são afetados. Não saia mexendo no código por causa disso.
 - **Sistema de deploy é manual e versionado:** `npm run deploy:snapshot` carimba `deploys/`,
-  zipa e tagueia. `main` = no ar; `staging` = noindex. Há **2 correções de Windows/OneDrive**
+  zipa e tagueia. O padrão do script é `--env production` (indexável): não voltar para
+  `staging`, foi ele que deixou o site fora do Google até a v0.2.2. Há **2 correções de Windows/OneDrive**
   no script (zip com barra normal + `Remove-Item` nativo). **Não reverter essas duas.**
 - Web Companion no Windows: o launcher quebra com `spawn EINVAL`; o fix é uma linha
   (`shell: true`) no `project-browser-server.mjs`. Se voltar a quebrar, é aí.
