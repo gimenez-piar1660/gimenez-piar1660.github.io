@@ -5,6 +5,8 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.5 | 2026-09-01 16:40 | favicon | production | 730782b | [notas](deploys/2026-09-01_1640_v0.2.5_favicon/notes.md) |
+| v0.2.4 | 2026-09-01 15:51 | logo-amarelo-240 | production | daa134b | [notas](deploys/2026-09-01_1551_v0.2.4_logo-amarelo-240/notes.md) |
 | v0.2.3 | 2026-08-28 04:38 | nav-themic-todas-paginas | production | 7265b49 | [notas](deploys/2026-08-28_0438_v0.2.3_nav-themic-todas-paginas/notes.md) |
 | v0.2.2 | 2026-08-26 09:18 | deploy | staging | 56f1fa7 | [notas](deploys/2026-08-26_0918_v0.2.2_deploy/notes.md) |
 | v0.2.1 | 2026-08-25 23:30 | deploy | staging | 10dd81e | [notas](deploys/2026-08-25_2330_v0.2.1_deploy/notes.md) |
