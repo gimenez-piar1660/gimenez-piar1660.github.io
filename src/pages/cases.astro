@@ -48,6 +48,10 @@ const trabalhos = [
     setor: 'Cripto e pagamentos',
     desc: 'Chegada de uma fintech africana ao Brasil anunciada sob embargo: veículos escolhidos e informados antes, publicação na data combinada. O anúncio estreou como notícia de mercado, não como release recebido no meio da fila.',
     icon: 'solar:card-transfer-line-duotone',
+    foto: '/brand/clients/photos/yellow-card-finsiders.webp',
+    fotoAlt: 'Hugo, da Yellow Card, em retrato com luzes da cidade desfocadas ao fundo',
+    // Foto 16/9 numa capa 16/10: o corte é horizontal e mínimo, o centro já enquadra o rosto.
+    // Sem fotoPos de propósito.
     url: 'https://finsidersbrasil.com.br/giro-noticias/yellow-card-desembarca-no-brasil-de-olho-em-pagamentos-internacionais/',
   },
   {
@@ -55,6 +59,10 @@ const trabalhos = [
     setor: 'Venture capital',
     desc: 'Artigo publicado quando a onda de demissões em startups ainda era lida como caso isolado. A tese saiu antes do consenso, e o porta-voz virou fonte recorrente do assunto nos meses seguintes.',
     icon: 'solar:chart-square-line-duotone',
+    foto: '/brand/clients/photos/investidores-vc-amure-pinho.webp',
+    fotoAlt: 'Amure Pinho, fundador da Investidores.vc, sentado na escada do escritório',
+    // 20% dá respiro acima da cabeça sem cortar as mãos na borda de baixo.
+    fotoPos: 'center 20%',
     url: 'https://epocanegocios.globo.com/colunas/noticia/2022/04/o-inverno-chegou-onda-de-demissoes-em-grandes-startups-indica-inicio-de-uma-turbulencia.html',
   },
   {
@@ -64,7 +72,9 @@ const trabalhos = [
     icon: 'solar:videocamera-record-line-duotone',
     foto: '/brand/clients/photos/skynova-sbt-externa.webp',
     fotoAlt: 'Equipe de externa do SBT grava entrevista na Skynova durante a Copa do Mundo',
-    fotoPos: 'center 42%',
+    // Foto vertical (590x1280) dentro de capa 16/10: o enquadramento vive no object-position.
+    // 42% sobrava teto e balão e cortava as pernas; 58% centra a entrevista e mostra o chão.
+    fotoPos: 'center 58%',
   },
   {
     cliente: 'Samira Cardoso · Mundo do Marketing',

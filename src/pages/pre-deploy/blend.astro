@@ -6,7 +6,8 @@
 //                  satélite-CTAs, arcos orbitais, ghost watermarks, sombra atmosférica.
 //   Três Mares  -> topografia de contorno animada, tinta preto-suave, lerp parallax.
 //   PiaR        -> o amarelo segue como acento (não o laranja da Mastercard).
-// Página de avaliação de direção visual. noindex. Não compete com o site vivo.
+// Página de avaliação de direção visual. Indexável desde 26/08/2026, por decisão
+// do Danilo: o site está no ar e todas as páginas entram no índice.
 // ============================================================================
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { site } from '@/data/site';
@@ -41,7 +42,6 @@ const orbits = [
 <BaseLayout
   title="Blend · Montserrat + Mastercard + Três Mares"
   description="Teste de direção visual: tipografia Montserrat com a linguagem de design da Mastercard e da Três Mares Capital."
-  noindex={true}
 >
   <div id="scroll-progress" aria-hidden="true"></div>
 
@@ -55,6 +55,7 @@ const orbits = [
       <div class="nav-links">
         <a href="#frentes">O que fazemos</a>
         <a href="#prova">Reputação</a>
+        <a href="/themic">The Mic</a>
         <a href="#falar">Contato</a>
       </div>
       <button class="nav-search" aria-label="Buscar"><iconify-icon icon="solar:magnifer-linear"></iconify-icon></button>

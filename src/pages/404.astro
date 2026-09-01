@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import Nav from '@components/Nav.astro';
 ---
 <BaseLayout
   title="Página não encontrada"
   description="A página que você procurou não existe ou foi movida."
-  noindex={true}
 >
+  <Nav />
   <main id="main" class="min-h-screen grid place-items-center px-6">
     <div class="text-center max-w-xl">
       <p class="ds-mono mb-4 text-[color:var(--text-muted)]">Erro 404</p>

@@ -5,7 +5,7 @@
 import { withBase } from '@/lib/base';
 
 interface Props {
-  current?: 'home' | 'sobre' | 'servicos' | 'cases' | 'pep' | 'insights' | 'blog' | 'metodo' | 'processos' | 'contato';
+  current?: 'home' | 'sobre' | 'servicos' | 'cases' | 'pep' | 'themic' | 'insights' | 'blog' | 'metodo' | 'processos' | 'contato';
 }
 const { current = 'home' } = Astro.props;
 
@@ -74,6 +74,7 @@ const insights = [
 
       <a class:list={['nav-link', current === 'cases' && 'is-current']} href="/cases" aria-current={current === 'cases' ? 'page' : undefined}>Cases</a>
       <a class:list={['nav-link', current === 'pep' && 'is-current']} href="/pep" aria-current={current === 'pep' ? 'page' : undefined}>PEP</a>
+      <a class:list={['nav-link', current === 'themic' && 'is-current']} href="/themic" aria-current={current === 'themic' ? 'page' : undefined}>The Mic</a>
 
       <div class="nav-dropdown">
         <button
@@ -132,6 +133,7 @@ const insights = [
 
       <a class:list={['nav-drawer-link', current === 'cases' && 'is-current']} href="/cases">Cases</a>
       <a class:list={['nav-drawer-link', current === 'pep' && 'is-current']} href="/pep">PEP</a>
+      <a class:list={['nav-drawer-link', current === 'themic' && 'is-current']} href="/themic">The Mic</a>
 
       <span class="nav-drawer-label">Insights</span>
       {insights.map((s) => (
@@ -189,9 +191,18 @@ const insights = [
     border-radius: 999px;
     transition: 0.3s;
     text-decoration: none;
+    /* "The Mic" é o único rótulo com espaço no meio: sem isto ele quebra em
+       duas linhas quando a barra aperta, e o nav inteiro cresce de 87 para 110px. */
+    white-space: nowrap;
   }
   .nav-link:hover { color: #0F0F11; background: rgba(0, 0, 0, 0.04); }
   .nav-link.is-current { color: #0F0F11; background: rgba(15, 15, 17, 0.06); }
+
+  /* Com 7 itens a barra pede 644px e só sobram 612px em 1024px. Aperta o
+     respiro lateral dos itens nessa faixa para tudo caber numa linha só. */
+  @media (min-width: 768px) and (max-width: 1200px) {
+    .nav-link { padding-left: 0.55rem; padding-right: 0.55rem; }
+  }
 
   /* dropdown Insights (desktop) */
   .nav-dropdown { position: relative; display: flex; }
