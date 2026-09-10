@@ -2,10 +2,11 @@
 // ============================================================
 // LANDING PAGE · THE MIC — Imersão em Autoridade Executiva
 // ------------------------------------------------------------
-// Versão de captação (v2, recebida em 08/09/2026 como
-// THE_MIC_LP_v2_captacao (8).html). Substitui a versão anterior, que era
-// lista de espera: agora a página vende a Edição 1, com data, local, preço
-// e caminho para o pagamento.
+// Versão de captação de interesse (v2, atualizada em 10/09/2026 com o
+// THE_MIC_LP_v2_captacao (9).html e o briefing THE_MIC_LP_ajustes_Rafa_10set).
+// A página anuncia a Edição 1 com data e local, e capta interesse: o link de
+// pagamento ainda não saiu do banco, então o valor fica fora da página e o
+// comercial apresenta as condições na conversa.
 //
 // O que mudou em relação à versão anterior desta página:
 //   - Entram três seções: a declaração em escala ("Competência sem voz é
@@ -19,8 +20,7 @@
 //     viram faixa de ponta a ponta (.band .bleed).
 //   - Os três números da prova contam a partir do zero quando entram na tela,
 //     respeitando prefers-reduced-motion.
-//   - Formulário passa de um passo para dois, com cinco perguntas de perfil e
-//     duas saídas: seguir para o pagamento ou falar com alguém antes.
+//   - Formulário passa de um passo para dois, com cinco perguntas de perfil.
 //
 // O que a adaptação manteve das regras da casa (CLAUDE.md):
 //   - Tipografia Montserrat / Open Sans / JetBrains Mono, via tokens. O arquivo
@@ -31,6 +31,16 @@
 //   - Zero travessão na prosa. O arquivo recebido tinha 10.
 //   - Números e nomes de exits saem de src/data/site.ts, fonte única. O arquivo
 //     recebido escrevia "Onze exits" e listava 8 nomes.
+//
+// O que mudou em 10/09/2026 (briefing do Rafa, sem link de pagamento):
+//   - O valor sai do ar. O card da ficha técnica mostra "Sob consulta" e a
+//     condição vai para a conversa. Nenhuma menção a 10.000 na página.
+//   - Os cinco CTAs passam a dizer "Quero saber mais". A primeira inscrição
+//     é pedido de informação, não compra, e o texto precisa dizer isso.
+//   - A etapa 2 do formulário fica com um botão só. Sem checkout, as duas
+//     saídas antigas levavam ao mesmo lugar.
+//   - CSS órfão da mudança foi removido junto: .price-card .fig sup (o "R$"
+//     sobrescrito) e .btn-outline (só o botão secundário usava).
 //
 // ---- RASTREAMENTO -------------------------------------------------------
 // 1) RD STATION · mesma conta e mesmo token público de src/pages/contato.astro.
@@ -48,6 +58,9 @@
 //    E os campos personalizados novos:
 //      cf_estagio_empresa · cf_objetivo_imersao · cf_disponibilidade_data
 //      cf_poder_decisao · cf_acao_final
+//    cf_acao_final agora chega sempre como "Quer saber mais". Continua sendo
+//    enviado de propósito: quando o checkout entrar, o campo volta a separar
+//    quem pagou de quem pediu contato, sem furo no histórico da base.
 //    Os demais (cf_utm_*, cf_pagina_conversao, cf_landing_page, cf_referrer,
 //    cf_produto_interesse) já existem, criados para /contato e para a v1 desta
 //    página. O RD responde 200 e descarta em silêncio campo que não existe,
@@ -72,9 +85,10 @@ const RD_PUBLIC_KEY = '0ba58cf81bc6e78d267b310a8ccafbfc';
 const RD_ID_PARCIAL = 'piar-lp-themic-passo-1';
 const RD_ID_THEMIC = 'piar-lp-themic';
 
-// Link do checkout (Asaas, Stripe, PagSeguro...). Enquanto estiver vazio, o
-// botão "Ir para o pagamento" envia o lead e mostra a confirmação na própria
-// página, sem redirecionar. Preencher aqui quando a cobrança estiver criada.
+// Link do checkout, para quando o banco liberar a cobrança. Enquanto estiver
+// vazio, a página trabalha por captação de interesse: registra o lead no RD,
+// mostra a confirmação e o comercial apresenta as condições na conversa.
+// Ao preencher, reativar também a linha comentada no submit do formulário.
 const CHECKOUT_URL = '';
 
 // Dados da edição em um lugar só: mudar data ou local é uma linha, não dez.
@@ -87,8 +101,9 @@ const EDICAO = {
   local: 'Sede do Investidores.vc',
   endereco: 'Rua Pitu, 72 · Brooklin · São Paulo',
   bairro: 'Brooklin, São Paulo',
-  preco: '10.000',
-  parcelas: 'em até 3x com juros',
+  investimento: 'Sob consulta',
+  parcelas: 'em até 3x',
+  condicaoPreco: 'Em até 3x · condições apresentadas na conversa',
 };
 const PRODUTO = `THE MIC · Edição 1 · ${EDICAO.datas}`;
 
@@ -99,7 +114,7 @@ import { withBase } from '@/lib/base';
 
 const titulo = 'THE MIC · Imersão em Autoridade Executiva';
 const descricao =
-  `Dois dias presenciais que transformam founders e C-levels em porta-vozes do próprio negócio. Edição 1 em ${EDICAO.datas} de 2026, em São Paulo. Até 30 líderes por turma.`;
+  `Dois dias presenciais que transformam founders e C-levels em porta-vozes do próprio negócio. Edição 1 confirmada: ${EDICAO.datas} de 2026, em São Paulo. Até 30 líderes por turma.`;
 ---
 
 <BaseLayout
@@ -131,8 +146,8 @@ const descricao =
       <p class="hero-sub">Dois dias presenciais que transformam liderança em mídia: narrativa, canais e ativos prontos para falar direto com o mercado.</p>
       <div class="hero-urgency"><span class="dot"></span> Edição 1 · {EDICAO.datas} · São Paulo</div>
       <div class="cta-row">
-        <a href="#lista" class="btn btn-lg" data-cta="hero">Quero minha vaga na Edição 1</a>
-        <span class="cta-note">R$ {EDICAO.preco} · em até 3x</span>
+        <a href="#lista" class="btn btn-lg" data-cta="hero">Quero saber mais</a>
+        <span class="cta-note">Investimento sob consulta · {EDICAO.parcelas}</span>
       </div>
       <p class="hero-strip">{EDICAO.datas} · {EDICAO.bairro} · Até 30 líderes por turma</p>
     </div>
@@ -536,10 +551,10 @@ const descricao =
         <div>
           <div class="price-card">
             <p class="cap">Investimento</p>
-            <p class="fig"><sup>R$</sup>{EDICAO.preco}</p>
-            <p class="per">Por vaga · {EDICAO.parcelas}</p>
-            <p class="inc">Inclui os dois dias presenciais, o diagnóstico de autoridade, os seis ativos, o certificado e o acesso à comunidade de líderes.</p>
-            <a href="#lista" class="btn" data-cta="ficha">Quero minha vaga</a>
+            <p class="consulta">{EDICAO.investimento}</p>
+            <p class="per">{EDICAO.condicaoPreco}</p>
+            <p class="inc">A vaga inclui os dois dias presenciais, o diagnóstico de autoridade, os seis ativos, o certificado e o acesso à comunidade de líderes.</p>
+            <a href="#lista" class="btn" data-cta="ficha">Quero saber mais</a>
           </div>
           <div class="corp">
             <strong>Para empresas</strong>
@@ -608,7 +623,7 @@ const descricao =
       <h2 class="closing-mark">O microfone <span class="gold">está aberto.</span></h2>
       <p>{EDICAO.datas}, no Brooklin. <b>Estar na primeira edição é ocupar um lugar que não se compra depois.</b> Turma pequena por desenho: todo mundo passa pelo microfone, com tempo de verdade.</p>
       <div class="cta-row">
-        <a href="#lista" class="btn btn-lg" data-cta="fechamento">Quero minha vaga na Edição 1</a>
+        <a href="#lista" class="btn btn-lg" data-cta="fechamento">Quero saber mais</a>
       </div>
     </div>
   </section>
@@ -618,8 +633,8 @@ const descricao =
     <div class="wrap">
       <div class="signup-grid">
         <div>
-          <h2>SUA VAGA NA<br />EDIÇÃO 1.</h2>
-          <p class="lede">Preencha para garantir seu lugar. A confirmação passa por uma checagem rápida de perfil. A mistura da sala faz parte do que você está comprando.</p>
+          <h2>QUERO SABER<br />MAIS.</h2>
+          <p class="lede">Preencha e nossa equipe entra em contato com tudo sobre a Edição 1: formato, condições de investimento e como funciona a entrada. Sem compromisso.</p>
           <ul class="sale-facts">
             <li>Dois dias presenciais, das 8h às 20h</li>
             <li>Diagnóstico de autoridade duas semanas antes</li>
@@ -628,7 +643,7 @@ const descricao =
           </ul>
           <p class="sale-meta">
             {EDICAO.datas} · {EDICAO.bairro}<br />
-            R$ {EDICAO.preco} por vaga · {EDICAO.parcelas}
+            Investimento sob consulta · {EDICAO.parcelas}
           </p>
         </div>
 
@@ -743,8 +758,7 @@ const descricao =
                 </div>
 
                 <div class="btn-row">
-                  <button type="submit" class="btn" id="submitBtn" data-acao="pagamento">Ir para o pagamento</button>
-                  <button type="submit" class="btn btn-outline" id="talkBtn" data-acao="contato">Prefiro falar com alguém antes</button>
+                  <button type="submit" class="btn" id="submitBtn" data-acao="saber-mais">Quero saber mais</button>
                 </div>
                 <button type="button" class="backlink" id="backStep1">← Voltar</button>
                 <div class="form-error" id="formError"></div>
@@ -766,8 +780,8 @@ const descricao =
 
           <div class="form-done" id="formDone">
             <div class="waveform" id="doneWave" aria-hidden="true"></div>
-            <h3 id="doneTitle">Recebemos sua inscrição.</h3>
-            <p id="doneText">Nossa equipe entra em contato para confirmar sua vaga na Edição 1.</p>
+            <h3 id="doneTitle">Recebemos seu contato.</h3>
+            <p id="doneText">Nossa equipe envia as condições de investimento e os detalhes da Edição 1 em breve.</p>
           </div>
         </div>
       </div>
@@ -787,7 +801,7 @@ const descricao =
   <!-- Barra fixa de CTA -->
   <div class="stickybar" id="stickybar">
     <p><span class="dot"></span> {EDICAO.datas} · {EDICAO.bairro}</p>
-    <a href="#lista" class="btn" data-cta="sticky">Garantir minha vaga</a>
+    <a href="#lista" class="btn" data-cta="sticky">Quero saber mais</a>
   </div>
 
 </div>
@@ -1188,9 +1202,8 @@ const descricao =
   .lp-themic .price-card { border: 1px solid var(--gold); border-radius: 3px; padding: 34px 32px; }
   .lp-themic .price-card .cap { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em;
                      text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
-  .lp-themic .price-card .fig { font-family: var(--display); font-weight: 800; font-size: clamp(38px, 5vw, 56px); line-height: 1;
+  .lp-themic .price-card .consulta { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.05;
                      color: var(--white); letter-spacing: -0.02em; }
-  .lp-themic .price-card .fig sup { font-size: 0.4em; vertical-align: super; color: var(--gold); margin-right: 4px; }
   .lp-themic .price-card .per { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em;
                      text-transform: uppercase; color: #a0a0a0; margin: 12px 0 20px; }
   .lp-themic .price-card .inc { font-size: 15px; color: #c4c4c4; line-height: 1.6; padding-top: 18px;
@@ -1309,8 +1322,6 @@ const descricao =
   .lp-themic .opt.sel { border-color: var(--gold); background: #1d1c17; }
   .lp-themic .opt.sel span { color: var(--white); }
   .lp-themic .btn-row { display: grid; gap: 10px; margin-top: 8px; }
-  .lp-themic .btn-outline { background: transparent; color: var(--gold); border-color: #45453c; }
-  .lp-themic .btn-outline:hover { background: rgba(254,209,54,.08); color: var(--gold); border-color: var(--gold); }
   .lp-themic .backlink { background: none; border: none; cursor: pointer; margin-top: 14px; padding: 0;
               font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em;
               text-transform: uppercase; color: var(--white); }
@@ -1758,11 +1769,10 @@ const descricao =
     bar2.classList.remove('on');
   });
 
-  /* ---------- Etapa 2: envia tudo ---------- */
-  let acao = 'pagamento';
-  document.querySelectorAll('#step2 button[type="submit"]').forEach((b) => {
-    b.addEventListener('click', () => { acao = b.dataset.acao; });
-  });
+  /* ---------- Etapa 2: envia tudo ----------
+     Sem checkout, a etapa 2 tem uma saída só: o lead pede as condições e o
+     comercial assume daqui. cf_acao_final entra fixo para o RD continuar
+     recebendo o campo, sem buraco no histórico da base. */
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1784,12 +1794,11 @@ const descricao =
     if (objetivos.length) dados.cf_objetivo_imersao = objetivos.join('; ');
     const linkedin = document.getElementById('linkedin').value.trim();
     if (linkedin) dados.linkedin = linkedin;
-    dados.cf_acao_final = acao === 'contato' ? 'Prefere falar antes' : 'Seguiu para pagamento';
+    dados.cf_acao_final = 'Quer saber mais';
 
-    const btns = [...document.querySelectorAll('#step2 button[type="submit"]')];
-    const alvo = btns.find((b) => b.dataset.acao === acao);
+    const alvo = document.getElementById('submitBtn');
     const textoOriginal = alvo.textContent;
-    btns.forEach((b) => { b.disabled = true; });
+    alvo.disabled = true;
     alvo.textContent = 'Enviando…';
 
     try {
@@ -1800,17 +1809,10 @@ const descricao =
         await new Promise((res) => setTimeout(res, 600));
       }
 
-      // Com checkout configurado, quem escolheu pagar vai direto para a cobrança.
-      // Sem ele, a página confirma o recebimento e o comercial assume daqui.
-      if (acao === 'pagamento' && CHECKOUT_URL) {
-        window.location.href = CHECKOUT_URL;
-        return;
-      }
-      if (acao === 'contato') {
-        document.getElementById('doneTitle').textContent = 'Recebemos seus dados.';
-        document.getElementById('doneText').textContent =
-          'Nossa equipe entra em contato para falar sobre a sua vaga na Edição 1.';
-      }
+      // Quando o link de pagamento existir, preencher CHECKOUT_URL no topo do
+      // arquivo e reativar a linha abaixo: o lead é registrado antes, e só
+      // depois a pessoa segue para a cobrança.
+      // if (CHECKOUT_URL) { window.location.href = CHECKOUT_URL; return; }
 
       document.getElementById('formWrap').style.display = 'none';
       document.getElementById('formDone').classList.add('show');
@@ -1820,7 +1822,7 @@ const descricao =
       console.error('[THE MIC]', err);
       erroBox.textContent = 'Não foi possível enviar agora. Tente de novo em instantes ou escreva para ' + 'contato@piar.group' + '.';
       erroBox.classList.add('show');
-      btns.forEach((b) => { b.disabled = false; });
+      alvo.disabled = false;
       alvo.textContent = textoOriginal;
     }
   });
