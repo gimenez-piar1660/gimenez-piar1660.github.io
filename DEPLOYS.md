@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.6 | 2026-09-10 18:09 | themic-captacao-interesse | production | 150f5d9 | [notas](deploys/2026-09-10_1809_v0.2.6_themic-captacao-interesse/notes.md) |
 | v0.2.5 | 2026-09-01 16:40 | favicon | production | 730782b | [notas](deploys/2026-09-01_1640_v0.2.5_favicon/notes.md) |
 | v0.2.4 | 2026-09-01 15:51 | logo-amarelo-240 | production | daa134b | [notas](deploys/2026-09-01_1551_v0.2.4_logo-amarelo-240/notes.md) |
 | v0.2.3 | 2026-08-28 04:38 | nav-themic-todas-paginas | production | 7265b49 | [notas](deploys/2026-08-28_0438_v0.2.3_nav-themic-todas-paginas/notes.md) |
