@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.8 | 2026-09-22 17:47 | diagnostico-autoridade | production | bfe9b96 | [notas](deploys/2026-09-22_1747_v0.2.8_diagnostico-autoridade/notes.md) |
 | v0.2.7 | 2026-09-17 13:00 | themic-media-tools | production | 552db69 | [notas](deploys/2026-09-17_1300_v0.2.7_themic-media-tools/notes.md) |
 | v0.2.6 | 2026-09-10 18:09 | themic-captacao-interesse | production | 150f5d9 | [notas](deploys/2026-09-10_1809_v0.2.6_themic-captacao-interesse/notes.md) |
 | v0.2.5 | 2026-09-01 16:40 | favicon | production | 730782b | [notas](deploys/2026-09-01_1640_v0.2.5_favicon/notes.md) |
