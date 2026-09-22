@@ -1,0 +1,1243 @@
+---
+// ============================================================
+// DIAGNÓSTICO DE AUTORIDADE · isca de topo de funil do THE MIC
+// ------------------------------------------------------------
+// Origem: arquivo diagnostico-autoridade.html (22/09/2026) e o briefing
+// "THE MIC · Briefing: publicar o Diagnóstico de Autoridade", do mesmo dia.
+//
+// O que a página é: autodiagnóstico de 10 perguntas, resultado na hora, nota
+// de 0 a 100 repartida em cinco territórios. Porta de entrada mais leve que a
+// LP: quem chega frio não decide uma imersão de dois dias, mas responde 10
+// perguntas. Três telas no mesmo documento, sem recarregar:
+//   1. abertura e captura dos dados
+//   2. as perguntas
+//   3. o resultado, que também é a versão que vira PDF
+//
+// ---- O QUE MUDOU NA ADAPTAÇÃO (regras do CLAUDE.md) ---------------------
+//   - Tipografia: o arquivo recebido pedia Archivo Black / Inter / IBM Plex
+//     Mono por Google Fonts. Aqui é Montserrat / Open Sans / JetBrains Mono,
+//     por token e self-hosted. Nenhum request para fonts.googleapis.com.
+//   - Cor por token (src/styles/tokens.css), não hexadecimal solto. As três
+//     exceções que sobraram estão anotadas no bloco de tokens locais, abaixo.
+//   - Zero travessão na prosa. O arquivo recebido tinha 11.
+//   - Números institucionais (anos, marcas, exits) saem de src/data/site.ts, e
+//     data, local e vagas da edição saem de src/data/themic.ts. O arquivo
+//     recebido escrevia "13 anos", "470 marcas", "11 empresas" e "22 e 23/10"
+//     na mão, que é exatamente como o número de exits desandou em 18 páginas.
+//   - Consentimento: checkbox obrigatório, com link para /privacidade e
+//     /termos, o mesmo bloco de /contato e /themic. O arquivo recebido usava
+//     consentimento implícito ("ao continuar, você autoriza").
+//   - Cabeçalho enxuto, sem a Nav do site: a página tem um objetivo só, e a
+//     marca PiaR no topo é a única saída.
+//   - O rodapé da versão em PDF virou elemento de verdade (.pdf-so) no lugar
+//     de um `content:` dentro do @media print. O endereço passa a vir de
+//     site.domain, então não existe mais string de URL escrita à mão.
+//   - O regex que tira acento da faixa para montar a tag estava escrito com os
+//     diacríticos literais no arquivo recebido, coisa que qualquer editor que
+//     normalize o arquivo quebra em silêncio. Aqui está ̀-ͯ.
+//
+// ---- RASTREAMENTO -------------------------------------------------------
+// 1) RD STATION · mesma conta e mesmo token público de /contato e /themic.
+//    Autentica em /platform/conversions pelo parâmetro api_key. É público por
+//    natureza: o próprio RD projeta assim o formulário embarcado em site.
+//
+//    Duas conversões, de propósito. O RD cria as duas sozinho no primeiro
+//    envio, não precisa cadastrar nada antes:
+//      RD_ID_INICIO   → dispara no envio dos dados, ANTES das perguntas.
+//                       Quem abandona no meio já entrou na base.
+//      RD_ID_COMPLETO → dispara no fim, com a nota e os cinco territórios.
+//
+//    Campos personalizados a CRIAR no painel antes de publicar
+//    (Configurações → Campos personalizados). O identificador de API precisa
+//    ser exatamente este, porque é o que o código envia:
+//      cf_diagnostico_nota       Número   0 a 100
+//      cf_diagnostico_faixa      Texto
+//      cf_diagnostico_imprensa   Número   0 a 20
+//      cf_diagnostico_digital    Número   0 a 20
+//      cf_diagnostico_busca      Número   0 a 20
+//      cf_diagnostico_narrativa  Número   0 a 20
+//      cf_diagnostico_preparo    Número   0 a 20
+//    Os cf_utm_*, cf_landing_page, cf_referrer, cf_pagina_conversao e
+//    cf_produto_interesse já existem, criados para /contato e para a /themic.
+//    O RD responde 200 e descarta em silêncio campo que não existe, então a
+//    ausência não quebra o envio, só perde o dado.
+//
+//    Campos NATIVOS do RD (não recriar como personalizado):
+//      name · email · personal_phone · company_name
+//
+//    Tags, também criadas sozinhas no primeiro envio:
+//      diagnostico-autoridade            todo lead, desde o preenchimento
+//      diagnostico-invisivel             nota 0 a 30
+//      diagnostico-conhecido-pelos-seus  nota 31 a 55
+//      diagnostico-lembrado-as-vezes     nota 56 a 75
+//      diagnostico-referencia            nota 76 a 100
+//      tem-assessoria                    pedido do comercial: separa quem já
+//                                        tem estrutura de imprensa montada
+//    A tag diz o grupo; a nota exata fica nos campos cf_*.
+//
+// 2) UTM e origem do lead
+//    O arquivo recebido lia só utm_source e utm_campaign da query string.
+//    Aqui entra a mesma cadeia de /contato e /themic: cookie piar_atrib
+//    (90 dias, primeiro toque, gravado só após consentimento de marketing) →
+//    espelho em sessionStorage → query string desta visita. Isso resolve duas
+//    coisas que o arquivo perdia: o utm_content, que o briefing usa para
+//    separar peça de anúncio, e quem chega pela home com UTM e só converte
+//    aqui depois.
+//
+//    O Passo 4 do briefing pede que a URL não perca os parâmetros em
+//    redirecionamento. Isso não é código desta página, é configuração de
+//    servidor: está anotado nas notas do deploy.
+// ============================================================
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+import { EDICAO, URL_PROGRAMA, UTM_DIAGNOSTICO } from '@/data/themic';
+import { withBase } from '@/lib/base';
+
+const RD_PUBLIC_KEY = '0ba58cf81bc6e78d267b310a8ccafbfc';
+const RD_ID_INICIO = 'diagnostico-autoridade-inicio';
+const RD_ID_COMPLETO = 'diagnostico-autoridade-completo';
+
+const PRODUTO = 'THE MIC · Diagnóstico de Autoridade';
+
+// Destino do botão no fim do diagnóstico, já com a UTM que marca o clique.
+const CTA_PROGRAMA = `${URL_PROGRAMA}${UTM_DIAGNOSTICO}`;
+
+// Endereço que vai impresso no rodapé do PDF. Sem "https://" porque ali ele é
+// para a pessoa ler e digitar, não para clicar.
+const ENDERECO_PDF = `${site.domain.replace(/^https?:\/\//, '')}${URL_PROGRAMA}`;
+
+const titulo = 'Diagnóstico de Autoridade · THE MIC';
+const descricao =
+  'Dez perguntas para descobrir onde a sua autoridade está travando. Resultado na hora, com a sua pontuação nos cinco territórios e o primeiro movimento prático para destravar cada um.';
+---
+
+<BaseLayout
+  title={titulo}
+  description={descricao}
+  canonical={`${site.domain}/diagnostico`}
+  ogImage="/brand/lp/the-mic/hero-microfone.jpg"
+  bodyClass="antialiased diag-body"
+>
+<div class="diag">
+  <div class="wrap">
+
+    <header class="topo">
+      <svg class="mic" width="17" height="26" viewBox="0 0 24 36" fill="none" aria-hidden="true">
+        <rect x="8" y="1" width="8" height="19" rx="4" fill="currentColor"></rect>
+        <path d="M4 15v2a8 8 0 0 0 16 0v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+        <path d="M12 25v9M7.5 34.5h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+      </svg>
+      <div class="logo">THE MIC</div>
+      <a href={withBase('/')} class="piar-mark" aria-label="Ir para o site da PiaR Group">
+        <img src={withBase('/brand/piar-horizontal-negativo.png')} alt="PiaR Group" width="70" height="23" loading="lazy" />
+      </a>
+    </header>
+
+    <!-- ===== TELA 1 · ABERTURA E CAPTURA ===== -->
+    <section class="tela ativa abertura" id="tela-abertura">
+      <div class="assinatura">
+        <svg class="mic" width="26" height="39" viewBox="0 0 24 36" fill="none" aria-hidden="true">
+          <rect x="8" y="1" width="8" height="19" rx="4" fill="currentColor"></rect>
+          <path d="M4 15v2a8 8 0 0 0 16 0v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+          <path d="M12 25v9M7.5 34.5h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+        </svg>
+        <div class="wave" id="wave-abertura"></div>
+      </div>
+
+      <span class="selo">Diagnóstico gratuito</span>
+      <h1>O que o mercado encontra quando procura por <em>você</em>?</h1>
+      <p class="lead">Antes da reunião, da proposta e do convite, alguém te procura. O que aparece nessa hora é construído em cinco territórios, e dá para medir onde o seu está frágil.</p>
+
+      <ol class="territorios-lista">
+        <li><span class="n">01</span> Presença na imprensa</li>
+        <li><span class="n">02</span> Presença digital</li>
+        <li><span class="n">03</span> Busca e inteligência artificial</li>
+        <li><span class="n">04</span> Narrativa</li>
+        <li><span class="n">05</span> Preparo para a pergunta difícil</li>
+      </ol>
+
+      <div class="entrega">
+        <span class="rot mono">O que você recebe, na hora</span>
+        <p>A sua pontuação em cada território, o diagnóstico do que está travando cada um deles e o <strong>primeiro movimento prático</strong> para destravar: cinco ações que você mesmo executa ainda nesta semana, sem contratar ninguém.</p>
+      </div>
+
+      <p class="credibilidade">Não é quiz de internet. É o raio-x que a PiaR aplica antes de preparar um porta-voz: <strong>{site.yearsOperating} anos, mais de {site.brandsServed.replace('+', '')} marcas e {site.exitsSupported} empresas acompanhadas até o exit.</strong></p>
+
+      <p class="tempo mono"><span class="pt"></span> 10 perguntas · 2 minutos · resultado na hora</p>
+
+      <form id="form-lead" novalidate>
+        <div class="campo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" placeholder="Como você se apresenta" />
+          <span class="erro" id="erro-nome">Preencha o seu nome.</span>
+        </div>
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="voce@empresa.com.br" />
+          <span class="erro" id="erro-email">Informe um e-mail válido.</span>
+        </div>
+        <div class="campo">
+          <label for="empresa">Empresa</label>
+          <input type="text" id="empresa" name="empresa" autocomplete="organization" placeholder="Onde você trabalha hoje" />
+          <span class="erro" id="erro-empresa">Preencha o nome da empresa.</span>
+        </div>
+        <div class="campo">
+          <label for="telefone">WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone" autocomplete="tel" placeholder="(11) 99999-9999" />
+          <span class="erro" id="erro-telefone">Informe um telefone com DDD.</span>
+        </div>
+
+        <div class="campo campo-consent">
+          <div class="consent">
+            <input type="checkbox" id="consent" name="consent" />
+            <label for="consent">
+              Concordo em compartilhar meus dados com a PiaR Group para receber o resultado deste diagnóstico e falar sobre a imersão THE MIC, inclusive por WhatsApp.
+              Os dados são tratados nas ferramentas que operam a nosso pedido, nunca são vendidos nem cedidos a terceiros, e você pode pedir a exclusão quando quiser, conforme a
+              <a href={withBase('/privacidade')} target="_blank" rel="noopener">Política de Privacidade</a> e os
+              <a href={withBase('/termos')} target="_blank" rel="noopener">Termos de Uso</a>.
+            </label>
+          </div>
+          <span class="erro" id="erro-consent">Precisamos do seu aceite para seguir.</span>
+        </div>
+
+        <!-- Armadilha de robô: humano não enxerga, bot preenche. -->
+        <input type="text" name="botcheck" id="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" class="botcheck" />
+
+        <button type="submit" class="btn" id="btn-comecar">Começar o diagnóstico →</button>
+      </form>
+    </section>
+
+    <!-- ===== TELA 2 · PERGUNTAS ===== -->
+    <section class="tela" id="tela-perguntas">
+      <div class="progresso">
+        <div class="barra"><i id="barra-preenche"></i></div>
+        <div class="contagem mono"><span id="contador">Pergunta 1 de 10</span></div>
+      </div>
+      <div class="pergunta">
+        <div class="territorio mono" id="rotulo-territorio"></div>
+        <h2 id="texto-pergunta"></h2>
+        <div class="opcoes" id="opcoes"></div>
+        <button class="voltar" id="btn-voltar" type="button">← Voltar</button>
+      </div>
+    </section>
+
+    <!-- ===== TELA 3 · RESULTADO ===== -->
+    <section class="tela" id="tela-resultado">
+      <div class="cabecalho-pdf" id="cabecalho-pdf"></div>
+
+      <div class="nota">
+        <div class="assinatura">
+          <svg class="mic" width="26" height="39" viewBox="0 0 24 36" fill="none" aria-hidden="true">
+            <rect x="8" y="1" width="8" height="19" rx="4" fill="currentColor"></rect>
+            <path d="M4 15v2a8 8 0 0 0 16 0v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+            <path d="M12 25v9M7.5 34.5h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+          </svg>
+          <div class="wave" id="wave-resultado"></div>
+        </div>
+        <div class="num" id="nota-final">0</div>
+        <div class="de">de 100 pontos de autoridade</div>
+        <div class="faixa" id="nome-faixa"></div>
+        <p class="resumo" id="resumo-faixa"></p>
+      </div>
+
+      <div class="mapa" id="mapa-territorios"></div>
+
+      <div class="secao-titulo">
+        <h3>Seus cinco territórios</h3>
+        <p>Onde você está forte, onde está exposto e o que fazer primeiro em cada um.</p>
+      </div>
+
+      <div id="cards-territorios"></div>
+
+      <div class="oferta">
+        <span class="rot mono" id="rot-oferta">Do diagnóstico à prática</span>
+        <h3 id="titulo-oferta"></h3>
+        <p class="ponte" id="ponte-oferta"></p>
+        <p>São {EDICAO.duracao}, presencial, em {EDICAO.cidade}: imprensa, palco, redes, posicionamento nas buscas e nas IAs, a Sabatina (você no banco do repórter, respondendo as perguntas que ninguém quer ouvir, com devolutiva na hora) e a gravação de um mini-podcast, que você leva pronto.</p>
+        <p>Conduzido por {site.founder.name}, 20 anos de redação e mais de {site.brandsServed.replace('+', '')} marcas preparadas para falar com a imprensa, e Laura Gurgel, analista do Shark Tank Brasil.</p>
+        <div class="dados">
+          <div><span class="v">{EDICAO.datasCurtas}</span><span class="l">{EDICAO.cidade}</span></div>
+          <div><span class="v">{EDICAO.vagas}</span><span class="l">cadeiras na Edição 1</span></div>
+          <div><span class="v">{EDICAO.duracao}</span><span class="l">presenciais</span></div>
+        </div>
+        <a class="btn" id="cta-programa" href={CTA_PROGRAMA}>Quero conhecer o programa →</a>
+        <button class="btn vazio" id="btn-refazer" type="button">Refazer o diagnóstico</button>
+        <!-- Só aparece no papel: quando alguém encaminha o PDF, é este link que vai junto. -->
+        <p class="pdf-so">Inscrições e programa completo: {ENDERECO_PDF}</p>
+      </div>
+
+      <div class="rodape">
+        <button class="imprimir" id="btn-imprimir" type="button">Salvar este resultado em PDF</button>
+        <p class="assinatura-rodape">THE MIC · PiaR Group</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ATENÇÃO, o bloco é is:global de propósito, e não por preguiça.
+     O Astro escopa estilo carimbando data-astro-cid-* em CADA elemento do
+     seletor, inclusive no último. Metade desta página nasce em JavaScript
+     (as barras da waveform, os botões de opção, as linhas do mapa, os cinco
+     cards, o cabeçalho do PDF) e elemento criado em runtime não recebe esse
+     carimbo: a regra simplesmente não casa, e o elemento sai sem estilo
+     nenhum. Foi o que aconteceu na primeira versão desta página, e é o que
+     acontece hoje com as waveforms de /themic.
+     O preço do is:global é vazamento, e o contrato para não vazar é um só:
+     TODO seletor daqui começa em .diag, e todo @keyframes começa em diag-. -->
+<style is:global>
+  body.diag-body { background: var(--ink); }
+
+  @media print {
+    /* margem zero para o preto sangrar até a borda da folha */
+    @page { size: A4; margin: 0; }
+
+    *,
+    *::before,
+    *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    html, body.diag-body { background: var(--ink) !important; }
+
+    /* Fora do diagnóstico não vai nada para o papel: nem o link de pular
+       conteúdo do BaseLayout, nem o banner de cookies. */
+    body.diag-body > *:not(.diag) { display: none !important; }
+  }
+
+  .diag {
+    /* ---------- Tokens locais, mapeados para o design system PiaR ----------
+       Os nomes ficam próximos aos do arquivo recebido, para dar para comparar
+       os dois lado a lado, mas os VALORES apontam para src/styles/tokens.css.
+
+       Três exceções continuam em hexadecimal, pelo mesmo motivo do --on-air
+       em /themic: tokens.css não tem semântica de estado nem um terceiro
+       degrau de preto.
+         --alerta e --ok  só existem para o medidor de território
+                          (baixo / médio / alto) e para o texto de erro.
+         --preto-3        entre --ink-soft (#1A1A1D) e --gray-700 (#333333)
+                          não há degrau, e #333 clareia demais o hover de card
+                          sobre preto. Este é o --ink-soft um passo acima.
+
+       O cinza de texto é --gray-400 e não --text-faint-d: sobre var(--ink), o
+       segundo dá 4,5:1 raspando, e quase todo uso aqui é mono de 11px. Mesma
+       lição do commit 56f1fa7 em /themic. */
+    --preto: var(--ink);
+    --preto-2: var(--ink-soft);
+    --preto-3: #26262B;
+    --ouro: var(--yellow);
+    --ouro-claro: var(--yellow-300);
+    --off: var(--paper);
+    --corpo: var(--text-muted-d);
+    --cinza: var(--gray-400);
+    --linha: var(--hairline-d);
+    --trilho: var(--gray-700);
+    --alerta: #E8433D;
+    --ok: #5EC27A;
+    --display: var(--font-display);
+    --body: var(--font-sans);
+    --mono: var(--font-mono);
+
+    display: block;
+    position: relative;
+    min-height: 100vh;
+    background: var(--preto);
+    color: var(--off);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* brilho quente no topo, para o preto não ficar chapado */
+  .diag::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(760px 420px at 50% -8%, rgba(254, 209, 54, .09), transparent 70%);
+  }
+
+  .diag * { margin: 0; padding: 0; box-sizing: border-box; }
+  .diag img, .diag svg { display: block; max-width: 100%; }
+  .diag a { color: inherit; }
+  .diag ::selection { background: var(--ouro); color: var(--preto); }
+  .diag :focus-visible { outline: 3px solid var(--ouro); outline-offset: 3px; }
+
+  .diag .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 30px 20px 80px;
+  }
+
+  .diag .mono {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .diag h1, .diag h2, .diag h3, .diag h4 {
+    font-family: var(--display);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+  }
+
+  /* ---------- Cabeçalho ---------- */
+  .diag .topo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--linha);
+    margin-bottom: 36px;
+  }
+  .diag .logo {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: .04em;
+  }
+  .diag .piar-mark { margin-left: auto; display: inline-flex; opacity: .55; transition: opacity .2s ease; }
+  .diag .piar-mark:hover { opacity: .9; }
+  .diag .mic { flex-shrink: 0; color: var(--ouro); }
+
+  /* ---------- Assinatura: microfone com waveform saindo dele ---------- */
+  .diag .assinatura { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 auto 26px; }
+  .diag .wave { display: flex; align-items: flex-end; gap: 3px; height: 34px; }
+  .diag .wave i { display: block; width: 4px; background: var(--ouro); border-radius: 2px; animation: diag-pulsa 1.4s ease-in-out infinite; }
+  @keyframes diag-pulsa { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .diag .wave i { animation: none; } }
+
+  /* ---------- Telas ---------- */
+  .diag .tela { display: none; }
+  .diag .tela.ativa { display: block; animation: diag-entra .35s ease; }
+  @keyframes diag-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Tela 1 ---------- */
+  .diag .selo {
+    display: inline-block;
+    background: var(--ouro);
+    color: var(--preto);
+    padding: 7px 15px;
+    border-radius: var(--r-pill);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+  .diag .abertura h1 { font-size: clamp(30px, 6.4vw, 46px); margin-bottom: 20px; }
+  .diag .abertura h1 em { font-style: normal; color: var(--ouro); }
+  .diag .lead { font-size: 17px; color: var(--corpo); margin-bottom: 14px; max-width: 60ch; }
+  .diag .lead strong { color: var(--off); font-weight: 600; }
+
+  .diag .territorios-lista { list-style: none; margin: 26px 0 34px; border-top: 1px solid var(--linha); }
+  .diag .territorios-lista li {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 12px 2px;
+    border-bottom: 1px solid var(--linha);
+    font-size: 15.5px;
+    color: var(--corpo);
+  }
+  .diag .territorios-lista .n {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: var(--ouro);
+    min-width: 22px;
+  }
+
+  .diag .entrega {
+    background: var(--preto-2);
+    border: 1px solid rgba(254, 209, 54, .24);
+    border-radius: var(--r-md);
+    padding: 20px 22px;
+    margin: 26px 0 20px;
+  }
+  .diag .entrega .rot { display: block; color: var(--ouro); margin-bottom: 9px; }
+  .diag .entrega p { font-size: 15.5px; color: var(--corpo); }
+  .diag .entrega strong { color: var(--off); font-weight: 600; }
+
+  .diag .credibilidade { font-size: 14.5px; color: var(--cinza); margin-bottom: 22px; line-height: 1.55; }
+  .diag .credibilidade strong { color: var(--corpo); font-weight: 500; }
+
+  .diag .tempo { display: flex; align-items: flex-start; gap: 9px; color: var(--cinza); margin-bottom: 28px; line-height: 1.7; }
+  .diag .tempo .pt { width: 5px; height: 5px; border-radius: 50%; background: var(--ouro); flex-shrink: 0; margin-top: 7px; }
+
+  /* ---------- Formulário ---------- */
+  .diag .campo { margin-bottom: 15px; }
+  .diag .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; color: var(--corpo); }
+  .diag .campo input[type="text"],
+  .diag .campo input[type="email"],
+  .diag .campo input[type="tel"] {
+    width: 100%;
+    background: var(--preto-2);
+    border: 1px solid var(--linha);
+    border-radius: var(--r-sm);
+    padding: 14px 15px;
+    color: var(--off);
+    font-family: inherit;
+    /* 16px não é estética: abaixo disso o iOS dá zoom ao focar o campo. */
+    font-size: 16px;
+    transition: border-color .15s;
+  }
+  .diag .campo input:focus { outline: none; border-color: var(--ouro); }
+  .diag .campo input::placeholder { color: var(--gray-500); }
+
+  .diag .campo-consent { margin: 20px 0 6px; }
+  .diag .consent { display: flex; gap: .8rem; align-items: flex-start; }
+  .diag .consent input[type="checkbox"] {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+    accent-color: var(--ouro);
+    margin-top: 2px;
+  }
+  .diag .consent label { font-size: 12.5px; font-weight: 400; color: var(--cinza); line-height: 1.55; margin-bottom: 0; }
+  .diag .consent label a { color: var(--ouro); text-decoration: underline; text-underline-offset: 3px; }
+
+  .diag .erro { color: var(--alerta); font-size: 13px; margin-top: 6px; display: none; }
+  .diag .erro.on { display: block; }
+
+  .diag .botcheck { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  .diag .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--ouro);
+    color: var(--preto);
+    border: none;
+    border-radius: var(--r-pill);
+    padding: 16px 30px;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform .12s, background .15s;
+    text-decoration: none;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .diag .btn:hover { background: var(--ouro-claro); }
+  .diag .btn:active { transform: scale(.99); }
+  .diag .btn[disabled] { opacity: .6; cursor: progress; }
+  .diag .btn.vazio { background: transparent; color: var(--cinza); border: 1px solid var(--linha); margin-top: 12px; }
+  .diag .btn.vazio:hover { background: var(--preto-2); color: var(--off); }
+
+  /* ---------- Tela 2 ---------- */
+  .diag .progresso { margin-bottom: 28px; }
+  .diag .barra { height: 3px; background: var(--preto-3); border-radius: 3px; overflow: hidden; }
+  .diag .barra i { display: block; height: 100%; background: var(--ouro); width: 0; transition: width .3s ease; }
+  .diag .contagem { display: flex; justify-content: space-between; margin-top: 11px; color: var(--cinza); }
+
+  .diag .territorio { color: var(--ouro); margin-bottom: 12px; }
+  .diag .pergunta h2 { font-size: clamp(21px, 4.4vw, 28px); margin-bottom: 24px; }
+  .diag .opcoes { display: flex; flex-direction: column; gap: 9px; }
+  .diag .opcao {
+    background: var(--preto-2);
+    border: 1px solid var(--linha);
+    border-radius: var(--r-md);
+    padding: 16px 18px;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--off);
+    text-align: left;
+    font-family: inherit;
+    transition: border-color .15s, background .15s;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    line-height: 1.4;
+  }
+  .diag .opcao:hover { border-color: var(--ouro); background: var(--preto-3); }
+  .diag .opcao .marca {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gray-600);
+    flex-shrink: 0;
+    transition: border-color .15s;
+  }
+  .diag .opcao:hover .marca { border-color: var(--ouro); }
+
+  .diag .voltar {
+    background: none;
+    border: none;
+    color: var(--cinza);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 24px;
+    padding: 6px 0;
+  }
+  .diag .voltar:hover { color: var(--off); }
+
+  /* ---------- Tela 3 ---------- */
+  .diag .nota { text-align: center; padding: 10px 0 30px; border-bottom: 1px solid var(--linha); margin-bottom: 34px; }
+  .diag .nota .num { font-family: var(--display); font-weight: 800; font-size: clamp(62px, 15vw, 96px); line-height: 1; color: var(--ouro); }
+  .diag .nota .de { color: var(--cinza); font-size: 14px; margin-top: 4px; }
+  .diag .nota .faixa { font-family: var(--display); font-weight: 800; font-size: clamp(24px, 5.2vw, 34px); margin-top: 20px; }
+  .diag .nota .resumo { color: var(--corpo); font-size: 16px; max-width: 56ch; margin: 16px auto 0; text-align: left; }
+
+  /* mapa dos cinco territórios: a forma do resultado num olhar */
+  .diag .mapa { margin-bottom: 34px; }
+  .diag .mapa-linha {
+    display: grid;
+    grid-template-columns: 1fr 150px 46px;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .diag .mapa-linha:first-child { border-top: 1px solid var(--linha); }
+  .diag .mapa-linha .rot { font-size: 14.5px; color: var(--corpo); }
+  .diag .mapa-linha .trilho { height: 6px; background: var(--trilho); border-radius: 4px; overflow: hidden; }
+  .diag .mapa-linha .trilho i {
+    display: block;
+    height: 100%;
+    width: 0;
+    min-width: 3px;
+    border-radius: 4px;
+    transition: width .8s var(--ease-spring);
+  }
+  .diag .mapa-linha .trilho i.baixo { background: var(--alerta); }
+  .diag .mapa-linha .trilho i.medio { background: var(--ouro); }
+  .diag .mapa-linha .trilho i.alto { background: var(--ok); }
+  .diag .mapa-linha .val { font-family: var(--mono); font-size: 12px; color: var(--cinza); text-align: right; }
+  @media (max-width: 560px) {
+    .diag .mapa-linha { grid-template-columns: 1fr 92px 40px; gap: 10px; }
+    .diag .mapa-linha .rot { font-size: 13.5px; }
+  }
+
+  .diag .secao-titulo { margin-bottom: 20px; }
+  .diag .secao-titulo h3 { font-size: 19px; margin-bottom: 6px; }
+  .diag .secao-titulo p { color: var(--cinza); font-size: 14px; }
+
+  .diag .card {
+    background: var(--preto-2);
+    border: 1px solid var(--linha);
+    border-radius: var(--r-md);
+    padding: 22px;
+    margin-bottom: 14px;
+  }
+  .diag .card-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .diag .card-topo .nome { color: var(--ouro); }
+  .diag .nivel {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--r-pill);
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .diag .nivel.baixo { color: var(--alerta); border-color: rgba(232, 67, 61, .4); }
+  .diag .nivel.medio { color: var(--ouro); border-color: rgba(254, 209, 54, .4); }
+  .diag .nivel.alto { color: var(--ok); border-color: rgba(94, 194, 122, .4); }
+  .diag .card h4 { font-size: 18px; line-height: 1.2; margin-bottom: 11px; }
+  .diag .card p { font-size: 15px; color: var(--corpo); margin-bottom: 14px; }
+  .diag .movimento { border-left: 2px solid var(--ouro); padding: 2px 0 2px 15px; }
+  .diag .movimento .rot { color: var(--ouro); display: block; margin-bottom: 5px; }
+  .diag .movimento p { font-size: 14.5px; color: var(--corpo); margin-bottom: 0; }
+
+  .diag .oferta {
+    background: linear-gradient(160deg, var(--preto-3), var(--preto-2));
+    border: 1px solid rgba(254, 209, 54, .28);
+    border-radius: var(--r-lg);
+    padding: 30px 24px;
+    margin-top: 38px;
+  }
+  .diag .oferta .rot { display: block; color: var(--ouro); margin-bottom: 12px; }
+  .diag .oferta h3 { font-size: clamp(22px, 4.6vw, 29px); margin-bottom: 16px; }
+  .diag .oferta h3 em { font-style: normal; color: var(--ouro); }
+  .diag .oferta p { color: var(--corpo); font-size: 15px; margin-bottom: 14px; }
+  .diag .oferta .ponte { color: var(--off); font-size: 16px; border-left: 2px solid var(--ouro); padding-left: 15px; margin-bottom: 20px; }
+  .diag .dados { display: flex; gap: 26px; flex-wrap: wrap; margin: 22px 0; padding-top: 20px; border-top: 1px solid var(--linha); }
+  .diag .dados div span { display: block; }
+  .diag .dados .v { font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--ouro); }
+  .diag .dados .l { color: var(--cinza); font-size: 12.5px; margin-top: 2px; }
+
+  .diag .rodape { text-align: center; color: var(--cinza); font-size: 12.5px; margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--linha); }
+  .diag .rodape .assinatura-rodape { margin-top: 10px; }
+  .diag .imprimir { background: none; border: none; color: var(--cinza); font-size: 13px; text-decoration: underline; cursor: pointer; font-family: inherit; }
+
+  /* Só existem no papel. */
+  .diag .cabecalho-pdf,
+  .diag .pdf-so { display: none; }
+
+  /* ---------- Versão impressa / PDF ---------- */
+  @media print {
+    .diag { min-height: 0; }
+    .diag::before { display: none; }
+    .diag .wrap { max-width: none; padding: 15mm 14mm 0; }
+    .diag #tela-resultado { padding-bottom: 0; }
+
+    /* só o resultado vai para o papel */
+    .diag .topo,
+    .diag .btn,
+    .diag .imprimir,
+    .diag .rodape,
+    .diag .voltar { display: none !important; }
+    .diag .tela { display: none !important; }
+    .diag #tela-resultado { display: block !important; }
+
+    .diag .cabecalho-pdf {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--linha);
+    }
+    .diag .cabecalho-pdf .marca { font-family: var(--display); font-weight: 800; font-size: 14px; letter-spacing: .04em; color: var(--off); }
+    .diag .cabecalho-pdf .marca span { color: var(--cinza); font-family: var(--body); font-weight: 400; font-size: 11px; letter-spacing: .1em; margin-left: 9px; }
+    .diag .cabecalho-pdf .quem {
+      margin-left: auto;
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cinza);
+      line-height: 1.6;
+    }
+    .diag .cabecalho-pdf .quem b { display: block; color: var(--ouro); font-weight: 500; }
+
+    .diag .nota { padding-top: 0; page-break-after: avoid; }
+    .diag .nota .assinatura { margin-bottom: 18px; }
+    .diag .wave i { animation: none; opacity: .9; }
+
+    .diag .mapa { page-break-inside: avoid; }
+    .diag .card, .diag .oferta { page-break-inside: avoid; background: var(--preto-2) !important; }
+    /* o mapa já anuncia os territórios; o subtítulo só criaria órfão no papel */
+    .diag .secao-titulo { display: none; }
+    .diag .card { margin-bottom: 5mm; }
+
+    .diag .oferta { margin: 26px 0 0; background: var(--preto-3) !important; }
+    .diag .pdf-so {
+      display: block;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--linha);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .06em;
+      color: var(--ouro);
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ RD_PUBLIC_KEY, RD_ID_INICIO, RD_ID_COMPLETO, PRODUTO, CTA_PROGRAMA }}>
+(function () {
+  'use strict';
+
+  /* ===================== PERGUNTAS =====================
+     Opções em ordem crescente de maturidade. Pontos: 0, 3, 7, 10.
+     10 perguntas x 10 pontos = 100. Dois territórios por pergunta x 2
+     perguntas = 20 por território. Mexer nas tabelas quebra essa conta.
+     ===================================================== */
+  const PONTOS = [0, 3, 7, 10];
+
+  /* Cada pergunta pode ter a própria pontuação em `p` e marcar o lead com uma
+     tag no RD em `tags` (índice da opção → tag). */
+  const PERGUNTAS = [
+    { t: 'imprensa', q: 'Nos últimos 12 meses, quantas vezes você foi citado ou entrevistado em algum veículo de imprensa?',
+      o: ['Nenhuma', 'De 1 a 2', 'De 3 a 6', 'Mais de 6'] },
+    { t: 'imprensa', q: 'Quando um repórter da sua área precisa de uma fonte, ele sabe como te encontrar?',
+      o: ['Não faço ideia', 'Provavelmente não', 'Talvez, se procurar bem', 'Sim, já me procuraram', 'Sim, ele fala com a minha assessoria'],
+      p: [0, 3, 7, 10, 10],
+      tags: { 4: 'tem-assessoria' } },
+
+    { t: 'digital', q: 'Com que frequência você publica conteúdo com o seu nome, no LinkedIn ou no Instagram?',
+      o: ['Quase nunca', 'Cerca de uma vez por mês', 'Toda semana', 'Várias vezes por semana'] },
+    { t: 'digital', q: 'Alguém já te procurou para negócio depois de ver algo que você publicou?',
+      o: ['Nunca aconteceu', 'Uma ou outra vez', 'Acontece de vez em quando', 'É uma fonte recorrente'] },
+
+    { t: 'busca', q: 'Se alguém pesquisa o seu nome no Google, o que aparece na primeira página?',
+      o: ['Nada meu', 'Só as minhas redes sociais', 'Alguma matéria ou entrevista', 'Vários resultados relevantes'] },
+    { t: 'busca', q: 'Você já perguntou a uma IA quem são as referências do seu setor e conferiu se o seu nome aparece?',
+      o: ['Nunca testei', 'Testei e não apareci', 'Apareci de forma vaga', 'Apareci com destaque'] },
+
+    { t: 'narrativa', q: 'Você consegue explicar o que faz, em trinta segundos, de um jeito que qualquer pessoa entenda?',
+      o: ['Sempre me enrolo', 'Depende do dia', 'Mais ou menos', 'Tenho isso afiado'] },
+    { t: 'narrativa', q: 'Existe um tema sobre o qual você quer ser lembrado como referência?',
+      o: ['Nunca pensei nisso', 'Tenho uma ideia vaga', 'Sei qual é, mas não comunico', 'Sim, e comunico sempre'] },
+
+    { t: 'preparo', q: 'Quando vem a pergunta difícil (o concorrente, o preço, o resultado que não veio), o que acontece?',
+      o: ['Travo ou desvio', 'Improviso na hora', 'Me saio bem às vezes', 'Tenho resposta preparada'] },
+    { t: 'preparo', q: 'Você já passou por algum preparo formal para falar com imprensa, palco ou investidor?',
+      o: ['Nunca', 'Li coisas por conta própria', 'Uma vez, há bastante tempo', 'Sim, e mantenho o treino'] }
+  ];
+
+  /* ===================== ANÁLISES POR TERRITÓRIO ===================== */
+  const TERRITORIOS = {
+    imprensa: { nome: 'Presença na imprensa', analises: [
+      { titulo: 'Você não está no radar das redações.',
+        texto: 'Repórter trabalha com prazo curto e agenda fechada. Quando ele precisa de uma fonte, não pesquisa quem é o melhor do setor: recorre a quem já está na agenda dele ou a quem apareceu recentemente em outro veículo. Não estar nessa lista é um problema de acesso e de relação, coisas que levam tempo e não se resolvem com um disparo. E o custo é silencioso, porque a pauta sai com o seu concorrente e o mercado lê que a referência é ele.',
+        movimento: 'Antes de pensar em aparecer, tenha as três respostas que uma redação precisa: sobre qual assunto específico você quer ser procurado, qual dado ou experiência você tem que ninguém mais tem, e quem na sua empresa consegue responder em menos de duas horas quando a imprensa aparece. Sem essas três, nenhuma porta se sustenta depois de aberta.' },
+      { titulo: 'Você aparece quando procuram, não quando decide.',
+        texto: 'Você já saiu na imprensa, mas de forma reativa: alguém lembrou, alguém indicou, surgiu a oportunidade. O problema da presença reativa é que ela não acumula. Sem um tema fixo, cada aparição te apresenta do zero e o mercado não constrói memória sobre você. Quem vira fonte recorrente não aparece mais por sorte: aparece porque ocupou um assunto e ficou fácil de achar.',
+        movimento: 'Liste as suas últimas aparições e veja se falam do mesmo tema. Se não falam, escolha um agora e segure esse assunto nos próximos três meses, inclusive recusando o que não for dele. Presença espalhada não vira memória de mercado.' },
+      { titulo: 'A imprensa já sabe quem você é.',
+        texto: 'Você tem acesso, e isso é raro. A partir daqui o risco muda de natureza: deixa de ser invisibilidade e passa a ser desgaste. Fonte que fala de tudo perde valor, e uma resposta mal calibrada numa pauta sensível custa mais do que dez aparições boas rendem.',
+        movimento: 'Defina por escrito dois assuntos que você aceita comentar e dois que você recusa. Ter esse limite claro é o que separa a fonte confiável da fonte apenas disponível.' }
+    ] },
+    digital: { nome: 'Presença digital', analises: [
+      { titulo: 'O seu nome não circula.',
+        texto: 'A conta é simples: quem não publica só é encontrado por quem já conhece. Hoje a sua reputação depende inteiramente de quem já trabalhou com você, e ela não alcança a mesa onde a decisão sobre você está sendo tomada. Publicar não é sobre virar criador de conteúdo. É sobre existir para quem ainda não te conhece.',
+        movimento: 'Publique um post por semana durante quatro semanas, respondendo perguntas que clientes te fazem toda hora. Não precisa de estratégia, precisa de constância.' },
+      { titulo: 'Você publica, mas não colhe.',
+        texto: 'Publicar sem direção gera audiência, não oportunidade. O que transforma uma coisa na outra é a repetição de um mesmo território: quando o seu nome fica colado a um assunto, as pessoas passam a te procurar por ele. Sem isso, os seus posts são lidos, elogiados e esquecidos na mesma semana.',
+        movimento: 'Olhe os seus últimos dez posts. Se um estranho os lesse, saberia dizer qual é o seu assunto? Se não souber, escolha um e fique nele por três meses.' },
+      { titulo: 'O digital já te traz negócio.',
+        texto: 'Você chegou onde a maioria não chega: conteúdo que gera demanda. O gargalo agora deixa de ser alcance e passa a ser consistência de discurso. Quem te procura chega com uma expectativa formada pelo que leu, e é ao vivo, na reunião ou no palco, que essa expectativa se confirma ou se quebra.',
+        movimento: 'Compare o que você diz nos posts com o que diz numa reunião. A distância entre os dois é exatamente por onde a confiança vaza.' }
+    ] },
+    busca: { nome: 'Busca e inteligência artificial', analises: [
+      { titulo: 'Você não existe na pesquisa.',
+        texto: 'A primeira reunião sobre você acontece sem você. Investidor, cliente grande e candidato sênior pesquisam antes de responder, e cada vez mais perguntam a uma IA em vez de rolar o Google. Essas ferramentas respondem com quem encontram citado em fontes confiáveis. Quando não há nada, a ausência não é lida como neutra: é lida como falta de relevância.',
+        movimento: 'Pesquise o seu nome numa aba anônima e anote o que aparece. Depois pergunte a uma IA quem são as referências do seu setor. O que você encontrar é exatamente o que o mercado encontra.' },
+      { titulo: 'Você aparece, mas não como referência.',
+        texto: 'O seu nome retorna resultados, só que o que aparece são perfis e páginas que você mesmo controla. Isso prova que você existe, não que você é relevante. As buscas e as IAs dão peso a menções de terceiros: matéria, citação, painel, artigo publicado fora da sua casa. É esse rastro que faz a máquina te classificar como fonte, e ele se constrói ao longo de meses, não de semanas.',
+        movimento: 'Defina o termo pelo qual você quer ser encontrado e use exatamente ele, sem variações, em tudo que está sob o seu controle: bio, perfis, site, assinatura de e-mail, descrição em eventos. Consistência de termo é o que a máquina lê como especialidade, e é a parte que não depende de ninguém além de você.' },
+      { titulo: 'Você já é encontrado.',
+        texto: 'O seu rastro digital trabalha sem você. O esforço agora é de curadoria: garantir que o que aparece primeiro seja o que você quer que apareça e que a informação esteja atualizada. Resultado velho é o tipo de coisa que custa caro no meio de uma negociação.',
+        movimento: 'Revise os cinco primeiros resultados do seu nome e corrija o que estiver desatualizado ou fora de contexto.' }
+    ] },
+    narrativa: { nome: 'Narrativa', analises: [
+      { titulo: 'Falta um fio que ligue tudo.',
+        texto: 'Sem narrativa definida, cada conversa recomeça do zero e você gasta a energia explicando o que faz, em vez de defender por que aquilo importa. É o sintoma mais comum entre pessoas tecnicamente excelentes: sabem demais sobre o assunto e por isso não conseguem simplificar. Quem não consegue ser resumido não é lembrado, e quem não é lembrado não é indicado.',
+        movimento: 'Escreva uma frase que comece com "eu ajudo ___ a ___" e teste com alguém de fora da sua área. Se a pessoa pedir explicação, a frase ainda não está pronta.' },
+      { titulo: 'Você tem o tema, falta a versão curta.',
+        texto: 'Você sabe do que quer falar, mas a mensagem muda conforme o interlocutor e o dia. Autoridade se constrói por repetição: é a mesma ideia dita muitas vezes, do mesmo jeito, que faz o mercado associar um assunto a um nome. Versões diferentes a cada conversa diluem justamente o que deveriam acumular.',
+        movimento: 'Fixe três frases que você vai repetir em toda entrevista, post e reunião nos próximos três meses. A sensação de repetição é só sua; para quem ouve, é a primeira vez.' },
+      { titulo: 'A sua mensagem está afiada.',
+        texto: 'Você tem território e consegue traduzir. O passo seguinte é levar essa narrativa para ambientes em que ela seja testada, e não apenas recebida: palco, entrevista ao vivo, banca, sabatina. Narrativa que só funciona em terreno amigável ainda não foi verificada.',
+        movimento: 'Aceite o próximo convite que te dê desconforto. É onde a mensagem prova que se sustenta.' }
+    ] },
+    preparo: { nome: 'Preparo para a pergunta difícil', analises: [
+      { titulo: 'Você está improvisando.',
+        texto: 'A pergunta difícil vem em toda entrevista, todo pitch e toda reunião importante, e ela é previsível: o concorrente, o preço, o resultado que não veio, o erro do passado. Improvisar nessas horas é o que faz uma boa conversa virar uma frase ruim publicada. E na maioria das vezes o dano não é a resposta errada, é a hesitação de três segundos que vem antes dela.',
+        movimento: 'Escreva as cinco perguntas que você menos gostaria de receber. Responda cada uma em voz alta, em até trinta segundos, e grave. A primeira escuta costuma ser desconfortável, e é justamente aí que está o valor do exercício.' },
+      { titulo: 'Você se vira, mas depende do dia.',
+        texto: 'Sair bem às vezes significa que o seu desempenho está sujeito a variáveis que você não controla: cansaço, clima da conversa, quem está na sala. Quem fala bem de forma consistente não é mais talentoso. Tem material pronto, ponte preparada para voltar ao tema e treino suficiente para não depender de inspiração.',
+        movimento: 'Monte um documento de uma página com as suas três mensagens, os cinco dados que você sempre cita e as respostas para as perguntas ruins. Leia antes de qualquer conversa importante.' },
+      { titulo: 'Você está preparado, e isso aparece.',
+        texto: 'Preparo é o que mais separa quem fala bem de quem parece falar bem. O risco de quem chegou até aqui é parar de treinar: a fala envelhece, os dados desatualizam e o repertório vira automático. Automatismo soa ensaiado, e ensaiado soa falso.',
+        movimento: 'Grave dois minutos falando sobre o seu tema e assista uma semana depois, sem indulgência. É o teste mais barato que existe.' }
+    ] }
+  };
+
+  const FAIXAS = [
+    { min: 0, max: 30, nome: 'Invisível',
+      resumo: 'A sua competência não circula. Quando alguém procura uma referência no seu setor, você não está na conversa, e isso não tem relação com o tamanho do seu conhecimento, e sim com a ausência de rastro. A boa notícia é que esse é o estágio em que o esforço rende mais rápido: as primeiras aparições mudam o resultado de forma visível.' },
+    { min: 31, max: 55, nome: 'Conhecido pelos seus',
+      resumo: 'Quem já te conhece confia em você, e isso é um ativo real. O problema é que essa reputação não sai do seu círculo: ela depende de alguém te indicar para existir. Você está sustentando o negócio na base da relação pessoal, o que funciona até o dia em que o mercado precisa te descobrir sozinho.' },
+    { min: 56, max: 75, nome: 'Lembrado às vezes',
+      resumo: 'Você aparece, mas de forma irregular e quase sempre reativa. Não é você quem decide quando. Nesse estágio, a diferença entre continuar oscilando e virar referência é quase toda de método: território definido, mensagem repetida e preparo para os momentos em que a atenção realmente aparece.' },
+    { min: 76, max: 100, nome: 'Referência',
+      resumo: 'A sua autoridade já trabalha por você: gente que nunca te conheceu chega sabendo quem você é. O desafio muda de lado. Agora é sobre consistência, proteção da reputação nos momentos difíceis e escolha de onde não estar. Quem chega aqui costuma perder mais por exposição mal calibrada do que por falta dela.' }
+  ];
+
+  /* ===================== ESTADO ===================== */
+  let atual = 0;
+  const respostas = new Array(PERGUNTAS.length).fill(null);
+  let lead = {};
+  let origem = {};
+  const $ = (id) => document.getElementById(id);
+
+  const RD_ATIVO = Boolean(RD_PUBLIC_KEY) && RD_PUBLIC_KEY.indexOf('COLE-SUA') !== 0;
+
+  function mostrarTela(id) {
+    document.querySelectorAll('.diag .tela').forEach((t) => t.classList.remove('ativa'));
+    $(id).classList.add('ativa');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* waveform: assinatura visual do THE MIC */
+  function desenharWave(el, barras) {
+    el.innerHTML = '';
+    for (let i = 0; i < barras; i++) {
+      const b = document.createElement('i');
+      b.style.height = (8 + Math.abs(Math.sin(i * 0.55)) * 24) + 'px';
+      b.style.animationDelay = (i * 0.045) + 's';
+      el.appendChild(b);
+    }
+  }
+  desenharWave($('wave-abertura'), 30);
+
+  /* ---------- Origem do lead: mesma cadeia de /contato e /themic ----------
+     Cookie piar_atrib (gravado só após consentimento de marketing, ver
+     ConsentimentoCookies.astro) → sessionStorage → query string desta própria
+     visita. Cobre quem converte na hora, antes de decidir sobre cookies, e
+     quem chega pela home com UTM e converte aqui depois. */
+  (function capturaOrigem() {
+    let atrib = {};
+    const bruto = document.cookie.split('; ').find((c) => c.indexOf('piar_atrib=') === 0);
+    if (bruto) {
+      try { atrib = JSON.parse(decodeURIComponent(bruto.slice('piar_atrib='.length))); } catch (err) { atrib = {}; }
+    }
+    if (!Object.keys(atrib).length) {
+      try {
+        const sessao = sessionStorage.getItem('piar_atrib');
+        if (sessao) atrib = JSON.parse(sessao);
+      } catch (err) { atrib = {}; }
+    }
+    const qs = new URLSearchParams(location.search);
+    const externo = document.referrer && document.referrer.indexOf(location.origin) !== 0;
+
+    origem = {
+      cf_utm_source: atrib.utm_source || qs.get('utm_source') || '',
+      cf_utm_medium: atrib.utm_medium || qs.get('utm_medium') || '',
+      cf_utm_campaign: atrib.utm_campaign || qs.get('utm_campaign') || '',
+      cf_utm_content: atrib.utm_content || qs.get('utm_content') || '',
+      cf_landing_page: atrib.landing_page || (location.pathname + location.search),
+      cf_referrer: atrib.referrer || (externo ? document.referrer : ''),
+      cf_pagina_conversao: location.pathname,
+      cf_produto_interesse: PRODUTO
+    };
+  })();
+
+  /* ---------- Máscara do WhatsApp, igual à de /themic ---------- */
+  (function mascaraTelefone() {
+    const tel = $('telefone');
+    tel.addEventListener('input', () => {
+      let v = tel.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 6) v = '(' + v.slice(0, 2) + ') ' + v.slice(2, v.length === 11 ? 7 : 6) + '-' + v.slice(v.length === 11 ? 7 : 6);
+      else if (v.length > 2) v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+      else if (v.length > 0) v = '(' + v;
+      tel.value = v;
+    });
+  })();
+
+  /* ---------- Tela 1: valida, grava o lead e avança ---------- */
+  $('form-lead').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if ($('botcheck').value) return;
+
+    const nome = $('nome').value.trim();
+    const email = $('email').value.trim();
+    const empresa = $('empresa').value.trim();
+    const telBruto = $('telefone').value.replace(/\D/g, '');
+    let ok = true;
+
+    const marca = (campo, valido) => {
+      $('erro-' + campo).classList.toggle('on', !valido);
+      if (!valido) ok = false;
+    };
+
+    marca('nome', nome.length >= 2);
+    marca('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email));
+    marca('empresa', empresa.length >= 2);
+    marca('telefone', telBruto.length >= 10);
+    marca('consent', $('consent').checked);
+
+    if (!ok) {
+      const primeiro = document.querySelector('.diag .erro.on');
+      if (primeiro) primeiro.closest('.campo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    lead = { nome, email, empresa, telefone: $('telefone').value.trim() };
+
+    /* O envio acontece aqui de propósito: quem abandonar as perguntas já
+       entrou na base, com origem e a tag diagnostico-autoridade. Falha de
+       rede não trava a navegação, porque o envio do fim reenvia tudo. */
+    const botao = $('btn-comecar');
+    botao.disabled = true;
+    try {
+      await enviarLead(lead, null);
+    } catch (err) {
+      console.error('[diagnóstico] o lead parcial não gravou', err);
+    }
+    botao.disabled = false;
+
+    mostrarTela('tela-perguntas');
+    renderPergunta();
+  });
+
+  /* ---------- Tela 2 ---------- */
+  function renderPergunta() {
+    const p = PERGUNTAS[atual];
+    $('barra-preenche').style.width = (atual / PERGUNTAS.length * 100) + '%';
+    $('contador').textContent = 'Pergunta ' + (atual + 1) + ' de ' + PERGUNTAS.length;
+    $('rotulo-territorio').textContent = TERRITORIOS[p.t].nome;
+    $('texto-pergunta').textContent = p.q;
+
+    const box = $('opcoes');
+    box.innerHTML = '';
+    p.o.forEach((texto, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opcao';
+      const marca = document.createElement('span');
+      marca.className = 'marca';
+      const label = document.createElement('span');
+      label.textContent = texto;
+      b.appendChild(marca);
+      b.appendChild(label);
+      b.addEventListener('click', () => responder(i));
+      box.appendChild(b);
+    });
+
+    $('btn-voltar').style.visibility = atual === 0 ? 'hidden' : 'visible';
+  }
+
+  function responder(i) {
+    respostas[atual] = i;
+    if (atual < PERGUNTAS.length - 1) {
+      atual++;
+      renderPergunta();
+    } else {
+      calcular();
+    }
+  }
+
+  $('btn-voltar').addEventListener('click', () => {
+    if (atual > 0) { atual--; renderPergunta(); }
+  });
+
+  /* ---------- Tela 3 ---------- */
+  function calcular() {
+    const porTerritorio = {};
+    Object.keys(TERRITORIOS).forEach((k) => { porTerritorio[k] = 0; });
+
+    let total = 0;
+    const tagsExtras = [];
+    PERGUNTAS.forEach((p, i) => {
+      const r = respostas[i];
+      const tabela = p.p || PONTOS;
+      const pts = r === null ? 0 : tabela[r];
+      total += pts;
+      porTerritorio[p.t] += pts;
+      if (p.tags && r !== null && p.tags[r]) tagsExtras.push(p.tags[r]);
+    });
+
+    const faixa = FAIXAS.find((f) => total >= f.min && total <= f.max) || FAIXAS[0];
+
+    $('nota-final').textContent = total;
+    $('nome-faixa').textContent = faixa.nome;
+    $('resumo-faixa').textContent = faixa.resumo;
+
+    desenharWave($('wave-resultado'), 34);
+
+    // mapa: a forma do resultado num olhar
+    const mapa = $('mapa-territorios');
+    mapa.innerHTML = '';
+    Object.keys(TERRITORIOS).forEach((k) => {
+      const pontos = porTerritorio[k];
+      const classe = pontos <= 7 ? 'baixo' : (pontos <= 14 ? 'medio' : 'alto');
+
+      const linha = document.createElement('div');
+      linha.className = 'mapa-linha';
+
+      const rot = document.createElement('span');
+      rot.className = 'rot';
+      rot.textContent = TERRITORIOS[k].nome;
+
+      const trilho = document.createElement('div');
+      trilho.className = 'trilho';
+      const preenche = document.createElement('i');
+      preenche.className = classe;
+      trilho.appendChild(preenche);
+
+      const val = document.createElement('span');
+      val.className = 'val';
+      val.textContent = pontos + '/20';
+
+      linha.appendChild(rot);
+      linha.appendChild(trilho);
+      linha.appendChild(val);
+      mapa.appendChild(linha);
+
+      requestAnimationFrame(() => { preenche.style.width = (pontos / 20 * 100) + '%'; });
+    });
+
+    const cards = $('cards-territorios');
+    cards.innerHTML = '';
+    Object.keys(TERRITORIOS).forEach((k) => {
+      const pontos = porTerritorio[k];                    // 0 a 20
+      const idx = pontos <= 7 ? 0 : (pontos <= 14 ? 1 : 2);
+      const rotulo = ['baixo', 'médio', 'alto'][idx];
+      const classe = ['baixo', 'medio', 'alto'][idx];
+      const a = TERRITORIOS[k].analises[idx];
+
+      const el = document.createElement('div');
+      el.className = 'card';
+
+      const topo = document.createElement('div');
+      topo.className = 'card-topo';
+      const nome = document.createElement('span');
+      nome.className = 'nome mono';
+      nome.textContent = TERRITORIOS[k].nome;
+      const nivel = document.createElement('span');
+      nivel.className = 'nivel ' + classe;
+      nivel.textContent = rotulo + ' · ' + pontos + '/20';
+      topo.appendChild(nome);
+      topo.appendChild(nivel);
+
+      const h = document.createElement('h4');
+      h.textContent = a.titulo;
+      const p = document.createElement('p');
+      p.textContent = a.texto;
+
+      const mov = document.createElement('div');
+      mov.className = 'movimento';
+      const rot = document.createElement('span');
+      rot.className = 'rot mono';
+      rot.textContent = 'Primeiro movimento';
+      const movP = document.createElement('p');
+      movP.textContent = a.movimento;
+      mov.appendChild(rot);
+      mov.appendChild(movP);
+
+      el.appendChild(topo);
+      el.appendChild(h);
+      el.appendChild(p);
+      el.appendChild(mov);
+      cards.appendChild(el);
+    });
+
+    // oferta ligada ao resultado: nomeia os dois territórios mais frágeis
+    const ordenados = Object.keys(TERRITORIOS)
+      .map((k) => ({ k: k, pts: porTerritorio[k], nome: TERRITORIOS[k].nome }))
+      .sort((a, b) => a.pts - b.pts);
+    const fracos = ordenados.filter((t) => t.pts <= 14).slice(0, 2);
+
+    const titulo = $('titulo-oferta');
+    titulo.textContent = '';
+    const destaque = (texto) => {
+      const em = document.createElement('em');
+      em.textContent = texto;
+      return em;
+    };
+
+    if (fracos.length === 2) {
+      $('rot-oferta').textContent = 'Onde você está mais exposto hoje';
+      titulo.appendChild(destaque(fracos[0].nome));
+      titulo.appendChild(document.createTextNode(' e '));
+      titulo.appendChild(destaque(fracos[1].nome));
+      titulo.appendChild(document.createTextNode(': é exatamente aqui que o THE MIC trabalha.'));
+    } else if (fracos.length === 1) {
+      $('rot-oferta').textContent = 'Onde você está mais exposto hoje';
+      titulo.appendChild(destaque(fracos[0].nome));
+      titulo.appendChild(document.createTextNode(': é exatamente aqui que o THE MIC trabalha.'));
+    } else {
+      $('rot-oferta').textContent = 'O próximo nível';
+      titulo.appendChild(document.createTextNode('Você já está bem nos cinco territórios. O THE MIC é sobre '));
+      titulo.appendChild(destaque('sustentar isso'));
+      titulo.appendChild(document.createTextNode(' sob pressão.'));
+    }
+
+    $('ponte-oferta').textContent = fracos.length
+      ? 'Os cinco movimentos acima são o que dá para fazer sozinho nesta semana. O que não se resolve sozinho é o resto: sustentar um tema quando ninguém está olhando, responder a pergunta difícil sem hesitar e ter método no lugar de improviso. São dois dias para isso.'
+      : 'A diferença entre quem aparece e quem se mantém é o que acontece na pergunta difícil, na crise e no dia em que o assunto não é confortável. São dois dias treinando exatamente isso.';
+
+    // cabeçalho que aparece só na versão impressa / PDF
+    const data = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    const cab = $('cabecalho-pdf');
+    cab.innerHTML =
+      '<svg class="mic" width="15" height="23" viewBox="0 0 24 36" fill="none" aria-hidden="true">' +
+        '<rect x="8" y="1" width="8" height="19" rx="4" fill="currentColor"/>' +
+        '<path d="M4 15v2a8 8 0 0 0 16 0v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>' +
+        '<path d="M12 25v9M7.5 34.5h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>' +
+      '</svg>' +
+      '<span class="marca">THE MIC<span>PIAR GROUP</span></span>' +
+      '<span class="quem"><b></b>Diagnóstico de Autoridade · ' + data + '</span>';
+    // O nome e a empresa entram como texto, nunca como HTML: são digitados
+    // pela própria pessoa e iriam parar no innerHTML acima.
+    cab.querySelector('.quem b').textContent = (lead.nome || '') + (lead.empresa ? ' · ' + lead.empresa : '');
+
+    enviarLead(lead, { nota: total, faixa: faixa.nome, territorios: porTerritorio, extras: tagsExtras })
+      .catch((err) => console.error('[diagnóstico] o resultado não gravou', err));
+
+    mostrarTela('tela-resultado');
+  }
+
+  $('btn-refazer').addEventListener('click', () => {
+    atual = 0;
+    respostas.fill(null);
+    mostrarTela('tela-perguntas');
+    renderPergunta();
+  });
+
+  $('btn-imprimir').addEventListener('click', () => window.print());
+
+  // O href já sai montado do Astro; esta linha existe só para o caso de a
+  // pessoa ter chegado com UTM própria, que não deve ser sobrescrita.
+  $('cta-programa').setAttribute('href', CTA_PROGRAMA);
+
+  /* =====================================================================
+     ENVIO PARA O RD STATION
+     Chamado duas vezes: na captura (resultado = null) e no fim, com a nota.
+     ===================================================================== */
+  function enviarLead(dados, resultado) {
+    const tags = ['diagnostico-autoridade'];
+
+    const payload = Object.assign({}, origem, {
+      conversion_identifier: resultado ? RD_ID_COMPLETO : RD_ID_INICIO,
+      name: dados.nome,
+      email: dados.email,
+      personal_phone: dados.telefone,
+      company_name: dados.empresa,
+      traffic_source: origem.cf_utm_source || 'direto',
+      traffic_medium: origem.cf_utm_medium || '',
+      traffic_campaign: origem.cf_utm_campaign || ''
+    });
+
+    if (resultado) {
+      // Acentos viram nada, o resto vira hífen: 'Lembrado às vezes' sai como
+      // 'diagnostico-lembrado-as-vezes', que é o nome combinado no briefing.
+      tags.push('diagnostico-' + resultado.faixa
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, ''));
+      (resultado.extras || []).forEach((t) => tags.push(t));
+
+      payload.cf_diagnostico_nota = resultado.nota;
+      payload.cf_diagnostico_faixa = resultado.faixa;
+      payload.cf_diagnostico_imprensa = resultado.territorios.imprensa;
+      payload.cf_diagnostico_digital = resultado.territorios.digital;
+      payload.cf_diagnostico_busca = resultado.territorios.busca;
+      payload.cf_diagnostico_narrativa = resultado.territorios.narrativa;
+      payload.cf_diagnostico_preparo = resultado.territorios.preparo;
+    }
+
+    payload.tags = tags;
+
+    if (!RD_ATIVO) {
+      console.log('[diagnóstico] RD_PUBLIC_KEY ausente, modo demonstração.', payload);
+      return Promise.resolve(false);
+    }
+
+    return fetch('https://api.rd.services/platform/conversions?api_key=' + encodeURIComponent(RD_PUBLIC_KEY), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_type: 'CONVERSION', event_family: 'CDP', payload: payload })
+    }).then((resp) => {
+      if (!resp.ok) throw new Error('RD Station respondeu ' + resp.status);
+      return true;
+    });
+  }
+})();
+</script>
+</BaseLayout>

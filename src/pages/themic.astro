@@ -92,19 +92,9 @@ const RD_ID_THEMIC = 'piar-lp-themic';
 const CHECKOUT_URL = '';
 
 // Dados da edição em um lugar só: mudar data ou local é uma linha, não dez.
-const EDICAO = {
-  datas: '22 e 23 de outubro',
-  datasCompletas: '22 e 23 de outubro de 2026',
-  diaSemana: 'Quinta e sexta, das 8h às 20h',
-  dia1: '22 de outubro',
-  dia2: '23 de outubro',
-  local: 'Sede do Investidores.vc',
-  endereco: 'Rua Pitu, 72 · Brooklin · São Paulo',
-  bairro: 'Brooklin, São Paulo',
-  investimento: 'Sob consulta',
-  parcelas: 'em até 3x',
-  condicaoPreco: 'Em até 3x · condições apresentadas na conversa',
-};
+// Saíram deste arquivo em 22/09/2026, quando a /diagnostico passou a precisar
+// dos mesmos valores. Fonte única em src/data/themic.ts.
+import { EDICAO } from '@/data/themic';
 const PRODUTO = `THE MIC · Edição 1 · ${EDICAO.datas}`;
 
 import BaseLayout from '@layouts/BaseLayout.astro';
