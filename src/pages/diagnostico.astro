@@ -256,10 +256,12 @@ const descricao =
         <p class="ponte" id="ponte-oferta"></p>
         <p>São {EDICAO.duracao}, presencial, em {EDICAO.cidade}: imprensa, palco, redes, posicionamento nas buscas e nas IAs, a Sabatina (você no banco do repórter, respondendo as perguntas que ninguém quer ouvir, com devolutiva na hora) e a gravação de um mini-podcast, que você leva pronto.</p>
         <p>Conduzido por {site.founder.name}, 20 anos de redação e mais de {site.brandsServed.replace('+', '')} marcas preparadas para falar com a imprensa, e Laura Gurgel, analista do Shark Tank Brasil.</p>
+        <!-- Sem data aqui de propósito (pedido de 23/09/2026): o resultado do
+             diagnóstico circula em PDF e é encaminhado, então data na tela
+             envelhece junto com o arquivo. Formato e tamanho da turma não. -->
         <div class="dados">
-          <div><span class="v">{EDICAO.datasCurtas}</span><span class="l">{EDICAO.cidade}</span></div>
-          <div><span class="v">{EDICAO.vagas}</span><span class="l">cadeiras na Edição 1</span></div>
-          <div><span class="v">{EDICAO.duracao}</span><span class="l">presenciais</span></div>
+          <div><span class="v">{EDICAO.duracao}</span><span class="l">presenciais em {EDICAO.cidade}</span></div>
+          <div><span class="v">{EDICAO.vagas}</span><span class="l">cadeiras por edição</span></div>
         </div>
         <a class="btn" id="cta-programa" href={CTA_PROGRAMA}>Quero conhecer o programa →</a>
         <button class="btn vazio" id="btn-refazer" type="button">Refazer o diagnóstico</button>
@@ -1234,8 +1236,14 @@ const descricao =
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ event_type: 'CONVERSION', event_family: 'CDP', payload: payload })
     }).then((resp) => {
-      if (!resp.ok) throw new Error('RD Station respondeu ' + resp.status);
-      return true;
+      if (resp.ok) return true;
+      // O corpo da resposta entra no erro de propósito. Quando um campo cf_*
+      // não existe na conta, ou o identificador de API saiu diferente do que
+      // foi combinado, é aqui que o RD diz qual. Sem isso sobra só o número do
+      // status e o problema vira adivinhação no painel.
+      return resp.text().then((corpo) => {
+        throw new Error('RD Station respondeu ' + resp.status + ': ' + corpo.slice(0, 500));
+      });
     });
   }
 })();

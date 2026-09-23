@@ -13,7 +13,6 @@
 export const EDICAO = {
   datas: '22 e 23 de outubro',
   datasCompletas: '22 e 23 de outubro de 2026',
-  datasCurtas: '22 e 23/10',
   diaSemana: 'Quinta e sexta, das 8h às 20h',
   dia1: '22 de outubro',
   dia2: '23 de outubro',
