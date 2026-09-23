@@ -32,9 +32,11 @@
 //   - O rodapé da versão em PDF virou elemento de verdade (.pdf-so) no lugar
 //     de um `content:` dentro do @media print. O endereço passa a vir de
 //     site.domain, então não existe mais string de URL escrita à mão.
-//   - O regex que tira acento da faixa para montar a tag estava escrito com os
-//     diacríticos literais no arquivo recebido, coisa que qualquer editor que
-//     normalize o arquivo quebra em silêncio. Aqui está ̀-ͯ.
+//   - O corte de acento que monta a tag da faixa nao usa regex com o
+//     intervalo de diacriticos escrito no arquivo: escrito, ele vira
+//     caractere literal em qualquer normalizacao e passa a depender de o
+//     editor nao mexer. Ver comoTag(), que corta por codigo de caractere
+//     e mantem a fonte em ASCII puro.
 //
 // ---- RASTREAMENTO -------------------------------------------------------
 // 1) RD STATION · mesma conta e mesmo token público de /contato e /themic.
@@ -1190,6 +1192,22 @@ const descricao =
      ENVIO PARA O RD STATION
      Chamado duas vezes: na captura (resultado = null) e no fim, com a nota.
      ===================================================================== */
+  /* 'Lembrado as vezes' vira 'lembrado-as-vezes', o nome de tag combinado no
+     briefing. O corte de acento e feito por codigo de caractere, e nao por um
+     regex com o intervalo de diacriticos escrito no arquivo: escrito, ele vira
+     caractere literal em qualquer normalizacao e passa a depender de o editor
+     nao mexer. Aqui a fonte e ASCII puro e nao tem como quebrar em silencio. */
+  function comoTag(texto) {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .split('')
+      .filter((c) => { const n = c.charCodeAt(0); return n < 0x300 || n > 0x36f; })
+      .join('')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   function enviarLead(dados, resultado) {
     const tags = ['diagnostico-autoridade'];
 
@@ -1205,23 +1223,23 @@ const descricao =
     });
 
     if (resultado) {
-      // Acentos viram nada, o resto vira hífen: 'Lembrado às vezes' sai como
-      // 'diagnostico-lembrado-as-vezes', que é o nome combinado no briefing.
-      tags.push('diagnostico-' + resultado.faixa
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, ''));
+      tags.push('diagnostico-' + comoTag(resultado.faixa));
       (resultado.extras || []).forEach((t) => tags.push(t));
 
-      payload.cf_diagnostico_nota = resultado.nota;
+      // Numero vai como TEXTO de proposito. O schema da API de conversoes do
+      // RD tipa todo campo cf_ como string (developers.rdstation.com/reference
+      // /conversao), e valor numerico cru e descartado em silencio: a resposta
+      // vem 200, o contato entra, e a pontuacao nao. Foi o que derrubou os
+      // testes de 23/09/2026. O campo no painel segue sendo do tipo Numero;
+      // quem converte "73" de volta para numero e o proprio RD.
+      const n = (v) => String(v);
+      payload.cf_diagnostico_nota = n(resultado.nota);
       payload.cf_diagnostico_faixa = resultado.faixa;
-      payload.cf_diagnostico_imprensa = resultado.territorios.imprensa;
-      payload.cf_diagnostico_digital = resultado.territorios.digital;
-      payload.cf_diagnostico_busca = resultado.territorios.busca;
-      payload.cf_diagnostico_narrativa = resultado.territorios.narrativa;
-      payload.cf_diagnostico_preparo = resultado.territorios.preparo;
+      payload.cf_diagnostico_imprensa = n(resultado.territorios.imprensa);
+      payload.cf_diagnostico_digital = n(resultado.territorios.digital);
+      payload.cf_diagnostico_busca = n(resultado.territorios.busca);
+      payload.cf_diagnostico_narrativa = n(resultado.territorios.narrativa);
+      payload.cf_diagnostico_preparo = n(resultado.territorios.preparo);
     }
 
     payload.tags = tags;
