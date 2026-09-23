@@ -195,6 +195,23 @@ const descricao =
         <div class="pain"><span class="q">“</span>Meu LinkedIn está parado, ou terceirizado sem alma.</div>
         <div class="pain"><span class="q">“</span>Tenho medo de dar entrevista e falar a coisa errada.</div>
       </div>
+
+      <!-- Ponte para a /diagnostico. Fica aqui de propósito: a pessoa acabou de
+           se reconhecer nas seis frases e a pergunta natural é "em qual delas eu
+           estou pior". Quem ainda não decide dois dias de imersão responde 10
+           perguntas, e volta para cá sabendo o que tem a ganhar.
+           O link vai SEM UTM de propósito: gravarAtribuicao() em
+           ConsentimentoCookies.astro sobrescreve o cookie piar_atrib quando vê
+           UTM nova, então marcar link interno apagaria a origem real de quem
+           chegou por anúncio. -->
+      <a href="/diagnostico" class="diag-bridge" data-cta="dores-diagnostico">
+        <span class="diag-bridge-txt">
+          <span class="rot mono">Antes de decidir qualquer coisa</span>
+          <strong>Descubra em qual desses pontos você está mais exposto.</strong>
+          <span class="sub">Diagnóstico de Autoridade: 10 perguntas, 2 minutos, resultado na hora e de graça.</span>
+        </span>
+        <span class="btn diag-bridge-btn">Fazer o diagnóstico</span>
+      </a>
     </div>
   </section>
 
@@ -1003,6 +1020,30 @@ const descricao =
     display: flex; gap: 15px; align-items: flex-start; line-height: 1.45;
   }
   .lp-themic .pain .q { font-family: var(--mono); color: var(--gold-deep); font-size: 15px; flex-shrink: 0; }
+
+  /* ---------- Ponte para o Diagnóstico de Autoridade ---------- */
+  .lp-themic .diag-bridge {
+    display: flex; align-items: center; justify-content: space-between; gap: 28px;
+    flex-wrap: wrap;
+    margin-top: 28px; padding: 28px 32px;
+    background: var(--ink); color: var(--white);
+    border-radius: var(--r-lg); text-decoration: none;
+    transition: transform .15s ease;
+  }
+  .lp-themic .diag-bridge:hover { transform: translateY(-2px); }
+  .lp-themic .diag-bridge-txt { display: flex; flex-direction: column; gap: 7px; }
+  .lp-themic .diag-bridge .rot {
+    font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold);
+  }
+  .lp-themic .diag-bridge strong { font-size: 19px; font-weight: 700; line-height: 1.3; }
+  /* var(--white) com opacidade, nunca --graphite-soft: sobre var(--ink) o
+     segundo some (mesma lição do commit 56f1fa7). */
+  .lp-themic .diag-bridge .sub { font-size: 14.5px; color: rgba(255, 255, 255, .72); }
+  .lp-themic .diag-bridge-btn { flex-shrink: 0; }
+  @media (max-width: 720px) {
+    .lp-themic .diag-bridge { padding: 24px; gap: 20px; }
+    .lp-themic .diag-bridge-btn { width: 100%; }
+  }
 
   /* ---------- Declaração em escala ---------- */
   .lp-themic .statement { background: var(--gold); color: var(--ink); padding: 120px 0; }

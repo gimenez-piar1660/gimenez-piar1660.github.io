@@ -5,7 +5,7 @@
 import { withBase } from '@/lib/base';
 
 interface Props {
-  current?: 'home' | 'sobre' | 'servicos' | 'cases' | 'pep' | 'themic' | 'insights' | 'blog' | 'metodo' | 'processos' | 'contato';
+  current?: 'home' | 'sobre' | 'servicos' | 'cases' | 'pep' | 'themic' | 'diagnostico' | 'insights' | 'blog' | 'metodo' | 'processos' | 'contato';
 }
 const { current = 'home' } = Astro.props;
 
@@ -75,6 +75,11 @@ const insights = [
       <a class:list={['nav-link', current === 'cases' && 'is-current']} href="/cases" aria-current={current === 'cases' ? 'page' : undefined}>Cases</a>
       <a class:list={['nav-link', current === 'pep' && 'is-current']} href="/pep" aria-current={current === 'pep' ? 'page' : undefined}>PEP</a>
       <a class:list={['nav-link', current === 'themic' && 'is-current']} href="/themic" aria-current={current === 'themic' ? 'page' : undefined}>The Mic</a>
+      {/* Rótulo por extenso de propósito: o botão de CTA ao lado diz "Agendar
+          diagnóstico" e leva a /contato, que é conversa com o comercial. Um
+          "Diagnóstico" solto aqui viraria dois itens com o mesmo nome e
+          destinos diferentes na mesma barra. */}
+      <a class:list={['nav-link', current === 'diagnostico' && 'is-current']} href="/diagnostico" aria-current={current === 'diagnostico' ? 'page' : undefined}>Diagnóstico de Autoridade</a>
 
       <div class="nav-dropdown">
         <button
@@ -134,6 +139,7 @@ const insights = [
       <a class:list={['nav-drawer-link', current === 'cases' && 'is-current']} href="/cases">Cases</a>
       <a class:list={['nav-drawer-link', current === 'pep' && 'is-current']} href="/pep">PEP</a>
       <a class:list={['nav-drawer-link', current === 'themic' && 'is-current']} href="/themic">The Mic</a>
+      <a class:list={['nav-drawer-link', current === 'diagnostico' && 'is-current']} href="/diagnostico">Diagnóstico de Autoridade</a>
 
       <span class="nav-drawer-label">Insights</span>
       {insights.map((s) => (
