@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.11 | 2026-09-23 13:43 | rd-campos-como-string | production | 2b0c306 | [notas](deploys/2026-09-23_1343_v0.2.11_rd-campos-como-string/notes.md) |
 | v0.2.10 | 2026-09-23 12:55 | resultado-sem-data | production | 225801d | [notas](deploys/2026-09-23_1255_v0.2.10_resultado-sem-data/notes.md) |
 | v0.2.9 | 2026-09-23 10:59 | nav-e-ponte-diagnostico | production | c8df036 | [notas](deploys/2026-09-23_1059_v0.2.9_nav-e-ponte-diagnostico/notes.md) |
 | v0.2.8 | 2026-09-22 17:47 | diagnostico-autoridade | production | bfe9b96 | [notas](deploys/2026-09-22_1747_v0.2.8_diagnostico-autoridade/notes.md) |
