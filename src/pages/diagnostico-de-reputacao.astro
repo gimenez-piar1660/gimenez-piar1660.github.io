@@ -1,0 +1,1014 @@
+---
+// ============================================================
+// DIAGNÓSTICO DE AUTORIDADE · PiaR Group · isca para outbound
+// ------------------------------------------------------------
+// Origem: arquivo diagnostico-autoridade-piar.html, recebido em 29/09/2026 para
+// substituir a primeira versão desta rota. Página de uso externo: não entra na
+// nav nem no rodapé, só é alcançada pelo link das campanhas de outbound.
+//
+// Mesmo questionário da /diagnostico (isca do THE MIC): perguntas, análises e
+// faixas vêm de src/data/diagnostico.ts, porque as duas páginas gravam nos
+// mesmos campos cf_diagnostico_* do RD. O arquivo recebido trazia o mesmo texto
+// com 5 travessões, que a /diagnostico já tinha corrigido na v0.2.8. O que é só
+// da PiaR (o serviço que resolve cada território) está em SERVICOS, abaixo.
+//
+// ---- O QUE MUDOU NA ADAPTAÇÃO -------------------------------------------
+//   - Zero travessão na prosa (regra do CLAUDE.md): 1 na abertura, 5 no texto
+//     compartilhado.
+//   - Fontes self-hosted do site no lugar do Google Fonts, e cores por token
+//     de src/styles/tokens.css. Exceções em hexadecimal no bloco de tokens.
+//   - Números institucionais de src/data/site.ts ("Treze anos, 470 marcas, 11
+//     exits" estavam escritos à mão, que é como o número de exits desandou).
+//   - Todo seletor começa em .dpiar: o CSS recebido era global (*, body, .btn,
+//     .card) e vazaria no banner de cookies que o BaseLayout coloca na página.
+//   - Cinzas de texto pequeno em --text-muted: o .45 do arquivo dá 3,3:1 sobre
+//     --paper, abaixo de AA. O dourado dos números 01 a 05 foi para o mesmo
+//     #6B4E00 do eyebrow, porque o --yellow-700 dá 4,25:1 sobre --paper.
+//   - "Refazer o diagnóstico" saía invisível: o botão fantasma herdava cinza
+//     escuro e ficava dentro do bloco escuro. Ganhou cor clara lá dentro.
+//   - O cabeçalho do PDF montava nome e empresa por innerHTML. Agora é texto.
+//   - Consentimento: ficou o do arquivo ("Ao continuar, você autoriza"), com
+//     link para a Política de Privacidade. /contato, /themic e /diagnostico usam
+//     checkbox obrigatório; se a página for alinhar com elas, é aqui.
+//   - Honeypot de robô e máscara de WhatsApp, iguais às das outras páginas.
+//
+// ---- RASTREAMENTO -------------------------------------------------------
+// RD STATION · mesmo token público de /contato, /themic e /diagnostico,
+// conferido em 29/09/2026 (payload vazio devolve 400 AT_LEAST_ONE_REQUIRED, que
+// é a resposta de chave válida). Duas conversões, que o RD cria sozinho:
+//   RD_ID_INICIO   → envio dos dados, ANTES das perguntas. Quem abandona no
+//                    meio já entrou na base.
+//   RD_ID_COMPLETO → fim, com a nota, os cinco territórios e o serviço indicado.
+//
+// O arquivo recebido tinha os dois defeitos que a /diagnostico já resolveu, e
+// que aqui saíram corrigidos:
+//   - mandava os cf_diagnostico_* como null no primeiro envio (v0.2.10: se o
+//     segundo envio falhar ou chegar fora de ordem, o null vence);
+//   - mandava número cru (v0.2.11: o RD tipa todo cf_ como texto e descarta
+//     número em silêncio).
+//
+// Campos personalizados:
+//   cf_diagnostico_nota, _faixa, _imprensa, _digital, _busca, _narrativa,
+//   _preparo   → os MESMOS da /diagnostico, já existem no painel.
+//   cf_diagnostico_servico → NOVO. Criar no painel com o nome
+//                "Diagnostico servico" (sem acento e SEM o prefixo cf_, que o
+//                RD acrescenta sozinho). Enquanto não existir, o RD descarta o
+//                campo e o serviço fica só na tag piar-servico-*.
+//
+// Tags (prefixo piar- para não misturar com as do THE MIC):
+//   piar-diagnostico-autoridade   todo lead, desde o preenchimento
+//   piar-diagnostico-<faixa>      invisivel, conhecido-pelos-seus,
+//                                 lembrado-as-vezes, referencia
+//   piar-servico-<servico>        o serviço que o resultado ofereceu
+//   piar-tem-assessoria           já tem estrutura de imprensa
+//
+// UTM: a mesma cadeia das outras páginas (cookie piar_atrib → sessionStorage →
+// query string desta visita). No outbound quem resolve é a query string: o lead
+// chega pelo link com UTM e converte na mesma visita.
+//
+// O botão final leva a /contato com a UTM do arquivo recebido, que marca a
+// conversa como vinda da isca (mesmo desenho do botão da /diagnostico para a
+// /themic).
+// ============================================================
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+import { PONTOS, PERGUNTAS, TERRITORIOS, FAIXAS } from '@/data/diagnostico';
+import { withBase } from '@/lib/base';
+
+const RD_PUBLIC_KEY = '0ba58cf81bc6e78d267b310a8ccafbfc';
+const RD_ID_INICIO = 'piar-diagnostico-inicio';
+const RD_ID_COMPLETO = 'piar-diagnostico-completo';
+
+const PRODUTO = 'PiaR Group · Diagnóstico de Autoridade';
+
+// Território → serviço que resolve, com a frase que completa "Nós ...".
+// O tipo obriga a ter os cinco territórios de TERRITORIOS.
+type Servico = { nome: string; resolve: string };
+const SERVICOS: Record<keyof typeof TERRITORIOS, Servico> = {
+  imprensa: {
+    nome: 'Relações Públicas',
+    resolve: 'abrimos e sustentamos a relação com as redações, para que a sua pauta chegue pronta e no tempo do veículo.',
+  },
+  digital: {
+    nome: 'Comunicação Integrada',
+    resolve: 'alinhamos o que você publica, o que a empresa comunica e o que a imprensa recebe, para que tudo empurre na mesma direção.',
+  },
+  busca: {
+    nome: 'Dados & GEO',
+    resolve: 'construímos o rastro que faz as buscas e as IAs citarem o seu nome quando alguém pergunta quem é referência no setor.',
+  },
+  narrativa: {
+    nome: 'Reputação & Branding',
+    resolve: 'identificamos o ativo raro da sua marca e o transformamos numa mensagem que o mercado repete sem você por perto.',
+  },
+  preparo: {
+    nome: 'Media & Audience Training',
+    resolve: 'preparamos você e o time para a entrevista, o palco e a pergunta difícil, com treino e devolutiva real.',
+  },
+};
+
+// Não resolve um território sozinho: entra só em "Também fazemos".
+const PEP = 'Projetos Especiais (PEP)';
+
+// Destino do "Quero conversar com a PiaR", com a UTM que marca o clique na isca.
+const CTA_CONVERSA = `${withBase('/contato')}?utm_source=diagnostico&utm_medium=isca&utm_campaign=piar-outbound`;
+
+const titulo = 'Diagnóstico de Autoridade';
+const descricao =
+  'Dez perguntas para descobrir onde a autoridade da sua marca está travando. Resultado imediato, com análise dos cinco territórios.';
+const descricaoPrevia = 'O mercado já procurou o seu nome. Descubra o que ele encontrou.';
+---
+
+<BaseLayout
+  title={titulo}
+  description={descricao}
+  ogDescription={descricaoPrevia}
+  canonical={`${site.domain}/diagnostico-de-reputacao`}
+  ogImage="/brand/lp/diagnostico-piar/og.png"
+  bodyClass="antialiased dpiar-body"
+>
+<div class="dpiar">
+  <main class="wrap" id="main">
+
+    <div class="topo">
+      <div class="logo">PiaR <span>Group</span></div>
+      <span class="eyebrow">Diagnóstico</span>
+    </div>
+
+    <!-- ===== TELA 1 · ABERTURA E CAPTURA ===== -->
+    <section class="tela ativa" id="tela-abertura">
+      <span class="eyebrow"><span class="marca-ed">///</span>Diagnóstico gratuito</span>
+      <h1>O mercado já procurou o seu nome.</h1>
+      <div class="barra"></div>
+      <p class="lede">Antes da reunião, da proposta e do convite, alguém pesquisa você. O&nbsp;que aparece nessa hora se constrói em cinco territórios, e dá para medir onde o seu está frágil.</p>
+
+      <ol class="territorios-lista">
+        <li><span class="n">01</span> Presença na imprensa</li>
+        <li><span class="n">02</span> Presença digital</li>
+        <li><span class="n">03</span> Busca e inteligência artificial</li>
+        <li><span class="n">04</span> Narrativa</li>
+        <li><span class="n">05</span> Preparo para a pergunta difícil</li>
+      </ol>
+
+      <div class="bloco-claro">
+        <span class="eyebrow">O que você recebe, na hora</span>
+        <p>A sua pontuação em cada território, o diagnóstico do que trava cada um deles e o <strong>primeiro movimento prático</strong> para destravar. Cinco ações que você executa ainda nesta semana, sem contratar ninguém.</p>
+      </div>
+
+      <p class="credibilidade">Não é quiz de internet. É o raio-x que aplicamos antes de assumir a reputação de uma marca. <strong>{site.yearsOperating}&nbsp;anos, mais de {site.brandsServed.replace('+', '')}&nbsp;marcas, {site.exitsSupported}&nbsp;empresas acompanhadas até o exit.</strong></p>
+
+      <div class="tempo"><span>10 perguntas</span> · <span>2 minutos</span> · <span>resultado na hora</span></div>
+
+      <form id="form-lead" novalidate>
+        <div class="campo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" placeholder="Como você se apresenta" />
+          <span class="erro" id="erro-nome">Preencha o seu nome.</span>
+        </div>
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="voce@empresa.com.br" />
+          <span class="erro" id="erro-email">Informe um e-mail válido.</span>
+        </div>
+        <div class="campo">
+          <label for="empresa">Empresa</label>
+          <input type="text" id="empresa" name="empresa" autocomplete="organization" placeholder="Onde você trabalha hoje" />
+          <span class="erro" id="erro-empresa">Preencha o nome da empresa.</span>
+        </div>
+        <div class="campo">
+          <label for="telefone">WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone" autocomplete="tel" placeholder="(11) 99999-9999" />
+          <span class="erro" id="erro-telefone">Informe um telefone com DDD.</span>
+        </div>
+
+        <!-- Armadilha de robô: humano não enxerga, bot preenche. -->
+        <input type="text" name="botcheck" id="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" class="botcheck" />
+
+        <button type="submit" class="btn btn--accent">Começar o diagnóstico</button>
+        <p class="privacidade">Ao continuar, você autoriza a PiaR Group a usar seus dados para enviar o resultado e falar sobre os nossos serviços, inclusive por WhatsApp. Não compartilhamos seus dados com terceiros, conforme a <a href={withBase('/privacidade')} target="_blank" rel="noopener">Política de Privacidade</a>.</p>
+      </form>
+    </section>
+
+    <!-- ===== TELA 2 · PERGUNTAS ===== -->
+    <section class="tela" id="tela-perguntas">
+      <div class="progresso">
+        <div class="trilho-prog"><i id="barra-preenche"></i></div>
+        <div class="contagem" id="contador">Pergunta 1 de 10</div>
+      </div>
+      <div class="pergunta">
+        <div class="eyebrow" id="rotulo-territorio"></div>
+        <h2 id="texto-pergunta"></h2>
+        <div class="barra"></div>
+        <div class="opcoes" id="opcoes"></div>
+        <button class="voltar" id="btn-voltar" type="button">← Voltar</button>
+      </div>
+    </section>
+
+    <!-- ===== TELA 3 · RESULTADO (também é a versão que vira PDF) ===== -->
+    <section class="tela" id="tela-resultado">
+      <div class="cabecalho-pdf">
+        <span class="marca">PiaR <span>Group</span></span>
+        <span class="quem"><b id="pdf-quem"></b><span id="pdf-data"></span></span>
+      </div>
+
+      <div class="placar">
+        <span class="eyebrow">Índice de autoridade</span>
+        <div class="num" id="nota-final">0</div>
+        <div class="de">de 100 pontos</div>
+        <h2 id="nome-faixa"></h2>
+        <div class="barra"></div>
+        <p class="resumo" id="resumo-faixa"></p>
+      </div>
+
+      <div class="mapa" id="mapa-territorios"></div>
+
+      <div class="secao-titulo">
+        <h2>Os seus cinco territórios.</h2>
+        <div class="barra"></div>
+        <p>Onde você está forte, onde está exposto e o que fazer primeiro em cada um.</p>
+      </div>
+
+      <div id="cards-territorios"></div>
+
+      <div class="oferta">
+        <span class="eyebrow" id="rot-oferta">Onde você está mais exposto hoje</span>
+        <h2 id="titulo-oferta"></h2>
+        <div class="barra"></div>
+        <p class="ponte" id="ponte-oferta"></p>
+
+        <div class="servico-destaque">
+          <span class="eyebrow">O serviço que resolve isso</span>
+          <div class="nome-servico" id="nome-servico"></div>
+          <p id="desc-servico"></p>
+        </div>
+
+        <div class="outros">
+          <span class="eyebrow">Também fazemos</span>
+          <ul id="lista-servicos"></ul>
+        </div>
+
+        <p class="manifesto">Atenção não se força. <span>Se atrai.</span></p>
+
+        <a class="btn btn--accent" id="cta-conversa" href={CTA_CONVERSA}>Quero conversar com a PiaR</a>
+        <button class="btn btn--ghost" id="btn-refazer" type="button">Refazer o diagnóstico</button>
+
+        <!-- Só aparece no papel, para quem receber o PDF encaminhado. -->
+        <p class="pdf-so">{site.brandDomain}</p>
+      </div>
+
+      <div class="rodape">
+        <button class="imprimir" id="btn-imprimir" type="button">Salvar este resultado em PDF</button>
+        <p class="assinatura">PiaR Group</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- is:global de propósito: opções, mapa, cards e lista de serviços nascem em
+     JavaScript, e elemento criado em runtime não recebe o carimbo
+     data-astro-cid-* do CSS escopado (sairia sem estilo nenhum, em silêncio).
+     O contrato para não vazar: todo seletor começa em .dpiar (ou no body com
+     .dpiar-body), e todo @keyframes começa em dpiar-. -->
+<style is:global>
+  body.dpiar-body { background: var(--paper); }
+
+  .dpiar {
+    /* ---------- Tokens locais, apontando para src/styles/tokens.css ----------
+       Duas exceções em hexadecimal:
+         --ouro-texto  #6B4E00, a combinação aprovada no DESIGN_SYSTEM.md para
+                       texto dourado sobre --paper (7:1). tokens.css não tem esse
+                       degrau: o --yellow-ink de lá é o 700, que dá 4,25:1.
+         --erro        estado de erro; tokens.css não tem semântica de estado. */
+    --tinta: var(--ink);
+    --papel: var(--paper);
+    --branco: var(--white);
+    --ouro: var(--yellow);
+    --ouro-claro: var(--yellow-300);
+    --ouro-700: var(--yellow-700);
+    --ouro-texto: #6B4E00;
+    --linha: var(--hairline);
+    --linha-forte: var(--hairline-strong);
+    --corpo: var(--text-muted);
+    --apagado: var(--text-faint);
+    --escuro-corpo: var(--text-muted-d);
+    --escuro-apagado: var(--gray-400);
+    --linha-clara: var(--hairline-d-strong);
+    --erro: #A32015;
+
+    display: block;
+    min-height: 100vh;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .dpiar * { box-sizing: border-box; margin: 0; padding: 0; }
+  .dpiar .wrap { max-width: var(--col-narrow); margin: 0 auto; padding: 32px 24px 96px; }
+
+  .dpiar h1, .dpiar h2, .dpiar h3, .dpiar h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -.015em;
+  }
+  .dpiar h1 { font-size: clamp(34px, 7vw, 56px); line-height: .98; }
+  .dpiar h2 { font-size: clamp(24px, 5vw, 34px); line-height: 1.06; }
+  .dpiar h3 { font-size: 32px; line-height: 1.15; }
+  .dpiar h4 { font-size: 20px; line-height: 1.2; }
+  .dpiar p { text-wrap: pretty; }
+  /* Só no celular: sem isso o título termina com "nome." sozinho na linha. No
+     desktop a quebra natural ("...procurou / o seu nome.") já é a melhor. */
+  @media (max-width: 560px) {
+    .dpiar h1, .dpiar h2 { text-wrap: balance; }
+  }
+
+  /* eyebrow: mono, caixa alta, tracking .2em */
+  .dpiar .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--ouro-texto);
+  }
+  .dpiar .eyebrow .marca-ed { color: var(--ouro-700); margin-right: 8px; }
+
+  /* barra 56 x 3: único elemento decorativo, sempre 24px abaixo do título */
+  .dpiar .barra { width: 56px; height: 3px; background: var(--ouro); border-radius: 2px; margin-top: 24px; }
+
+  .dpiar .lede { font-size: clamp(18px, 2.4vw, 24px); line-height: 1.45; font-weight: 400; color: var(--corpo); max-width: 56ch; margin-top: 24px; }
+  .dpiar .lede strong { color: var(--tinta); font-weight: 600; }
+
+  .dpiar .topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--linha);
+    margin-bottom: 48px;
+  }
+  .dpiar .logo { font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; }
+  .dpiar .logo span { color: var(--apagado); font-weight: 400; }
+  .dpiar .topo .eyebrow { font-size: 11px; }
+
+  .dpiar .tela { display: none; }
+  .dpiar .tela.ativa { display: block; animation: dpiar-entrada 900ms var(--ease-emphasis) both; }
+  @keyframes dpiar-entrada { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .dpiar .tela.ativa { animation: none; }
+    .dpiar * { transition: none !important; }
+  }
+
+  /* lista dos territórios: hairline grid */
+  .dpiar .territorios-lista { list-style: none; margin: 40px 0; border-top: 1px solid var(--linha); }
+  .dpiar .territorios-lista li { display: flex; align-items: baseline; gap: 16px; padding: 14px 2px; border-bottom: 1px solid var(--linha); font-size: 16px; }
+  .dpiar .territorios-lista .n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; color: var(--ouro-texto); min-width: 26px; }
+
+  .dpiar .bloco-claro { background: var(--branco); border: 1px solid var(--linha); border-radius: var(--r-md); padding: 24px; }
+  .dpiar .bloco-claro .eyebrow { margin-bottom: 12px; }
+  .dpiar .bloco-claro p { color: var(--corpo); }
+  .dpiar .bloco-claro strong { color: var(--tinta); font-weight: 600; }
+
+  .dpiar .credibilidade { font-size: 15px; color: var(--corpo); margin: 24px 0; }
+  .dpiar .credibilidade strong { color: var(--tinta); font-weight: 600; }
+  .dpiar .tempo { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--corpo); margin: 24px 0 32px; }
+  /* cada trecho inteiro: no celular, "hora" não fica sozinha na linha */
+  .dpiar .tempo span { white-space: nowrap; }
+
+  /* ---------- formulário ---------- */
+  .dpiar .campo { margin-bottom: 16px; }
+  .dpiar .campo label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .dpiar .campo input {
+    width: 100%;
+    background: var(--branco);
+    border: 1px solid var(--linha-forte);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    color: var(--tinta);
+    font-family: inherit;
+    /* 16px não é estética: abaixo disso o iOS dá zoom ao focar o campo. */
+    font-size: 16px;
+    transition: border-color var(--dur-fast);
+  }
+  .dpiar .campo input:focus { outline: 2px solid var(--ouro); outline-offset: 1px; border-color: transparent; }
+  .dpiar .campo input::placeholder { color: var(--apagado); }
+  .dpiar .erro { color: var(--erro); font-size: 13px; margin-top: 6px; display: none; }
+  .dpiar .erro.on { display: block; }
+  .dpiar .privacidade { font-size: 13px; color: var(--corpo); margin-top: 16px; line-height: 1.5; }
+  .dpiar .privacidade a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .dpiar .botcheck { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  /* botões: caixa alta, tracking .16em, nunca ponto final */
+  .dpiar .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    border: none;
+    border-radius: var(--r-pill);
+    padding: 17px 32px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-fast), transform var(--dur-fast);
+  }
+  .dpiar .btn--accent { background: var(--ouro); color: var(--tinta); }
+  .dpiar .btn--accent:hover { background: var(--ouro-claro); }
+  .dpiar .btn--ghost { background: transparent; color: var(--corpo); border: 1px solid var(--linha-forte); margin-top: 12px; }
+  .dpiar .btn--ghost:hover { border-color: var(--tinta); color: var(--tinta); }
+  .dpiar .btn:active { transform: scale(.995); }
+  .dpiar .btn:focus-visible { outline: 2px solid var(--ouro); outline-offset: 3px; }
+
+  /* ---------- progresso ---------- */
+  .dpiar .progresso { margin-bottom: 40px; }
+  .dpiar .trilho-prog { height: 3px; background: var(--linha); border-radius: 2px; overflow: hidden; }
+  .dpiar .trilho-prog i { display: block; height: 100%; width: 0; background: var(--ouro); transition: width var(--dur-base) var(--ease-emphasis); }
+  .dpiar .contagem { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--corpo); margin-top: 12px; }
+
+  .dpiar .pergunta .eyebrow { margin-bottom: 12px; }
+  .dpiar .pergunta h2 { margin-bottom: 8px; }
+  .dpiar .pergunta .barra { margin-bottom: 32px; }
+  .dpiar .opcoes { display: flex; flex-direction: column; gap: 8px; }
+  .dpiar .opcao {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 17px 20px;
+    background: var(--branco);
+    border: 1px solid var(--linha);
+    border-radius: var(--r-sm);
+    color: var(--tinta);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--dur-fast), background var(--dur-fast);
+  }
+  .dpiar .opcao:hover { border-color: var(--tinta); }
+  .dpiar .opcao:focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+  .dpiar .opcao .marca { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--linha-forte); flex-shrink: 0; transition: border-color var(--dur-fast); }
+  .dpiar .opcao:hover .marca { border-color: var(--tinta); }
+  .dpiar .voltar {
+    margin-top: 32px;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    color: var(--corpo);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .dpiar .voltar:hover { color: var(--tinta); }
+
+  /* ---------- bloco escuro: a nota ---------- */
+  .dpiar .placar { background: var(--tinta); color: var(--papel); border-radius: var(--r-lg); padding: 48px 32px; margin-bottom: 48px; }
+  .dpiar .placar .eyebrow { color: var(--ouro); }
+  .dpiar .placar .num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(80px, 18vw, 176px);
+    line-height: .88;
+    letter-spacing: -.04em;
+    color: var(--ouro);
+    margin-top: 16px;
+  }
+  .dpiar .placar .de { font-family: var(--font-mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--escuro-apagado); margin-top: 8px; }
+  .dpiar .placar h2 { margin-top: 32px; color: var(--papel); }
+  .dpiar .placar .barra { margin-bottom: 24px; }
+  .dpiar .placar .resumo { font-size: 17px; line-height: 1.55; color: var(--escuro-corpo); max-width: 54ch; }
+
+  /* ---------- mapa dos cinco territórios ---------- */
+  .dpiar .mapa { margin-bottom: 48px; }
+  .dpiar .mapa-linha {
+    display: grid;
+    grid-template-columns: 1fr 132px 96px;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .dpiar .mapa-linha:first-child { border-top: 1px solid var(--linha); }
+  .dpiar .mapa-linha .rot { font-size: 15px; }
+  .dpiar .mapa-linha .trilho { height: 6px; background: var(--linha); border-radius: 3px; overflow: hidden; }
+  .dpiar .mapa-linha .trilho i { display: block; height: 100%; width: 0; min-width: 3px; border-radius: 3px; background: var(--ouro); transition: width 900ms var(--ease-emphasis); }
+  .dpiar .mapa-linha .val { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--corpo); text-align: right; white-space: nowrap; }
+  @media (max-width: 560px) {
+    .dpiar .mapa-linha { grid-template-columns: 1fr 70px 88px; gap: 12px; }
+    .dpiar .mapa-linha .rot { font-size: 14px; }
+  }
+
+  .dpiar .secao-titulo { margin-bottom: 32px; }
+  .dpiar .secao-titulo .barra { margin-bottom: 12px; }
+  .dpiar .secao-titulo p { color: var(--corpo); margin-top: 12px; }
+
+  .dpiar .card { background: var(--branco); border: 1px solid var(--linha); border-radius: var(--r-md); padding: 28px; margin-bottom: 16px; }
+  .dpiar .card-topo { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .dpiar .nivel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 5px 12px;
+    border: 1px solid var(--linha-forte);
+    border-radius: var(--r-pill);
+    color: var(--corpo);
+  }
+  .dpiar .nivel.baixo { border-color: var(--tinta); color: var(--tinta); font-weight: 500; }
+  .dpiar .card h4 { margin-bottom: 12px; }
+  .dpiar .card p { color: var(--corpo); margin-bottom: 20px; }
+  .dpiar .movimento { border-left: 3px solid var(--ouro); padding: 2px 0 2px 18px; }
+  .dpiar .movimento .eyebrow { display: block; margin-bottom: 8px; }
+  .dpiar .movimento p { margin: 0; color: var(--tinta); }
+
+  /* ---------- oferta: bloco escuro de fechamento ---------- */
+  .dpiar .oferta { background: var(--tinta); color: var(--papel); border-radius: var(--r-lg); padding: 40px 32px; margin-top: 56px; }
+  .dpiar .oferta .eyebrow { color: var(--ouro); }
+  .dpiar .oferta h2 { color: var(--papel); margin-top: 16px; }
+  .dpiar .oferta h2 em { font-style: normal; color: var(--ouro); }
+  .dpiar .oferta .barra { margin-bottom: 24px; }
+  .dpiar .oferta p { color: var(--escuro-corpo); margin-bottom: 16px; }
+  .dpiar .oferta .ponte { color: var(--papel); font-size: 17px; border-left: 3px solid var(--ouro); padding-left: 18px; margin: 24px 0; }
+
+  .dpiar .servico-destaque { border: 1px solid var(--linha-clara); border-radius: var(--r-md); padding: 24px; margin: 24px 0; }
+  .dpiar .servico-destaque .nome-servico { font-family: var(--font-display); font-weight: 600; font-size: 22px; letter-spacing: -.01em; color: var(--ouro); margin: 12px 0 10px; }
+  .dpiar .servico-destaque p { margin: 0; color: var(--escuro-corpo); }
+  .dpiar .outros { margin: 24px 0; padding-top: 24px; border-top: 1px solid var(--linha-clara); }
+  .dpiar .outros .eyebrow { display: block; color: var(--escuro-apagado); margin-bottom: 12px; }
+  .dpiar .outros ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .dpiar .outros li {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    color: var(--escuro-corpo);
+    border: 1px solid var(--linha-clara);
+    border-radius: var(--r-pill);
+    padding: 6px 12px;
+  }
+  .dpiar .manifesto { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 1.25; letter-spacing: -.01em; color: var(--papel); margin: 32px 0 24px; }
+  .dpiar .manifesto span { color: var(--ouro); white-space: nowrap; }
+  /* Dentro do bloco escuro o botão fantasma precisa de cor clara: com o cinza
+     escuro de fora, texto e borda somem no fundo. */
+  .dpiar .oferta .btn--ghost { color: var(--escuro-corpo); border-color: var(--linha-clara); }
+  .dpiar .oferta .btn--ghost:hover { color: var(--papel); border-color: var(--ouro); }
+
+  .dpiar .rodape { text-align: center; color: var(--corpo); font-size: 13px; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--linha); }
+  .dpiar .rodape .assinatura { margin-top: 10px; }
+  .dpiar .imprimir { background: none; border: none; color: var(--corpo); font-family: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+
+  /* Só existem no papel. */
+  .dpiar .cabecalho-pdf,
+  .dpiar .pdf-so { display: none; }
+
+  /* ---------- versão impressa / PDF ---------- */
+  @media print {
+    @page { size: A4; margin: 14mm; }
+
+    .dpiar * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body.dpiar-body,
+    body.dpiar-body .dpiar { background: var(--white) !important; }
+
+    /* Fora do diagnóstico não vai nada: nem o link de pular conteúdo do
+       BaseLayout, nem o banner de cookies. */
+    body.dpiar-body > *:not(.dpiar) { display: none !important; }
+
+    .dpiar { min-height: 0; }
+    .dpiar .wrap { max-width: none; padding: 0; }
+    .dpiar .topo,
+    .dpiar .btn,
+    .dpiar .imprimir,
+    .dpiar .rodape,
+    .dpiar .voltar { display: none !important; }
+    .dpiar .tela { display: none !important; }
+    .dpiar #tela-resultado { display: block !important; animation: none; }
+
+    .dpiar .cabecalho-pdf { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--linha); }
+    .dpiar .cabecalho-pdf .marca { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
+    .dpiar .cabecalho-pdf .marca span { color: var(--apagado); font-weight: 400; }
+    .dpiar .cabecalho-pdf .quem {
+      margin-left: auto;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--corpo);
+      line-height: 1.6;
+    }
+    .dpiar .cabecalho-pdf .quem b { display: block; color: var(--ouro-700); font-weight: 500; }
+
+    .dpiar .placar { break-inside: avoid; page-break-inside: avoid; padding: 32px; }
+    .dpiar .placar .num { font-size: 88px; }
+    .dpiar .mapa,
+    .dpiar .card,
+    .dpiar .oferta { break-inside: avoid; page-break-inside: avoid; }
+    .dpiar .card { margin-bottom: 5mm; border: 1px solid var(--linha-forte); }
+    .dpiar .oferta .pdf-so {
+      display: block;
+      margin: 24px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--linha-clara);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .14em;
+      color: var(--ouro);
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ RD_PUBLIC_KEY, RD_ID_INICIO, RD_ID_COMPLETO, PRODUTO, PONTOS, PERGUNTAS, TERRITORIOS, FAIXAS, SERVICOS, PEP }}>
+(function () {
+  'use strict';
+
+  /* Perguntas, análises e faixas vêm de src/data/diagnostico.ts, a mesma
+     fonte da /diagnostico. O que é só daqui: o serviço de cada território
+     (SERVICOS) e o envio ao RD com conversões e tags próprias. */
+
+  /* ===================== ESTADO ===================== */
+  let atual = 0;
+  const respostas = new Array(PERGUNTAS.length).fill(null);
+  let lead = {};
+  let origem = {};
+  const $ = (id) => document.getElementById(id);
+
+  const RD_ATIVO = Boolean(RD_PUBLIC_KEY) && RD_PUBLIC_KEY.indexOf('COLE-SUA') !== 0;
+
+  // 0 a 7 baixo, 8 a 14 médio, 15 a 20 alto: a mesma régua da /diagnostico.
+  const ROTULOS = ['baixo', 'médio', 'alto'];
+  const nivelDe = (pontos) => (pontos <= 7 ? 0 : (pontos <= 14 ? 1 : 2));
+
+  function mostrarTela(id) {
+    document.querySelectorAll('.dpiar .tela').forEach((t) => t.classList.remove('ativa'));
+    $(id).classList.add('ativa');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---------- Origem do lead: mesma cadeia de /contato, /themic e /diagnostico ----------
+     Cookie piar_atrib (gravado só após consentimento de marketing, ver
+     ConsentimentoCookies.astro) → sessionStorage → query string desta visita. */
+  (function capturaOrigem() {
+    let atrib = {};
+    const bruto = document.cookie.split('; ').find((c) => c.indexOf('piar_atrib=') === 0);
+    if (bruto) {
+      try { atrib = JSON.parse(decodeURIComponent(bruto.slice('piar_atrib='.length))); } catch (err) { atrib = {}; }
+    }
+    if (!Object.keys(atrib).length) {
+      try {
+        const sessao = sessionStorage.getItem('piar_atrib');
+        if (sessao) atrib = JSON.parse(sessao);
+      } catch (err) { atrib = {}; }
+    }
+    const qs = new URLSearchParams(location.search);
+    const externo = document.referrer && document.referrer.indexOf(location.origin) !== 0;
+
+    origem = {
+      cf_utm_source: atrib.utm_source || qs.get('utm_source') || '',
+      cf_utm_medium: atrib.utm_medium || qs.get('utm_medium') || '',
+      cf_utm_campaign: atrib.utm_campaign || qs.get('utm_campaign') || '',
+      cf_utm_content: atrib.utm_content || qs.get('utm_content') || '',
+      cf_landing_page: atrib.landing_page || (location.pathname + location.search),
+      cf_referrer: atrib.referrer || (externo ? document.referrer : ''),
+      cf_pagina_conversao: location.pathname,
+      cf_produto_interesse: PRODUTO
+    };
+  })();
+
+  /* ---------- Máscara do WhatsApp, igual à de /themic ---------- */
+  (function mascaraTelefone() {
+    const tel = $('telefone');
+    tel.addEventListener('input', () => {
+      let v = tel.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 6) v = '(' + v.slice(0, 2) + ') ' + v.slice(2, v.length === 11 ? 7 : 6) + '-' + v.slice(v.length === 11 ? 7 : 6);
+      else if (v.length > 2) v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+      else if (v.length > 0) v = '(' + v;
+      tel.value = v;
+    });
+  })();
+
+  /* ---------- Tela 1: valida, grava o lead e avança ---------- */
+  $('form-lead').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if ($('botcheck').value) return;
+
+    const nome = $('nome').value.trim();
+    const email = $('email').value.trim();
+    const empresa = $('empresa').value.trim();
+    const telBruto = $('telefone').value.replace(/\D/g, '');
+    let ok = true;
+
+    const marca = (campo, valido) => {
+      $('erro-' + campo).classList.toggle('on', !valido);
+      if (!valido) ok = false;
+    };
+
+    marca('nome', nome.length >= 2);
+    marca('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email));
+    marca('empresa', empresa.length >= 2);
+    marca('telefone', telBruto.length >= 10);
+
+    if (!ok) {
+      const primeiro = document.querySelector('.dpiar .erro.on');
+      if (primeiro) primeiro.closest('.campo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    lead = { nome, email, empresa, telefone: $('telefone').value.trim() };
+
+    // Grava já aqui: quem abandonar as perguntas entra na base mesmo assim.
+    enviarLead(null).catch((err) => console.error('[diagnóstico PiaR] o lead parcial não gravou', err));
+
+    mostrarTela('tela-perguntas');
+    renderPergunta();
+  });
+
+  /* ---------- Tela 2 ---------- */
+  function renderPergunta() {
+    const p = PERGUNTAS[atual];
+    $('barra-preenche').style.width = (atual / PERGUNTAS.length * 100) + '%';
+    $('contador').textContent = 'Pergunta ' + (atual + 1) + ' de ' + PERGUNTAS.length;
+    $('rotulo-territorio').textContent = TERRITORIOS[p.t].nome;
+    $('texto-pergunta').textContent = p.q;
+
+    const box = $('opcoes');
+    box.innerHTML = '';
+    p.o.forEach((texto, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opcao';
+      const marca = document.createElement('span');
+      marca.className = 'marca';
+      const label = document.createElement('span');
+      label.textContent = texto;
+      b.appendChild(marca);
+      b.appendChild(label);
+      b.addEventListener('click', () => responder(i));
+      box.appendChild(b);
+    });
+
+    $('btn-voltar').style.visibility = atual === 0 ? 'hidden' : 'visible';
+  }
+
+  function responder(i) {
+    respostas[atual] = i;
+    if (atual < PERGUNTAS.length - 1) {
+      atual++;
+      renderPergunta();
+    } else {
+      calcular();
+    }
+  }
+
+  $('btn-voltar').addEventListener('click', () => {
+    if (atual > 0) { atual--; renderPergunta(); }
+  });
+
+  /* ---------- Tela 3 ---------- */
+  function calcular() {
+    const porTerritorio = {};
+    Object.keys(TERRITORIOS).forEach((k) => { porTerritorio[k] = 0; });
+
+    let total = 0;
+    const tagsExtras = [];
+    PERGUNTAS.forEach((p, i) => {
+      const r = respostas[i];
+      const tabela = p.p || PONTOS;
+      const pts = r === null ? 0 : tabela[r];
+      total += pts;
+      porTerritorio[p.t] += pts;
+      if (p.tags && r !== null && p.tags[r]) tagsExtras.push(p.tags[r]);
+    });
+
+    const faixa = FAIXAS.find((f) => total >= f.min && total <= f.max) || FAIXAS[0];
+    $('nota-final').textContent = total;
+    $('nome-faixa').textContent = faixa.nome + '.';
+    $('resumo-faixa').textContent = faixa.resumo;
+
+    // mapa: a forma do resultado num olhar
+    const mapa = $('mapa-territorios');
+    mapa.innerHTML = '';
+    Object.keys(TERRITORIOS).forEach((k) => {
+      const pontos = porTerritorio[k];
+      const linha = document.createElement('div');
+      linha.className = 'mapa-linha';
+      const rot = document.createElement('span');
+      rot.className = 'rot';
+      rot.textContent = TERRITORIOS[k].nome;
+      const trilho = document.createElement('div');
+      trilho.className = 'trilho';
+      const preenche = document.createElement('i');
+      trilho.appendChild(preenche);
+      const val = document.createElement('span');
+      val.className = 'val';
+      val.textContent = pontos + '/20 · ' + ROTULOS[nivelDe(pontos)];
+      linha.appendChild(rot);
+      linha.appendChild(trilho);
+      linha.appendChild(val);
+      mapa.appendChild(linha);
+      requestAnimationFrame(() => { preenche.style.width = (pontos / 20 * 100) + '%'; });
+    });
+
+    const cards = $('cards-territorios');
+    cards.innerHTML = '';
+    Object.keys(TERRITORIOS).forEach((k) => {
+      const pontos = porTerritorio[k];
+      const idx = nivelDe(pontos);
+      const a = TERRITORIOS[k].analises[idx];
+
+      const el = document.createElement('div');
+      el.className = 'card';
+      const topo = document.createElement('div');
+      topo.className = 'card-topo';
+      const nome = document.createElement('span');
+      nome.className = 'eyebrow';
+      nome.textContent = TERRITORIOS[k].nome;
+      const niv = document.createElement('span');
+      niv.className = 'nivel' + (idx === 0 ? ' baixo' : '');
+      niv.textContent = ROTULOS[idx] + ' · ' + pontos + '/20';
+      topo.appendChild(nome);
+      topo.appendChild(niv);
+
+      const h = document.createElement('h4');
+      h.textContent = a.titulo;
+      const p = document.createElement('p');
+      p.textContent = a.texto;
+
+      const mov = document.createElement('div');
+      mov.className = 'movimento';
+      const rot = document.createElement('span');
+      rot.className = 'eyebrow';
+      rot.textContent = 'Primeiro movimento';
+      const movP = document.createElement('p');
+      movP.textContent = a.movimento;
+      mov.appendChild(rot);
+      mov.appendChild(movP);
+
+      el.appendChild(topo);
+      el.appendChild(h);
+      el.appendChild(p);
+      el.appendChild(mov);
+      cards.appendChild(el);
+    });
+
+    /* Oferta: o território mais frágil aponta o serviço. Empate fica com a
+       ordem dos territórios (o sort é estável). */
+    const ordenados = Object.keys(TERRITORIOS)
+      .map((k) => ({ k: k, pts: porTerritorio[k], nome: TERRITORIOS[k].nome }))
+      .sort((a, b) => a.pts - b.pts);
+    const fracos = ordenados.filter((t) => t.pts <= 14).slice(0, 2);
+    const alvo = fracos.length ? fracos[0] : ordenados[0];
+    const servico = SERVICOS[alvo.k];
+
+    const titulo = $('titulo-oferta');
+    titulo.textContent = '';
+    const destaque = (texto) => {
+      const em = document.createElement('em');
+      em.textContent = texto;
+      return em;
+    };
+
+    if (fracos.length >= 2) {
+      $('rot-oferta').textContent = 'Onde você está mais exposto hoje';
+      titulo.appendChild(destaque(fracos[0].nome));
+      titulo.appendChild(document.createTextNode(' e '));
+      titulo.appendChild(destaque(fracos[1].nome));
+      titulo.appendChild(document.createTextNode(' são os seus dois pontos mais frágeis.'));
+      $('ponte-oferta').textContent = 'Os cinco movimentos acima são o que dá para fazer sozinho nesta semana. O\u00A0resto não se resolve sozinho: sustentar um tema quando ninguém está olhando, aparecer onde a decisão sobre você acontece, ter método no lugar de improviso. É esse trabalho que fazemos.';
+    } else if (fracos.length === 1) {
+      $('rot-oferta').textContent = 'Onde você está mais exposto hoje';
+      titulo.appendChild(destaque(fracos[0].nome));
+      titulo.appendChild(document.createTextNode(' é o seu ponto mais frágil.'));
+      $('ponte-oferta').textContent = 'Você está bem na maior parte dos territórios, e por isso mesmo o ponto fraco pesa: é ele que trava o conjunto. É esse tipo de gargalo que destravamos.';
+    } else {
+      $('rot-oferta').textContent = 'O próximo nível';
+      titulo.appendChild(document.createTextNode('Você está bem nos cinco territórios. O trabalho agora é '));
+      titulo.appendChild(destaque('sustentar'));
+      titulo.appendChild(document.createTextNode('.'));
+      $('ponte-oferta').textContent = 'Quem chega até aqui perde mais por exposição mal calibrada do que por falta dela. Manter reputação é trabalho contínuo: curadoria do que aparece, preparo para o momento difícil e escolha de onde não estar.';
+    }
+
+    $('nome-servico').textContent = servico.nome;
+    $('desc-servico').textContent = 'Nós ' + servico.resolve;
+
+    const lista = $('lista-servicos');
+    lista.innerHTML = '';
+    Object.keys(SERVICOS)
+      .filter((k) => k !== alvo.k)
+      .map((k) => SERVICOS[k].nome)
+      .concat([PEP])
+      .forEach((s) => {
+        const li = document.createElement('li');
+        li.textContent = s;
+        lista.appendChild(li);
+      });
+
+    // Cabeçalho que só aparece no PDF. Nome e empresa entram como texto,
+    // nunca como HTML: são digitados pela própria pessoa.
+    $('pdf-quem').textContent = (lead.nome || '') + (lead.empresa ? ' · ' + lead.empresa : '');
+    $('pdf-data').textContent = 'Diagnóstico de Autoridade · ' +
+      new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    enviarLead({ nota: total, faixa: faixa.nome, territorios: porTerritorio, extras: tagsExtras, servico: servico.nome })
+      .catch((err) => console.error('[diagnóstico PiaR] o resultado não gravou', err));
+
+    mostrarTela('tela-resultado');
+  }
+
+  $('btn-refazer').addEventListener('click', () => {
+    atual = 0;
+    respostas.fill(null);
+    mostrarTela('tela-perguntas');
+    renderPergunta();
+  });
+
+  $('btn-imprimir').addEventListener('click', () => window.print());
+
+  /* =====================================================================
+     ENVIO PARA O RD STATION
+     Chamado duas vezes: na captura (resultado = null) e no fim, com a nota.
+     ===================================================================== */
+  /* 'Lembrado as vezes' vira 'lembrado-as-vezes', 'Dados & GEO' vira
+     'dados-geo'. O corte de acento e feito por codigo de caractere, e nao por
+     um regex com diacriticos literais, que um editor pode normalizar em
+     silencio (ver notas da v0.2.11). */
+  function comoTag(texto) {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .split('')
+      .filter((c) => { const n = c.charCodeAt(0); return n < 0x300 || n > 0x36f; })
+      .join('')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function enviarLead(resultado) {
+    const tags = ['piar-diagnostico-autoridade'];
+
+    const payload = Object.assign({}, origem, {
+      conversion_identifier: resultado ? RD_ID_COMPLETO : RD_ID_INICIO,
+      name: lead.nome,
+      email: lead.email,
+      personal_phone: lead.telefone,
+      company_name: lead.empresa,
+      traffic_source: origem.cf_utm_source || 'direto',
+      traffic_medium: origem.cf_utm_medium || '',
+      traffic_campaign: origem.cf_utm_campaign || ''
+    });
+
+    // Os cf_diagnostico_* só vão no envio final. No primeiro eles não existem
+    // ainda, e mandar null deixaria o contato sem nota se o segundo envio
+    // falhar ou chegar fora de ordem (notas da v0.2.10).
+    if (resultado) {
+      tags.push('piar-diagnostico-' + comoTag(resultado.faixa));
+      tags.push('piar-servico-' + comoTag(resultado.servico));
+      (resultado.extras || []).forEach((t) => tags.push('piar-' + t));
+
+      // Numero vai como TEXTO: o RD tipa todo campo cf_ como string e
+      // descarta numero cru em silencio (notas da v0.2.11).
+      const n = (v) => String(v);
+      payload.cf_diagnostico_nota = n(resultado.nota);
+      payload.cf_diagnostico_faixa = resultado.faixa;
+      payload.cf_diagnostico_servico = resultado.servico;
+      payload.cf_diagnostico_imprensa = n(resultado.territorios.imprensa);
+      payload.cf_diagnostico_digital = n(resultado.territorios.digital);
+      payload.cf_diagnostico_busca = n(resultado.territorios.busca);
+      payload.cf_diagnostico_narrativa = n(resultado.territorios.narrativa);
+      payload.cf_diagnostico_preparo = n(resultado.territorios.preparo);
+    }
+
+    payload.tags = tags;
+
+    if (!RD_ATIVO) {
+      console.log('[diagnóstico PiaR] RD_PUBLIC_KEY ausente, modo demonstração.', payload);
+      return Promise.resolve(false);
+    }
+
+    return fetch('https://api.rd.services/platform/conversions?api_key=' + encodeURIComponent(RD_PUBLIC_KEY), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_type: 'CONVERSION', event_family: 'CDP', payload: payload })
+    }).then((resp) => {
+      if (resp.ok) return true;
+      // O corpo da resposta entra no erro: quando um campo cf_* não existe na
+      // conta, é aqui que o RD diz qual.
+      return resp.text().then((corpo) => {
+        throw new Error('RD Station respondeu ' + resp.status + ': ' + corpo.slice(0, 500));
+      });
+    });
+  }
+})();
+</script>
+</BaseLayout>

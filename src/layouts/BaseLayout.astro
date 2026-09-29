@@ -11,6 +11,8 @@ import ConsentimentoCookies from '@components/ConsentimentoCookies.astro';
 interface Props {
   title: string;
   description: string;
+  // Texto da prévia do link (WhatsApp, LinkedIn). Sem ele, vale o description.
+  ogDescription?: string;
   canonical?: string;
   ogImage?: string;
   noindex?: boolean;
@@ -20,6 +22,7 @@ interface Props {
 const {
   title,
   description,
+  ogDescription = description,
   canonical = Astro.url.href,
   ogImage = '/brand/piar-horizontal-positivo.png',
   noindex = false,
@@ -61,7 +64,7 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:locale" content="pt_BR" />
@@ -69,7 +72,7 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- LGPD: a atribuicao de origem (cookie piar_atrib) NAO mora mais aqui.
