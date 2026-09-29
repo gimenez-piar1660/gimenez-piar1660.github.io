@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.13 | 2026-09-29 11:48 | remove-danilo | production | 28747f5 | [notas](deploys/2026-09-29_1148_v0.2.13_remove-danilo/notes.md) |
 | v0.2.12 | 2026-09-29 10:01 | themic-sem-data | production | 2fac00e | [notas](deploys/2026-09-29_1001_v0.2.12_themic-sem-data/notes.md) |
 | v0.2.11 | 2026-09-23 13:43 | rd-campos-como-string | production | 2b0c306 | [notas](deploys/2026-09-23_1343_v0.2.11_rd-campos-como-string/notes.md) |
 | v0.2.10 | 2026-09-23 12:55 | resultado-sem-data | production | 225801d | [notas](deploys/2026-09-23_1255_v0.2.10_resultado-sem-data/notes.md) |
