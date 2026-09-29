@@ -74,7 +74,7 @@ const provas = [
 ];
 
 // Quem lidera. Set padronizado de retratos (estudio, fundo amarelo PiaR, 657x657),
-// o mesmo enquadramento para as seis pessoas. Ninguem precisa de `flip` aqui: as
+// o mesmo enquadramento para as cinco pessoas. Ninguem precisa de `flip` aqui: as
 // fotos ja vem na orientacao correta.
 const lideranca = [
   { nome: site.founder.name, papel: 'Fundador e CEO', foto: '/brand/team/bruno.webp', flip: false, desc: 'Dirige a estratégia desde 2013. Eleito profissional de imprensa no Startup Awards da ABStartups, em 2018.' },
@@ -82,7 +82,6 @@ const lideranca = [
   { nome: 'Gabriela Calencautcy', papel: 'Projetos Especiais', foto: '/brand/team/gabriela.webp', flip: false, desc: 'Conduz o PEP e os trabalhos que vão além da cobertura de imprensa.' },
   { nome: 'Bella Cascione', papel: 'Gerente de núcleo', foto: '/brand/team/bella.webp', flip: false, desc: 'Lidera nosso núcleo Alfa e garante que o combinado na estratégia chegue inteiro na entrega.' },
   { nome: 'Ana Flávia', papel: 'Marketing', foto: '/brand/team/ana-flavia.webp', flip: false, desc: 'Cuida do marketing da casa e da comunicação que a PiaR faz da própria marca.' },
-  { nome: 'Danilo Lastrucci', papel: 'Vendas & Business', foto: '/brand/team/danilo.webp', flip: false, desc: 'Abre as conversas comerciais e desenha o formato de cada nova parceria.' },
 ];
 
 // PiaRBoard: o dashboard proprietario (a "caixa-preta aberta"). Dados reais da proposta (Adaflow, slides 6 e 7).
@@ -360,7 +359,14 @@ const servicosLd = [
 
       /* lideranca */
       .leaders { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 2.4rem; }
-      @media (min-width: 760px) { .leaders { grid-template-columns: repeat(3,1fr); } }
+      /* Três por linha em grade de 6 trilhas, cada card ocupando 2. Quando a
+         última linha fica com dois cards, o primeiro deles começa na trilha 2
+         e a dupla fica centralizada, sem buraco à direita. */
+      @media (min-width: 760px) {
+        .leaders { grid-template-columns: repeat(6,1fr); }
+        .leader { grid-column: span 2; }
+        .leader:nth-child(3n+1):nth-last-child(2) { grid-column: 2 / span 2; }
+      }
       .leader { border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,.1); background: rgba(13,15,22,.55); overflow: hidden; transition: var(--t-smooth); padding-bottom: 1.4rem; }
       .leader:hover { border-color: rgba(255,255,255,.2); transform: translateY(-4px); box-shadow: 0 24px 48px rgba(0,0,0,.3); }
       .leader-photo { aspect-ratio: 1/1; overflow: hidden; background: #0d0f16; }

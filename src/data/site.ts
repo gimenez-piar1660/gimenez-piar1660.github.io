@@ -6,7 +6,10 @@
 // Decisões registradas em:
 //   project/workbench/specs/pep-site-migration-2026-06-02/spec.md (seção 9)
 //   - D-IDENT-1: e-mail oficial = contato@piar.group (alterado por Danilo em 2026-06-30; antes hello@piar.group)
-//   - D-IDENT-2: telefone público aparece apenas na página /contato
+//   - D-IDENT-2: sem telefone público. Em 29/09/2026 o WhatsApp comercial saiu
+//     do site inteiro (JSON-LD e llms.txt); o contato é por e-mail e formulário.
+//     Para voltar a ter número, criar o campo aqui e reativar `telephone` no
+//     JSON-LD de src/layouts/BaseLayout.astro.
 //   - D-IDENT-3: número de exits = quantos nomes existem em EXITS, abaixo.
 //     Era 8 até 17/08/2026. Em 18/08/2026 Danilo confirmou 11, acrescentando
 //     VExpenses (comprada pela VR), Menew (combinação de operações com a Linx)
@@ -60,11 +63,8 @@ export const site = {
   domain: import.meta.env.SITE,
   brandDomain: 'piar.group',
 
-  // Contato canônico.
+  // Contato canônico. Sem telefone público desde 29/09/2026 (ver D-IDENT-2).
   email: 'contato@piar.group',
-  phone: '(11) 97563-3655',
-  phoneE164: '+5511975633655',
-  whatsapp: 'https://wa.me/5511975633655',
 
   // Fatos institucionais (com lastro na auditoria EEAT).
   foundingYear: '2013',
