@@ -61,6 +61,8 @@
 //                                 lembrado-as-vezes, referencia
 //   piar-servico-<servico>        o serviço que o resultado ofereceu
 //   piar-tem-assessoria           já tem estrutura de imprensa
+// E, fora do prefixo, lead_sitepiar em todo lead e nos dois envios (pedido de
+// 29/09/2026). O nome vem do RD, então fica exatamente assim, com sublinhado.
 //
 // UTM: a mesma cadeia das outras páginas (cookie piar_atrib → sessionStorage →
 // query string desta visita). No outbound quem resolve é a query string: o lead
@@ -79,6 +81,8 @@ import { withBase } from '@/lib/base';
 const RD_PUBLIC_KEY = '0ba58cf81bc6e78d267b310a8ccafbfc';
 const RD_ID_INICIO = 'piar-diagnostico-inicio';
 const RD_ID_COMPLETO = 'piar-diagnostico-completo';
+// Tag que marca o lead como vindo do site da PiaR no RD. Vai junto das piar-*.
+const TAG_LEAD_SITE = 'lead_sitepiar';
 
 const PRODUTO = 'PiaR Group · Diagnóstico de Autoridade';
 
@@ -629,7 +633,7 @@ const descricaoPrevia = 'O mercado já procurou o seu nome. Descubra o que ele e
   }
 </style>
 
-<script is:inline define:vars={{ RD_PUBLIC_KEY, RD_ID_INICIO, RD_ID_COMPLETO, PRODUTO, PONTOS, PERGUNTAS, TERRITORIOS, FAIXAS, SERVICOS, PEP }}>
+<script is:inline define:vars={{ RD_PUBLIC_KEY, RD_ID_INICIO, RD_ID_COMPLETO, TAG_LEAD_SITE, PRODUTO, PONTOS, PERGUNTAS, TERRITORIOS, FAIXAS, SERVICOS, PEP }}>
 (function () {
   'use strict';
 
@@ -955,7 +959,8 @@ const descricaoPrevia = 'O mercado já procurou o seu nome. Descubra o que ele e
   }
 
   function enviarLead(resultado) {
-    const tags = ['piar-diagnostico-autoridade'];
+    // Estas duas vão nos dois envios: quem abandona as perguntas também leva.
+    const tags = ['piar-diagnostico-autoridade', TAG_LEAD_SITE];
 
     const payload = Object.assign({}, origem, {
       conversion_identifier: resultado ? RD_ID_COMPLETO : RD_ID_INICIO,
