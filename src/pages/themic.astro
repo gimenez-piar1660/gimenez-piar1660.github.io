@@ -4,14 +4,14 @@
 // ------------------------------------------------------------
 // Versão de captação de interesse (v2, atualizada em 10/09/2026 com o
 // THE_MIC_LP_v2_captacao (9).html e o briefing THE_MIC_LP_ajustes_Rafa_10set).
-// A página anuncia a Edição 1 com data e local, e capta interesse: o link de
+// A página anuncia a Edição 1 com local, sem data, e capta interesse: o link de
 // pagamento ainda não saiu do banco, então o valor fica fora da página e o
 // comercial apresenta as condições na conversa.
 //
 // O que mudou em relação à versão anterior desta página:
 //   - Entram três seções: a declaração em escala ("Competência sem voz é
 //     invisibilidade"), "O que destrava" (o que muda depois dos dois dias) e
-//     a ficha técnica da Edição 1 (#ficha), com data, local, turma, formato,
+//     a ficha técnica da Edição 1 (#ficha), com local, turma, formato,
 //     foto do auditório, cartão de preço e bloco para empresas.
 //   - Saem duas: "Antes x Depois" e a faixa de quatro números da imersão
 //     (2 dias / 30 líderes / 6 ativos / 4 etapas). O CSS delas foi removido
@@ -41,6 +41,15 @@
 //     saídas antigas levavam ao mesmo lugar.
 //   - CSS órfão da mudança foi removido junto: .price-card .fig sup (o "R$"
 //     sobrescrito) e .btn-outline (só o botão secundário usava).
+//
+// O que mudou em 29/09/2026 (data do evento fora da página):
+//   - Nenhuma menção a dia, mês ou ano da Edição 1: hero, programação, ficha
+//     técnica (a linha "Quando" saiu e o horário foi para "Formato"),
+//     fechamento, formulário, barra fixa, rodapé e meta description.
+//   - cf_produto_interesse passa a chegar no RD como "THE MIC · Edição 1".
+//   - A pergunta cf_disponibilidade_data vira "dois dias inteiros". O campo
+//     e os valores das respostas continuam os mesmos, para não quebrar o
+//     histórico da base.
 //
 // ---- RASTREAMENTO -------------------------------------------------------
 // 1) RD STATION · mesma conta e mesmo token público de src/pages/contato.astro.
@@ -91,11 +100,11 @@ const RD_ID_THEMIC = 'piar-lp-themic';
 // Ao preencher, reativar também a linha comentada no submit do formulário.
 const CHECKOUT_URL = '';
 
-// Dados da edição em um lugar só: mudar data ou local é uma linha, não dez.
+// Dados da edição em um lugar só: mudar local ou turma é uma linha, não dez.
 // Saíram deste arquivo em 22/09/2026, quando a /diagnostico passou a precisar
 // dos mesmos valores. Fonte única em src/data/themic.ts.
 import { EDICAO } from '@/data/themic';
-const PRODUTO = `THE MIC · Edição 1 · ${EDICAO.datas}`;
+const PRODUTO = 'THE MIC · Edição 1';
 
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Nav from '@components/Nav.astro';
@@ -104,7 +113,7 @@ import { withBase } from '@/lib/base';
 
 const titulo = 'THE MIC · Imersão em Autoridade Executiva';
 const descricao =
-  `Dois dias presenciais que transformam founders e C-levels em porta-vozes do próprio negócio. Edição 1 confirmada: ${EDICAO.datas} de 2026, em São Paulo. Até 30 líderes por turma.`;
+  `Dois dias presenciais que transformam founders e C-levels em porta-vozes do próprio negócio. Edição 1 em São Paulo, com até 30 líderes por turma.`;
 ---
 
 <BaseLayout
@@ -134,12 +143,12 @@ const descricao =
       <h1 class="hero-mark"><span class="the">THE</span>MIC</h1>
       <p class="hero-tagline">Quando o founder ou C-level se posiciona de forma estratégica, o negócio ganha a <mark>credibilidade</mark> que anúncio pago não compra.</p>
       <p class="hero-sub">Dois dias presenciais que transformam liderança em mídia: narrativa, canais e ativos prontos para falar direto com o mercado.</p>
-      <div class="hero-urgency"><span class="dot"></span> Edição 1 · {EDICAO.datas} · São Paulo</div>
+      <div class="hero-urgency"><span class="dot"></span> Edição 1 · São Paulo</div>
       <div class="cta-row">
         <a href="#lista" class="btn btn-lg" data-cta="hero">Quero saber mais</a>
         <span class="cta-note">Investimento sob consulta · {EDICAO.parcelas}</span>
       </div>
-      <p class="hero-strip">{EDICAO.datas} · {EDICAO.bairro} · Até 30 líderes por turma</p>
+      <p class="hero-strip">{EDICAO.bairro} · Até 30 líderes por turma</p>
     </div>
   </section>
 
@@ -314,7 +323,7 @@ const descricao =
       <div class="days">
         <div class="day">
           <div class="day-head">
-            <span class="n">Dia 1 · {EDICAO.dia1}</span>
+            <span class="n">Dia 1</span>
             <h3>Você descobre como soa, aprende a sustentar uma ideia e testa se aguenta pressão.</h3>
           </div>
           <div class="day-block">
@@ -338,7 +347,7 @@ const descricao =
 
         <div class="day">
           <div class="day-head">
-            <span class="n">Dia 2 · {EDICAO.dia2}</span>
+            <span class="n">Dia 2</span>
             <h3>Você descobre onde falar, como ser encontrado e sai com material gravado.</h3>
           </div>
           <div class="day-block">
@@ -527,13 +536,9 @@ const descricao =
   <section class="block block-dark reveal" id="ficha">
     <div class="wrap">
       <div class="eyebrow on-dark"><span class="dot"></span> EDIÇÃO 1</div>
-      <h2 class="title">A primeira turma <span class="gold">tem data.</span></h2>
+      <h2 class="title">A primeira turma <span class="gold">já tem endereço.</span></h2>
       <div class="sheet-grid">
         <div class="sheet-rows">
-          <div class="sheet-row">
-            <span class="k">Quando</span>
-            <span class="v">{EDICAO.datasCompletas}<small>{EDICAO.diaSemana}</small></span>
-          </div>
           <div class="sheet-row">
             <span class="k">Onde</span>
             <span class="v">{EDICAO.local}<small>{EDICAO.endereco}</small></span>
@@ -544,7 +549,7 @@ const descricao =
           </div>
           <div class="sheet-row">
             <span class="k">Formato</span>
-            <span class="v">Presencial, dois dias inteiros<small>Mais o diagnóstico de autoridade, duas semanas antes</small></span>
+            <span class="v">Presencial, dois dias inteiros, das 8h às&nbsp;20h<small>Mais o diagnóstico de autoridade, duas semanas antes</small></span>
           </div>
           <figure class="venue">
             <img src={withBase('/brand/lp/the-mic/auditorio-investidores-vc.jpg')} alt="Auditório da sede do Investidores.vc, no Brooklin" loading="lazy" />
@@ -628,7 +633,7 @@ const descricao =
     <div class="wrap">
       <div class="eyebrow on-dark"><span class="dot"></span> ON AIR</div>
       <h2 class="closing-mark">O microfone <span class="gold">está aberto.</span></h2>
-      <p>{EDICAO.datas}, no Brooklin. <b>Estar na primeira edição é ocupar um lugar que não se compra depois.</b> Turma pequena por desenho: todo mundo passa pelo microfone, com tempo de verdade.</p>
+      <p><b>Estar na primeira edição é ocupar um lugar que não se compra depois.</b> Turma pequena por desenho: todo mundo passa pelo microfone, com tempo de verdade.</p>
       <div class="cta-row">
         <a href="#lista" class="btn btn-lg" data-cta="fechamento">Quero saber mais</a>
       </div>
@@ -649,7 +654,7 @@ const descricao =
             <li>Certificado e acesso à comunidade de líderes</li>
           </ul>
           <p class="sale-meta">
-            {EDICAO.datas} · {EDICAO.bairro}<br />
+            {EDICAO.bairro}<br />
             Investimento sob consulta · {EDICAO.parcelas}
           </p>
         </div>
@@ -743,7 +748,7 @@ const descricao =
                 </div>
 
                 <div class="qblock" data-q="cf_disponibilidade_data">
-                  <p>Você tem disponibilidade nos dias {EDICAO.datas}?</p>
+                  <p>Você consegue reservar dois dias inteiros para a imersão?</p>
                   <div class="opts">
                     <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Sim, os dois dias" /><span>Sim, os dois dias</span></label>
                     <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Não, quero a próxima edição" /><span>Não. Quero saber da próxima edição</span></label>
@@ -801,13 +806,13 @@ const descricao =
         <img src={withBase('/brand/piar-horizontal-negativo.png')} alt="" class="fmark-piar" width="82" height="27" loading="lazy" />
         <span class="fmark">THE MIC</span>
       </a>
-      <p>IMERSÃO EM AUTORIDADE EXECUTIVA · PIAR GROUP · SÃO PAULO · 2026</p>
+      <p>IMERSÃO EM AUTORIDADE EXECUTIVA · PIAR GROUP · SÃO PAULO</p>
     </div>
   </footer>
 
   <!-- Barra fixa de CTA -->
   <div class="stickybar" id="stickybar">
-    <p><span class="dot"></span> {EDICAO.datas} · {EDICAO.bairro}</p>
+    <p><span class="dot"></span> Edição 1 · {EDICAO.bairro}</p>
     <a href="#lista" class="btn" data-cta="sticky">Quero saber mais</a>
   </div>
 
