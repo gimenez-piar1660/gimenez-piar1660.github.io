@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.16 | 2026-09-30 14:51 | themic-data-dezembro | production | 06424bf | [notas](deploys/2026-09-30_1451_v0.2.16_themic-data-dezembro/notes.md) |
 | v0.2.15 | 2026-09-29 15:13 | tag-lead-sitepiar | production | 7b14ee4 | [notas](deploys/2026-09-29_1513_v0.2.15_tag-lead-sitepiar/notes.md) |
 | v0.2.14 | 2026-09-29 14:51 | diagnostico-piar | production | e72b9ec | [notas](deploys/2026-09-29_1451_v0.2.14_diagnostico-piar/notes.md) |
 | v0.2.13 | 2026-09-29 11:48 | remove-danilo | production | 28747f5 | [notas](deploys/2026-09-29_1148_v0.2.13_remove-danilo/notes.md) |
