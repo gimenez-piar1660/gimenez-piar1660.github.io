@@ -1,20 +1,24 @@
 // ============================================================
 // FONTE ÚNICA — THE MIC
 // ============================================================
-// Local e formato da edição em um lugar só. Antes estes valores viviam
+// Data, local e formato da edição em um lugar só. Antes estes valores viviam
 // dentro de src/pages/themic.astro, e a /diagnostico (a isca que leva para a
-// LP) precisaria repetir os mesmos dados na mão. É exatamente assim que o número
+// LP) precisaria repetir a data na mão. É exatamente assim que o número
 // de exits desandou em 18 páginas (ver src/data/site.ts, D-IDENT-3), então a
-// regra vale aqui também: quem mostra local ou formato do THE MIC lê daqui.
+// regra vale aqui também: quem mostra data ou local do THE MIC lê daqui.
 //
 // Mudar a edição é editar este arquivo, não caçar string em duas páginas.
 //
-// A data do evento saiu de todas as páginas em 29/09/2026, e os campos de
-// data saíram daqui junto (datas, datasCompletas, diaSemana, dia1, dia2).
-// Para trazer de volta, os valores antigos estão no histórico do git.
+// Histórico da data da Edição 1: 22 e 23 de outubro até 29/09/2026, quando a
+// data saiu das páginas; em 30/09/2026 voltou, remarcada para 2 e 3 de dezembro.
 // ============================================================
 
 export const EDICAO = {
+  datas: '2 e 3 de dezembro',
+  datasCompletas: '2 e 3 de dezembro de 2026',
+  diaSemana: 'Quarta e quinta, das 8h às 20h',
+  dia1: '2 de dezembro',
+  dia2: '3 de dezembro',
   local: 'Sede do Investidores.vc',
   endereco: 'Rua Pitu, 72 · Brooklin · São Paulo',
   bairro: 'Brooklin, São Paulo',
