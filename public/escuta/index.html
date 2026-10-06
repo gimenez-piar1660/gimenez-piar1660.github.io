@@ -260,14 +260,31 @@ function validId(){
   e.textContent = ''; return true;
 }
 
-document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => {
-  if (state.step === 1 && !validId()) return;
-  show(state.step + 1);
-}));
+// Telas com resposta obrigatória. A 8 (espaço livre) e os comentários das frentes são opcionais.
+const OBRIGATORIAS = { 2:'q2', 3:'q3', 4:'q4', 6:'q6', 7:'q7' };
+function erro(n, msg){
+  // as telas 2 a 7 não têm caixa de erro no HTML: ela só é criada quando há o que avisar
+  let e = steps[n].querySelector('.err');
+  if (!e && msg) { e = document.createElement('div'); e.className = 'err'; e.setAttribute('role','alert'); steps[n].querySelector('.actions').before(e); }
+  if (e) e.textContent = msg;
+  return !msg;
+}
+function valida(n){
+  if (n === 1) return validId();
+  if (OBRIGATORIAS[n] && !v(OBRIGATORIAS[n])) return erro(n, 'Responda esta pergunta para continuar.');
+  if (n === 5) {
+    const faltam = FRENTES.filter(f => !state.frentes[f]);
+    if (faltam.length) return erro(n, 'Marque uma opção em cada frente para continuar. Falta: ' + faltam.join(', ') + '.');
+  }
+  return erro(n, '');
+}
+function avancar(){ if (valida(state.step)) show(state.step + 1); }
+
+document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', avancar));
 document.querySelectorAll('[data-prev]').forEach(b => b.addEventListener('click', () => show(Math.max(0, state.step - 1))));
 document.addEventListener('keydown', ev => {
   if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey) && state.step > 0 && state.step < 8) {
-    ev.preventDefault(); if (state.step === 1 && !validId()) return; show(state.step + 1);
+    ev.preventDefault(); avancar();
   }
 });
 
@@ -283,6 +300,9 @@ function frentesTexto(){
 
 document.getElementById('form').addEventListener('submit', async ev => {
   ev.preventDefault();
+  // Enter num campo (ou "Ir" no teclado do celular) dispara o submit em qualquer tela: fora da última, só avança.
+  if (state.step !== 8) { avancar(); return; }
+  for (let n = 1; n < 8; n++) if (!valida(n)) { show(n); return; }
   const btn = document.getElementById('send'), err = document.getElementById('err8');
   const data = {
     nome: v('nome'), email: v('email'), cargo: v('cargo'), empresa: v('empresa'),
