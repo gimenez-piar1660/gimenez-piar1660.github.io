@@ -11,14 +11,14 @@
 //
 // Histórico da data da Edição 1: 22 e 23 de outubro até 29/09/2026, quando a
 // data saiu das páginas; em 30/09/2026 voltou, remarcada para 2 e 3 de dezembro.
+// Em 14/10/2026 passou para 2027, só com o ano: o mês entra quando a data no
+// Investidores.vc estiver reservada. Os campos de dia e mês saíram daqui junto
+// (valores antigos no histórico do git).
 // ============================================================
 
 export const EDICAO = {
-  datas: '2 e 3 de dezembro',
-  datasCompletas: '2 e 3 de dezembro de 2026',
-  diaSemana: 'Quarta e quinta, das 8h às 20h',
-  dia1: '2 de dezembro',
-  dia2: '3 de dezembro',
+  ano: '2027',
+  horario: 'Dois dias inteiros, das 8h às 20h',
   local: 'Sede do Investidores.vc',
   endereco: 'Rua Pitu, 72 · Brooklin · São Paulo',
   bairro: 'Brooklin, São Paulo',
@@ -30,7 +30,7 @@ export const EDICAO = {
   // apresenta as condições na conversa (decisão de 10/09/2026).
   investimento: 'Sob consulta',
   parcelas: 'em até 3x',
-  condicaoPreco: 'Em até 3x · condições apresentadas na conversa',
+  condicaoPreco: 'Condições apresentadas na conversa',
 } as const;
 
 // Caminho da LP dentro do site. A /diagnostico manda o lead para cá.

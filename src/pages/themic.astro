@@ -46,6 +46,15 @@
 // voltou aos mesmos lugares, remarcada para 2 e 3 de dezembro. O valor vive em
 // src/data/themic.ts; esta página só lê de lá.
 //
+// O que mudou em 14/10/2026 (briefing "Alteração LP The Mic para 2027"):
+//   - A Edição 1 passa para 2027, sem mês nem dias. A página deixa de anunciar
+//     turma com data e capta para a próxima edição.
+//   - O diagnóstico vira o CTA principal no hero e na barra fixa. O formulário
+//     fica como segunda opção no hero (.btn-outline volta só para isso) e
+//     continua nos botões do meio, do fechamento e do rodapé.
+//   - A pergunta de disponibilidade deixa de citar dia; o campo no RD
+//     (cf_disponibilidade_data) e os identificadores de conversão ficam iguais.
+//
 // ---- RASTREAMENTO -------------------------------------------------------
 // 1) RD STATION · mesma conta e mesmo token público de src/pages/contato.astro.
 //    Autentica em /platform/conversions pelo parâmetro api_key. É público por
@@ -99,7 +108,7 @@ const CHECKOUT_URL = '';
 // Saíram deste arquivo em 22/09/2026, quando a /diagnostico passou a precisar
 // dos mesmos valores. Fonte única em src/data/themic.ts.
 import { EDICAO } from '@/data/themic';
-const PRODUTO = `THE MIC · Edição 1 · ${EDICAO.datas}`;
+const PRODUTO = `THE MIC · Edição 1 · ${EDICAO.ano}`;
 
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Nav from '@components/Nav.astro';
@@ -108,7 +117,7 @@ import { withBase } from '@/lib/base';
 
 const titulo = 'THE MIC · Imersão em Autoridade Executiva';
 const descricao =
-  `Dois dias presenciais que transformam founders e C-levels em porta-vozes do próprio negócio. Edição 1 confirmada: ${EDICAO.datas} de 2026, em São Paulo. Até 30 líderes por turma.`;
+  `Dois dias presenciais que transformam founders e C-levels em porta-vozes do próprio negócio. Primeira edição em ${EDICAO.ano}, em São Paulo, com até 30 líderes por turma. Faça o diagnóstico de autoridade e entre na lista.`;
 ---
 
 <BaseLayout
@@ -138,12 +147,13 @@ const descricao =
       <h1 class="hero-mark"><span class="the">THE</span>MIC</h1>
       <p class="hero-tagline">Quando o founder ou C-level se posiciona de forma estratégica, o negócio ganha a <mark>credibilidade</mark> que anúncio pago não compra.</p>
       <p class="hero-sub">Dois dias presenciais que transformam liderança em mídia: narrativa, canais e ativos prontos para falar direto com o mercado.</p>
-      <div class="hero-urgency"><span class="dot"></span> Edição 1 · {EDICAO.datas} · São Paulo</div>
+      <div class="hero-urgency"><span class="dot"></span> Edição 1 · {EDICAO.ano} · São Paulo</div>
       <div class="cta-row">
-        <a href="#lista" class="btn btn-lg" data-cta="hero">Quero saber mais</a>
-        <span class="cta-note">Investimento sob consulta · {EDICAO.parcelas}</span>
+        <a href="/diagnostico" class="btn btn-lg" data-cta="hero">Fazer o diagnóstico</a>
+        <a href="#lista" class="btn btn-lg btn-outline" data-cta="hero-lista">Quero saber da Edição 1</a>
+        <span class="cta-note">Diagnóstico gratuito · 10 perguntas, 2 minutos</span>
       </div>
-      <p class="hero-strip">{EDICAO.datas} · {EDICAO.bairro} · Até 30 líderes por turma</p>
+      <p class="hero-strip">{EDICAO.bairro} · Dois dias presenciais · Até 30 líderes por turma</p>
     </div>
   </section>
 
@@ -318,7 +328,7 @@ const descricao =
       <div class="days">
         <div class="day">
           <div class="day-head">
-            <span class="n">Dia 1 · {EDICAO.dia1}</span>
+            <span class="n">Dia 1</span>
             <h3>Você descobre como soa, aprende a sustentar uma ideia e testa se aguenta pressão.</h3>
           </div>
           <div class="day-block">
@@ -342,7 +352,7 @@ const descricao =
 
         <div class="day">
           <div class="day-head">
-            <span class="n">Dia 2 · {EDICAO.dia2}</span>
+            <span class="n">Dia 2</span>
             <h3>Você descobre onde falar, como ser encontrado e sai com material gravado.</h3>
           </div>
           <div class="day-block">
@@ -482,7 +492,7 @@ const descricao =
         <div class="chair">
           <div class="row">
             <span class="cno">Cadeira 03 · Redes e Aquisição</span>
-            <span class="pending">Anúncio em breve</span>
+            <span class="pending">A confirmar para a Edição 1</span>
           </div>
           <h3>Social</h3>
           <p class="disc">Conteúdo e audiência</p>
@@ -491,7 +501,7 @@ const descricao =
         <div class="chair">
           <div class="row">
             <span class="cno">Cadeira 04 · Busca e Reputação</span>
-            <span class="pending">Anúncio em breve</span>
+            <span class="pending">A confirmar para a Edição 1</span>
           </div>
           <h3>GEO e reputação</h3>
           <p class="disc">Busca, algoritmo e IA</p>
@@ -501,7 +511,7 @@ const descricao =
 
       <div class="chairs-note">
         <span class="tag">Edição 1</span>
-        <span>As próximas cadeiras são anunciadas primeiro para quem já garantiu a vaga.</span>
+        <span>As próximas cadeiras são anunciadas primeiro para quem está na lista da Edição 1.</span>
       </div>
     </div>
   </section>
@@ -531,12 +541,12 @@ const descricao =
   <section class="block block-dark reveal" id="ficha">
     <div class="wrap">
       <div class="eyebrow on-dark"><span class="dot"></span> EDIÇÃO 1</div>
-      <h2 class="title">A primeira turma <span class="gold">tem data.</span></h2>
+      <h2 class="title">O que já está <span class="gold">definido.</span></h2>
       <div class="sheet-grid">
         <div class="sheet-rows">
           <div class="sheet-row">
             <span class="k">Quando</span>
-            <span class="v">{EDICAO.datasCompletas}<small>{EDICAO.diaSemana}</small></span>
+            <span class="v">Primeira edição em {EDICAO.ano}<small>{EDICAO.horario}</small></span>
           </div>
           <div class="sheet-row">
             <span class="k">Onde</span>
@@ -632,7 +642,7 @@ const descricao =
     <div class="wrap">
       <div class="eyebrow on-dark"><span class="dot"></span> ON AIR</div>
       <h2 class="closing-mark">O microfone <span class="gold">está aberto.</span></h2>
-      <p>{EDICAO.datas}, no Brooklin. <b>Estar na primeira edição é ocupar um lugar que não se compra depois.</b> Turma pequena por desenho: todo mundo passa pelo microfone, com tempo de verdade.</p>
+      <p>A primeira edição acontece em {EDICAO.ano}, no Brooklin. <b>Estar nela é ocupar um lugar que não se compra depois.</b> Turma pequena por desenho: todo mundo passa pelo microfone, com tempo de verdade.</p>
       <div class="cta-row">
         <a href="#lista" class="btn btn-lg" data-cta="fechamento">Quero saber mais</a>
       </div>
@@ -653,7 +663,7 @@ const descricao =
             <li>Certificado e acesso à comunidade de líderes</li>
           </ul>
           <p class="sale-meta">
-            {EDICAO.datas} · {EDICAO.bairro}<br />
+            {EDICAO.bairro} · Primeira edição em {EDICAO.ano}<br />
             Investimento sob consulta · {EDICAO.parcelas}
           </p>
         </div>
@@ -747,10 +757,11 @@ const descricao =
                 </div>
 
                 <div class="qblock" data-q="cf_disponibilidade_data">
-                  <p>Você tem disponibilidade nos dias {EDICAO.datas}?</p>
+                  <p>Dois dias inteiros, presencial em São Paulo: isso caberia na sua agenda?</p>
                   <div class="opts">
-                    <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Sim, os dois dias" /><span>Sim, os dois dias</span></label>
-                    <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Não, quero a próxima edição" /><span>Não. Quero saber da próxima edição</span></label>
+                    <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Sim" /><span>Sim</span></label>
+                    <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Depende da data" /><span>Depende da data</span></label>
+                    <label class="opt"><input type="radio" name="cf_disponibilidade_data" value="Dois dias é muito para mim" /><span>Dois dias é muito para mim</span></label>
                   </div>
                 </div>
 
@@ -805,14 +816,14 @@ const descricao =
         <img src={withBase('/brand/piar-horizontal-negativo.png')} alt="" class="fmark-piar" width="82" height="27" loading="lazy" />
         <span class="fmark">THE MIC</span>
       </a>
-      <p>IMERSÃO EM AUTORIDADE EXECUTIVA · PIAR GROUP · SÃO PAULO · 2026</p>
+      <p>IMERSÃO EM AUTORIDADE EXECUTIVA · PIAR GROUP · SÃO PAULO</p>
     </div>
   </footer>
 
   <!-- Barra fixa de CTA -->
   <div class="stickybar" id="stickybar">
-    <p><span class="dot"></span> {EDICAO.datas} · {EDICAO.bairro}</p>
-    <a href="#lista" class="btn" data-cta="sticky">Quero saber mais</a>
+    <p><span class="dot"></span> Diagnóstico de Autoridade · 2 minutos, de graça</p>
+    <a href="/diagnostico" class="btn" data-cta="sticky">Fazer o diagnóstico</a>
   </div>
 
 </div>
@@ -928,6 +939,8 @@ const descricao =
   }
   .lp-themic .btn:hover { transform: translateY(-2px); background: var(--white); border-color: var(--white); }
   .lp-themic .btn-lg { padding: 20px 40px; font-size: 16.5px; }
+  .lp-themic .btn-outline { background: transparent; color: var(--gold); border-color: #45453c; }
+  .lp-themic .btn-outline:hover { background: rgba(254,209,54,.08); color: var(--gold); border-color: var(--gold); }
 
   /* ---------- Barra fixa ---------- */
   .lp-themic .stickybar {
@@ -983,6 +996,8 @@ const descricao =
   }
   .lp-themic .cta-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
   .lp-themic .cta-note { font-family: var(--mono); font-size: 12px; color: var(--white); letter-spacing: 0.06em; }
+  /* com dois botões, a nota ao lado invadia a foto: desce para a linha de baixo */
+  .lp-themic .hero .cta-note { flex-basis: 100%; }
   .lp-themic .hero-strip {
     margin-top: 54px; padding-top: 22px; border-top: 1px solid var(--ink-line);
     font-family: var(--mono); font-size: 12px; color: var(--white);
