@@ -12,6 +12,11 @@ const { current = 'home' } = Astro.props;
 // Narrativas promovidas para a raiz. BASE vazio = links no site vivo (/<slug>).
 const BASE = '';
 
+// "Diagnóstico de Autoridade" do menu leva ao diagnóstico com a identidade da
+// PiaR (/diagnostico-de-reputacao), não ao do THE MIC (/diagnostico). A UTM
+// separa no RD quem chegou pelo menu de quem chegou pelo outbound.
+const DIAGNOSTICO_MENU = '/diagnostico-de-reputacao?utm_source=site&utm_medium=organico&utm_campaign=home&utm_content=menu';
+
 // Dropdown "Serviços" — as 6 ofertas-ancora da PiaR (curadoria comercial).
 const services = [
   { label: 'Relações Públicas', href: `${BASE}/relacoes-publicas` },
@@ -79,7 +84,7 @@ const insights = [
           diagnóstico" e leva a /contato, que é conversa com o comercial. Um
           "Diagnóstico" solto aqui viraria dois itens com o mesmo nome e
           destinos diferentes na mesma barra. */}
-      <a class:list={['nav-link', current === 'diagnostico' && 'is-current']} href="/diagnostico" aria-current={current === 'diagnostico' ? 'page' : undefined}>Diagnóstico de Autoridade</a>
+      <a class:list={['nav-link', current === 'diagnostico' && 'is-current']} href={DIAGNOSTICO_MENU} aria-current={current === 'diagnostico' ? 'page' : undefined}>Diagnóstico de Autoridade</a>
 
       <div class="nav-dropdown">
         <button
@@ -139,7 +144,7 @@ const insights = [
       <a class:list={['nav-drawer-link', current === 'cases' && 'is-current']} href="/cases">Cases</a>
       <a class:list={['nav-drawer-link', current === 'pep' && 'is-current']} href="/pep">PEP</a>
       <a class:list={['nav-drawer-link', current === 'themic' && 'is-current']} href="/themic">The Mic</a>
-      <a class:list={['nav-drawer-link', current === 'diagnostico' && 'is-current']} href="/diagnostico">Diagnóstico de Autoridade</a>
+      <a class:list={['nav-drawer-link', current === 'diagnostico' && 'is-current']} href={DIAGNOSTICO_MENU}>Diagnóstico de Autoridade</a>
 
       <span class="nav-drawer-label">Insights</span>
       {insights.map((s) => (
