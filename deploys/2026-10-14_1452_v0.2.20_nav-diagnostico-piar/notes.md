@@ -9,7 +9,21 @@
 
 ## O que mudou desde o deploy anterior
 
-Preencha aqui, em portugues, o resumo do que o CEO deve olhar nesta versao.
+**O "Diagnóstico de Autoridade" do menu passa a levar ao diagnóstico com a
+identidade da PiaR**, e não mais ao do THE MIC. Vale para a barra do desktop e
+para o menu do celular, nas 34 páginas que têm menu.
+
+- Destino novo: `/diagnostico-de-reputacao?utm_source=site&utm_medium=organico&utm_campaign=home&utm_content=menu`.
+- A `/diagnostico` (isca do THE MIC) continua no ar e segue sendo o destino
+  dos botões da `/themic`.
+- O link que veio no pedido tinha `utm_campaign=home%20` (com um espaço no
+  fim). Entrou `home`, sem o espaço, para bater com os filtros do RD.
+
+### Como conferir depois de subir
+
+Abrir `piar.group` com Ctrl+F5, clicar em "Diagnóstico de Autoridade" no menu:
+a página deve ser a da PiaR e a barra de endereço deve terminar em
+`utm_content=menu`.
 
 ### Arquivos alterados (git)
 
