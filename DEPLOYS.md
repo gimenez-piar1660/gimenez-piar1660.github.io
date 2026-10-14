@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.19 | 2026-10-14 14:20 | themic-2027 | production | 53ad41c | [notas](deploys/2026-10-14_1420_v0.2.19_themic-2027/notes.md) |
 | v0.2.18 | 2026-10-06 16:18 | escuta-obrigatorias | production | c98328b | [notas](deploys/2026-10-06_1618_v0.2.18_escuta-obrigatorias/notes.md) |
 | v0.2.17 | 2026-10-06 15:00 | escuta-piar | production | 9cd1201 | [notas](deploys/2026-10-06_1500_v0.2.17_escuta-piar/notes.md) |
 | v0.2.16 | 2026-09-30 14:51 | themic-data-dezembro | production | 06424bf | [notas](deploys/2026-09-30_1451_v0.2.16_themic-data-dezembro/notes.md) |
