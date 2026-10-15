@@ -14,8 +14,9 @@ const BASE = '';
 
 // "Diagnóstico de Autoridade" do menu leva ao diagnóstico com a identidade da
 // PiaR (/diagnostico-de-reputacao), não ao do THE MIC (/diagnostico). A UTM
-// separa no RD quem chegou pelo menu de quem chegou pelo outbound.
-const DIAGNOSTICO_MENU = '/diagnostico-de-reputacao?utm_source=site&utm_medium=organico&utm_campaign=home&utm_content=menu';
+// separa no RD quem chegou pelo menu de quem chegou pelo outbound. A barra
+// final evita o 301 do servidor (sem barra -> com barra) antes da página.
+const DIAGNOSTICO_MENU = '/diagnostico-de-reputacao/?utm_source=site&utm_medium=organico&utm_campaign=home&utm_content=menu';
 
 // Dropdown "Serviços" — as 6 ofertas-ancora da PiaR (curadoria comercial).
 const services = [
