@@ -9,7 +9,18 @@
 
 ## O que mudou desde o deploy anterior
 
-Preencha aqui, em portugues, o resumo do que o CEO deve olhar nesta versao.
+O item "Diagnóstico de Autoridade" do menu (barra e gaveta do celular) leva ao
+diagnóstico com a identidade da PiaR, com o link enviado pelo comercial:
+
+`/diagnostico-de-reputacao/?utm_source=site&utm_medium=organico&utm_campaign=home&utm_content=menu`
+
+A diferença para a v0.2.20 é a barra final: sem ela o servidor dava um 301
+antes de abrir a página. Conferido no build: as 34 páginas com menu têm o link
+novo e nenhuma ainda aponta para o diagnóstico do THE MIC. Os botões da própria
+/themic continuam indo para /diagnostico, de propósito.
+
+Atenção: a v0.2.20 nunca chegou ao servidor (em 15/10 o piar.group ainda tinha
+o menu em /diagnostico). Esta versão substitui as duas: basta subir este zip.
 
 ### Arquivos alterados (git)
 
