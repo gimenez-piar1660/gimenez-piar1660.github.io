@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.21 | 2026-10-15 11:14 | nav-diagnostico-barra | production | 09cb886 | [notas](deploys/2026-10-15_1114_v0.2.21_nav-diagnostico-barra/notes.md) |
 | v0.2.20 | 2026-10-14 14:52 | nav-diagnostico-piar | production | ff2d86f | [notas](deploys/2026-10-14_1452_v0.2.20_nav-diagnostico-piar/notes.md) |
 | v0.2.19 | 2026-10-14 14:20 | themic-2027 | production | 53ad41c | [notas](deploys/2026-10-14_1420_v0.2.19_themic-2027/notes.md) |
 | v0.2.18 | 2026-10-06 16:18 | escuta-obrigatorias | production | c98328b | [notas](deploys/2026-10-06_1618_v0.2.18_escuta-obrigatorias/notes.md) |
