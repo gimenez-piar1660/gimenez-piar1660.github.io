@@ -5,6 +5,7 @@
 
 | Versao | Data/hora | Deploy | Ambiente | Commit | Notas |
 |--------|-----------|--------|----------|--------|-------|
+| v0.2.22 | 2026-10-19 16:19 | plano-2027 | production | 730a743 | [notas](deploys/2026-10-19_1619_v0.2.22_plano-2027/notes.md) |
 | v0.2.21 | 2026-10-15 11:14 | nav-diagnostico-barra | production | 09cb886 | [notas](deploys/2026-10-15_1114_v0.2.21_nav-diagnostico-barra/notes.md) |
 | v0.2.20 | 2026-10-14 14:52 | nav-diagnostico-piar | production | ff2d86f | [notas](deploys/2026-10-14_1452_v0.2.20_nav-diagnostico-piar/notes.md) |
 | v0.2.19 | 2026-10-14 14:20 | themic-2027 | production | 53ad41c | [notas](deploys/2026-10-14_1420_v0.2.19_themic-2027/notes.md) |
