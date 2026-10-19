@@ -11,6 +11,8 @@ import ConsentimentoCookies from '@components/ConsentimentoCookies.astro';
 interface Props {
   title: string;
   description: string;
+  // Título da prévia do link (WhatsApp, LinkedIn). Sem ele, vale o title.
+  ogTitle?: string;
   // Texto da prévia do link (WhatsApp, LinkedIn). Sem ele, vale o description.
   ogDescription?: string;
   canonical?: string;
@@ -22,6 +24,7 @@ interface Props {
 const {
   title,
   description,
+  ogTitle,
   ogDescription = description,
   canonical = Astro.url.href,
   ogImage = '/brand/piar-horizontal-positivo.png',
@@ -37,6 +40,7 @@ const siteName = 'PiaR Group';
 const fullTitle = title === siteName || title.includes(siteName)
   ? title
   : `${title} · ${siteName}`;
+const previaTitulo = ogTitle ?? fullTitle;
 
 // og:image e twitter:image pedem URL absoluta. withBase resolve o caminho de
 // public/ e Astro.site coloca o domínio na frente.
@@ -63,7 +67,7 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:title" content={previaTitulo} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
@@ -71,7 +75,7 @@ const ogImageUrl = new URL(withBase(ogImage), Astro.site).href;
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:title" content={previaTitulo} />
     <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
 

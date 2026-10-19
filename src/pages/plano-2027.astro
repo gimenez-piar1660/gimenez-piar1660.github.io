@@ -1,0 +1,556 @@
+---
+// ============================================================
+// PLANO DE COMUNICAÇÃO 2027 EM UMA PÁGINA · isca de material gratuito
+// ------------------------------------------------------------
+// Origem: lp-plano-2027.html (Ana Flávia, marketing) e o briefing "Página do
+// Plano de comunicação 2027", de 15/10/2026. Página independente: sem a Nav e o
+// Footer do site, porque a página tem topo e rodapé próprios. Fora do menu e do
+// rodapé; quem chega vem pelos links com UTM que o marketing monta por canal.
+//
+// ---- O QUE MUDOU NA ADAPTAÇÃO -------------------------------------------
+//   - Fontes self-hosted do site (Montserrat e JetBrains Mono, global.css) no
+//     lugar do Google Fonts.
+//   - Logo: o PNG embutido em base64 (duas vezes) virou o arquivo do site,
+//     public/brand/piar-vertical-negativo.png recortado na margem, em
+//     public/brand/lp/plano-2027/.
+//   - Todo seletor começa em .plano: o CSS recebido era global (*, body, form,
+//     button, footer) e vazaria no banner de cookies do BaseLayout. O CSS veio
+//     em duas camadas (base + "hero compacto" sobrescrevendo); aqui ficou só o
+//     valor final de cada regra, e saíram as classes que o HTML não usava.
+//   - Rodapé sem o telefone (11) 99169-8958: o site não tem telefone público
+//     desde 29/09/2026 (D-IDENT-2 em src/data/site.ts). E-mail e ano de
+//     fundação vêm de site.ts. Entraram Privacidade e Gerenciar cookies.
+//   - Aviso do formulário com link para a Política de Privacidade.
+//   - Honeypot de robô e máscara de WhatsApp, iguais às das outras páginas.
+//
+// ---- RASTREAMENTO -------------------------------------------------------
+// O briefing previa a integração de formulários do RD, que lê o envio pelo
+// código de monitoramento. Aqui o envio vai direto para a API de conversões,
+// como em /contato, /themic e /diagnostico, porque o loader do RD só carrega
+// depois do aceite de cookies de marketing (LGPD, ver ConsentimentoCookies):
+// pela integração, quem recusa os cookies converteria sem chegar ao RD.
+// O loader continua carregando nesta página como em todas, após o aceite.
+// NÃO ligar a captura de formulários do RD para esta página: o lead entraria
+// duas vezes, uma delas com outro identificador.
+//
+// RD STATION · mesmo token público das outras páginas.
+//   Conversão: RD_ID (o RD cria sozinho no primeiro envio).
+//   Tag: TAG_ISCA, em todo lead, mandada no próprio envio. A regra no RD que o
+//        briefing sugere vira redundância segura, não requisito.
+//   Campos nativos (não criar): name, email, mobile_phone (Celular),
+//        company_name, job_title (Cargo; o RD reserva o nome "cargo").
+//   Campos personalizados a criar no painel, tipo lista de opções, com as
+//   opções EXATAMENTE como em FUNCIONARIOS e ORCAMENTO abaixo. Digitar o nome
+//   sem acento e sem o prefixo cf_, que o RD acrescenta sozinho:
+//        "Numero de funcionarios" → cf_numero_de_funcionarios
+//        "Orcamento 2027"         → cf_orcamento_2027
+//   Atribuição: os mesmos cf_utm_*, cf_landing_page, cf_referrer,
+//        cf_pagina_conversao e cf_produto_interesse das outras páginas, mais
+//        traffic_source/medium/campaign (a "Origem" do lead no RD). A UTM vem
+//        da cadeia de sempre: cookie piar_atrib → sessionStorage → URL.
+//   Consentimento: available_for_mailing e base legal de comunicação por
+//        consentimento, porque o aviso do formulário diz que quem envia aceita
+//        receber conteúdos por e-mail. Sem isso, a conta com LGPD ligada pode
+//        barrar o e-mail de entrega.
+//
+// Depois do envio: mostra "Pronto, o material é seu" e vai para o PDF depois de
+// no mínimo ESPERA_MS (1,5 s, pedido do briefing: não tirar) e de o RD
+// responder, com teto de ESPERA_MAX_MS para ninguém ficar preso numa rede lenta.
+// Se o PDF mudar de endereço, é só trocar PDF_URL: o botão "Abrir o PDF" lê a
+// mesma constante.
+// ============================================================
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { site } from '@/data/site';
+import { withBase } from '@/lib/base';
+
+const RD_PUBLIC_KEY = '0ba58cf81bc6e78d267b310a8ccafbfc';
+const RD_ID = 'material-plano-comunicacao-2027';
+const TAG_ISCA = 'isca-plano-2027';
+const PRODUTO = 'Plano de comunicação 2027 em uma página';
+
+const PDF_URL = 'https://drive.google.com/file/d/1VHRzWHcqWoUiuLMhRZYsV4c7Zn_ATAKM/view?usp=sharing';
+const ESPERA_MS = 1500;
+const ESPERA_MAX_MS = 6000;
+
+// Opções que a página envia ao RD. Os campos de lista do painel precisam ter
+// estas opções escritas exatamente assim.
+const CARGOS = [
+  'Sócio(a) ou CEO',
+  'Diretor(a)',
+  'Gerente ou coordenador(a) de marketing ou comunicação',
+  'Analista',
+  'Outro',
+];
+const FUNCIONARIOS = ['1 a 49', '50 a 199', '200 a 499', '500 a 999', '1.000 ou mais'];
+const ORCAMENTO = ['Sim', 'Ainda não', 'Não sei'];
+
+// Os oito blocos do modelo: o nome curto vai na miniatura do hero, o longo na
+// seção "O que tem no material".
+const BLOCOS = [
+  { curto: 'A frase de 2027', longo: 'A frase de 2027' },
+  { curto: 'Para quem', longo: 'Para quem' },
+  { curto: 'A nossa tese', longo: 'A nossa tese' },
+  { curto: 'Quem fala', longo: 'Quem fala por nós' },
+  { curto: 'Onde estar', longo: 'Onde precisamos estar' },
+  { curto: 'Momentos do ano', longo: 'Os momentos do ano' },
+  { curto: 'Além da imprensa', longo: 'Além da imprensa' },
+  { curto: 'Como saber', longo: 'Como vamos saber' },
+];
+const num = (i: number) => String(i + 1).padStart(2, '0');
+
+const LOGO = withBase('/brand/lp/plano-2027/piar-vertical-negativo.png');
+
+const titulo = 'Plano de comunicação 2027 em uma página';
+const descricao =
+  'Material gratuito da PiaR: um guia curto e um modelo de uma página para decidir, antes de fechar o orçamento, o que a sua empresa quer que digam dela em 2027.';
+const tituloPrevia = 'O seu plano de comunicação de 2027 em uma página';
+const descricaoPrevia = 'Oito perguntas para responder antes de fechar o orçamento. Material gratuito da PiaR.';
+---
+
+<BaseLayout
+  title={titulo}
+  description={descricao}
+  ogTitle={tituloPrevia}
+  ogDescription={descricaoPrevia}
+  canonical={`${site.domain}/plano-2027`}
+  ogImage="/brand/lp/plano-2027/og.png"
+  bodyClass="antialiased plano-body"
+>
+<div class="plano">
+  <main id="main">
+
+    <!-- HERO + FORMULÁRIO: cabe numa tela de notebook, sem rolar -->
+    <section class="hero">
+      <div class="wrap hero-top">
+        <a class="logo" href={withBase('/')}><img src={LOGO} alt="PiaR Group" width="61" height="40" /></a>
+      </div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="mono eyebrow">/// Material gratuito · Planeje 2027 agora</p>
+          <h1>O seu plano de comunicação de 2027 <span>em uma página.</span></h1>
+          <p class="lead">Um guia curto e um modelo para decidir, antes de fechar o orçamento, o que a sua empresa quer que digam dela no ano que vem.</p>
+          <div class="chips">
+            <div><b>8</b><span>perguntas</span></div>
+            <div><b>1</b><span>página</span></div>
+            <div><b>1h</b><span>para preencher</span></div>
+          </div>
+          <div class="sheet" aria-hidden="true">
+            <div class="sheet-head"><span>Plano de comunicação 2027</span><i></i></div>
+            <div class="sheet-grid">
+              {BLOCOS.map((b, i) => <div><em>{num(i)}</em>{b.curto}</div>)}
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="form">
+          <div class="form-step">
+            <h2>Receba o material</h2>
+            <p class="sub">PDF de cinco páginas, com versão editável. Chega também no seu e-mail.</p>
+            <!-- Os name são os identificadores do RD: o envio monta o payload direto do formulário. -->
+            <form id="lp-form" name="plano-comunicacao-2027" novalidate>
+              <div class="row2">
+                <div><label for="nome">Nome</label><input id="nome" name="name" type="text" autocomplete="name" required /></div>
+                <div><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required /></div>
+              </div>
+              <div class="row2">
+                <div><label for="telefone">WhatsApp, com DDD</label><input id="telefone" name="mobile_phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(11) 90000-0000" required /></div>
+                <div><label for="empresa">Empresa</label><input id="empresa" name="company_name" type="text" autocomplete="organization" required /></div>
+              </div>
+              <div class="row2">
+                <div>
+                  <label for="cargo">Cargo</label>
+                  <select id="cargo" name="job_title" required>
+                    <option value="" selected disabled>Selecione</option>
+                    {CARGOS.map((c) => <option>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label for="funcionarios">Funcionários</label>
+                  <select id="funcionarios" name="cf_numero_de_funcionarios" required>
+                    <option value="" selected disabled>Selecione</option>
+                    {FUNCIONARIOS.map((f) => <option>{f}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <p class="rotulo" id="rotulo-orcamento">A comunicação já está no orçamento de 2027? <span class="opt">(opcional)</span></p>
+                <div class="radios" role="radiogroup" aria-labelledby="rotulo-orcamento">
+                  {ORCAMENTO.map((o) => <label><input type="radio" name="cf_orcamento_2027" value={o} /><span>{o}</span></label>)}
+                </div>
+              </div>
+
+              <!-- Armadilha de robô: humano não enxerga, bot preenche. -->
+              <input type="text" name="botcheck" id="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+              <button type="submit" class="enviar">Quero o material &#8594;</button>
+              <p class="fine">Ao enviar, você aceita receber conteúdos da PiaR por e-mail. Dá para sair da lista a qualquer momento. Veja a <a href={withBase('/privacidade')} target="_blank" rel="noopener">Política de Privacidade</a>.</p>
+            </form>
+          </div>
+
+          <div class="thanks" role="status" aria-live="polite">
+            <h2>Pronto, o material é seu.</h2>
+            <p>Estamos abrindo o PDF. Uma cópia também está a caminho do seu e-mail.</p>
+            <a class="btn" href={PDF_URL}>Abrir o PDF</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POR QUE AGORA -->
+    <section class="block">
+      <div class="wrap">
+        <p class="mono kicker">/// Por que agora</p>
+        <h2 class="title">Reputação não se improvisa. <span>Ela se decide antes.</span></h2>
+        <p class="body">Sem um plano, a comunicação vira pedido avulso: um release aqui, uma ação ali, sempre com pressa e sempre justificando por que precisa existir. E reputação é feita de constância. O jornalista volta a quem já conhece, e o mercado lembra de quem repete a mesma ideia.</p>
+        <div class="grid3">
+          <div class="tile"><p class="mono">01</p><h3>O orçamento de 2027 está sendo fechado</h3><p>Comunicação que fica de fora em dezembro briga por verba no meio do ano.</p></div>
+          <div class="tile"><p class="mono">02</p><h3>As pautas de 2027 já estão sendo apuradas</h3><p>As matérias de "o que esperar do ano" saem entre novembro e dezembro, com fontes que o jornalista já conhece.</p></div>
+          <div class="tile"><p class="mono">03</p><h3>Assessoria leva tempo para ganhar tração</h3><p>Quem decide agora começa janeiro com tese e porta-voz definidos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OS OITO BLOCOS -->
+    <section class="block white">
+      <div class="wrap">
+        <div class="split">
+          <div>
+            <p class="mono kicker">/// O que tem no material</p>
+            <h2 class="title">Oito perguntas, <span>uma página.</span></h2>
+            <p class="body">O modelo cabe numa folha e se preenche em uma hora, com duas ou três pessoas na mesa. O guia mostra, para cada bloco, a pergunta certa, o erro mais comum e um exemplo.</p>
+          </div>
+          <div>
+            <p class="mono kicker">/// Para quem é</p>
+            <ul class="plain">
+              <li>Quem lidera marketing ou comunicação e precisa defender a verba de 2027</li>
+              <li>CEOs e sócios que querem saber o que a comunicação vai construir no ano</li>
+              <li>Empresas que vão lançar, captar, expandir ou mudar de liderança em 2027</li>
+            </ul>
+          </div>
+        </div>
+        <div class="blocks">
+          {BLOCOS.map((b, i) => <div class="blk"><p class="mono">{num(i)}</p><p>{b.longo}</p></div>)}
+        </div>
+      </div>
+    </section>
+
+    <!-- PIAR -->
+    <section class="block dark">
+      <div class="wrap">
+        <p class="mono kicker">/// Quem fez</p>
+        <h2 class="title">Toda empresa é julgada <span>do outro lado da mesa.</span></h2>
+        <p class="body">A PiaR é uma agência de relações públicas fundada em {site.foundingYear}, em {site.address.locality}. A gente trabalha a partir de como a imprensa e o mercado leem uma empresa: antes da pauta vem a tese, e antes da entrevista vem o preparo de quem fala.</p>
+        <div class="offer">
+          <div><p class="mono">Assessoria de imprensa</p><h3>Tese antes da pauta</h3><p>Pauta construída uma por uma, para os veículos que o seu público lê.</p></div>
+          <div><p class="mono">Projetos especiais</p><h3>Além da matéria</h3><p>Estudos, eventos, conteúdo próprio e parcerias que levam a marca para fora da imprensa.</p></div>
+          <div><p class="mono">Porta-voz</p><h3>Preparo para a pergunta difícil</h3><p>Para quem vai falar pela empresa em 2027 e precisa chegar pronto.</p></div>
+        </div>
+        <div class="final">
+          <h3>Comece 2027 com o plano pronto. O material é gratuito.</h3>
+          <a class="btn" href="#form">Receber o material</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="wrap">
+      <span class="assinatura"><img src={LOGO} alt="PiaR Group" width="49" height="32" loading="lazy" /> desde {site.foundingYear}</span>
+      <span class="links">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <a href={withBase('/privacidade')}>Privacidade</a>
+        <button type="button" data-ck="gerenciar">Gerenciar cookies</button>
+      </span>
+    </div>
+  </footer>
+</div>
+
+<style is:global>
+  body.plano-body { background: var(--paper); }
+
+  .plano {
+    /* Cores do arquivo recebido. Preto, papel, branco e amarelo são os tokens
+       do site (mesmos valores); estas não têm token equivalente. O ocre
+       #6B4E00 é o dourado de texto aprovado no DESIGN_SYSTEM.md sobre papel. */
+    --creme: #FFF8DC;
+    --creme-linha: #F1E2A6;
+    --ocre: #6B4E00;
+    --mudo: #6E6E76;
+    --suave: #4A4A52;
+    --corpo: #2A2A30;
+    --linha: #E2E2E6;
+    --linha-escura: #2A2A30;
+    --texto-escuro: #C8C8CE;
+
+    font-family: var(--font-display);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .plano * { box-sizing: border-box; margin: 0; padding: 0; }
+  .plano a { color: inherit; }
+  .plano .mono { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1.6px; font-size: 12px; font-weight: 500; }
+  .plano .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- hero: cabe numa tela, sem rolagem no desktop ---------- */
+  .plano .hero { background: var(--ink); color: var(--white); min-height: 100vh; padding: 28px 0 40px; display: flex; flex-direction: column; gap: 28px; }
+  .plano .hero-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+  .plano .logo { display: block; }
+  .plano .logo img { display: block; height: 40px; width: auto; }
+  .plano .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; width: 100%; flex: 1; }
+  .plano .eyebrow { color: var(--yellow); margin-bottom: 14px; }
+  .plano .hero h1 { font-size: 44px; line-height: 1.05; font-weight: 800; letter-spacing: -1.4px; margin: 0 0 14px; }
+  .plano .hero h1 span { color: var(--yellow); }
+  .plano .lead { font-size: 17px; line-height: 1.55; color: var(--texto-escuro); max-width: 520px; }
+  .plano .chips { display: flex; gap: 12px; margin: 22px 0 26px; }
+  .plano .chips div { display: flex; align-items: baseline; gap: 8px; border: 1px solid var(--linha-escura); border-radius: 999px; padding: 8px 16px; }
+  .plano .chips b { font-size: 20px; font-weight: 800; color: var(--yellow); }
+  .plano .chips span { font-size: 13px; color: var(--texto-escuro); }
+
+  /* miniatura do modelo */
+  .plano .sheet { background: var(--creme); color: var(--ink); border-radius: 14px; padding: 12px; max-width: 520px; transform: rotate(-1.5deg); box-shadow: 10px 10px 0 var(--yellow); }
+  .plano .sheet-head { display: flex; justify-content: space-between; align-items: center; background: var(--ink); color: var(--white); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-weight: 800; font-size: 14px; }
+  .plano .sheet-head i { width: 28px; height: 3px; background: var(--yellow); }
+  .plano .sheet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .plano .sheet-grid div { background: var(--white); border: 1px solid var(--creme-linha); border-radius: 7px; padding: 7px 8px; font-size: 12px; font-weight: 700; line-height: 1.25; }
+  .plano .sheet-grid em { display: block; font-style: normal; font-family: var(--font-mono); font-size: 10px; color: var(--ocre); letter-spacing: 1px; margin-bottom: 2px; }
+
+  /* ---------- formulário ---------- */
+  .plano .card { background: var(--white); color: var(--ink); border-radius: 20px; padding: 28px 30px; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); scroll-margin-top: 24px; }
+  .plano .card h2 { font-size: 21px; line-height: 1.25; font-weight: 800; letter-spacing: -.3px; }
+  .plano .card .sub { font-size: 13.5px; color: var(--suave); margin: 4px 0 16px; }
+  .plano form { display: grid; gap: 12px; }
+  .plano label,
+  .plano .rotulo { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; }
+  .plano .opt { font-weight: 500; color: var(--mudo); }
+  .plano input,
+  .plano select { width: 100%; font: inherit; font-size: 14.5px; color: var(--ink); background: var(--paper); border: 1px solid var(--linha); border-radius: 9px; padding: 10px 12px; outline: none; appearance: none; -webkit-appearance: none; }
+  .plano select { background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 40px; }
+  .plano input:focus,
+  .plano select:focus { border-color: var(--ink); background-color: var(--white); }
+  .plano .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .plano .radios { display: flex; gap: 8px; flex-wrap: wrap; }
+  .plano .radios label { margin: 0; }
+  .plano .radios input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .plano .radios span { display: inline-block; font-size: 13.5px; font-weight: 600; padding: 7px 14px; border: 1px solid var(--linha); border-radius: 999px; background: var(--paper); cursor: pointer; }
+  .plano .radios input:checked + span { background: var(--yellow); border-color: var(--yellow); }
+  .plano .radios input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .plano .botcheck { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  .plano .enviar { font: inherit; font-size: 16px; font-weight: 700; color: var(--ink); background: var(--yellow); border: 0; border-radius: 999px; padding: 14px 24px; cursor: pointer; margin-top: 4px; }
+  .plano .enviar:hover { filter: brightness(.96); }
+  .plano .enviar:disabled { cursor: progress; }
+  .plano .fine { font-size: 11.5px; color: var(--mudo); line-height: 1.5; }
+  .plano .fine a { text-decoration: underline; text-underline-offset: 2px; }
+
+  .plano .thanks { display: none; }
+  .plano .card.enviado .form-step { display: none; }
+  .plano .card.enviado .thanks { display: block; }
+  .plano .thanks h2 { margin-bottom: 8px; }
+  .plano .thanks p { font-size: 15px; color: var(--suave); margin-bottom: 18px; }
+  .plano .btn { display: inline-block; text-decoration: none; font-weight: 700; font-size: 16px; background: var(--yellow); color: var(--ink); border-radius: 999px; padding: 15px 28px; }
+
+  /* ---------- seções ---------- */
+  .plano .block { padding: 88px 0; }
+  .plano .kicker { color: var(--ocre); }
+  .plano .title { font-size: 38px; line-height: 1.1; font-weight: 800; letter-spacing: -.8px; margin: 12px 0 18px; max-width: 760px; }
+  .plano .title span { color: var(--ocre); }
+  .plano .body { font-size: 17px; line-height: 1.65; color: var(--corpo); max-width: 720px; }
+  .plano .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .plano .tile { background: var(--creme); border: 1px solid var(--creme-linha); border-radius: 16px; padding: 28px; }
+  .plano .tile .mono { color: var(--ocre); font-size: 11px; }
+  .plano .tile h3 { font-size: 19px; line-height: 1.3; font-weight: 800; margin: 10px 0 8px; }
+  .plano .tile p { font-size: 15px; color: var(--suave); }
+
+  .plano .white { background: var(--white); }
+  .plano .blocks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; }
+  .plano .blk { border: 1px solid var(--linha); border-radius: 14px; padding: 20px; background: var(--paper); }
+  .plano .blk .mono { color: var(--ocre); font-size: 11px; }
+  .plano .blk p { font-size: 15px; font-weight: 700; margin-top: 6px; line-height: 1.35; }
+  .plano .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .plano .plain { list-style: none; display: grid; gap: 12px; margin-top: 24px; }
+  .plano .plain li { font-size: 16px; padding-left: 22px; position: relative; color: var(--corpo); }
+  .plano .plain li::before { content: "///"; position: absolute; left: 0; top: 2px; font-family: var(--font-mono); font-size: 10px; color: var(--ocre); letter-spacing: -1px; }
+
+  .plano .dark { background: var(--ink); color: var(--white); }
+  .plano .dark .kicker { color: var(--yellow); }
+  .plano .dark .title span { color: var(--yellow); }
+  .plano .dark .body { color: var(--texto-escuro); }
+  .plano .offer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .plano .offer div { border-top: 1px solid var(--linha-escura); padding-top: 18px; }
+  .plano .offer .mono { color: var(--yellow); font-size: 11px; }
+  .plano .offer h3 { font-size: 19px; font-weight: 800; margin: 8px 0 6px; }
+  .plano .offer p { font-size: 15px; color: #B8B8BE; }
+  .plano .final { margin-top: 56px; background: var(--yellow); color: var(--ink); border-radius: 20px; padding: 36px 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .plano .final h3 { font-size: 24px; line-height: 1.25; font-weight: 800; max-width: 560px; }
+  .plano .final .btn { background: var(--ink); color: var(--white); }
+
+  /* ---------- rodapé ---------- */
+  .plano .rodape { background: var(--ink); color: #8A8A92; border-top: 1px solid var(--linha-escura); }
+  .plano .rodape .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 28px; padding-bottom: 28px; flex-wrap: wrap; font-size: 14px; }
+  .plano .rodape .assinatura { display: flex; align-items: center; gap: 14px; }
+  .plano .rodape .assinatura img { height: 32px; width: auto; }
+  .plano .rodape .links { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .plano .rodape a,
+  .plano .rodape button { color: var(--yellow); text-decoration: none; background: none; border: 0; font: inherit; cursor: pointer; }
+  .plano .rodape a:hover,
+  .plano .rodape button:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 900px) {
+    .plano .hero { min-height: 0; }
+    .plano .hero-grid,
+    .plano .split { grid-template-columns: 1fr; }
+    .plano .hero-grid { gap: 32px; }
+    .plano .split { gap: 40px; }
+    .plano .hero h1 { font-size: 36px; }
+    .plano .title { font-size: 30px; }
+    .plano .grid3,
+    .plano .offer { grid-template-columns: 1fr; }
+    .plano .blocks { grid-template-columns: 1fr 1fr; }
+    .plano .row2 { grid-template-columns: 1fr; }
+    .plano .final { padding: 28px; }
+    .plano .sheet { display: none; }
+    .plano .chips { gap: 8px; flex-wrap: wrap; }
+    .plano .chips div { padding: 6px 12px; }
+    .plano .chips span { white-space: nowrap; }
+  }
+
+  /* Notebook de tela baixa: os chips saem para o formulário caber inteiro. */
+  @media (max-height: 760px) and (min-width: 901px) {
+    .plano .chips { display: none; }
+    .plano .lead { margin-bottom: 22px; }
+    .plano .hero { gap: 18px; }
+  }
+
+  /* Notebook 1366x768 com as barras do navegador e do Windows (área útil
+     perto de 625px): sem este aperto o aviso abaixo do botão fica 32px para
+     fora. O título já cabe em três linhas, então baixar o h1 não resolveria. */
+  @media (max-height: 700px) and (min-width: 901px) {
+    .plano .hero { padding-top: 20px; gap: 12px; }
+    .plano .card { padding: 22px 30px; }
+    .plano .card .sub { margin-bottom: 12px; }
+    .plano form { gap: 10px; }
+    .plano input,
+    .plano select { padding-top: 8px; padding-bottom: 8px; line-height: 1.3; }
+  }
+</style>
+
+<script is:inline define:vars={{ RD_PUBLIC_KEY, RD_ID, TAG_ISCA, PRODUTO, PDF_URL, ESPERA_MS, ESPERA_MAX_MS }}>
+(function () {
+  'use strict';
+
+  const form = document.getElementById('lp-form');
+  const card = document.getElementById('form');
+  const tel = document.getElementById('telefone');
+  const botao = form.querySelector('.enviar');
+  const RD_ATIVO = Boolean(RD_PUBLIC_KEY) && RD_PUBLIC_KEY.indexOf('COLE-SUA') !== 0;
+  let enviado = false;
+
+  /* ---------- Origem do lead: mesma cadeia de /contato, /themic e /diagnostico ----------
+     Cookie piar_atrib (gravado só após consentimento de marketing, ver
+     ConsentimentoCookies.astro) → sessionStorage → query string desta visita. */
+  const origem = (function () {
+    let atrib = {};
+    const bruto = document.cookie.split('; ').find((c) => c.indexOf('piar_atrib=') === 0);
+    if (bruto) {
+      try { atrib = JSON.parse(decodeURIComponent(bruto.slice('piar_atrib='.length))); } catch (err) { atrib = {}; }
+    }
+    if (!Object.keys(atrib).length) {
+      try {
+        const sessao = sessionStorage.getItem('piar_atrib');
+        if (sessao) atrib = JSON.parse(sessao);
+      } catch (err) { atrib = {}; }
+    }
+    const qs = new URLSearchParams(location.search);
+    const externo = document.referrer && document.referrer.indexOf(location.origin) !== 0;
+
+    return {
+      cf_utm_source: atrib.utm_source || qs.get('utm_source') || '',
+      cf_utm_medium: atrib.utm_medium || qs.get('utm_medium') || '',
+      cf_utm_campaign: atrib.utm_campaign || qs.get('utm_campaign') || '',
+      cf_utm_content: atrib.utm_content || qs.get('utm_content') || '',
+      cf_landing_page: atrib.landing_page || (location.pathname + location.search),
+      cf_referrer: atrib.referrer || (externo ? document.referrer : ''),
+      cf_pagina_conversao: location.pathname,
+      cf_produto_interesse: PRODUTO
+    };
+  })();
+
+  /* ---------- Máscara do WhatsApp, igual à de /themic ---------- */
+  tel.addEventListener('input', () => {
+    let v = tel.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 6) v = '(' + v.slice(0, 2) + ') ' + v.slice(2, v.length === 11 ? 7 : 6) + '-' + v.slice(v.length === 11 ? 7 : 6);
+    else if (v.length > 2) v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+    else if (v.length > 0) v = '(' + v;
+    tel.value = v;
+    tel.setCustomValidity('');
+  });
+
+  /* ---------- Payload: o formulário já usa os identificadores do RD ---------- */
+  function montarPayload() {
+    const payload = {};
+    // Campo vazio não vai: string vazia poderia apagar o que o contato já tem.
+    Object.keys(origem).forEach((k) => { if (origem[k]) payload[k] = origem[k]; });
+    new FormData(form).forEach((valor, chave) => {
+      if (chave === 'botcheck') return;
+      if (typeof valor === 'string' && valor.trim()) payload[chave] = valor.trim();
+    });
+    if (origem.cf_utm_source) payload.traffic_source = origem.cf_utm_source;
+    if (origem.cf_utm_medium) payload.traffic_medium = origem.cf_utm_medium;
+    if (origem.cf_utm_campaign) payload.traffic_campaign = origem.cf_utm_campaign;
+    payload.conversion_identifier = RD_ID;
+    payload.tags = [TAG_ISCA];
+    // O aviso do formulário diz que quem envia aceita receber conteúdos por e-mail.
+    payload.available_for_mailing = true;
+    payload.legal_bases = [{ category: 'communications', type: 'consent', status: 'granted' }];
+    return payload;
+  }
+
+  function enviarRD(payload) {
+    if (!RD_ATIVO) {
+      console.warn('[plano 2027] RD_PUBLIC_KEY ausente, modo demonstração.', payload);
+      return Promise.resolve(false);
+    }
+    return fetch('https://api.rd.services/platform/conversions?api_key=' + encodeURIComponent(RD_PUBLIC_KEY), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // keepalive: o envio termina mesmo que a página já tenha ido para o PDF.
+      keepalive: true,
+      body: JSON.stringify({ event_type: 'CONVERSION', event_family: 'CDP', payload: payload })
+    }).then((resp) => {
+      if (resp.ok) return true;
+      // O corpo da resposta entra no erro: é ali que o RD diz o que recusou.
+      return resp.text().then((corpo) => {
+        throw new Error('RD Station respondeu ' + resp.status + ': ' + corpo.slice(0, 500));
+      });
+    });
+  }
+
+  const esperar = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  /* ---------- Envio e ida para o PDF ---------- */
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (enviado) return;
+
+    const digitos = tel.value.replace(/\D/g, '');
+    tel.setCustomValidity(digitos.length === 0 || digitos.length >= 10 ? '' : 'Informe o WhatsApp com DDD.');
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (document.getElementById('botcheck').value) return;
+
+    enviado = true;
+    botao.disabled = true;
+    const envio = enviarRD(montarPayload())
+      .catch((err) => console.error('[plano 2027] o lead não gravou', err));
+
+    card.classList.add('enviado');
+
+    // Fica na tela pelo menos ESPERA_MS e até o RD responder, com teto de
+    // ESPERA_MAX_MS. Só então abre o PDF.
+    Promise.all([esperar(ESPERA_MS), Promise.race([envio, esperar(ESPERA_MAX_MS)])])
+      .then(() => { window.location.href = PDF_URL; });
+  });
+})();
+</script>
+</BaseLayout>
